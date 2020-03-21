@@ -1,0 +1,82 @@
+import argparse
+import os
+from polyply.itp_tool.itp_I import *
+#from polyply.monomer_itps.resolve_name import *
+from polyply.structure_tool.mc_poly_growth import *
+from polyply.structure_tool.analysis_funtions import *
+from polyply.structure_tool.geometrical_functions import *
+from polyply.structure_tool.force_field_tools import *
+from polyply import DATA_PATH
+
+
+parser = argparse.ArgumentParser(description=' ')
+parser.add_argument('-itp'     , metavar = 'itps of blocks'     , dest = 'itpfiles', type = str   , help = 'name of the monomer .itp files', nargs = '*')
+parser.add_argument('-n_mon'   , metavar = 'length of blocks'   , dest = 'mon'     , type = int   , help = 'number of monomers per blocks', nargs = '*')
+parser.add_argument('-polymer' , metavar = 'itp from monomers'  , dest = 'r_itp_name', type = str   , help = 'use itps in default repository', nargs='*')
+parser.add_argument('-name'    , metavar = 'name of molecule'   , dest = 'name'    , type = str   , help = 'name of the new polymer molecule', default='polymer')
+parser.add_argument('-o'       , metavar = 'name of outfile'    , dest = 'outfile' , type = str   , help = 'name of the output file', default='outfile')
+parser.add_argument('-p'       , metavar = 'topology file'      , dest = 'topfile' , type = str   , help = 'name of system topology file')
+parser.add_argument('-T'       , metavar = 'temperature'        , dest = 'temp'    , type = float , help = 'temperature of system', default=298.0) 
+parser.add_argument('-v'       , action='store_true'  , help = 'be loud and noisy')
+parser.add_argument('-env'     , metavar = 'environmnet'        , dest = 'env'     , type = str   , help = 'type of environment to add to chain', default=None)
+parser.add_argument('-sys'     , metavar = 'system'             , dest = 'sys'     , type = str   , help = 'trajectory of environment',default=None)   
+parser.add_argument('-maxsteps', metavar = 'max MC steps'       , dest = 'maxsteps', type = int   , help = 'maximum number of MC steps befaure exit by error', default=5000)
+parser.add_argument('-links'   , metavar = 'linkfile'           , dest = 'linkfile', type = str   , help = 'file where the bonded links are specified.', default=None)
+parser.add_argument('-endgroup', metavar = 'endgroup itps'     , dest = 'endgroup', type = str   , help = 'itp files with endgroups', nargs='*' ,default=None)
+parser.add_argument('-lipid'   , metavar = 'lipid type'        , dest = 'lipid'   , type = str   , help = 'lipid type of the bilayer when env is bilayer')
+parser.add_argument('-spacing' , metavar = 'spacing of PEL'    , dest = 'spacing' , type = float , help = 'spaceing between PEL in a bilayer', default=0 )
+parser.add_argument('-sol'     , metavar = 'solvent'           , dest = 'solvent' , type = str   , help = 'name of solvent for the polymer system', default=None)   
+parser.add_argument('-lib'     , action='store_true'  , help = 'show itp library')   
+parser.add_argument('-cut_off' , metavar = 'cut off'           , dest = 'cut_off' , type = float , help = 'cut-off for non-bonded interactions (nm)', default=1.1)
+parser.add_argument('-softness', metavar = 'softness'          , dest = 'softness' , type = float , help = ' if r_AB < softness * sigma a move is rejected', default=0.75)
+parser.add_argument('-epsilon', metavar = 'dielectric constant', dest = 'eps' , type = float , help = 'dielectric constant to be used for electrostatics', default=15)
+parser.add_argument('-start'  , metavar = 'start-atom'         , dest = 'start' , type = int , help = 'starting atom for restart', default=0)
+parser.add_argument('-branch'  , metavar = 'branch'         , dest = 'branch' , type = int , help = 'degree of branching per monomer',nargs='*')
+
+args = parser.parse_args()
+
+def resolve_name(names, path):
+    paths = []
+    for name in names:
+        polym, ff, version = name.split('.')
+        basename = '{}.{}.{}.itp'.format(polym, ff,version)
+        full_name = os.path.join(path, 'monomer_itps',  basename)
+        paths += [ full_name ]
+    return(paths)
+
+def show_files(path):
+    files = [ f for f in os.listdir(path) if len(f.split('.')) == 4] 
+    print('\nPolymer       ','Force-Field',' Version')
+    print('---------------------------------------------------')
+    for f in files:
+        print('{:<15s}{:<15s}{:<15s}'.format(f.split('.')[0], f.split('.')[1],  f.split('.')[2]))
+  
+def main():
+ 
+   if not args.itpfiles == None:
+      itp_tool(args.itpfiles, args.linkfile ,args.mon, args.outfile, args.name, args.endgroup, args.branch)
+
+   elif not args.r_itp_name == None:
+      itp_files = resolve_name(args.r_itp_name, DATA_PATH)
+      print(args.endgroup)
+      itp_tool(itp_files, args.linkfile ,args.mon, args.outfile, args.name, args.endgroup,args.branch)
+
+   elif not args.env == None:
+      magic_numbers = (args.cut_off, args.softness, args.eps , args.v)
+      if args.env != "restart":
+         env_options = (args.env, args.solvent, args.lipid, args.sys, 0)
+      else:
+         env_options = (args.env, args.solvent, args.lipid, args.sys, args.start)
+      top_options = (args.topfile)
+      mc_options =  (args.temp, args.maxsteps, args.v, args.name)
+      build_system(top_options, env_options, mc_options, args.outfile, magic_numbers)
+
+   elif args.lib:
+      path = os.path.join(DATA_PATH, 'monomer_itps')
+      show_files(path)
+   else:
+      print('Please specify either -itp or -sys option.')
+
+   return(None)
+
+main()

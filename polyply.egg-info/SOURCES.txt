@@ -1,0 +1,17 @@
+README.md
+setup.py
+bin/__init__.py
+bin/polyply.gen_itp
+polyply/__init__.py
+polyply.egg-info/PKG-INFO
+polyply.egg-info/SOURCES.txt
+polyply.egg-info/dependency_links.txt
+polyply.egg-info/requires.txt
+polyply.egg-info/top_level.txt
+polyply/code/__init__.py
+polyply/code/itp_generator.py
+polyply/code/itp_read.py
+polyply/data/__init__.py
+polyply/data/AA/__init__.py
+polyply/data/CG/__init__.py
+polyply/tests/__init__.py
