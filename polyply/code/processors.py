@@ -1,5 +1,19 @@
 
 class Map_to_molecule():
+
+
+    def _get_links(self, link_name, length, attrs):
+        links = []
+
+        for link in self._force_field.links:
+            if link.name == link_name:
+                if length and length == len(link.nodes) and link.attributes_match(attrs):
+                    links.append(link)
+                elif link.attributes_match(attrs):
+                    links.append(link)
+
+        return links
+
      def map_to_molecule(self, mol=Vermouth.Molecule(nx.Graph())):
          new_mol = self._force_field.blocks[block_names[0]].to_molecule()
          new_mol._force_field = self._force_field

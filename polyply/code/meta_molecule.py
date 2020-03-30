@@ -1,7 +1,7 @@
 from collections import namedtuple
 import json
 import networkx as nx
-
+from networkx.readwrite import json_graph
 
 Monomer = namedtuple('Monomer', 'resname, n_blocks')
 
@@ -22,8 +22,7 @@ class MetaMolecule(nx.Graph):
         that matches may only refer to already existing nodes.
         But connections can be an empty list.
         """
-        self.add_node(current, attr_dict={"resname": resname})
-
+        self.add_node(current, resname=resname)
         for edge in connections:
             if self.has_node(edge[0]) and self.has_node(edge[1]):
                 self.add_edge(edge[0], edge[1])
@@ -33,22 +32,10 @@ class MetaMolecule(nx.Graph):
                 raise IOError(msg.format(edge))
 
     def _get_edge_resname(self, edge):
-        return self.nodes[edge[0]] + "_" + self.nodes[edge[1]]
-
-    def _get_links(self, link_name, length, attrs):
-        links = []
-
-        for link in self._force_field.links:
-            if link.name == link_name:
-                if length and length == len(link.nodes) and link.attributes_match(attrs):
-                    links.append(link)
-                elif link.attributes_match(attrs):
-                    links.append(link)
-
-        return links
+        return self.nodes[edge[0]]["resname"] + "_" + self.nodes[edge[1]]["resname"]
 
     @classmethod
-    def from_linear(cls, force_field, monomers, mol_name):
+    def from_monomer_seq_linear(cls, force_field, monomers, mol_name):
         """
         Constructs a meta graph for a linear molecule
         which is the default assumption from
@@ -58,7 +45,8 @@ class MetaMolecule(nx.Graph):
         res_count = 0
 
         for monomer in monomers:
-            while trans <= monomer.n_blocks:
+            trans = 0
+            while trans < monomer.n_blocks:
 
                 if res_count != 0:
                     connect = [(res_count-1, res_count)]
@@ -66,31 +54,19 @@ class MetaMolecule(nx.Graph):
                     connect = []
                 trans += 1
 
-                meta_mol_graph.add_monomer(res_count, monomer.name, connect)
-
+                meta_mol_graph.add_monomer(res_count, monomer.resname, connect)
+                res_count += 1
         return meta_mol_graph
 
     @classmethod
     def from_json(cls, force_field, json_file, mol_name):
         """
         Constructs a :class::`MetaMolecule` from a json file
-        format based graph.
+        using the networkx json package.
         """
-        meta_mol = cls(nx.Graph(), force_field=force_field, mol_name=mol_name)
         with open(json_file) as file_:
             data = json.load(file_)
 
-        def recursive_grapher(_dict, current_node=0, graph=meta_mol):
-            prev_node = current_node
-            for value in _dict.values():
-                graph.add_monomer(current_node, value["resname"], [(prev_node, current_node)])
-                current_node += 1
-                try:
-                    current_node, graph = recursive_grapher(value["branches"],
-                                                            current_node, graph)
-                except KeyError:
-                    continue
-
-            return current_node, graph
-
-        return recursive_grapher(data)
+        graph = json_graph.node_link_graph(data)
+        meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
+        return meta_mol
