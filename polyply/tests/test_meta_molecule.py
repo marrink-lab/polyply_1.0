@@ -21,8 +21,8 @@ import numpy as np
 import networkx as nx
 import vermouth.forcefield
 import vermouth.molecule
-import polyply.code.meta_molecule
-from polyply.code.meta_molecule import (MetaMolecule, Monomer)
+import polyply.src.meta_molecule
+from polyply.src.meta_molecule import (MetaMolecule, Monomer)
 
 class TestPolyply:
     @staticmethod

@@ -20,7 +20,7 @@ import pytest
 import numpy as np
 import vermouth.forcefield
 import vermouth.molecule
-import polyply.code.parsers
+import polyply.src.parsers
 
 class TestPolyply:
     @staticmethod
@@ -38,7 +38,7 @@ class TestPolyply:
         """
         lines = textwrap.dedent(lines).splitlines()
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.code.parsers.read_polyply(lines, ff)
+        polyply.src.parsers.read_polyply(lines, ff)
 
         link_bond = vermouth.molecule.Interaction(
                 atoms=["COC", "+COC"], parameters=['1', '0.37', '7000'], meta={"version":1},)
@@ -61,7 +61,7 @@ class TestPolyply:
         """
         lines = textwrap.dedent(lines).splitlines()
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.code.parsers.read_polyply(lines, ff)
+        polyply.src.parsers.read_polyply(lines, ff)
 
         dih  = [vermouth.molecule.Interaction(
                 atoms=["COC", "+COC", "++COC", "+++COC"], parameters=['1','180.00','1.96','1'], meta={'version':3}),
@@ -86,7 +86,7 @@ class TestPolyply:
         """
         lines = textwrap.dedent(lines).splitlines()
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.code.parsers.read_polyply(lines, ff)
+        polyply.src.parsers.read_polyply(lines, ff)
 
         excl = [vermouth.molecule.Interaction(
                 atoms=["COC", "++COC"], parameters=[], meta={"version":1},)]
@@ -111,7 +111,7 @@ class TestPolyply:
         """
         lines = textwrap.dedent(lines).splitlines()
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.code.parsers.read_polyply(lines, ff)
+        polyply.src.parsers.read_polyply(lines, ff)
 
         block_bond = vermouth.molecule.Interaction(
                 atoms=[0, 1], parameters=['1', '0.37', '7000'], meta={},)
