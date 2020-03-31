@@ -140,7 +140,70 @@ class TestApplyLinks:
          Interaction(atoms=(4, 7), parameters=[], meta={}),
          Interaction(atoms=(5, 6), parameters=[], meta={}),
          Interaction(atoms=(5, 7), parameters=[], meta={}),
-         Interaction(atoms=(6, 7), parameters=[], meta={})]})
+         Interaction(atoms=(6, 7), parameters=[], meta={})]}),
+         ("""[ moleculetype ]
+           P3HT               1
+          [ atoms ]
+              1   SC5    1    P3HT     S1    1        0       45
+              2   SC5    1    P3HT     C2    2        0       45
+              3   SC5    1    P3HT     C3    3        0       45
+              4    VS    1    P3HT     V4    4        0        0
+              5   SC3    1    P3HT     C5    5        0       45
+              6   SC3    1    P3HT     C6    6        0       45
+          [ bonds ]
+              5    6    1    0.360         5000
+              4   10    1    0.380        50000
+           [ exclusions ]
+              1    7
+              2    7
+              3    7
+          [ constraints ]
+              1    2    1   0.240
+              1    3    1   0.240
+              2    3    1   0.240
+              3    5    1   0.285
+          [ angles ]
+              1    3    5    2       180      250
+              3    5    6    1       155       25
+              2    3   10    1       160      180
+              4    8    9    1       160      180
+              4   10   16    1       158      180
+          [ dihedrals ]
+              1    4 7  10        9       0.0      1.8  1
+              1    4 7  10        9       0.0     -9.5  2
+           [ virtual_sitesn ]
+             4    2    1   2   3""",
+          [Monomer(resname="P3HT", n_blocks=2)],
+           {"bonds":[
+           Interaction(atoms=(3, 9), parameters=['1', '0.380', '50000'], meta={'version': 1}),
+           Interaction(atoms=(4, 5), parameters=['1', '0.360', '5000'], meta={}),
+           Interaction(atoms=(10, 11), parameters=['1', '0.360', '5000'], meta={})],
+           "angles":[
+           Interaction(atoms=(0, 2, 4), parameters=['2', '180', '250'], meta={}),
+           Interaction(atoms=(1, 2, 6), parameters=['1', '160', '180'], meta={}),
+           Interaction(atoms=(2, 4, 5), parameters=['1', '155', '25'], meta={}),
+           Interaction(atoms=(3, 7, 8), parameters=['1', '160', '180'], meta={}),
+           Interaction(atoms=(6, 8, 10), parameters=['2', '180', '250'], meta={}),
+           Interaction(atoms=(8, 10, 11), parameters=['1', '155', '25'], meta={})],
+           "constraints":[
+           Interaction(atoms=(0, 1), parameters=['1', '0.240'], meta={}),
+           Interaction(atoms=(0, 2), parameters=['1', '0.240'], meta={}),
+           Interaction(atoms=(1, 2), parameters=['1', '0.240'], meta={}),
+           Interaction(atoms=(2, 4), parameters=['1', '0.285'], meta={}),
+           Interaction(atoms=(6, 7), parameters=['1', '0.240'], meta={}),
+           Interaction(atoms=(6, 8), parameters=['1', '0.240'], meta={}),
+           Interaction(atoms=(7, 8), parameters=['1', '0.240'], meta={}),
+           Interaction(atoms=(8, 10), parameters=['1', '0.285'], meta={})],
+           "exclusions":[
+           Interaction(atoms=(0, 6), parameters=[], meta={'version':1}),
+           Interaction(atoms=(1, 6), parameters=[], meta={'version':1}),
+           Interaction(atoms=(2, 6), parameters=[], meta={'version':1})],
+           "virtual_sitesn":[
+           Interaction(atoms=(3, 0, 1, 2), parameters=['2'], meta={}),
+           Interaction(atoms=(9, 6, 7, 8), parameters=['2'], meta={})],
+           "dihedrals":[
+           Interaction(atoms=(0, 3, 9, 6), parameters=['9','0.0','-9.5','2'], meta={}),
+           Interaction(atoms=(0, 3, 9, 6), parameters=['9','0.0','1.8','1'], meta={'version':2})]})
          ))
 
     def test_polyply_input(lines, monomers, interactions):
@@ -152,7 +215,6 @@ class TestApplyLinks:
         new_meta_mol = polyply.src.apply_links.ApplyLinks().run_molecule(meta_mol)
 
         for key in new_meta_mol.molecule.interactions:
-            print(key)
             for interaction in new_meta_mol.molecule.interactions[key]:
-                print(interaction)
+                #print(interaction)
                 assert interaction in interactions[key]

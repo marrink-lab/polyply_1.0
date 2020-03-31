@@ -11,9 +11,9 @@ class MetaMolecule(nx.Graph):
     """
 
     def __init__(self, *args, **kwargs):
-        self._force_field = kwargs.pop('force_field', None)
+        self.force_field = kwargs.pop('force_field', None)
         super().__init__(*args, **kwargs)
-        self.molecules = []
+        self.molecule = None
 
     def add_monomer(self, current, resname, connections):
         """
@@ -31,8 +31,8 @@ class MetaMolecule(nx.Graph):
                        "not exist. Cannot add edge to unkown nodes.")
                 raise IOError(msg.format(edge))
 
-    def _get_edge_resname(self, edge):
-        return self.nodes[edge[0]]["resname"] + "_" + self.nodes[edge[1]]["resname"]
+    def get_edge_resname(self, edge):
+        return [self.nodes[edge[0]]["resname"],  self.nodes[edge[1]]["resname"]]
 
     @classmethod
     def from_monomer_seq_linear(cls, force_field, monomers, mol_name):

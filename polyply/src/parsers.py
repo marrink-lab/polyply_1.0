@@ -83,8 +83,8 @@ class PolyplyParser(ITPDirector):
 
         n_atoms = len(block.nodes)
         res_name = block.nodes[0]['resname']
-        block_interactions = []
         for key in block.interactions:
+            block_interactions = []
             new_link = vermouth.molecule.Link()
             new_link.interactions = defaultdict(list)
             new_link.name = res_name
