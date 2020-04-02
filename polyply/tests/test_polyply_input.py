@@ -15,6 +15,9 @@
 Test that force field files are properly read.
 """
 
+# TODO:
+# add test for when version tagging is important
+
 import textwrap
 import pytest
 import numpy as np
@@ -64,13 +67,15 @@ class TestPolyply:
         polyply.src.parsers.read_polyply(lines, ff)
 
         dih  = [vermouth.molecule.Interaction(
-                atoms=["COC", "+COC", "++COC", "+++COC"], parameters=['1','180.00','1.96','1'], meta={'version':3}),
+                atoms=["COC", "+COC", "++COC", "+++COC"], parameters=['1','180.00','1.96','1'], meta={'version':1}),
                vermouth.molecule.Interaction(
-                atoms=["COC", "+COC", "++COC", "+++COC"], parameters=['1','0','0.18','2'], meta={'version':2}),
+                atoms=["COC", "+COC", "++COC", "+++COC"], parameters=['1','0','0.18','2'], meta={'version':1}),
                vermouth.molecule.Interaction(
                 atoms=["COC", "+COC", "++COC", "+++COC"], parameters=['1','0','0.33','3'], meta={'version':1})]
 
-        assert ff.links[0].interactions['dihedrals'] == dih
+        assert len(ff.links) == 3
+        for link in  ff.links:
+            assert link.interactions['dihedrals'][0] in dih
 
     @staticmethod
     def test_exclusions():
@@ -95,8 +100,8 @@ class TestPolyply:
 
 
     @staticmethod
-    def test_split_link_block():
-        lines = """
+    @pytest.mark.parametrize('lines, total, blocks, links', (
+        ("""
         [ moleculetype ]
         ; name nexcl.
         PEO         1
@@ -108,16 +113,64 @@ class TestPolyply:
         ; back bone bonds
         1  2   1   0.37 7000
         2  3   1   0.37 7000
-        """
+        """,
+        1,
+        {"bonds":[ vermouth.molecule.Interaction(
+                atoms=[0, 1], parameters=['1', '0.37', '7000'], meta={},)]},
+        {"bonds":[vermouth.molecule.Interaction(
+                atoms=["EO2", "+EO1"], parameters=['1', '0.37', '7000'], meta={"version":1},)]}
+        ),
+        ("""
+         [ moleculetype ]
+         PS 1
+         [ atoms ]
+            1    STY            1  PS       R1       1     0.00000E+00   45
+            2    STY            1  PS       R2       2     0.00000E+00   45
+            3    STY            1  PS       R3       3     0.00000E+00   45
+            4    SCY            1  PS       B        4     0.00000E+00   45
+         [ bonds ]
+            1     4   1     0.27 8000
+            4     5   1     0.27 8000
+
+         [ angles ]
+           4     1     2    1   136  100
+           4     1     3    1   136  100
+           ; links
+           4     5     6    1   136  100
+           4     5     7    1   136  100
+           1     4     5    1   120   25
+           4     5     8    1    52  550
+        """,
+        5,
+        {"bonds": [vermouth.molecule.Interaction(
+                atoms=[0, 3], parameters=['1', '0.27', '8000'], meta={},)],
+         "angles":[vermouth.molecule.Interaction(
+                atoms=[3, 0, 1], parameters=['1', '136', '100'], meta={},),
+                   vermouth.molecule.Interaction(
+                atoms=[3, 0, 2], parameters=['1', '136', '100'], meta={},)]},
+        {"bonds": [vermouth.molecule.Interaction(
+                atoms=["B", "+R1"], parameters=['1', '0.27', '8000'], meta={'version':1},)],
+         "angles":[
+                vermouth.molecule.Interaction(
+                atoms=["B", "+R1", "+R2"], parameters=['1', '136', '100'], meta={'version':1},),
+                vermouth.molecule.Interaction(
+                atoms=["B", "+R1", "+R2"], parameters=['1', '136', '100'], meta={'version':1},),
+                vermouth.molecule.Interaction(
+                atoms=["R1", "B", "+R1"], parameters=['1', '120', '25'], meta={'version':1},),
+                vermouth.molecule.Interaction(
+                atoms=["B", "+R1", "+B"], parameters=['1', '52', '550'], meta={'version':1},)]},
+        )))
+
+    def test_split_link_block(lines, total, blocks, links):
         lines = textwrap.dedent(lines).splitlines()
         ff = vermouth.forcefield.ForceField(name='test_ff')
         polyply.src.parsers.read_polyply(lines, ff)
-
-        block_bond = vermouth.molecule.Interaction(
-                atoms=[0, 1], parameters=['1', '0.37', '7000'], meta={},)
-
-        link_bond = vermouth.molecule.Interaction(
-                atoms=["EO2", "+EO1"], parameters=['1', '0.37', '7000'], meta={"version":1},)
-
-        assert ff.blocks['PEO'].interactions['bonds'][0] == block_bond
-        assert ff.links[0].interactions['bonds'][0] == link_bond
+        # test the correct total number of links is produced
+        assert len(ff.links) == total
+        # check if each link has the length one
+        for link in ff.links:
+            assert len(link.interactions) == 1
+            key = list(link.interactions.keys())[0]
+            values = link.interactions[key]
+            print(values)
+            assert len(values) == 1 

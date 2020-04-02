@@ -1,0 +1,14 @@
+; polyply-itp
+
+[ moleculetype ]
+PEO 1
+
+[ atoms ]
+1 EO 1 PEO CO1 1 0.0 45.0
+2 EO 2 PEO CO1 2 0.0 45.0
+3 EO 3 PEO CO1 3 0.0 45.0
+4 EO 4 PEO CO1 4 0.0 45.0
+
+[ dihedrals ]
+1 2 3 4 params
+

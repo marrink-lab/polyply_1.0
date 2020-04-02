@@ -51,7 +51,7 @@ class TestApplyLinks:
         {"bonds":[Interaction(atoms=(0, 1), parameters=['1', '0.37', '7000'], meta={}),
          Interaction(atoms=(1, 2), parameters=['1', '0.37', '7000'], meta={}),
          Interaction(atoms=(1, 3), parameters=['1', '0.37', '7000'], meta={}),
-         Interaction(atoms=(3, 4), parameters=['1', '0.37', '7000'], meta={"version":1}),
+         Interaction(atoms=(3, 4), parameters=['1', '0.37', '7000'], meta={'version':1}),
          Interaction(atoms=(4, 5), parameters=['1', '0.37', '7000'], meta={}),
          Interaction(atoms=(5, 6), parameters=['1', '0.37', '7000'], meta={}),
          Interaction(atoms=(5, 7), parameters=['1', '0.37', '7000'], meta={})]}
@@ -60,10 +60,10 @@ class TestApplyLinks:
          [ moleculetype ]
          PS 1
          [ atoms ]
-            1    STY            1  STYR       R1       1     0.00000E+00   45
-            2    STY            1  STYR       R2       2     0.00000E+00   45
-            3    STY            1  STYR       R3       3     0.00000E+00   45
-            4    SCY            1  STYR       B        4     0.00000E+00   45
+            1    STY            1  PS       R1       1     0.00000E+00   45
+            2    STY            1  PS       R2       2     0.00000E+00   45
+            3    STY            1  PS       R3       3     0.00000E+00   45
+            4    SCY            1  PS       B        4     0.00000E+00   45
          [ bonds ]
             1     4   1     0.270000 8000
             4     5   1     0.270000 8000
@@ -100,15 +100,15 @@ class TestApplyLinks:
          [Monomer(resname="PS",n_blocks=2)],
          {"bonds":[
          Interaction(atoms=(0, 3), parameters=['1', '0.270000', '8000'], meta={}),
-         Interaction(atoms=(3, 4), parameters=['1', '0.270000', '8000'], meta={}),
+         Interaction(atoms=(3, 4), parameters=['1', '0.270000', '8000'], meta={'version':1}),
          Interaction(atoms=(4, 7), parameters=['1', '0.270000', '8000'], meta={})],
          "angles":[
-         Interaction(atoms=(0, 3, 4), parameters=['1', '120', '25'], meta={}),
+         Interaction(atoms=(0, 3, 4), parameters=['1', '120', '25'],  meta={'version':1}),
          Interaction(atoms=(3, 0, 1), parameters=['1', '136', '100'], meta={}),
          Interaction(atoms=(3, 0, 2), parameters=['1', '136', '100'], meta={}),
-         Interaction(atoms=(3, 4, 5), parameters=['1', '136', '100'], meta={}),
-         Interaction(atoms=(3, 4, 6), parameters=['1', '136', '100'], meta={}),
-         Interaction(atoms=(3, 4, 7), parameters=['1', '52', '550'], meta={}),
+         Interaction(atoms=(3, 4, 5), parameters=['1', '136', '100'], meta={'version':1}),
+         Interaction(atoms=(3, 4, 6), parameters=['1', '136', '100'], meta={'version':1}),
+         Interaction(atoms=(3, 4, 7), parameters=['1', '52', '550'],  meta={'version':1}),
          Interaction(atoms=(7, 4, 5), parameters=['1', '136', '100'], meta={}),
          Interaction(atoms=(7, 4, 6), parameters=['1', '136', '100'], meta={})],
          "constraints":[
@@ -122,19 +122,19 @@ class TestApplyLinks:
          Interaction(atoms=(0, 1), parameters=[], meta={}),
          Interaction(atoms=(0, 2), parameters=[], meta={}),
          Interaction(atoms=(0, 3), parameters=[], meta={}),
-         Interaction(atoms=(0, 4), parameters=[], meta={}),
-         Interaction(atoms=(0, 5), parameters=[], meta={}),
-         Interaction(atoms=(0, 6), parameters=[], meta={}),
-         Interaction(atoms=(0, 7), parameters=[], meta={}),
+         Interaction(atoms=(0, 4), parameters=[], meta={'version':1}),
+         Interaction(atoms=(0, 5), parameters=[], meta={'version':1}),
+         Interaction(atoms=(0, 6), parameters=[], meta={'version':1}),
+         Interaction(atoms=(0, 7), parameters=[], meta={'version':1}),
          Interaction(atoms=(1, 2), parameters=[], meta={}),
          Interaction(atoms=(1, 3), parameters=[], meta={}),
-         Interaction(atoms=(1, 4), parameters=[], meta={}),
+         Interaction(atoms=(1, 4), parameters=[], meta={'version':1}),
          Interaction(atoms=(2, 3), parameters=[], meta={}),
-         Interaction(atoms=(2, 4), parameters=[], meta={}),
-         Interaction(atoms=(3, 4), parameters=[], meta={}),
-         Interaction(atoms=(3, 5), parameters=[], meta={}),
-         Interaction(atoms=(3, 6), parameters=[], meta={}),
-         Interaction(atoms=(3, 7), parameters=[], meta={}),
+         Interaction(atoms=(2, 4), parameters=[], meta={'version':1}),
+         Interaction(atoms=(3, 4), parameters=[], meta={'version':1}),
+         Interaction(atoms=(3, 5), parameters=[], meta={'version':1}),
+         Interaction(atoms=(3, 6), parameters=[], meta={'version':1}),
+         Interaction(atoms=(3, 7), parameters=[], meta={'version':1}),
          Interaction(atoms=(4, 5), parameters=[], meta={}),
          Interaction(atoms=(4, 6), parameters=[], meta={}),
          Interaction(atoms=(4, 7), parameters=[], meta={}),
@@ -180,9 +180,9 @@ class TestApplyLinks:
            Interaction(atoms=(10, 11), parameters=['1', '0.360', '5000'], meta={})],
            "angles":[
            Interaction(atoms=(0, 2, 4), parameters=['2', '180', '250'], meta={}),
-           Interaction(atoms=(1, 2, 6), parameters=['1', '160', '180'], meta={}),
+           Interaction(atoms=(1, 2, 9), parameters=['1', '160', '180'], meta={'version':1}),
            Interaction(atoms=(2, 4, 5), parameters=['1', '155', '25'], meta={}),
-           Interaction(atoms=(3, 7, 8), parameters=['1', '160', '180'], meta={}),
+           Interaction(atoms=(3, 7, 8), parameters=['1', '160', '180'], meta={'version':1}),
            Interaction(atoms=(6, 8, 10), parameters=['2', '180', '250'], meta={}),
            Interaction(atoms=(8, 10, 11), parameters=['1', '155', '25'], meta={})],
            "constraints":[
@@ -202,8 +202,24 @@ class TestApplyLinks:
            Interaction(atoms=(3, 0, 1, 2), parameters=['2'], meta={}),
            Interaction(atoms=(9, 6, 7, 8), parameters=['2'], meta={})],
            "dihedrals":[
-           Interaction(atoms=(0, 3, 9, 6), parameters=['9','0.0','-9.5','2'], meta={}),
-           Interaction(atoms=(0, 3, 9, 6), parameters=['9','0.0','1.8','1'], meta={'version':2})]})
+           Interaction(atoms=(0, 3, 6, 9), parameters=['9','0.0','-9.5','2'], meta={'version':1}),
+           Interaction(atoms=(0, 3, 6, 9), parameters=['9','0.0','1.8','1'], meta={'version':1})]}),
+         ("""
+         [ moleculetype ]
+         PEO 1
+         [ atoms ]
+            1     EO     1      PEO       CO1       1     0.00000E+00   45
+         [ bonds ]
+            1     2   1     0.27 8000
+         [ dihedrals ]
+         1    2    3   4   params
+         """,
+         [Monomer(resname="PEO", n_blocks=4)],
+         {"bonds":[Interaction(atoms=(0, 1), parameters=['1', '0.27', '8000'], meta={'version': 1}),
+         Interaction(atoms=(1, 2), parameters=['1', '0.27', '8000'], meta={'version': 1}),
+         Interaction(atoms=(2, 3), parameters=['1', '0.27', '8000'], meta={'version': 1})],
+         "dihedrals":[Interaction(atoms=(0, 1, 2, 3), parameters=['params'], meta={'version': 1})]}
+         )
          ))
 
     def test_polyply_input(lines, monomers, interactions):
@@ -214,7 +230,9 @@ class TestApplyLinks:
         new_meta_mol = polyply.src.map_to_molecule.MapToMolecule().run_molecule(meta_mol)
         new_meta_mol = polyply.src.apply_links.ApplyLinks().run_molecule(meta_mol)
 
-        for key in new_meta_mol.molecule.interactions:
-            for interaction in new_meta_mol.molecule.interactions[key]:
-                #print(interaction)
-                assert interaction in interactions[key]
+        for key in interactions:
+            print(key)
+            print(new_meta_mol.molecule.interactions[key])
+            for interaction in interactions[key]:
+                assert interaction in new_meta_mol.molecule.interactions[key]
+                print(interaction)

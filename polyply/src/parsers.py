@@ -85,10 +85,10 @@ class PolyplyParser(ITPDirector):
         res_name = block.nodes[0]['resname']
         for key in block.interactions:
             block_interactions = []
-            new_link = vermouth.molecule.Link()
-            new_link.interactions = defaultdict(list)
-            new_link.name = res_name
             for interaction in block.interactions[key]:
+                new_link = vermouth.molecule.Link()
+                new_link.interactions = defaultdict(list)
+                new_link.name = res_name
                 if np.sum(np.array(interaction.atoms) > n_atoms - 1) > 0:
                     new_link.interactions[key].append(interaction)
                     self._treat_link_atoms(block, new_link, key)

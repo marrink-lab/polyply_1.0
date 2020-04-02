@@ -29,10 +29,6 @@ def find_atoms(molecule, **attrs):
     for node_idx in molecule:
         node = molecule.nodes[node_idx]
         if vermouth.molecule.attributes_match(node, attrs, ignore_keys=ignore):
-            print("node", node)
-            print("attrs", attrs)
-            print(vermouth.molecule.attributes_match(node, attrs, ignore_keys=ignore))
-            print("+++++++++++++++++++++++++")
             yield node_idx
 
 def _build_link_interaction_from(molecule, interaction, match):
@@ -63,14 +59,14 @@ def apply_link_between_residues(molecule, link, resids):
     # we have to go on resid or at least one criterion otherwise
     # the matching will be super slow, if we need to iterate
     # over all combintions of a possible links.
-    print("resids", resids)
+    #print("resids", resids)
     nx.set_node_attributes(link, dict(zip(link.nodes, resids)), 'resid')
     #print("resids", resids)
     link_to_mol = {}
     for node in link.nodes:
         attrs = link.nodes[node]
         attrs.update({'ignore':['order', 'charge_group']})
-        print(link.interactions)
+        #print(link.interactions)
         matchs = [atom for atom in find_atoms(molecule, **attrs)]
         #print("match", matchs)
         if len(matchs) == 1:
@@ -119,32 +115,33 @@ def get_subgraphs(meta_molecule, orders, edge):
     for idx_set in sub_graph_idxs:
         graph = nx.Graph()
         for idx, node in enumerate(idx_set[:-1]):
-            graph.add_edge(node, idx_set[idx+1])
+            if node != idx_set[idx+1]:
+               graph.add_edge(node, idx_set[idx+1])
         graphs.append(graph)
 
-    return graphs
+    return graphs, sub_graph_idxs
 
 def is_subgraph(graph1, graph2):
     graph_matcher = isomorphism.GraphMatcher(graph1, graph2)
-    return graph_matcher.is_isomorphic()
+    return graph_matcher.subgraph_is_isomorphic()
 
 def _get_links(meta_molecule, edge):
     links = []
     res_names = meta_molecule.get_edge_resname(edge)
     link_resids = []
+    #print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     for link in meta_molecule.force_field.links:
+        #print("link" ,link)
         #1. first check a link applies to the residues by name
         link_resnames = set(nx.get_node_attributes(link, "resname").values())
 
         if res_names[0] in link_resnames and res_names[1] in link_resnames:
-
             #2. check if order attributes match and extract resids
             orders = list(nx.get_node_attributes(link, "order").values())
-            sub_graphs = get_subgraphs(meta_molecule, orders, edge)
-
-            for graph in sub_graphs:
+            sub_graphs, resids = get_subgraphs(meta_molecule, orders, edge)
+            for idx, graph in enumerate(sub_graphs):
                 if is_subgraph(meta_molecule, graph):
-                    link_resids.append([ i+1 for i in graph.nodes])
+                    link_resids.append([ i+1 for i in resids[idx]])
                     links.append(link)
 
     return links, link_resids
@@ -174,7 +171,7 @@ class ApplyLinks(Processor):
 
         for edge in meta_molecule.edges:
             links, resids = _get_links(meta_molecule, edge)
-
+            print("resids", resids, edge)
             for link, idxs in zip(links, resids):
                 try:
                     #print(idxs)

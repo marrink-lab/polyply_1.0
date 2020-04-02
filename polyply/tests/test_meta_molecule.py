@@ -42,8 +42,8 @@ class TestPolyply:
         meta_mol = MetaMolecule(name="test", force_field=ff)
         meta_mol.add_monomer(0,"PEO",[])
         meta_mol.add_monomer(1,"PEO",[(1,0)])
-        name = meta_mol._get_edge_resname((1,0))
-        assert name == "PEO_PEO"
+        name = meta_mol.get_edge_resname((1,0))
+        assert name == ["PEO", "PEO"]
 
     @staticmethod
     @pytest.mark.parametrize('monomers, edges, nodes, attrs', (
