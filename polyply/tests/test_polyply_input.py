@@ -67,15 +67,14 @@ class TestPolyply:
         polyply.src.parsers.read_polyply(lines, ff)
 
         dih  = [vermouth.molecule.Interaction(
-                atoms=["COC", "+COC", "++COC", "+++COC"], parameters=['1','180.00','1.96','1'], meta={'version':1}),
+                atoms=["COC", "+COC", "++COC", "+++COC"], parameters=['1','180.00','1.96','1'], meta={'version':3}),
                vermouth.molecule.Interaction(
-                atoms=["COC", "+COC", "++COC", "+++COC"], parameters=['1','0','0.18','2'], meta={'version':1}),
+                atoms=["COC", "+COC", "++COC", "+++COC"], parameters=['1','0','0.18','2'], meta={'version':2}),
                vermouth.molecule.Interaction(
                 atoms=["COC", "+COC", "++COC", "+++COC"], parameters=['1','0','0.33','3'], meta={'version':1})]
 
-        assert len(ff.links) == 3
-        for link in  ff.links:
-            assert link.interactions['dihedrals'][0] in dih
+        assert len(ff.links) == 1
+        assert ff.links[0].interactions['dihedrals'] == dih
 
     @staticmethod
     def test_exclusions():

@@ -51,30 +51,31 @@ class PolyplyParser(ITPDirector):
 
         # we need to convert the atom index to an atom-name
         n_atoms = len(block.nodes)
-        new_atoms = []
 
         # the uncommented statement does not work because node and
         # atom name are couple for blocks, which is debatably useful
         #atom_names = list(nx.get_node_attributes(block, 'atomname'))
         atom_names = [block.nodes[node]["atomname"] for node in block.nodes]
 
-        # at this stage the link only has a single interaction
-        interaction = link.interactions[inter_type][-1]
-        for atom in interaction.atoms:
-            prefix = ""
-            while atom/n_atoms >= 1:
-                atom = atom - n_atoms
-                prefix = prefix + "+"
+        for inter_type in link.interactions:
+            for interaction in link.interactions[inter_type]:
+                new_atoms = []
+                for atom in interaction.atoms:
+                    prefix = ""
+                    while atom/n_atoms >= 1:
+                        atom = atom - n_atoms
+                        prefix = prefix + "+"
 
-            new_name = prefix + atom_names[atom]
-            new_atoms.append(new_name)
-            attrs = block.nodes[atom]
-            link.add_node(new_name, **attrs)
-            order = prefix.count("+")
-            nx.set_node_attributes(link, {new_name:order}, "order")
+                    new_name = prefix + atom_names[atom]
+                    new_atoms.append(new_name)
+                    attrs = block.nodes[atom]
+                    link.add_node(new_name, **attrs)
+                    order = prefix.count("+")
+                    nx.set_node_attributes(link, {new_name:order}, "order")
 
-        interaction.atoms[:] = new_atoms
-        return link
+                interaction.atoms[:] = new_atoms
+
+        return new_atoms
 
     def _split_links_and_blocks(self, block):
 
@@ -83,22 +84,28 @@ class PolyplyParser(ITPDirector):
 
         n_atoms = len(block.nodes)
         res_name = block.nodes[0]['resname']
+        prev_atoms = []
+        links = []
         for key in block.interactions:
             block_interactions = []
             for interaction in block.interactions[key]:
-                new_link = vermouth.molecule.Link()
-                new_link.interactions = defaultdict(list)
-                new_link.name = res_name
                 if np.sum(np.array(interaction.atoms) > n_atoms - 1) > 0:
-                    new_link.interactions[key].append(interaction)
-                    self._treat_link_atoms(block, new_link, key)
-                    new_link.make_edges_from_interaction_type(type_=key)
-                    self.force_field.links.append(new_link)
+                   if interaction.atoms != prev_atoms:
+                       prev_atoms[:] = interaction.atoms
+                       new_link = vermouth.molecule.Link()
+                       new_link.interactions = defaultdict(list)
+                       new_link.name = res_name
+                       links.append(new_link)
+                   links[-1].interactions[key].append(interaction)
                 else:
                     block_interactions.append(interaction)
 
             block.interactions[key] = block_interactions
 
+        for link in links:
+            self._treat_link_atoms(block, link, key)
+            link.make_edges_from_interaction_type(type_=key)
+            self.force_field.links.append(link)
 
     # overwrites the finalize method to deal with dangling bonds
     # and to deal with multiple interactions in the way needed

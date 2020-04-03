@@ -14,6 +14,8 @@
 """
 Test that force field files are properly read.
 """
+# TODO
+# linting and more unit tests
 
 import textwrap
 import pytest
@@ -203,7 +205,7 @@ class TestApplyLinks:
            Interaction(atoms=(9, 6, 7, 8), parameters=['2'], meta={})],
            "dihedrals":[
            Interaction(atoms=(0, 3, 6, 9), parameters=['9','0.0','-9.5','2'], meta={'version':1}),
-           Interaction(atoms=(0, 3, 6, 9), parameters=['9','0.0','1.8','1'], meta={'version':1})]}),
+           Interaction(atoms=(0, 3, 6, 9), parameters=['9','0.0','1.8','1'], meta={'version':2})]}),
          ("""
          [ moleculetype ]
          PEO 1
