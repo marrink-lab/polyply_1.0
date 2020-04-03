@@ -52,7 +52,7 @@ def generate_meta_molecule(raw_graph, force_field, name):
     try:
         file_extension = raw_graph.split(".")[1]
         if  file_extension == "json":
-            meta_mol = MetaMolecule.from_json(raw_graph, force_field, name)
+            meta_mol = MetaMolecule.from_json(json_file=raw_graph, force_field=force_field, mol_name=name)
    #    elif file_extension == "itp":
    #        meta_mol = MetaMolecule.from_itp(raw_graph, force_field, name)
     except IndexError:
@@ -79,7 +79,7 @@ def main():
 
     file_group = parser.add_argument_group('Input and output files')
     file_group.add_argument('-f', dest='inpath', required=False, type=Path,
-                            help='Input file (ITP|FF)',nargs="*" )
+                            help='Input file (ITP|FF)', nargs="*" )
     file_group.add_argument('-o', dest='outpath', type=Path,
                             help='Output ITP (ITP)')
     file_group.add_argument('-seq', dest='raw_graph', required=True, type=str,

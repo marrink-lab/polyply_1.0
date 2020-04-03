@@ -59,16 +59,12 @@ def apply_link_between_residues(molecule, link, resids):
     # we have to go on resid or at least one criterion otherwise
     # the matching will be super slow, if we need to iterate
     # over all combintions of a possible links.
-    #print("resids", resids)
     nx.set_node_attributes(link, dict(zip(link.nodes, resids)), 'resid')
-    #print("resids", resids)
     link_to_mol = {}
     for node in link.nodes:
         attrs = link.nodes[node]
         attrs.update({'ignore':['order', 'charge_group']})
-        #print(link.interactions)
         matchs = [atom for atom in find_atoms(molecule, **attrs)]
-        #print("match", matchs)
         if len(matchs) == 1:
             link_to_mol[node] = matchs[0]
         else:
@@ -125,16 +121,26 @@ def is_subgraph(graph1, graph2):
     graph_matcher = isomorphism.GraphMatcher(graph1, graph2)
     return graph_matcher.subgraph_is_isomorphic()
 
+def _get_link_resnames(link):
+    res_names = list(nx.get_node_attributes(link, "resname").values())
+    out_resnames = []
+    for name in res_names:
+        try:
+          out_resnames += name.value
+        except AttributeError:
+          out_resnames.append(name)
+
+    return set(out_resnames)
+
 def _get_links(meta_molecule, edge):
     links = []
     res_names = meta_molecule.get_edge_resname(edge)
+    print(res_names)
     link_resids = []
-    #print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     for link in meta_molecule.force_field.links:
-        #print("link" ,link)
         #1. first check a link applies to the residues by name
-        link_resnames = set(nx.get_node_attributes(link, "resname").values())
-
+        link_resnames = _get_link_resnames(link)
+        #print(link_resnames)
         if res_names[0] in link_resnames and res_names[1] in link_resnames:
             #2. check if order attributes match and extract resids
             orders = list(nx.get_node_attributes(link, "order").values())
@@ -171,10 +177,8 @@ class ApplyLinks(Processor):
 
         for edge in meta_molecule.edges:
             links, resids = _get_links(meta_molecule, edge)
-            print("resids", resids, edge)
             for link, idxs in zip(links, resids):
                 try:
-                    #print(idxs)
                     apply_link_between_residues(molecule, link, idxs)
                 except MatchError:
                     continue

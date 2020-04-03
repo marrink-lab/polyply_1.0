@@ -1,0 +1,4 @@
+[ link ]
+resname "MET|PEO"
+[ bonds ]
+ME    +EO   1   0.39  5000 {"group":"connection"}  ; MET-PEG

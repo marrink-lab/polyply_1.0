@@ -12,7 +12,7 @@
 ; IMPORTANT NOTE: when using this topology, please used the modified martini_v2.1_PS.itp file
 ;                 downloadable from the Example Applications page.
 [ moleculetype ]
-PS 1
+STYR 1
 ;
 [ atoms ]
 ;  nr    type       resnr  residu    atom    cgnr        charge    mass 
