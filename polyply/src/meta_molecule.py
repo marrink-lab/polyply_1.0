@@ -70,3 +70,4 @@ class MetaMolecule(nx.Graph):
         graph = json_graph.node_link_graph(data)
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
         return meta_mol
+

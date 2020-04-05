@@ -11,18 +11,6 @@ from polyply import (DATA_PATH, MetaMolecule, ApplyLinks, Monomer, MapToMolecule
 
 VERSION = 'polyply version {}'.format(polyply.__version__)
 
-import sys
-import traceback
-
-#class TracePrints(object):
-#  def __init__(self):
-#    self.stdout = sys.stdout
-#  def write(self, s):
-#    self.stdout.write("Writing %r\n" % s)
-#    traceback.print_stack(file=self.stdout)
-
-#sys.stdout = TracePrints()
-
 def read_ff_from_file(paths, force_field):
     """
     read the itp and ff files for the defintion of blocks and links.
@@ -64,15 +52,17 @@ def generate_meta_molecule(raw_graph, force_field, name):
     try:
         file_extension = raw_graph.split(".")[1]
         if  file_extension == "json":
-            meta_mol = MetaMolecule.from_json(json_file=raw_graph, force_field=force_field, mol_name=name)
+            meta_mol = MetaMolecule.from_json(json_file=raw_graph,
+                                              force_field=force_field,
+                                              mol_name=name)
    #    elif file_extension == "itp":
    #        meta_mol = MetaMolecule.from_itp(raw_graph, force_field, name)
     except IndexError:
         try:
             monomers = split_seq_string(raw_graph)
             meta_mol = MetaMolecule.from_monomer_seq_linear(monomers=monomers,
-                                                           force_field=force_field,
-                                                           mol_name=name)
+                                                            force_field=force_field,
+                                                            mol_name=name)
         except ValueError:
             raise IOError("Unkown file fromat or sequence string {}.".format(raw_graph))
 
@@ -87,11 +77,11 @@ def main():
     )
     parser.add_argument('-V', '--version', action='version', version=VERSION)
     parser.add_argument('-name', required=True, type=str, dest="name",
- 		       help="name of the final molecule")
+                        help="name of the final molecule")
 
     file_group = parser.add_argument_group('Input and output files')
     file_group.add_argument('-f', dest='inpath', required=False, type=Path,
-                            help='Input file (ITP|FF)', nargs="*" )
+                            help='Input file (ITP|FF)', nargs="*")
     file_group.add_argument('-o', dest='outpath', type=Path,
                             help='Output ITP (ITP)')
     file_group.add_argument('-seq', dest='raw_graph', required=True, type=str,
@@ -99,7 +89,7 @@ def main():
 
     ff_group = parser.add_argument_group('Force field selection')
     ff_group.add_argument('-lib', dest='lib', required=False, type=str,
-                           help='force-fields to include from library')
+                          help='force-fields to include from library')
     ff_group.add_argument('-ff-dir', dest='extra_ff_dir', action='append',
                           type=Path, default=[],
                           help='Additional repository for custom force fields.')
@@ -171,7 +161,8 @@ def main():
     meta_molecule = ApplyLinks().run_molecule(meta_molecule)
 
     with open('{}.itp'.format(args.outpath), 'w') as outfile:
-        vermouth.gmx.itp.write_molecule_itp(meta_molecule.molecule, outfile,moltype=args.name, header=["polyply-itp"])
+        vermouth.gmx.itp.write_molecule_itp(meta_molecule.molecule, outfile,
+                                            moltype=args.name, header=["polyply-itp"])
 
 if __name__ == '__main__':
     main()
