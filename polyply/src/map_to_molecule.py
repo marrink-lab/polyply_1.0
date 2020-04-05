@@ -36,7 +36,7 @@ class MapToMolecule(Processor):
             else:
                node_to_resid[node] = resid
 
-        print(node_to_resid)
+        #print(node_to_resid)
         meta_molecule.add_nodes_from(set(node_to_resid.values()))
 
         # 3. set node attributes
@@ -52,7 +52,7 @@ class MapToMolecule(Processor):
 
         # 4. add all missing edges
         block.make_edges_from_interaction_type(type_="bonds")
-        print(block.edges)
+        #print(block.edges)
         for edge in block.edges:
             v1 = node_to_resid[edge[0]]
             v2 = node_to_resid[edge[1]]
