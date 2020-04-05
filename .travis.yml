@@ -1,0 +1,80 @@
+language: python
+dist: xenial
+cache: pip
+
+branches:
+  only:
+  - master
+  - /^v(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)(?:-(?<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/ # SemVer tags (https://github.com/semver/semver/issues/232#issuecomment-405596809)
+
+env:
+  global:
+    - SKIP_GENERATE_AUTHORS=1
+    - SKIP_WRITE_GIT_CHANGELOG=1
+  matrix:
+    - WITH_SCIPY=true WITH_CODECOV=true
+before_install:
+  - pip install --upgrade setuptools pip
+install:
+  - if [[ ${WITH_SCIPY} == true ]]; then pip install scipy; fi
+  - pip install --upgrade .
+before_script:
+  - pip install --upgrade -r requirements-tests.txt
+script:
+  - coverage run --source=polyply $(which pytest) -vv polyply
+after_success:
+  - coverage report --omit='*/bin/pytest'
+  - if [[ ${WITH_CODECOV} == true ]]; then codecov; fi
+
+jobs:
+  fast_finish: true
+  allow_failures:
+    - python: "3.5-dev"
+    - python: "3.6-dev"
+    - python: "3.7-dev"
+    - python: "3.8-dev"
+  include:
+    - python: "3.5"
+    - python: "3.6"
+    - python: "3.7"
+    - python: "3.8"
+    - python: "3.5-dev"
+    - python: "3.6-dev"
+    - python: "3.7-dev"
+    - python: "3.8-dev"
+      env: WITH_SCIPY=false WITH_CODECOV=false
+
+    - stage: docs
+      python: "3.7"
+      install:
+        - pip install --upgrade -r requirements-docs.txt
+        - pip install --upgrade .[full]
+      # script: python setup.py build_sphinx
+      script: mkdir -p doc/source/_static; sphinx-build -EnW -b html doc/source/ doc/build/html
+      after_success: skip
+
+    - stage: pylint
+      python: "3.7"
+      install:
+        - pip install --upgrade -r requirements-tests.txt
+        - pip install pylint
+      script:
+        - python run_pylint.py --disable=fixme --fail-under=8.5 polyply
+        - python run_pylint.py --disable=fixme --fail-under=9.5 bin/polyply.gen_itp
+#        - python run_pylint.py --disable=fixme --fail-under=9.5 bin/polyply.structure_generator
+      after_success: skip
+
+#    - stage: deploy
+#      python: "3.7"
+#      addons: skip
+#      env: WITH_CODECOV=false
+#      before_script: skip
+#      script: skip
+#      deploy:
+#          provider: pypi
+#          user: pckroon
+#          password:
+#              # travis encrypt --add deploy.password
+#              secure:
+#          on:
+#              tags: true

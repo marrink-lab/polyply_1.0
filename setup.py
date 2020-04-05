@@ -9,7 +9,7 @@ setup(
     include_package_data=True,
     scripts=['bin/polyply.gen_itp', ],
     license='Apache 2.0',
-    description='Tool for generating MARTINI Polymer itps and structures',
+    description='tool for generating GROMACS (bio)-macromolecule itps and structures',
     long_description=open('README.md').read(),
     install_requires=['numpy', 'scipy','networkx','tqdm'],
 )
