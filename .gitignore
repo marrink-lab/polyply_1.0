@@ -14,7 +14,7 @@ est.pdb
 
 **/test_high_level_API
 
-htmlcov
+**/htmlcov
 
 doc/build
 doc/source/api
