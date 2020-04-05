@@ -4,6 +4,7 @@ est.pdb
 **.bak
 
 **.lprof
+polyply.egg-info
 
 .eggs/**
 *.swp
