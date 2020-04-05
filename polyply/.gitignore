@@ -12,6 +12,8 @@ est.pdb
 .coverage
 .hypothesis
 
+**/test_high_level_API
+
 htmlcov
 
 doc/build
