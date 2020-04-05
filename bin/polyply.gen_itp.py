@@ -11,6 +11,18 @@ from polyply import (DATA_PATH, MetaMolecule, ApplyLinks, Monomer, MapToMolecule
 
 VERSION = 'polyply version {}'.format(polyply.__version__)
 
+import sys
+import traceback
+
+#class TracePrints(object):
+#  def __init__(self):
+#    self.stdout = sys.stdout
+#  def write(self, s):
+#    self.stdout.write("Writing %r\n" % s)
+#    traceback.print_stack(file=self.stdout)
+
+#sys.stdout = TracePrints()
+
 def read_ff_from_file(paths, force_field):
     """
     read the itp and ff files for the defintion of blocks and links.

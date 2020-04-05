@@ -113,7 +113,7 @@ class PolyplyParser(ITPDirector):
     def finalize(self, lineno=0):
 
         if self.current_meta is not None:
-            raise IOError("Your #ifdef section is orderd incorrectly."
+            raise IOError("Your #ifdef/#ifndef section is orderd incorrectly."
                           "There is no #endif for the last pragma..")
 
         prev_section = self.section

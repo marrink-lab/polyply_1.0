@@ -1,3 +1,4 @@
+import networkx as nx
 from polyply.src.processor import Processor
 
 class MapToMolecule(Processor):
@@ -9,16 +10,73 @@ class MapToMolecule(Processor):
     single meta molecule or a system. The later is currently not
     implemented.
     """
+    @staticmethod
+    def expand_meta_graph(meta_molecule, block, meta_mol_node):
+        """
+        When a multiresidue block is encounterd the individual
+        residues are added instead of the orignial block to
+        the meta molecule.
+        """
+        # 1. relable nodes to make space for new nodes to be inserted
+        mapping = {}
+        offset = len(block.nodes) - 1
+        for node in meta_molecule.nodes:
+            if node > meta_mol_node:
+                mapping[node] = node + offset
+
+        nx.relabel_nodes(meta_molecule, mapping, copy=False)
+
+        # 2. add the new nodes to the meta molecule overwriting
+        # the inital node
+        node_to_resid = {}
+        resids = nx.get_node_attributes(block, "resid")
+        for node, resid in resids.items():
+            if resid != meta_mol_node:
+               node_to_resid[node] = resid + meta_mol_node - 1
+            else:
+               node_to_resid[node] = resid
+
+        print(node_to_resid)
+        meta_molecule.add_nodes_from(set(node_to_resid.values()))
+
+        # 3. set node attributes
+        name_dict = {}
+        ignore_dict = {}
+        resnames = nx.get_node_attributes(block, "resname")
+        for idx, value in resnames.items():
+            name_dict.update({node_to_resid[idx]:value})
+            ignore_dict.update({node_to_resid[idx]:False})
+
+        nx.set_node_attributes(meta_molecule, name_dict, "resname")
+        nx.set_node_attributes(meta_molecule, ignore_dict, "links")
+
+        # 4. add all missing edges
+        block.make_edges_from_interaction_type(type_="bonds")
+        print(block.edges)
+        for edge in block.edges:
+            v1 = node_to_resid[edge[0]]
+            v2 = node_to_resid[edge[1]]
+            if v1 != v2:
+               meta_molecule.add_edge(v1, v2)
 
     @staticmethod
     def add_blocks(meta_molecule):
+        """
+        Add disconnected blocks to :class:`vermouth.molecule.Molecue`
+        and if a multiresidue block is encountered expand the meta
+        molecule graph to include the block at residue level.
+        """
         force_field = meta_molecule.force_field
         name = meta_molecule.nodes[0]["resname"]
         new_mol = force_field.blocks[name].to_molecule()
 
         for node in list(meta_molecule.nodes.keys())[1:]:
             resname = meta_molecule.nodes[node]["resname"]
-            new_mol.merge_molecule(force_field.blocks[resname])
+            block = force_field.blocks[resname]
+            new_mol.merge_molecule(block)
+
+            if len(set(nx.get_node_attributes(block, "resname").values())) > 1:
+                MapToMolecule.expand_meta_graph(meta_molecule, block, node)
 
         return new_mol
 

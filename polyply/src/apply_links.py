@@ -80,12 +80,44 @@ def apply_link_between_residues(molecule, link, resids):
                          range(0, len(atoms)-1)]
             molecule.add_edges_from(new_edges)
 
+def apply_explicit_link(molecule, link):
+    """
+    Applies interactions from a link regardless of any
+    checks. This requires atoms in the link to be of
+    int type. Within polyply the explicit flag can
+    be set to these links for the program to know
+    to apply them using this method.
+
+    Parameters
+    ----------
+    molecule: :class:`vermouth.molecule.Molecule`
+        A vermouth molecule definintion
+    link: :class:`vermouth.molecule.Link`
+        A vermouth link definintion
+    """
+    for inter_type, value in link.interactions.items():
+        new_interactions = []
+        for interaction in value:
+            try:
+               interaction.atoms[:] =  [int(atom) - 1 for atom in interaction.atoms]
+            except ValueError:
+                msg = """Trying to apply an explicit link but interaction
+                      {} but cannot convert the atoms to integers. Note
+                      excplicit links need to be defined by atom numbers."""
+                raise ValueError(msg.format(interaction))
+            if set(interaction.atoms).issubset(set(molecule.nodes)):
+               new_interactions.append(interaction)
+            else:
+               raise IOError("Atoms of link interaction {} are not"
+                             " part of the molecule.".format(interaction))
+        molecule.interactions[inter_type] += new_interactions
+
 def neighborhood(graph, node, degree):
     # Adobted from: https://stackoverflow.com/questions/
     #22742754/finding-the-n-degree-neighborhood-of-a-node
 
     path_lengths = nx.single_source_dijkstra_path_length(graph, node)
-    neighbours = [node for node, length in path_lengths.items() if length <= degree]
+    neighbours = [node for node, length in path_lengths.items() if 0 < length <= degree]
     return neighbours
 
 def get_subgraphs(meta_molecule, orders, edge):
@@ -98,15 +130,22 @@ def get_subgraphs(meta_molecule, orders, edge):
             for idx_set in sub_graph_idxs:
                 idx_set.append(resid)
         else:
-            res_ids = neighborhood(meta_molecule, edge[0], idx-zero_idx)
+            #print(orders)
+            #print(meta_molecule.edges)
+            res_ids = neighborhood(meta_molecule, edge[0], len(orders)-1)
+            #print("resids", res_ids)
             new_sub_graph_idxs = []
             for idx_set in sub_graph_idxs:
-                for ids in res_ids:
-                    new = idx_set.append(ids)
+                for _id in res_ids:
+             #       print(idx_set)
+                    new = idx_set + [_id]
+              #      print(new)
                     new_sub_graph_idxs.append(new)
 
+            #print(new_sub_graph_idxs)
             sub_graph_idxs = new_sub_graph_idxs
 
+    #print(sub_graph_idxs)
     graphs = []
     for idx_set in sub_graph_idxs:
         graph = nx.Graph()
@@ -135,13 +174,14 @@ def _get_link_resnames(link):
 def _get_links(meta_molecule, edge):
     links = []
     res_names = meta_molecule.get_edge_resname(edge)
-    print(res_names)
+    #print(res_names)
     link_resids = []
     for link in meta_molecule.force_field.links:
-        #1. first check a link applies to the residues by name
         link_resnames = _get_link_resnames(link)
-        #print(link_resnames)
-        if res_names[0] in link_resnames and res_names[1] in link_resnames:
+        if "explicit" in link.molecule_meta:
+            if link.molecule_meta["explicit"]:
+               continue
+        elif res_names[0] in link_resnames and res_names[1] in link_resnames:
             #2. check if order attributes match and extract resids
             orders = list(nx.get_node_attributes(link, "order").values())
             sub_graphs, resids = get_subgraphs(meta_molecule, orders, edge)
@@ -182,6 +222,11 @@ class ApplyLinks(Processor):
                     apply_link_between_residues(molecule, link, idxs)
                 except MatchError:
                     continue
+
+        for link in force_field.links:
+            if "explicit" in link.molecule_meta:
+               if link.molecule_meta["explicit"]:
+                  apply_explicit_link(molecule, link)
 
         meta_molecule.molecule = molecule
         return meta_molecule
