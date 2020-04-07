@@ -108,6 +108,6 @@ def gen_itp(args):
     meta_molecule = MapToMolecule().run_molecule(meta_molecule)
     meta_molecule = ApplyLinks().run_molecule(meta_molecule)
 
-    with open('{}.itp'.format(args.outpath), 'w') as outfile:
-        vermouth.gmx.itp.write_molecule_itp(meta_molecule.molecule, outfile,
+    with open('{}'.format(args.outpath), 'w') as outpath:
+        vermouth.gmx.itp.write_molecule_itp(meta_molecule.molecule, outpath,
                                             moltype=args.name, header=["polyply-itp"])
