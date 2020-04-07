@@ -6,6 +6,7 @@ from polyply.src.processor import Processor
 class MatchError(Exception):
     """Raised we find no match between links and molecule"""
 
+
 def find_atoms(molecule, **attrs):
     """
     Yields all indices of atoms that match `attrs`
@@ -31,6 +32,7 @@ def find_atoms(molecule, **attrs):
         node = molecule.nodes[node_idx]
         if vermouth.molecule.attributes_match(node, attrs, ignore_keys=ignore):
             yield node_idx
+
 
 def _build_link_interaction_from(molecule, interaction, match):
     """
@@ -102,6 +104,7 @@ def apply_link_between_residues(molecule, link, resids):
                          range(0, len(atoms)-1)]
             molecule.add_edges_from(new_edges)
 
+
 def apply_explicit_link(molecule, link):
     """
     Applies interactions from a link regardless of any
@@ -134,6 +137,7 @@ def apply_explicit_link(molecule, link):
                               "part of the molecule.".format(interaction))
         molecule.interactions[inter_type] += new_interactions
 
+
 def neighborhood(graph, node, degree):
     """
     Returns all neighbours of `node` that are less or equal
@@ -161,6 +165,7 @@ def neighborhood(graph, node, degree):
     path_lengths = nx.single_source_dijkstra_path_length(graph, node)
     neighbours = [node for node, length in path_lengths.items() if 0 < length <= degree]
     return neighbours
+
 
 def get_subgraphs(meta_molecule, orders, edge):
     """
@@ -216,6 +221,7 @@ def get_subgraphs(meta_molecule, orders, edge):
 
     return graphs, sub_graph_idxs
 
+
 def is_subgraph(graph1, graph2):
     """
     Checks if graph1 is a subgrpah to graph1.
@@ -232,6 +238,7 @@ def is_subgraph(graph1, graph2):
     graph_matcher = isomorphism.GraphMatcher(graph1, graph2)
     return graph_matcher.subgraph_is_isomorphic()
 
+
 def _get_link_resnames(link):
     res_names = list(nx.get_node_attributes(link, "resname").values())
     out_resnames = []
@@ -242,6 +249,7 @@ def _get_link_resnames(link):
             out_resnames.append(name)
 
     return set(out_resnames)
+
 
 def _get_links(meta_molecule, edge):
     """
@@ -281,6 +289,7 @@ def _get_links(meta_molecule, edge):
                     links.append(link)
 
     return links, link_resids
+
 
 class ApplyLinks(Processor):
     """
