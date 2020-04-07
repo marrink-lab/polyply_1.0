@@ -74,28 +74,6 @@ def gen_itp(args):
         Path(DATA_PATH) / 'force_fields'
     )
 
-    for directory in args.extra_ff_dir:
-        try:
-            vermouth.forcefield.find_force_fields(directory, known_force_fields)
-        except FileNotFoundError:
-            msg = '"{}" given to the -ff-dir option should be a directory.'
-            raise ValueError(msg.format(directory))
-
-    if args.list_ff:
-        print('The following force fields are known:')
-        for idx, ff_name in enumerate(reversed(list(known_force_fields)), 1):
-            print('{:3d}. {}'.format(idx, ff_name))
-        parser.exit()
-
-    if args.list_blocks:
-        print('The following Blocks are known to force field {}:'.format(args.lib))
-        print(', '.join(known_force_fields[args.lib].blocks))
-    if args.list_links:
-        print('The following Links are known to force field {}:'.format(args.lib))
-        print(', '.join(known_force_fields[args.lib].links))
-        parser.exit()
-
-    # Here starts the main polyply itp generation
     if args.lib:
         force_field = known_force_fields[args.lib]
     else:
