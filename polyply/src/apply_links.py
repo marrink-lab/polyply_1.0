@@ -1,7 +1,7 @@
 import networkx as nx
 from networkx.algorithms import isomorphism
 import vermouth.molecule
-from polyply.src.processor import Processor  # Should be a relative import: from .processor import Processor
+from .processor import Processor
 
 
 class MatchError(Exception):
@@ -105,7 +105,8 @@ def apply_link_between_residues(molecule, link, resids):
             new_interaction = _build_link_interaction_from(molecule, interaction, link_to_mol)
             molecule.add_or_replace_interaction(inter_type, *new_interaction)
             atoms = interaction.atoms
-            new_edges = [(link_to_mol[at1], link_to_mol[at2]) for at1, at2 in zip(atoms[:-1], atoms[1:])]
+            new_edges = [(link_to_mol[at1], link_to_mol[at2])
+                         for at1, at2 in zip(atoms[:-1], atoms[1:])]
             molecule.add_edges_from(new_edges)
 
 
@@ -124,9 +125,8 @@ def apply_explicit_link(molecule, link):
     link: :class:`vermouth.molecule.Link`
         A vermouth link definintion
     """
-    for inter_type, value in link.interactions.items():  # value bad variable name
-        new_interactions = []
-        for interaction in value:
+    for inter_type, inter_list in link.interactions.items():
+        for interaction in inter_list:
             try:
                 interaction.atoms[:] = [int(atom) - 1 for atom in interaction.atoms]
             except ValueError:
@@ -135,14 +135,14 @@ def apply_explicit_link(molecule, link):
                       explicit links need to be defined by atom numbers."""
                 raise ValueError(msg.format(interaction))
             if set(interaction.atoms).issubset(set(molecule.nodes)):
-                new_interactions.append(interaction)
+                molecule.add_or_replace_interaction(inter_type, interaction.atoms,
+                                                    interaction.parameters,
+                                                    meta=interaction.meta)
             else:
                 raise IOError("Atoms of link interaction {} are not "
                               "part of the molecule.".format(interaction))
-        molecule.interactions[inter_type] += new_interactions  # Use molecule.add_or_replace_interaction?
 
-
-def neighborhood(graph, node, degree):  # Degree wrong name. Distance is more appropriate.
+def neighborhood(graph, node, distance, start=0):
     """
     Returns all neighbours of `node` that are less or equal
     to `degree` nodes away within a graph excluding the node
@@ -163,28 +163,76 @@ def neighborhood(graph, node, degree):  # Degree wrong name. Distance is more ap
 
     Returns
     --------
-    int
+    list
+       list of all nodes distance away from reference
     """
-
-    path_lengths = nx.single_source_dijkstra_path_length(graph, node)  # networkx documentation is down, so I can't chcek. Can't you give a max_distance to traverse to this method? Is there  asimilar method wher eyou can?
-    # See also: nx.ego_graph
-    neighbours = [node for node, length in path_lengths.items() if 0 < length <= degree]
+    path_lengths = nx.single_source_dijkstra_path_length(graph, node)
+    neighbours = [node for node, length in path_lengths.items() if start <= length <= distance]
     return neighbours
 
-
-def get_subgraphs(meta_molecule, orders, edge):  # incomprehensible docstring, bad function name
+def _orders_to_paths(meta_molecule, orders, node):
     """
-    Creates a residue based graph from the orders
-    attribute and an edge of a meta_molecule. For each order
-    index in orders a matching resid in meta_molecule
-    is found essentially by adding the first edge atom
-    and the order index unless the order index is a
-    a signed order (e.g. '<'). In that case all neighbours
-    that are the numbers of orders - 1 away are found. At residue
-    level all interactions must be connected and are at most
-    the term length (i.e. orders - 1) away. Currently this way
-    of interpreting the signed orders ignores larger versus
-    smaller. For each set of neighbours a new graph is created.
+    Takes the `order` attributes of a `vermouth.molecule`
+    and a `MetaMolecule` and returns a list of all paths
+    that match the order centered at a given `node`. In
+    this context a path is of length orders - 1 and starts
+    at node. Note that at the residue level a path cannot
+    be between nodes that are not connected by an edge. Also
+    note that because of takens of the form '<' a single
+    order token can generate multiple paths.
+
+    Parameters
+    ------------
+    meta_molecule: :class:`polyply.MetaMolecule`
+        A polyply meta_molecule definintion
+    orders: :type:`list`
+        A list of order tokens
+    node:
+        Single node matching one in the meta_molecule
+    """
+    paths = [[]]
+    for token in orders:
+        #1. deal with order tokens that are resids
+        if isinstance(token, int):
+            resid = node + token
+            for path in paths:
+                path.append(resid)
+
+        #2. deal with larger and smaller tokens
+        elif token.contains('>') or token.contains('<'):
+            offset = len(token)
+            neighbours = neighborhood(meta_molecule, node,
+                                      len(orders)-1,
+	       	               start=offset)
+            if token.contains('>'):
+               res_ids = [_id > node for _id in neighbours]
+            else:
+               res_ids = [_id < node for _id in neighbours]
+
+            new_paths = []
+            for path in paths:
+                for _id in res_ids:
+                    new = path + [_id]
+                    new_paths.append(new)
+
+            paths = new_paths
+
+        #3. raise error if we do not know a token
+        else:
+            msg = "Cannot interpret order token {}."
+            raise IOError(msg.format(token))
+
+    return paths
+
+def gen_link_fragments(meta_molecule, orders, node):
+    """
+    Genereate all fragments of meta_molecule that match
+    the order specification at a given node. The function
+    returns a list of graphs, which are each a single
+    path in residue space matching the order attribute
+    at a given node. It also returns the raw paths,
+    which are the residues in meta_molecule corresponding
+    to the nodes of a given link.
 
     Parameters
     ----------
@@ -192,40 +240,27 @@ def get_subgraphs(meta_molecule, orders, edge):  # incomprehensible docstring, b
         A polyply meta_molecule definintion
     orders: :type:`list`
         A list of all order parameters
-    edge:
-        Single edge matching one in the meta_molecule
+    node:
+        Single node matching one in the meta_molecule
 
     Returns
     ----------
-    list  # List containing what? Also incorrect, actually returns tuple.
+    tuple
+         list of nx.Graph
+             fragments of link in residue space
+         list of int
+             indices of link nodes
     """
-    # This functions needs drastic refactoring, better variable names, more helper functions, and a better docstring.
-    sub_graph_idxs = [[]]
-
-    for idx, order in enumerate(orders):
-        if isinstance(order, int):
-            resid = edge[0] + order
-            for idx_set in sub_graph_idxs:
-                idx_set.append(resid)
-        else:
-            res_ids = neighborhood(meta_molecule, edge[0], len(orders)-1)
-            new_sub_graph_idxs = []
-            for idx_set in sub_graph_idxs:
-                for _id in res_ids:
-                    new = idx_set + [_id]
-                    new_sub_graph_idxs.append(new)
-
-            sub_graph_idxs = new_sub_graph_idxs
-
+    paths = _orders_to_paths(meta_molecule, orders, node)
     graphs = []
-    for idx_set in sub_graph_idxs:
+    for path in paths:
         graph = nx.Graph()
-        for idx, node in enumerate(idx_set[:-1]):  # Why not the last one? Also, you're not treating idx_set as a set. So BAD var name.
-            if node != idx_set[idx+1]:
-                graph.add_edge(node, idx_set[idx+1])  # So, if I understand correctly, idx_set actuall contains a bunch of edges (in a condensed format)?
+        for idx, _node in enumerate(path[:-1]):  # Why not the last one? Also, you're not treating idx_set as a set.
+            if _node != path[idx+1]:
+                graph.add_edge(_node, path[idx+1])  # So, if I understand correctly, idx_set actuall contains a bunch of edges (in a condensed format)?
         graphs.append(graph)
 
-    return graphs, sub_graph_idxs
+    return graphs, paths
 
 
 def is_subgraph(graph1, graph2):
@@ -241,30 +276,44 @@ def is_subgraph(graph1, graph2):
     ----------
     bool
     """
-    # I think there should be a nx.is_subgraph_isomorphic function.
     graph_matcher = isomorphism.GraphMatcher(graph1, graph2)
     return graph_matcher.subgraph_is_isomorphic()
 
 
 def _get_link_resnames(link):
-    # Missing docstring
-    res_names = list(nx.get_node_attributes(link, "resname").values())
-    out_resnames = []
-    for name in res_names:
-        try:
-            out_resnames += name.value  # ??
-        except AttributeError:
-            out_resnames.append(name)
+    """
+    Get the resnames of a `link` directly from the node attributes
+    of the link atoms. It is not safe enough to just take the
+    link name, because it is often undefined or empty. Note that
+    a link name can also be a `vermouth.molecule.Choice` object.
 
-    return set(out_resnames)  # Make out_resnames a set to start with
+    Parameters
+    ----------
+    link: :class:`vermouth.molecule.Link`
+
+    Returns
+    ----------
+    set
+      all unique resnames of a molecule
+    """
+    res_names = list(nx.get_node_attributes(link, "resname").values())
+    out_resnames = set()
+
+    for name in res_names:
+        if isinstance(name, vermouth.molecule.Choice):
+            out_resnames.update(name.value)
+        else:
+            out_resnames.add(name)
+
+    return out_resnames
 
 
 def _get_links(meta_molecule, edge):
     """
     Collects all links and matching resids within a `meta_molecule`
-    that include the atoms defined in `edge`. It ignores all
+    that include the edge defined in `edge`. It ignores all
     links, which have the meta_molecule explicit flag set to True.
-    A link is applicable to an edge if the resnames of the edge
+    A link is applicable to an edge, if the resnames of the edge
     match the resnames specified with the link and if the graph
     of resids is a subgraph to the meta_molecule resid graph.
 
@@ -272,27 +321,32 @@ def _get_links(meta_molecule, edge):
     -----------
     meta_molecule: :class:`polyply.MetaMolecule`
         A polyply meta_molecule definition
-    edge:
-        Single edge matching one in the meta_molecule
+    node:
+        Single node matching one in the meta_molecule
     Returns
     ---------
-    list of links and list of lists of resids
+    tuple
+        list of links
+        list of lists of resids
     """
+
     links = []
     res_names = meta_molecule.get_edge_resname(edge)
     link_resids = []
+
     for link in meta_molecule.force_field.links:
         link_resnames = _get_link_resnames(link)
+
         if link.molecule_meta.get('explicit'):
             continue
         elif res_names[0] in link_resnames and res_names[1] in link_resnames:
-            #2. check if order attributes match and extract resids  # Where's #1.?
             orders = list(nx.get_node_attributes(link, "order").values())
-            sub_graphs, resids = get_subgraphs(meta_molecule, orders, edge)
+            sub_graphs, resids = gen_link_fragments(meta_molecule, orders, edge[0])
             for idx, graph in enumerate(sub_graphs):
                 if is_subgraph(meta_molecule, graph):
-                    link_resids.append([i+1 for i in resids[idx]])
-                    links.append(link)
+                    if len(resids[idx]) == len(orders):
+                        link_resids.append([i+1 for i in resids[idx]])
+                        links.append(link)
 
     return links, link_resids
 
@@ -331,5 +385,4 @@ class ApplyLinks(Processor):
             if link.molecule_meta.get('explicit'):
                 apply_explicit_link(molecule, link)
 
-        meta_molecule.molecule = molecule  # This should not be nescessary
         return meta_molecule
