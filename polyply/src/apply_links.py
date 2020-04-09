@@ -1,8 +1,9 @@
+from itertools import combinations
 import networkx as nx
 from networkx.algorithms import isomorphism
 import vermouth.molecule
 from .processor import Processor
-
+from vermouth.processors.do_links import match_order
 
 class MatchError(Exception):
     """Raised we find no match between links and molecule"""
@@ -138,6 +139,10 @@ def apply_explicit_link(molecule, link):
                 molecule.add_or_replace_interaction(inter_type, interaction.atoms,
                                                     interaction.parameters,
                                                     meta=interaction.meta)
+                atoms = interaction.atoms
+                new_edges = [(at1, at2)
+                            for at1, at2 in zip(atoms[:-1], atoms[1:])]
+                molecule.add_edges_from(new_edges)
             else:
                 raise IOError("Atoms of link interaction {} are not "
                               "part of the molecule.".format(interaction))
@@ -170,6 +175,29 @@ def neighborhood(graph, node, distance, start=0):
     neighbours = [node for node, length in path_lengths.items() if start <= length <= distance]
     return neighbours
 
+def _check_relative_order(resids, orders):
+    """
+    This function checks if the relative order of
+    list of lists of residues adheres to the order
+    specifications of vermouth orders.
+    """
+    order_match = {}
+    for order, resid in zip(orders, resids):
+        if order not in order_match:
+           order_match[order] = resid
+        # Assert all orders correspond to the same resid
+        elif order in order_match and order_match[order] != resid:
+           return False
+
+    else:  # No break
+        for ((order1, resid1), (order2, resid2)) in combinations(order_match.items(), 2):
+            # Assert the differences between resids correspond to what
+            # the orders require.
+            if not match_order(order1, resid1, order2, resid2):
+               return False
+
+    return True
+
 def _orders_to_paths(meta_molecule, orders, node):
     """
     Takes the `order` attributes of a `vermouth.molecule`
@@ -199,15 +227,15 @@ def _orders_to_paths(meta_molecule, orders, node):
                 path.append(resid)
 
         #2. deal with larger and smaller tokens
-        elif token.contains('>') or token.contains('<'):
-            offset = len(token)
+        elif '>' in token or '<' in token:
             neighbours = neighborhood(meta_molecule, node,
-                                      len(orders)-1,
-	       	               start=offset)
-            if token.contains('>'):
-               res_ids = [_id > node for _id in neighbours]
+                                      len(orders)-1)
+            if '>' in token:
+               res_ids = [_id for _id in neighbours if
+                          _id > node]
             else:
-               res_ids = [_id < node for _id in neighbours]
+               res_ids = [_id  for _id in neighbours if
+                          _id < node]
 
             new_paths = []
             for path in paths:
@@ -222,7 +250,12 @@ def _orders_to_paths(meta_molecule, orders, node):
             msg = "Cannot interpret order token {}."
             raise IOError(msg.format(token))
 
-    return paths
+    clean_paths = []
+    for path in paths:
+        if _check_relative_order(path, orders):
+           clean_paths.append(path)
+
+    return clean_paths
 
 def gen_link_fragments(meta_molecule, orders, node):
     """
@@ -337,7 +370,7 @@ def _get_links(meta_molecule, edge):
     for link in meta_molecule.force_field.links:
         link_resnames = _get_link_resnames(link)
 
-        if link.molecule_meta.get('explicit'):
+        if link.molecule_meta.get('by_atom_id'):
             continue
         elif res_names[0] in link_resnames and res_names[1] in link_resnames:
             orders = list(nx.get_node_attributes(link, "order").values())
@@ -382,7 +415,7 @@ class ApplyLinks(Processor):
                     continue
 
         for link in force_field.links:
-            if link.molecule_meta.get('explicit'):
+            if link.molecule_meta.get('by_atom_id'):
                 apply_explicit_link(molecule, link)
 
         return meta_molecule
