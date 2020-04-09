@@ -33,12 +33,12 @@ class Test_gen_itp():
         -o test_data/gen_itp/output/P3HT_out.itp
         """,
         "test_data/gen_itp/ref/P3HT_10.itp"),
-       # ("""-f test_data/gen_itp/input/PPI.ff
-       # -seq test_data/gen_itp/input/PPI.json
-       # -name PPI
-       # -o test_data/gen_itp/output/PPI_out.itp
-       # """,
-       # "test_data/gen_itp/ref/PPI_G5.itp")
+        ("""-f test_data/gen_itp/input/PPI.ff
+        -seqf test_data/gen_itp/input/PPI.json
+        -name PPI
+        -o test_data/gen_itp/output/PPI_out.itp
+        """,
+        "test_data/gen_itp/ref/G3.itp")
         ))
    def test_gen_itp(arg_string, ref_file):
        parser = argparse.ArgumentParser(
@@ -51,8 +51,10 @@ class Test_gen_itp():
                                help='Input file (ITP|FF)', nargs="*")
        file_group.add_argument('-o', dest='outpath', type=Path,
                                help='Output ITP (ITP)')
-       file_group.add_argument('-seq', dest='raw_graph', required=True, type=str,
-                               help='Either linear sequence or graph input file (JSON|ITP)')
+       file_group.add_argument('-seq', dest='seq', required=False, type=str,
+                               help='linear sequence')
+       file_group.add_argument('-seqf', dest='seq_file', required=False, type=Path,
+                               help='linear sequence')
        ff_group = parser.add_argument_group('Force field selection')
        ff_group.add_argument('-lib', dest='lib', required=False, type=str,
                              help='force-fields to include from library')

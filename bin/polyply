@@ -6,10 +6,10 @@ different subcommands. This is the main executable.
 """
 
 import argparse
-import polyply
 from pathlib import Path
 import vermouth
 import vermouth.forcefield
+import polyply
 from polyply import (gen_itp, gen_coords, DATA_PATH)
 
 VERSION = 'polyply version {}'.format(polyply.__version__)
@@ -21,8 +21,11 @@ def main():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
+
+    parser.add_argument('-lib', dest='lib', required=False, type=str,
+                          help='force-fields to include from library')
     parser.add_argument('-V', '--version', action='version', version=VERSION)
-    ff_group = parser.add_argument_group('Force field selection')
+    ff_group = parser.add_argument_group('Library Files')
     ff_group.add_argument('-list-lib', action='store_true', dest='list_ff',
                           help='List all known force fields, and exit.')
     ff_group.add_argument('-list-blocks', type=str, dest='list_blocks',
@@ -40,8 +43,8 @@ def main():
 
     # Input Arguments for the itp generation tool
 
-    parser_gen_itp.add_argument('-lib', dest='lib', required=False, type=str,
-                          help='force-fields to include from library')
+#    parser_gen_itp.add_argument('-lib', dest='lib', required=False, type=str,
+#                          help='force-fields to include from library')
     parser_gen_itp.add_argument('-name', required=True, type=str, dest="name",
                         help="name of the final molecule")
 
@@ -50,8 +53,10 @@ def main():
                             help='Input file (ITP|FF)', nargs="*")
     file_group.add_argument('-o', dest='outpath', type=Path,
                             help='Output ITP (ITP)')
-    file_group.add_argument('-seq', dest='raw_graph', required=True, type=str,
-                            help='Either linear sequence or graph input file (JSON|ITP)')
+    file_group.add_argument('-seq', dest='seq', required=False, type=str,
+                            help='A linear sequence of residue names.')
+    file_group.add_argument('-seqf', dest='seq_file', required=False, type=Path,
+                            help='A graph input file (JSON|ITP)')
 
    #martini_group = parser_gen_itp.add_argument_group('Martini specifics for protein and DNA.')
    #martini_group.add_argument('-nt', dest='neutral_termini',
