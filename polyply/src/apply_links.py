@@ -2,8 +2,9 @@ from itertools import combinations
 import networkx as nx
 from networkx.algorithms import isomorphism
 import vermouth.molecule
-from .processor import Processor
 from vermouth.processors.do_links import match_order
+from .processor import Processor
+
 
 class MatchError(Exception):
     """Raised we find no match between links and molecule"""
@@ -184,17 +185,16 @@ def _check_relative_order(resids, orders):
     order_match = {}
     for order, resid in zip(orders, resids):
         if order not in order_match:
-           order_match[order] = resid
+            order_match[order] = resid
         # Assert all orders correspond to the same resid
         elif order in order_match and order_match[order] != resid:
-           return False
+            return False
 
-    else:  # No break
-        for ((order1, resid1), (order2, resid2)) in combinations(order_match.items(), 2):
-            # Assert the differences between resids correspond to what
-            # the orders require.
-            if not match_order(order1, resid1, order2, resid2):
-               return False
+    for ((order1, resid1), (order2, resid2)) in combinations(order_match.items(), 2):
+        # Assert the differences between resids correspond to what
+        # the orders require.
+        if not match_order(order1, resid1, order2, resid2):
+            return False
 
     return True
 
@@ -231,11 +231,11 @@ def _orders_to_paths(meta_molecule, orders, node):
             neighbours = neighborhood(meta_molecule, node,
                                       len(orders)-1)
             if '>' in token:
-               res_ids = [_id for _id in neighbours if
-                          _id > node]
+                res_ids = [_id for _id in neighbours if
+                           _id > node]
             else:
-               res_ids = [_id  for _id in neighbours if
-                          _id < node]
+                res_ids = [_id  for _id in neighbours if
+                           _id < node]
 
             new_paths = []
             for path in paths:
@@ -253,7 +253,7 @@ def _orders_to_paths(meta_molecule, orders, node):
     clean_paths = []
     for path in paths:
         if _check_relative_order(path, orders):
-           clean_paths.append(path)
+            clean_paths.append(path)
 
     return clean_paths
 
