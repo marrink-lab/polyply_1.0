@@ -43,8 +43,6 @@ def main():
 
     # Input Arguments for the itp generation tool
 
-#    parser_gen_itp.add_argument('-lib', dest='lib', required=False, type=str,
-#                          help='force-fields to include from library')
     parser_gen_itp.add_argument('-name', required=True, type=str, dest="name",
                         help="name of the final molecule")
 
