@@ -148,32 +148,32 @@ def apply_explicit_link(molecule, link):
                 raise IOError("Atoms of link interaction {} are not "
                               "part of the molecule.".format(interaction))
 
-def neighborhood(graph, node, distance, start=0):
+def neighborhood(graph, source, cutoff, start=1):
     """
-    Returns all neighbours of `node` that are less or equal
-    to `degree` nodes away within a graph excluding the node
-    itself.
-
-    Adapted from: https://stackoverflow.com/questions/
-    22742754/finding-the-n-degree-neighborhood-of-a-node
+    Returns all neighbours of `source` that are less or equal
+    to `cutoff` nodes away and more or equal to `start` away
+    within a graph excluding the node itself.
 
     Parameters
     ----------
     graph: :class:`networkx.Graph`
         A networkx graph definintion
-    node:
+    source:
         A node key matching one in the graph
-    degree: :type:`int`
+    cut_off: :type:`int`
         The maxdistance between the node and its
         neighbours.
+    start: :type:`int`
+        The minimum length of a path. Default
+        is zero
 
     Returns
     --------
     list
        list of all nodes distance away from reference
     """
-    path_lengths = nx.single_source_dijkstra_path_length(graph, node)
-    neighbours = [node for node, length in path_lengths.items() if start <= length <= distance]
+    paths = nx.single_source_shortest_path(G=graph, source=source, cutoff=cutoff)
+    neighbours = [ node for node, path in paths.items() if start <= len(path)]
     return neighbours
 
 def _check_relative_order(resids, orders):
@@ -182,12 +182,13 @@ def _check_relative_order(resids, orders):
     list of lists of residues adheres to the order
     specifications of vermouth orders.
     """
+
     order_match = {}
     for order, resid in zip(orders, resids):
         if order not in order_match:
             order_match[order] = resid
         # Assert all orders correspond to the same resid
-        elif order in order_match and order_match[order] != resid:
+        elif order_match[order] != resid:
             return False
 
     for ((order1, resid1), (order2, resid2)) in combinations(order_match.items(), 2):
@@ -206,7 +207,7 @@ def _orders_to_paths(meta_molecule, orders, node):
     this context a path is of length orders - 1 and starts
     at node. Note that at the residue level a path cannot
     be between nodes that are not connected by an edge. Also
-    note that because of takens of the form '<' a single
+    note that because of tokens of the form '<' a single
     order token can generate multiple paths.
 
     Parameters
@@ -237,6 +238,10 @@ def _orders_to_paths(meta_molecule, orders, node):
                 res_ids = [_id  for _id in neighbours if
                            _id < node]
 
+            # each resid in resids spwans a new path in
+            # that needs to be added to paths discarding
+            # the old one. so we first generate them and
+            # then overwrite the old paths list.
             new_paths = []
             for path in paths:
                 for _id in res_ids:
@@ -259,7 +264,7 @@ def _orders_to_paths(meta_molecule, orders, node):
 
 def gen_link_fragments(meta_molecule, orders, node):
     """
-    Genereate all fragments of meta_molecule that match
+    Generate all fragments of meta_molecule that match
     the order specification at a given node. The function
     returns a list of graphs, which are each a single
     path in residue space matching the order attribute
@@ -288,9 +293,9 @@ def gen_link_fragments(meta_molecule, orders, node):
     graphs = []
     for path in paths:
         graph = nx.Graph()
-        for idx, _node in enumerate(path[:-1]):  # Why not the last one? Also, you're not treating idx_set as a set.
+        for idx, _node in enumerate(path[:-1]):
             if _node != path[idx+1]:
-                graph.add_edge(_node, path[idx+1])  # So, if I understand correctly, idx_set actuall contains a bunch of edges (in a condensed format)?
+                graph.add_edge(_node, path[idx+1])
         graphs.append(graph)
 
     return graphs, paths
@@ -354,7 +359,7 @@ def _get_links(meta_molecule, edge):
     -----------
     meta_molecule: :class:`polyply.MetaMolecule`
         A polyply meta_molecule definition
-    node:
+    edge:
         Single node matching one in the meta_molecule
     Returns
     ---------
