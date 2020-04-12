@@ -71,3 +71,15 @@ class MetaMolecule(nx.Graph):
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
         return meta_mol
 
+    @classmethod
+    def from_json(cls, force_field, json_file, mol_name):
+        """
+        Constructs a :class::`MetaMolecule` from a json file
+        using the networkx json package.
+        """
+        with open(json_file) as file_:
+            data = json.load(file_)
+
+        graph = json_graph.node_link_graph(data)
+        meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
+        return meta_mol
