@@ -19,222 +19,342 @@ Test that force field files are properly read.
 
 import textwrap
 import pytest
-import numpy as np
 import networkx as nx
 import vermouth.forcefield
-import vermouth.molecule
+import vermouth.ffinput
 import polyply.src.meta_molecule
 import polyply.src.map_to_molecule
 import polyply.src.parsers
 import polyply.src.apply_links
 from polyply.src.meta_molecule import (MetaMolecule, Monomer)
-from vermouth.molecule import Interaction
+from polyply.src.apply_links import MatchError
+
 
 class TestApplyLinks:
     @staticmethod
-    @pytest.mark.parametrize('lines, monomers, interactions', (
+    @pytest.mark.parametrize('edges, orders, node, result', (
+        # all ids and within graph
+        ([(0, 1), (1, 2)],
+         [0, 0, 1, 1],
+         1,
+         [[1, 1, 2, 2]]),
+        # all ids but one not in grpah
+        ([(0, 1), (1, 2)],
+         [0, 1, 2, 3],
+         0,
+         [[0, 1, 2, 3]]),
+        # some basic incl. '>'
+        ([(0, 1), (1, 2)],
+         [0, '>', '>'],
+         0,
+         [[0, 1, 1], [0, 2, 2]]),
+        # linear and some ids some '>'
+        ([(0, 1), (1, 2)],
+         [0, '>', '>>'],
+         0,
+         [[0, 1, 2]]),
+        ([(0, 1), (1, 2), (2, 3), (3, 4)],
+         [0, '<', '>'],
+         2,
+         [[2, 1, 3], [2, 1, 4], [2, 0, 3],
+          [2, 0, 4]]),
+    ))
+    def test_orders_to_paths(edges, orders, node, result):
+        graph = nx.Graph()
+        graph.add_edges_from(edges)
+        paths = polyply.src.apply_links._orders_to_paths(graph, orders, node)
+        assert paths == result
+
+    @staticmethod
+    def test_orders_to_paths_error():
+        graph = nx.Graph()
+        graph.add_edges_from([(0, 1), (1, 2)])
+        with pytest.raises(IOError):
+            polyply.src.apply_links._orders_to_paths(graph, [1, '*'], 0)
+
+    @staticmethod
+    @pytest.mark.parametrize('edges, orders, node, ref_edges', (
+        # all ids and within graph
+        ([(0, 1), (1, 2)],
+         [0, 0, 1, 1],
+         1,
+         [[(1, 2)]]),
+        # all ids but one not in grpah
+        ([(0, 1), (1, 2)],
+         [0, 1, 2, 3],
+         0,
+         [[(0, 1), (1, 2), (2, 3)]]),
+        # linear and some ids some '>'
+        ([(0, 1), (1, 2)],
+         [0, '>', '>>'],
+         0,
+         [[(0, 1), (1, 2)], [(0, 2)]])
+    ))
+    def test_gen_link_fragments(edges, orders, node, ref_edges):
+        graph = nx.Graph()
+        graph.add_edges_from(edges)
+        result_graph, _ = polyply.src.apply_links.gen_link_fragments(
+            graph, orders, node)
+        for graph in result_graph:
+            assert list(graph.edges) in ref_edges
+
+    @staticmethod
+    @pytest.mark.parametrize('lines, ref_ids', (
         ("""[ moleculetype ]
         ; name nexcl.
         PEO         1
         ;
         [ atoms ]
         1  SN1a    1   PEO   CO1  1   0.000  45
-        2  SN1a    1   PEO   CO2  1   0.000  45
-        3  SN1a    1   PEO   CO3  1   0.000  45
-        4  SN1a    1   PEO   CO4  1   0.000  45
+        [ link ]
+        resname "PEO"
         [ bonds ]
-        ; back bone bonds
-        1  2   1   0.37 7000
-        2  3   1   0.37 7000
-        2  4   1   0.37 7000
-        4  5   1   0.37 7000
-        """,
-        [Monomer(resname="PEO",n_blocks=2)],
-        {"bonds":[Interaction(atoms=(0, 1), parameters=['1', '0.37', '7000'], meta={}),
-         Interaction(atoms=(1, 2), parameters=['1', '0.37', '7000'], meta={}),
-         Interaction(atoms=(1, 3), parameters=['1', '0.37', '7000'], meta={}),
-         Interaction(atoms=(3, 4), parameters=['1', '0.37', '7000'], meta={'version':1}),
-         Interaction(atoms=(4, 5), parameters=['1', '0.37', '7000'], meta={}),
-         Interaction(atoms=(5, 6), parameters=['1', '0.37', '7000'], meta={}),
-         Interaction(atoms=(5, 7), parameters=['1', '0.37', '7000'], meta={})]}
-         ),
-         ("""
-         [ moleculetype ]
-         PS 1
-         [ atoms ]
-            1    STY            1  PS       R1       1     0.00000E+00   45
-            2    STY            1  PS       R2       2     0.00000E+00   45
-            3    STY            1  PS       R3       3     0.00000E+00   45
-            4    SCY            1  PS       B        4     0.00000E+00   45
-         [ bonds ]
-            1     4   1     0.270000 8000
-            4     5   1     0.270000 8000
-         [ constraints ]
-            2     3    1     0.270000
-            3     1    1     0.270000
-            1     2    1     0.270000
-         [ angles ]
-            4     1     2    1   136  100
-            4     1     3    1   136  100
-            4     5     6    1   136  100
-            4     5     7    1   136  100
-            1     4     5    1   120   25
-            4     5     8    1    52  550
-         [ exclusions ]
-         1 2
-         1 3
-         1 4
-         1 5
-         1 6
-         1 7
-         1 8
-         2 3
-         2 4
-         2 5
-         3 5
-         3 4
-         4 5
-         4 6
-         4 7
-         4 8
-         4 9
-         """,
-         [Monomer(resname="PS",n_blocks=2)],
-         {"bonds":[
-         Interaction(atoms=(0, 3), parameters=['1', '0.270000', '8000'], meta={}),
-         Interaction(atoms=(3, 4), parameters=['1', '0.270000', '8000'], meta={'version':1}),
-         Interaction(atoms=(4, 7), parameters=['1', '0.270000', '8000'], meta={})],
-         "angles":[
-         Interaction(atoms=(0, 3, 4), parameters=['1', '120', '25'],  meta={'version':1}),
-         Interaction(atoms=(3, 0, 1), parameters=['1', '136', '100'], meta={}),
-         Interaction(atoms=(3, 0, 2), parameters=['1', '136', '100'], meta={}),
-         Interaction(atoms=(3, 4, 5), parameters=['1', '136', '100'], meta={'version':1}),
-         Interaction(atoms=(3, 4, 6), parameters=['1', '136', '100'], meta={'version':1}),
-         Interaction(atoms=(3, 4, 7), parameters=['1', '52', '550'],  meta={'version':1}),
-         Interaction(atoms=(7, 4, 5), parameters=['1', '136', '100'], meta={}),
-         Interaction(atoms=(7, 4, 6), parameters=['1', '136', '100'], meta={})],
-         "constraints":[
-         Interaction(atoms=(0, 1), parameters=['1', '0.270000'], meta={}),
-         Interaction(atoms=(1, 2), parameters=['1', '0.270000'], meta={}),
-         Interaction(atoms=(2, 0), parameters=['1', '0.270000'], meta={}),
-         Interaction(atoms=(4, 5), parameters=['1', '0.270000'], meta={}),
-         Interaction(atoms=(5, 6), parameters=['1', '0.270000'], meta={}),
-         Interaction(atoms=(6, 4), parameters=['1', '0.270000'], meta={})],
-         "exclusions":[
-         Interaction(atoms=(0, 1), parameters=[], meta={}),
-         Interaction(atoms=(0, 2), parameters=[], meta={}),
-         Interaction(atoms=(0, 3), parameters=[], meta={}),
-         Interaction(atoms=(0, 4), parameters=[], meta={'version':1}),
-         Interaction(atoms=(0, 5), parameters=[], meta={'version':1}),
-         Interaction(atoms=(0, 6), parameters=[], meta={'version':1}),
-         Interaction(atoms=(0, 7), parameters=[], meta={'version':1}),
-         Interaction(atoms=(1, 2), parameters=[], meta={}),
-         Interaction(atoms=(1, 3), parameters=[], meta={}),
-         Interaction(atoms=(1, 4), parameters=[], meta={'version':1}),
-         Interaction(atoms=(2, 3), parameters=[], meta={}),
-         Interaction(atoms=(2, 4), parameters=[], meta={'version':1}),
-         Interaction(atoms=(3, 4), parameters=[], meta={'version':1}),
-         Interaction(atoms=(3, 5), parameters=[], meta={'version':1}),
-         Interaction(atoms=(3, 6), parameters=[], meta={'version':1}),
-         Interaction(atoms=(3, 7), parameters=[], meta={'version':1}),
-         Interaction(atoms=(4, 5), parameters=[], meta={}),
-         Interaction(atoms=(4, 6), parameters=[], meta={}),
-         Interaction(atoms=(4, 7), parameters=[], meta={}),
-         Interaction(atoms=(5, 6), parameters=[], meta={}),
-         Interaction(atoms=(5, 7), parameters=[], meta={}),
-         Interaction(atoms=(6, 7), parameters=[], meta={})]}),
-         ("""[ moleculetype ]
-           P3HT               1
-          [ atoms ]
-              1   SC5    1    P3HT     S1    1        0       45
-              2   SC5    1    P3HT     C2    2        0       45
-              3   SC5    1    P3HT     C3    3        0       45
-              4    VS    1    P3HT     V4    4        0        0
-              5   SC3    1    P3HT     C5    5        0       45
-              6   SC3    1    P3HT     C6    6        0       45
-          [ bonds ]
-              5    6    1    0.360         5000
-              4   10    1    0.380        50000
-           [ exclusions ]
-              1    7
-              2    7
-              3    7
-          [ constraints ]
-              1    2    1   0.240
-              1    3    1   0.240
-              2    3    1   0.240
-              3    5    1   0.285
-          [ angles ]
-              1    3    5    2       180      250
-              3    5    6    1       155       25
-              2    3   10    1       160      180
-              4    8    9    1       160      180
-              4   10   16    1       158      180
-          [ dihedrals ]
-              1    4 7  10        9       0.0      1.8  1
-              1    4 7  10        9       0.0     -9.5  2
-           [ virtual_sitesn ]
-             4    2    1   2   3""",
-          [Monomer(resname="P3HT", n_blocks=2)],
-           {"bonds":[
-           Interaction(atoms=(3, 9), parameters=['1', '0.380', '50000'], meta={'version': 1}),
-           Interaction(atoms=(4, 5), parameters=['1', '0.360', '5000'], meta={}),
-           Interaction(atoms=(10, 11), parameters=['1', '0.360', '5000'], meta={})],
-           "angles":[
-           Interaction(atoms=(0, 2, 4), parameters=['2', '180', '250'], meta={}),
-           Interaction(atoms=(1, 2, 9), parameters=['1', '160', '180'], meta={'version':1}),
-           Interaction(atoms=(2, 4, 5), parameters=['1', '155', '25'], meta={}),
-           Interaction(atoms=(3, 7, 8), parameters=['1', '160', '180'], meta={'version':1}),
-           Interaction(atoms=(6, 8, 10), parameters=['2', '180', '250'], meta={}),
-           Interaction(atoms=(8, 10, 11), parameters=['1', '155', '25'], meta={})],
-           "constraints":[
-           Interaction(atoms=(0, 1), parameters=['1', '0.240'], meta={}),
-           Interaction(atoms=(0, 2), parameters=['1', '0.240'], meta={}),
-           Interaction(atoms=(1, 2), parameters=['1', '0.240'], meta={}),
-           Interaction(atoms=(2, 4), parameters=['1', '0.285'], meta={}),
-           Interaction(atoms=(6, 7), parameters=['1', '0.240'], meta={}),
-           Interaction(atoms=(6, 8), parameters=['1', '0.240'], meta={}),
-           Interaction(atoms=(7, 8), parameters=['1', '0.240'], meta={}),
-           Interaction(atoms=(8, 10), parameters=['1', '0.285'], meta={})],
-           "exclusions":[
-           Interaction(atoms=(0, 6), parameters=[], meta={'version':1}),
-           Interaction(atoms=(1, 6), parameters=[], meta={'version':1}),
-           Interaction(atoms=(2, 6), parameters=[], meta={'version':1})],
-           "virtual_sitesn":[
-           Interaction(atoms=(3, 0, 1, 2), parameters=['2'], meta={}),
-           Interaction(atoms=(9, 6, 7, 8), parameters=['2'], meta={})],
-           "dihedrals":[
-           Interaction(atoms=(0, 3, 6, 9), parameters=['9','0.0','-9.5','2'], meta={'version':1}),
-           Interaction(atoms=(0, 3, 6, 9), parameters=['9','0.0','1.8','1'], meta={'version':2})]}),
-         ("""
-         [ moleculetype ]
-         PEO 1
-         [ atoms ]
-            1     EO     1      PEO       CO1       1     0.00000E+00   45
-         [ bonds ]
-            1     2   1     0.27 8000
-         [ dihedrals ]
-         1    2    3   4   params
-         """,
-         [Monomer(resname="PEO", n_blocks=4)],
-         {"bonds":[Interaction(atoms=(0, 1), parameters=['1', '0.27', '8000'], meta={'version': 1}),
-         Interaction(atoms=(1, 2), parameters=['1', '0.27', '8000'], meta={'version': 1}),
-         Interaction(atoms=(2, 3), parameters=['1', '0.27', '8000'], meta={'version': 1})],
-         "dihedrals":[Interaction(atoms=(0, 1, 2, 3), parameters=['params'], meta={'version': 1})]}
-         )
-         ))
-
-    def test_polyply_input(lines, monomers, interactions):
+        CO1 +CO1 params""",
+         [[1, 2], [2, 3], [3, 4], [4, 5]]),
+        ("""[ moleculetype ]
+        ; name nexcl.
+        PEO         1
+        ;
+        [ atoms ]
+        1  SN1a    1   PEO   CO1  1   0.000  45
+        [ link ]
+        resname "PEO"
+        [ angles ]
+        CO1 +CO1 ++CO1""",
+         [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6]]),
+        ("""[ moleculetype ]
+        ; name nexcl.
+        PEO         1
+        ;
+        [ atoms ]
+        1  SN1a    1   PEO   CO1  1   0.000  45
+        [ link ]
+        resname "PEO"
+        [ dihedrals ]
+        CO1 +CO1 >CO1 >>CO1""",
+         [[1, 2, 2, 3], [1, 2, 2, 4], [1, 2, 3, 4], [2, 3, 3, 4], [2, 3, 3, 5],
+          [2, 3, 4, 5], [3, 4, 4, 5]])
+    ))
+    def test_get_links(lines, ref_ids):
         lines = textwrap.dedent(lines).splitlines()
-        ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.src.parsers.read_polyply(lines, ff)
-        meta_mol = MetaMolecule.from_monomer_seq_linear(ff, monomers, "test")
-        new_meta_mol = polyply.src.map_to_molecule.MapToMolecule().run_molecule(meta_mol)
-        new_meta_mol = polyply.src.apply_links.ApplyLinks().run_molecule(meta_mol)
+        force_field = vermouth.forcefield.ForceField(name='test_ff')
+        vermouth.ffinput.read_ff(lines, force_field)
+        meta_mol = MetaMolecule.from_monomer_seq_linear(
+            force_field, [Monomer(resname="PEO", n_blocks=5)], "test")
+        polyply.src.map_to_molecule.MapToMolecule().run_molecule(meta_mol)
 
-        for key in interactions:
-            print(key)
-            print(new_meta_mol.molecule.interactions[key])
-            for interaction in interactions[key]:
-                assert interaction in new_meta_mol.molecule.interactions[key]
-                print(interaction)
+        resids = []
+        for edge in meta_mol.edges:
+            _, ids = polyply.src.apply_links._get_links(meta_mol, edge)
+            resids += ids
+        assert resids == ref_ids
+
+    @staticmethod
+    @pytest.mark.parametrize('links, interactions, edges, idx, inttype',
+         (("""
+         [ link ]
+         [ bonds ]
+         BB +BB  1  0.350  1250
+         """,
+         [vermouth.molecule.Interaction(atoms=(0, 1),
+                                        parameters=['1', '0.350', '1250'],
+                                        meta={})],
+         1,
+         [1, 2],
+         'bonds'),
+         ("""
+         [ link ]
+         [ bonds ]
+         BB   SC1   1  0.350  1250
+         """,
+         [vermouth.molecule.Interaction(atoms=(2, 3),
+                                        parameters=['1', '0.350', '1250'],
+                                        meta={})],
+         1,
+         [3, 3],
+         'bonds'),
+         ("""
+         [ link ]
+         [ angles ]
+         BB  +BB  +SC1  1  125  250
+         """,
+        [vermouth.molecule.Interaction(atoms=(1, 2, 3),
+                                       parameters=['1', '125', '250'],
+                                       meta={})],
+        2,
+        [2, 3],
+        'angles')
+        ))
+    def test_add_interaction_and_edge(links, interactions, edges, idx, inttype):
+        lines = """
+        [ moleculetype ]
+        GLY  1
+        [ atoms ]
+        ;id  type resnr residu atom cgnr   charge
+         1   SP2   1     GLY    BB     1      0
+        [ moleculetype ]
+        ALA  1
+        [ atoms ]
+        ;id  type resnr residu atom cgnr   charge
+         1   SP2   1     ALA    BB     1      0
+         2   SC2   1     ALA    SC1     1      0
+        """
+        lines = lines + links
+        lines = textwrap.dedent(lines).splitlines()
+        force_field = vermouth.forcefield.ForceField(name='test_ff')
+        vermouth.ffinput.read_ff(lines, force_field)
+
+        new_mol = force_field.blocks['GLY'].to_molecule()
+        new_mol.merge_molecule(force_field.blocks['GLY'])
+        new_mol.merge_molecule(force_field.blocks['ALA'])
+
+        polyply.src.apply_links.apply_link_between_residues(
+            new_mol, force_field.links[0], idx)
+        assert new_mol.interactions[inttype] == interactions
+        assert len(new_mol.edges) == edges
+
+    @staticmethod
+    @pytest.mark.parametrize('links, idx',
+                             (
+                                 (  # no match considering the order parameter
+                                     """
+         [ link ]
+         [ bonds ]
+         BB   +BB  1  0.350  1250""",
+                                     [1, 4],
+                                 ),
+                                 (  # no match due to incorrect atom name
+                                     """
+         [ link ]
+         [ bonds ]
+         BB   SC5   1  0.350  1250
+         """,
+                                     [3, 3])))
+    def test_link_failure(links, idx):
+        lines = """
+        [ moleculetype ]
+        GLY  1
+        [ atoms ]
+        ;id  type resnr residu atom cgnr   charge
+         1   SP2   1     GLY    BB     1      0
+        [ moleculetype ]
+        ALA  1
+        [ atoms ]
+        ;id  type resnr residu atom cgnr   charge
+         1   SP2   1     ALA    BB     1      0
+         2   SC2   1     ALA    SC1    1      0
+        """
+        lines = lines + links
+        lines = textwrap.dedent(lines).splitlines()
+        force_field = vermouth.forcefield.ForceField(name='test_ff')
+        vermouth.ffinput.read_ff(lines, force_field)
+
+        new_mol = force_field.blocks['GLY'].to_molecule()
+        new_mol.merge_molecule(force_field.blocks['GLY'])
+        new_mol.merge_molecule(force_field.blocks['ALA'])
+
+        with pytest.raises(MatchError):
+            polyply.src.apply_links.apply_link_between_residues(
+                new_mol, force_field.links[0], idx)
+
+    @staticmethod
+    @pytest.mark.parametrize('links, interactions, edges, inttype',
+                             (("""
+         [ link ]
+         [ molmeta ]
+         by_atom_ID true
+         [ bonds ]
+         1   2  1  0.350  1250
+         """,
+                               [vermouth.molecule.Interaction(
+                                   atoms=(0, 1), parameters=['1', '0.350', '1250'], meta={}),
+                                ],
+                                 1,
+                                 'bonds'
+                               ),
+                                 ("""
+         [ link ]
+         [ molmeta ]
+         by_atom_ID true
+         [ angles ]
+         2  3  4  1  125  250
+         """,
+                                  [vermouth.molecule.Interaction(
+                                      atoms=(1, 2, 3), parameters=['1', '125', '250'], meta={})],
+                                  2,
+                                  'angles')
+                              ))
+    def test_add_explicit_link(links, interactions, edges, inttype):
+        lines = """
+        [ moleculetype ]
+        GLY  1
+        [ atoms ]
+        ;id  type resnr residu atom cgnr   charge
+         1   SP2   1     GLY    BB     1      0
+        [ moleculetype ]
+        ALA  1
+        [ atoms ]
+        ;id  type resnr residu atom cgnr   charge
+         1   SP2   1     ALA    BB     1      0
+         2   SC2   1     ALA    SC1     1      0
+        """
+        lines = lines + links
+        lines = textwrap.dedent(lines).splitlines()
+        force_field = vermouth.forcefield.ForceField(name='test_ff')
+        vermouth.ffinput.read_ff(lines, force_field)
+
+        new_mol = force_field.blocks['GLY'].to_molecule()
+        new_mol.merge_molecule(force_field.blocks['GLY'])
+        new_mol.merge_molecule(force_field.blocks['ALA'])
+
+        polyply.src.apply_links.apply_explicit_link(
+            new_mol, force_field.links[0])
+        assert new_mol.interactions[inttype] == interactions
+        assert len(new_mol.edges) == edges
+
+    @staticmethod
+    @pytest.mark.parametrize('links, error_type',
+                             (("""
+         [ link ]
+         [ molmeta ]
+         by_atom_ID true
+         [ bonds ]
+         BB  +BB  1  0.350  1250
+         """,
+                               ValueError
+                               ),
+                              ("""
+         [ link ]
+         [ molmeta ]
+         by_atom_ID true
+         [ angles ]
+         1   8  1  125  250
+         """,
+                               IOError)
+                              ))
+    def test_explicit_link_failure(links, error_type):
+        lines = """
+        [ moleculetype ]
+        GLY  1
+        [ atoms ]
+        ;id  type resnr residu atom cgnr   charge
+         1   SP2   1     GLY    BB     1      0
+        [ moleculetype ]
+        ALA  1
+        [ atoms ]
+        ;id  type resnr residu atom cgnr   charge
+         1   SP2   1     ALA    BB     1      0
+         2   SC2   1     ALA    SC1    1      0
+        """
+        lines = lines + links
+        lines = textwrap.dedent(lines).splitlines()
+        force_field = vermouth.forcefield.ForceField(name='test_ff')
+        vermouth.ffinput.read_ff(lines, force_field)
+
+        new_mol = force_field.blocks['GLY'].to_molecule()
+        new_mol.merge_molecule(force_field.blocks['GLY'])
+        new_mol.merge_molecule(force_field.blocks['ALA'])
+
+        with pytest.raises(error_type):
+            polyply.src.apply_links.apply_explicit_link(
+                new_mol, force_field.links[0])
