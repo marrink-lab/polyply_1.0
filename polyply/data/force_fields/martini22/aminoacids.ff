@@ -15,7 +15,6 @@
 [ macros ]
 protein_resnames "GLY|ALA|CYS|VAL|LEU|ILE|MET|PRO|HYP|ASN|GLN|ASP|ASP0|GLU|GLU0|THR|SER|LYS|LYS0|ARG|ARG0|HIS|HISH|PHE|TYR|TRP"
 protein_resnames_non_pro "GLY|ALA|CYS|VAL|LEU|ILE|MET|ASN|GLN|ASP|ASP0|GLU|GLU0|THR|SER|LYS|LYS0|ARG|ARG0|HIS|HISH|PHE|TYR|TRP"
-prot_default_bb_type P2
 
 ;;; GLYCINE
 
@@ -24,8 +23,9 @@ prot_default_bb_type P2
 GLY                1			
 
 [ atoms ]
-;id  type resnr residu atom cgnr   charge
- 1   SP2   1     GLY    BB     1      0      
+;id type resnr residu atom cgnr   charge
+ 1   P5   1     GLY    BB     1      0      
+
 
 ;;; ALANINE
 
@@ -35,7 +35,8 @@ ALA                1
 
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
- 1   P1    1     ALA    BB     1      0
+ 1   P4    1     ALA    BB     1      0     ; ALA slightly less polar 
+
 
 ;;; CYSTEINE
 
@@ -45,13 +46,14 @@ CYS                1
 
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
- 1   $prot_default_bb_type     1   CYS    BB     1      0
- 2   TC4    1   CYS    SC1    2      0     
+ 1   P5     1   CYS    BB     1      0
+ 2   C5     1   CYS    SC1    2      0     
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
-  BB   SC1    1       0.341     7500        
+   1     2    1       0.31     7500        
+
 
 ;;; VALINE
 
@@ -61,13 +63,13 @@ VAL                1
 
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
- 1   $prot_default_bb_type   1     VAL     BB     1      0    
- 2   SC2  1     VAL     SC1    2      0    
+ 1   P5   1     VAL     BB     1      0    
+ 2   AC2  1     VAL     SC1    2      0    
 
 [constraints]
-#meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  
-  BB   SC1    1       0.292
+   1     2    1       0.265       
+
 
 ;;; LEUCINE
 
@@ -77,13 +79,14 @@ LEU                1
 
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
- 1   $prot_default_bb_type   1     LEU     BB     1      0    
- 2   SC1  1     LEU     SC1    2      0    
+ 1   P5   1     LEU     BB     1      0    
+ 2   AC1  1     LEU     SC1    2      0    
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
-  BB   SC1    1       0.363     7500    
+   1     2    1       0.33     7500    
+
 
 ;;; ISOLEUCINE
 
@@ -93,13 +96,13 @@ ILE                1
 
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
- 1   $prot_default_bb_type   1     ILE     BB     1      0    
- 2   SC1  1     ILE     SC1    2      0    
+ 1   P5   1     ILE     BB     1      0    
+ 2   AC1  1     ILE     SC1    2      0    
 
 [constraints]
-#meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  
-  BB   SC1    1       0.341
+   1     2    1       0.31       
+
 
 ;;; METHIONINE
 
@@ -109,13 +112,14 @@ MET                1
 
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
- 1   $prot_default_bb_type   1     MET     BB     1      0    
- 2   C4   1     MET     SC1    2      0     
+ 1   P5   1     MET     BB     1      0    
+ 2   C5   1     MET     SC1    2      0     
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
-  BB   SC1    1       0.40     2500
+   1     2    1       0.40     2500
+
 
 ;;; PROLINE
 
@@ -125,27 +129,14 @@ PRO                1
 
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
- 1   SP2a   1     PRO     BB     1      0    
- 2   SC3    1     PRO     SC1    2      0    
+ 1   P4   1     PRO     BB     1      0    
+ 2   C3   1     PRO     SC1    2      0    
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
-  BB   SC1   1       0.330     7500
+  1     2    1       0.30     7500
 
-[ moleculetype ]
-; molname       nrexcl
-HYP                1
-
-[ atoms ]
-;id type resnr residu atom cgnr   charge
- 1    P1   1     HYP     BB     1      0    
- 2    P1   1     HYP     SC1    2      0    
-
-[bonds]
-#meta {"group": "Side chain bonds"}
-;  i     j   funct   length  force.c.
-  BB   SC1   1       0.300     7500
 
 ;;; ASPARAGINE
 
@@ -155,13 +146,14 @@ ASN                1
 
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
- 1   $prot_default_bb_type    1     ASN     BB     1      0    
- 2   SP4    1     ASN     SC1    2      0    
+ 1   P5    1     ASN     BB     1      0    
+ 2   P5    1     ASN     SC1    2      0    
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
-  BB   SC1    1       0.352     5000
+   1     2    1       0.32     5000
+
 
 ;;; GLUTAMINE
 
@@ -171,13 +163,14 @@ GLN                1
 
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
- 1   $prot_default_bb_type    1     GLN     BB     1      0    
+ 1   P5    1     GLN     BB     1      0    
  2   P4    1     GLN     SC1    2      0    
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
-  BB   SC1    1       0.400    5000     
+   1     2    1       0.40     5000     
+
 
 ;;; ASPARTATE
 
@@ -187,13 +180,31 @@ ASP                1
 
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
- 1   $prot_default_bb_type     1     ASP     BB     1      0    
- 2   SQn     1     ASP     SC1    2   -1.0    
+ 1   P5     1     ASP     BB     1      0    
+ 2   Qa     1     ASP     SC1    2   -1.0    
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
-  BB   SC1    1       0.352     7500
+   1     2    1       0.32     7500
+
+
+;;; ASPARTATE - NEUTRAL FORM
+
+[ moleculetype ]
+; molname       nrexcl
+ASP0               1
+
+[ atoms ]
+;id type resnr residu atom cgnr   charge
+ 1   P5     1     ASP0    BB     1      0    
+ 2   P3     1     ASP0    SC1    2      0    
+
+[bonds]
+#meta {"group": "Side chain bonds"}
+;  i     j   funct   length  force.c.
+   1     2    1       0.32     7500
+
 
 ;;; GLUTAMATE
 
@@ -203,13 +214,31 @@ GLU                1
 
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
- 1   $prot_default_bb_type     1     GLU     BB     1      0    
- 2   Qn     1     GLU     SC1    2   -1.0    
+ 1   P5     1     GLU     BB     1      0    
+ 2   Qa     1     GLU     SC1    2   -1.0    
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
-  BB   SC1    1       0.400    5000     
+   1     2    1       0.40     5000     
+
+
+;;; GLUTAMATE - NEUTRAl FORM
+
+[ moleculetype ]
+; molname       nrexcl
+GLU0               1
+
+[ atoms ]
+;id type resnr residu atom cgnr   charge
+ 1   P5     1     GLU0    BB     1      0    
+ 2   P1     1     GLU0    SC1    2      0    
+
+[bonds]
+#meta {"group": "Side chain bonds"}
+;  i     j   funct   length  force.c.
+   1     2    1       0.40     5000    
+
 
 ;;; THREONINE
 
@@ -219,13 +248,13 @@ THR                1
 
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
-1   $prot_default_bb_type     1     THR     BB     1      0    
-2   SP1     1     THR     SC1    2      0    
+1   P5     1     THR     BB     1      0    
+2   P1     1     THR     SC1    2      0    
 
 [constraints]
-#meta {"group": "Side chain bonds"}
 ;  i     j   funct   length 
-  BB   SC1    1       0.286
+   1     2    1       0.26   
+
 
 ;;; SERINE
 
@@ -235,13 +264,14 @@ SER                1
 
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
-1   $prot_default_bb_type     1    SER     BB     1      0    
-2   TP1     1    SER     SC1    2      0    
+1   P5     1    SER     BB     1      0    
+2   P1     1    SER     SC1    2      0    
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
-  BB   SC1    1       0.287     7500
+   1     2    1       0.25     7500
+
 
 ;;; LYSINE 
 
@@ -251,20 +281,45 @@ LYS                1
 
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
- 1   $prot_default_bb_type    1     LYS     BB     1      0    
- 2   SC3    1     LYS     SC1    2      0    
- 3   SQp    1     LYS     SC2    3    1.0    
+ 1   P5    1     LYS     BB     1      0    
+ 2   C3    1     LYS     SC1    2      0    
+ 3   Qd    1     LYS     SC2    3    1.0    
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
-  BB   SC1    1       0.347     5000      
- SC1   SC2    1       0.280     5000  
+   1     2    1       0.33     5000      
+   2     3    1       0.28     5000  
 
 [angles]
 #meta {"group": "Side chain angles"}
 ;  i     j    k     funct   angle  force.c.
-  BB   SC1  SC2       2   180.000    25.0      
+    1     2    3       2   180.000    25.0      
+
+
+;;; LYSINE - NEUTRAL FORM
+
+[ moleculetype ]
+; molname       nrexcl
+LYS0               1
+
+[ atoms ]
+;id type resnr residu atom cgnr   charge
+ 1   P5    1     LYS     BB     1      0    
+ 2   C3    1     LYS     SC1    2      0    
+ 3   P1    1     LYS     SC2    3      0    
+
+[bonds]
+#meta {"group": "Side chain bonds"}
+;  i     j   funct   length  force.c.
+   1     2    1       0.33     5000      
+   2     3    1       0.28     5000  
+
+[angles]
+#meta {"group": "Side chain angles"}
+;  i     j    k     funct   angle  force.c.
+    1     2    3       2   180.000    25.0      
+
 
 ;;; ARGININE 
 
@@ -274,20 +329,45 @@ ARG                1
 
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
-1   $prot_default_bb_type     1     ARG     BB     1      0    
-2   SN2d     1     ARG     SC1    2      0    
-3   SQp      1     ARG     SC2    3    1.0    
+1   P5     1     ARG     BB     1      0    
+2   N0     1     ARG     SC1    2      0    
+3   Qd     1     ARG     SC2    3    1.0    
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
-  BB   SC1    1       0.347     5000   
- SC1   SC2    1       0.340     5000  
+   1     2    1       0.33     5000   
+   2     3    1       0.34     5000  
 
 [angles]
 #meta {"group": "Side chain angles"}
 ;  i     j    k     funct   angle  force.c.
-  BB   SC1  SC2       2   180.000    25.0      
+    1     2    3       2   180.000    25.0      
+
+
+;; ARGININE - NEUTRAL FORM
+
+[ moleculetype ]
+; molname       nrexcl
+ARG0               1
+
+[ atoms ]
+;id type resnr residu atom cgnr   charge
+1   P5     1     ARG0    BB     1      0    
+2   N0     1     ARG0    SC1    2      0    
+3   P4     1     ARG0    SC2    3      0    
+
+[bonds]
+#meta {"group": "Side chain bonds"}
+;  i     j   funct   length  force.c.
+   1     2    1       0.33     5000       
+   2     3    1       0.34     5000     
+
+[angles]
+#meta {"group": "Side chain angles"}
+;  i     j    k     funct   angle  force.c.
+    1     2    3       2   180.000    25.0      
+
 
 ;;; HISTIDINE 
 
@@ -297,65 +377,66 @@ HIS                1
 
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
-1   $prot_default_bb_type     1     HIS     BB     1      0    
-2   TC3     1     HIS     SC1    2    0    ; three side chains in triangle
-3   TN3d    1     HIS     SC2    3    0    ; configuration, mimicking
-4   TN3a    1     HIS     SC3    4    0    ; ring structure
+1   P5     1     HIS     BB     1      0    
+2   SC4    1     HIS     SC1    2    0    ; three side chains in triangle
+3   SP1    1     HIS     SC2    3    0    ; configuration, mimicking
+4   SP1    1     HIS     SC3    4    0    ; ring structure
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
-  BB   SC1    1       0.336     7500 
+   1     2    1       0.32     7500 
 
 [constraints]
-#meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  
- SC1   SC2    1       0.285
- SC1   SC3    1       0.285  
- SC2   SC3    1       0.285
+   2     3    1       0.27    
+   2     4    1       0.27   
+   3     4    1       0.27  
 
 [angles]
 #meta {"group": "Side chain angles"}
 ;  i     j    k     funct   angle  force.c.
-   BB   SC1  SC2       2   150.000   50.0  
-   BB   SC1  SC3       2   150.000   50.0 
+    1     2    3       2   150.000   50.0  
+    1     2    4       2   150.000   50.0 
 
 [dihedrals]
 ;  i     j    k    l   funct   angle  force.c.
-  BB   SC2  SC3  SC1       2    0.0    50.0     ; to prevent backflipping of ring
+   1     3    4    2       2    0.0    50.0     ; to prevent backflipping of ring
+
+;;; HISTIDINE, charged.
 
 [ moleculetype ]
 ;molname       nrexcl
-HIH                1
+HISH               1
 
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
-1   $prot_default_bb_type     1     HIS     BB     1      0    
-2   TC3     1     HIH     SC1    2    0    ; three side chains in triangle
-3   TN3d    1     HIH     SC2    3    0    ; configuration, mimicking
-4   TQp     1     HIH     SC3    4   +1    ; ring structure
+1   P5     1     HIS     BB     1    0    
+2   SC4    1     HIS     SC1    2    0    ; three side chains in triangle
+3   SP1    1     HIS     SC2    3    0    ; configuration, mimicking
+4   SQd    1     HIS     SC3    4   1.0   ; ring structure
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
-  BB   SC1    1       0.336     7500 
+   1     2    1       0.32     7500 
 
 [constraints]
-#meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  
- SC1   SC2    1       0.285
- SC1   SC3    1       0.285  
- SC2   SC3    1       0.285
+   2     3    1       0.27    
+   2     4    1       0.27   
+   3     4    1       0.27  
 
 [angles]
 #meta {"group": "Side chain angles"}
 ;  i     j    k     funct   angle  force.c.
-   BB   SC1  SC2       2   150.000   50.0  
-   BB   SC1  SC3       2   150.000   50.0 
+    1     2    3       2   150.000   50.0  
+    1     2    4       2   150.000   50.0 
 
 [dihedrals]
 ;  i     j    k    l   funct   angle  force.c.
-  BB   SC2  SC3  SC1       2    0.0    50.0     ; to prevent backflipping of ring
+   1     3    4    2       2    0.0    50.0     ; to prevent backflipping of ring
+
 
 ;;; PHENYLALANINE
 
@@ -365,32 +446,32 @@ PHE                1
 
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
-1   $prot_default_bb_type     1     PHE     BB     1    0
-2   TC3    1     PHE     SC1    2    0    ; three side chains in triangle
-3   TC4    1     PHE     SC2    3    0    ; configuration, mimicking
-4   TC4    1     PHE     SC3    4    0    ; ring structure
+1   P5     1     PHE     BB     1    0
+2   SC5    1     PHE     SC1    2    0    ; three side chains in triangle
+3   SC5    1     PHE     SC2    3    0    ; configuration, mimicking
+4   SC5    1     PHE     SC3    4    0    ; ring structure
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
-  BB   SC1    1       0.325     7500 	
+   1     2    1       0.31     7500 	
 
 [constraints]
-#meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  
- SC1   SC2    1       0.285
- SC1   SC3    1       0.285
- SC2   SC3    1       0.285
+   2     3    1       0.27     
+   2     4    1       0.27    
+   3     4    1       0.27   
 
 [angles]
 #meta {"group": "Side chain angles"}
 ;  i     j    k     funct   angle  force.c.
-  BB   SC1  SC2        2   150.000   50.0  
-  BB   SC1  SC3        2   150.000   50.0 
+    1     2    3       2   150.000   50.0  
+    1     2    4       2   150.000   50.0 
 
 [dihedrals]
 ;  i     j    k    l   funct   angle  force.c.
-  BB   SC2  SC3  SC1       2    0.0    50.0     ; to prevent backflipping of ring
+   1     3    4    2       2    0.0    50.0     ; to prevent backflipping of ring
+
 
 ;;; TYROSINE
 
@@ -400,35 +481,32 @@ TYR                1
 
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
-1   $prot_default_bb_type     1     TYR     BB     1    0
-2   TC3    1     TYR     SC1    2    0  
-3   TC4    1     TYR     SC2    3    0 
-4   TC4    1     TYR     SC3    4    0  
-5   TP1    1     TYR     SC4    5    0
+1   P5     1     TYR     BB     1    0
+2   SC4    1     TYR     SC1    2    0  
+3   SC4    1     TYR     SC2    3    0 
+4   SP1    1     TYR     SC3    4    0  
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
-  BB   SC1    1       0.336    5000 	
+   1     2    1       0.32     5000 	
 
 [constraints]
-#meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  
- SC1   SC2    1       0.290
- SC1   SC3    1       0.290
- SC2   SC4    1       0.290
- SC3   SC4    1       0.290
- SC2   SC3    1       0.285
+   2     3    1       0.27     
+   2     4    1       0.27    
+   3     4    1       0.27   
 
 [angles]
 #meta {"group": "Side chain angles"}
 ;  i     j    k     funct   angle  force.c.
-   BB   SC1  SC2       2   125.000   60.0  
-   BB   SC1  SC3       2   125.000   60.0 
+    1     2    3       2   150.000   50.0  
+    1     2    4       2   150.000   50.0 
 
 [dihedrals]
 ;  i     j    k    l   funct   angle  force.c.
- SC4   SC2  SC3  SC1       2    180.0    50.0     ; to prevent backflipping of ring
+   1     3    4    2       2    0.0    50.0     ; to prevent backflipping of ring
+
 
 ;;; TRYPTOPHAN
 
@@ -438,38 +516,36 @@ TRP                1
 
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
-1   $prot_default_bb_type       1     TRP     BB     1    0
-2   TC4      1     TRP     SC1    2    0       36
-3   TN3d     1     TRP     SC2    3    0       36
-4   TC4      1     TRP     SC3    4    0        0
-5   TC4      1     TRP     SC4    5    0       36
-6   TC4      1     TRP     SC5    6    0       36
+1   P5       1     TRP     BB     1    0
+2   SC4      1     TRP     SC1    2    0    
+3   SNd      1     TRP     SC2    3    0
+4   SC5      1     TRP     SC3    4    0
+5   SC5      1     TRP     SC4    5    0
 
-[ bonds ]
+[bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
-  BB   SC1    1       0.315     5000 	
+   1     2    1       0.30     5000 	
 
-[ constraints ]
-#meta {"group": "Side chain bonds"}
+[constraints]
 ;  i     j   funct   length  
- SC1   SC2    1       0.285
- SC2   SC5    1       0.494
- SC4   SC5    1       0.285
- SC1   SC4    1       0.494
+   2     3    1       0.27     
+   3     4    1       0.27    
+   2     4    1       0.27   
+   3     5    1       0.27    
+   4     5    1       0.27   
 
-[ angles ]
+[angles]
 #meta {"group": "Side chain angles"}
 ;  i     j    k     funct   angle  force.c.
-  BB   SC1  SC2       2   210.000   60.0 
-  BB   SC1  SC4       2   90.000    60.0  
+   1     2    3       2   210.000   50.0 
+   1     2    4       2   90.000    50.0  
 
-[ dihedrals ]
+[dihedrals]
 ;  i     j    k    l   funct   angle  force.c.
- SC5   SC4  SC2  SC1       2   180.0     60.0    ; to keep plane fixed
+   1     3    4    2       2    0.0    50.0     ; to prevent backflipping of ring
+   2     3    5    4       2    0.0    200.0    ; to keep plane fixed
 
-[ virtual_sitesn ]
-SC3 SC5 SC4 SC2 SC1 -- 2
 
 ;;; Links
 
@@ -479,48 +555,67 @@ resname $protein_resnames
 [ bonds ]
 BB +BB 1 0.350 1250 {"group": "Backbone bonds"}
 
-;[ link ]
-;resname $protein_resnames
-;[ features ]
-;scfix
-;[ molmeta ]
-;scfix true
-;[ dihedrals ]
-;#meta {"group": "SC-BB-BB-SC scFix"}
-;SC1 BB +BB +SC1 1 dihphase(SC1,BB,+BB,+SC1|.0f) 75 1
-
-[ link ]
-resname $protein_resnames
-[ features ]
-scfix
-[ molmeta ]
-scfix true
-[ angles ]
-SC1 BB +BB 10 100 15 {"group": "SC-BB-BB and BB-BB-SC scFix", "comment": "SC-BB-BB"}
-
-[ link ]
-resname $protein_resnames
-[ features ]
-scfix
-[ molmeta ]
-scfix true
-[ angles ]
-BB +BB +SC1 10 100 15 {"group": "SC-BB-BB and BB-BB-SC scFix", "comment": "BB-BB-SC"}
 
 [ link ]
 resname $protein_resnames
 [ angles ]
--BB  BB  SC1  2 100 25 {"group": "BBS angles regular martini", "version": 1}
+-BB  BB  SC1  2 100 25 {"group": "BBS angles"}
 
 [ link ]
 resname $protein_resnames
 [ angles ]
-#meta {"group": "First SBB regular martini"}
-SC1 BB +BB 2 100 25 {"version": 1}
+#meta {"group": "First SBB"}
+SC1 BB +BB 2 100 25
 [ non-edges ]
 BB -BB
 
 ;; Links for the different secondary structures.
+;; Set the bead type as a function of the secondary structures.
+;; We first replace for all amino acids, including for PRO and ALA that are
+;; special.
+[ link ]
+resname $protein_resnames
+[ atoms ]
+BB {"cgsecstruct": "T|3|E", "replace": {"atype": "Nda"}}
+
+[ link ]
+resname $protein_resnames
+[ atoms ]
+BB {"cgsecstruct": "2", "replace": {"atype": "Na"}}
+
+[ link ]
+resname $protein_resnames
+[ atoms ]
+BB {"cgsecstruct": "1", "replace": {"atype": "Nd"}}
+
+[ link ]
+resname $protein_resnames
+[ features ]
+collagen
+[ atoms ]
+BB {"cgsecstruct": "H|F", "replace": {"atype": "N0"}}
+
+;; Fix bead types for ALA and PRO.
+[ link ]
+resname "ALA|PRO|HYP"
+[ atoms ]
+BB {"cgsecstruct": "S", "replace": {"atype": "P4"}}
+
+[ link ]
+resname "ALA|PRO|HYP"
+[ atoms ]
+BB {"cgsecstruct": "T|3|2|1|E", "replace": {"atype": "N0"}}
+
+[ link ]
+resname "ALA|PRO|HYP"
+[ atoms ]
+BB {"cgsecstruct": "H|F", "replace": {"atype": "C5"}}
+
+[ link ]
+resname "PRO"
+[ atoms ]
+BB {"cgsecstruct": "2", "replace": {"atype": "Na"}}
+
 ;; Setup the bonds. We only have the bonds assuming everything is coil.
 ;; We always select the lowest force constant when the two residues involved
 ;; are assigned different secondary structures.
@@ -537,13 +632,14 @@ BB {"cgsecstruct": "F"} +BB
 [ link ]
 resname $protein_resnames
 cgsecstruct "F"
+[ features ]
+collagen
 [ bonds ]
 BB +BB 1 0.365 1250
 
 [ link ]
 resname $protein_resnames
 [ constraints ]
-#meta {"group": "Backbone bonds"}
 BB +BB 1 0.310 
 [ !bonds ]
 BB +BB
@@ -554,7 +650,6 @@ BB +BB {"cgsecstruct": "H|1|2|3"}
 [ link ]
 resname $protein_resnames
 [ constraints ]
-#meta {"group": "Backbone bonds"}
 BB +BB 1 0.33
 [ !bonds ]
 BB +BB
@@ -565,7 +660,6 @@ BB {"cgsecstruct": "S|C|T|E"} +BB {"cgsecstruct": "H|1|2|3"}
 [ link ]
 resname $protein_resnames
 [ constraints ]
-#meta {"group": "Backbone bonds"}
 BB +BB 1 0.3375
 [ !bonds ]
 BB +BB
@@ -588,7 +682,25 @@ resname $protein_resnames
 [ link ]
 resname $protein_resnames
 [ angles ]
--BB BB +BB 2 119.2 150 {"group": "BBB angles"}
+-BB BB {"cgsecstruct": "E"} +BB 2 134 25 {"group": "BBB angles"}
+[ patterns ]
+-BB BB {"cgsecstruct": "E"} +BB 
+-BB {"cgsecstruct": "E"} BB +BB 
+-BB  BB +BB {"cgsecstruct": "E"}
+
+[ link ]
+resname $protein_resnames
+[ angles ]
+-BB BB {"cgsecstruct": "S"} +BB 2 130 20 {"group": "BBB angles"}
+[ patterns ]
+-BB BB {"cgsecstruct": "S"} +BB 
+-BB {"cgsecstruct": "S"} BB +BB 
+-BB  BB +BB {"cgsecstruct": "S"}
+
+[ link ]
+resname $protein_resnames
+[ angles ]
+-BB BB {"cgsecstruct": "F"} +BB 2 119.2 150 {"group": "BBB angles"}
 [ patterns ]
 -BB BB {"cgsecstruct": "F"} +BB 
 -BB {"cgsecstruct": "F"} BB +BB 
@@ -601,16 +713,6 @@ resname $protein_resnames
 -BB BB {"cgsecstruct": "H|1|2|3", "resname": "PRO|HYP"} +BB 
 -BB {"cgsecstruct": "H|1|2|3", "resname": "PRO|HYP"} BB +BB 
 -BB  BB +BB {"cgsecstruct": "H|1|2|3", "resname": "PRO|HYP"}
-
-
-[ link ]
-resname $protein_resnames
-[ angles ]
--BB BB +BB 2 134 25 {"group": "BBB angles"}
-[ patterns ]
--BB BB {"cgsecstruct": "E"} +BB 
--BB {"cgsecstruct": "E"} BB +BB 
--BB  BB +BB {"cgsecstruct": "E"}
 
 [ link ]
 [ angles ]
@@ -645,15 +747,6 @@ resname $protein_resnames
 -BB  BB +BB {"cgsecstruct": "T", "resname": "PRO|HYP"}
 
 [ link ]
-resname $protein_resnames
-[ angles ]
--BB BB +BB 2 130 20 {"group": "BBB angles"}
-[ patterns ]
--BB BB {"cgsecstruct": "S"} +BB 
--BB {"cgsecstruct": "S"} BB +BB 
--BB  BB +BB {"cgsecstruct": "S"}
-
-[ link ]
 [ angles ]
 -BB BB +BB 2 130 20 {"group": "BBB angles"}
 [ patterns ]
@@ -666,9 +759,9 @@ resname $protein_resnames
 [ angles ]
 -BB BB +BB 2 127 20 {"group": "BBB angles"}
 [ patterns ]
--BB BB {"cgsecstruct": "C", "resname": $protein_resnames_non_pro} +BB 
--BB {"cgsecstruct": "C", "resname": $protein_resnames_non_pro} BB +BB 
--BB  BB +BB {"cgsecstruct": "C", "resname": $protein_resnames_non_pro}
+-BB BB {"cgsecstruct": "C"} +BB 
+-BB {"cgsecstruct": "C"} BB +BB 
+-BB  BB +BB {"cgsecstruct": "C"}
 -BB {"cgsecstruct": null} BB {"cgsecstruct": null} +BB {"cgsecstruct": null}
 
 [ link ]
@@ -695,6 +788,8 @@ cgsecstruct "H|1|2|3"
 [ link ]
 resname $protein_resnames
 cgsecstruct "F"
+[ features ]
+collagen
 [ dihedrals ]
 -BB BB  +BB ++BB 1 90.7 100 1
 
@@ -717,6 +812,8 @@ resname $protein_resnames
 cgsecstruct "E"
 [ molmeta ]
 extdih true
+[ features ]
+extdih
 [ dihedrals ]
 -BB BB +BB ++BB 1 0 10 1
 
@@ -734,31 +831,11 @@ BB ++BB 1 0.640 2500
 +BB +++BB 1 0.640 2500
 BB +++BB 1 0.970 2500
 
-;; Protein terminii. These links should be applied last.
-[ link ]
-[ molmeta ]
-neutral_termini not(true)
-[ features ]
-neutral_termini
-[ atoms ]
-BB {"replace": {"atype": "Qp", "charge": 1}}
-[ non-edges ]
-BB -BB
-
-[ link ]
-[ molmeta ]
-neutral_termini not(true)
-[ features ]
-neutral_termini
-[ atoms ]
-BB {"replace": {"atype": "Qn", "charge": -1}}
-[ non-edges ]
-BB +BB
-
 ;; Cystein bridge
 [ link ]
 resname "CYS"
 [ constraints ]
 SC1 >SC1 1 0.24 {"comment": "Disulfide bridge"}
-[ features ]
-disulfide
+;[ features ]
+;disulfide
+

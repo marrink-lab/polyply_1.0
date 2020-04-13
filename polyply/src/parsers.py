@@ -83,12 +83,15 @@ class PolyplyParser(ITPDirector):
         # the proper nodes.
 
         n_atoms = len(block.nodes)
-        res_name = block.nodes[0]['resname']
+        res_name = block.name
         prev_atoms = []
         links = []
         for key in block.interactions:
             block_interactions = []
             for interaction in block.interactions[key]:
+                if any([isinstance(atom, str) for atom in interaction.atoms]):
+                   return
+
                 if np.sum(np.array(interaction.atoms) > n_atoms - 1) > 0:
                    if interaction.atoms != prev_atoms:
                        prev_atoms[:] = interaction.atoms
