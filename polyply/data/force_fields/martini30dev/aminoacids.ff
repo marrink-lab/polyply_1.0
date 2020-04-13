@@ -558,15 +558,15 @@ resname $protein_resnames
 [ bonds ]
 BB +BB 1 0.350 1250 {"group": "Backbone bonds"}
 
-;[ link ]
-;resname $protein_resnames
-;[ features ]
-;scfix
-;[ molmeta ]
-;scfix true
-;[ dihedrals ]
-;#meta {"group": "SC-BB-BB-SC scFix"}
-;SC1 BB +BB +SC1 1 dihphase(SC1,BB,+BB,+SC1|.0f) 75 1
+[ link ]
+resname $protein_resnames
+[ features ]
+scfix
+[ molmeta ]
+scfix true
+[ dihedrals ]
+#meta {"group": "SC-BB-BB-SC scFix"}
+SC1 BB +BB +SC1 1 dihphase(SC1,BB,+BB,+SC1|.0f) 75 1
 
 [ link ]
 resname $protein_resnames

@@ -1,0 +1,24 @@
+[ modification ]
+C-ter
+[ atoms ]
+BB {"replace": {"atype": "Qa", "charge": -1}}
+
+[ modification ]
+N-ter
+[ atoms ]
+BB {"replace": {"atype": "Qd", "charge": 1}}
+
+[ modification ]
+zwitter
+[ atoms ]
+BB {"replace": {"atype": "Qda"}}
+
+[ modification ]
+COOH-ter
+[ atoms ]
+BB {"replace": {"atype": "P5", "charge": 0}}
+
+[ modification ]
+NH2-ter
+[ atoms ]
+BB {"replace": {"atype": "P5", "charge": 0}}
