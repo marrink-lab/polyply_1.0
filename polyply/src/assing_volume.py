@@ -113,6 +113,16 @@ def compute_volume(block, coords, vdwradii):
     radgyr = radius_of_gyration(geom_vects)
     return radgyr
 
+def map_from_CoG(coords):
+    n_atoms = len(coords)
+    points = np.array(list(coords.values()))
+    CoG = center_of_geomtry(points)
+    out_vectors = {}
+    for key, coord in coords.items():
+        diff = coord - CoG
+        out_vectors[key] = diff
+
+    return out_vectors
 
 class GenerateTemplates(Processor):
     """
@@ -136,8 +146,10 @@ class GenerateTemplates(Processor):
             coords = _expand_inital_coords(block, {}, 'bonds')
             coords = _expand_inital_coords(block, coords, 'constraints')
             coords = energy_minimize(block, coords)
-            templates[resname] = coords
             volumes[resname] = compute_volume(block, coords, vdwradii)
+            coords = map_from_CoG(coords)
+            templates[resname] = coords
+
            # with open(resname + ".xyz", 'w') as _file:
            #      _file.write("{} \n \n".format(len(coords)))
            #      for name, xyz in coords.items():
