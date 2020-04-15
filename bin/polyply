@@ -46,13 +46,12 @@ def main():
     parser_gen_itp.add_argument('-name', required=True, type=str, dest="name",
                         help="name of the final molecule")
 
-    file_group = parser_gen_itp.add_argument_group('Input and output files')
+    file_group = parser_gen_itp.add_argument_group('input and output options')
     file_group.add_argument('-f', dest='inpath', required=False, type=Path,
                             help='Input file (ITP|FF)', nargs="*")
     file_group.add_argument('-o', dest='outpath', type=Path,
                             help='Output ITP (ITP)')
-
-    seq_group = add_mutually_exclusive_group("Sequence Input",required=True)
+    seq_group = file_group.add_mutually_exclusive_group(required=True)
     seq_group.add_argument('-seq', dest='seq', type=str,
                             help='A linear sequence of residue names.')
     seq_group.add_argument('-seqf', dest='seq_file', type=Path,
