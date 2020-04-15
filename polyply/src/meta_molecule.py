@@ -34,6 +34,47 @@ class MetaMolecule(nx.Graph):
     def get_edge_resname(self, edge):
         return [self.nodes[edge[0]]["resname"],  self.nodes[edge[1]]["resname"]]
 
+    @staticmethod
+    def _block_graph_to_res_graph(block):
+        """
+        generate a residue graph from the nodes
+        of `block`.
+        """
+        res_graph = nx.Graph()
+
+        #1. generate mapping of nodes to residues
+        node_to_resid = {}
+        resids = nx.get_node_attributes(block, "resid")
+        for node, resid in resids.items():
+               node_to_resid[node] = resid - 1
+
+        res_graph.add_nodes_from(set(node_to_resid.values()))
+
+        #2. set node attributes
+        name_dict = {}
+        ignore_dict = {}
+        resnames = nx.get_node_attributes(block, "resname")
+        for idx, value in resnames.items():
+            name_dict.update({node_to_resid[idx]:value})
+            ignore_dict.update({node_to_resid[idx]:False})
+
+        nx.set_node_attributes(res_graph, name_dict, "resname")
+        nx.set_node_attributes(res_graph, ignore_dict, "links")
+
+        #3. add all missing edges
+        block.make_edges_from_interaction_type(type_="bonds")
+        block.make_edges_from_interaction_type(type_="constraints")
+        print(block.edges)
+        print(node_to_resid)
+        for edge in block.edges:
+            v1 = node_to_resid[edge[0]]
+            v2 = node_to_resid[edge[1]]
+            if v1 != v2:
+               res_graph.add_edge(v1, v2)
+
+        return res_graph
+
+
     @classmethod
     def from_monomer_seq_linear(cls, force_field, monomers, mol_name):
         """
@@ -72,14 +113,15 @@ class MetaMolecule(nx.Graph):
         return meta_mol
 
     @classmethod
-    def from_json(cls, force_field, json_file, mol_name):
+    def from_itp(cls, force_field, itp_file, mol_name):
         """
-        Constructs a :class::`MetaMolecule` from a json file
-        using the networkx json package.
+        Constructs a :class::`MetaMolecule` from an itp file.
         """
-        with open(json_file) as file_:
-            data = json.load(file_)
+        with open(itp_file) as file_:
+            lines = file_.readlines()
+            read_polyply(lines, force_field)
 
-        graph = json_graph.node_link_graph(data)
+        graph = MetaMolecule._block_graph_to_res_graph(force_field.blocks[mol_name])
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
+        meta_mol.molecule = force_field.blocks[mol_name].to_molecule()
         return meta_mol
