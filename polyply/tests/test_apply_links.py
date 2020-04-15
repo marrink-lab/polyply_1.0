@@ -214,22 +214,21 @@ class TestApplyLinks:
         assert len(new_mol.edges) == edges
 
     @staticmethod
-    @pytest.mark.parametrize('links, idx',
-                             (
-                                 (  # no match considering the order parameter
+    @pytest.mark.parametrize('links, idx',(
+       (  # no match considering the order parameter
                                      """
          [ link ]
          [ bonds ]
          BB   +BB  1  0.350  1250""",
-                                     [1, 4],
-                                 ),
-                                 (  # no match due to incorrect atom name
+         [1, 4],
+       ),
+       (  # no match due to incorrect atom name
                                      """
          [ link ]
          [ bonds ]
          BB   SC5   1  0.350  1250
          """,
-                                     [3, 3])))
+        [3, 3])))
     def test_link_failure(links, idx):
         lines = """
         [ moleculetype ]
@@ -258,32 +257,33 @@ class TestApplyLinks:
                 new_mol, force_field.links[0], idx)
 
     @staticmethod
-    @pytest.mark.parametrize('links, interactions, edges, inttype',
-                             (("""
-         [ link ]
-         [ molmeta ]
-         by_atom_ID true
-         [ bonds ]
-         1   2  1  0.350  1250
-         """,
-                               [vermouth.molecule.Interaction(
-                                   atoms=(0, 1), parameters=['1', '0.350', '1250'], meta={}),
-                                ],
-                                 1,
-                                 'bonds'
-                               ),
-                                 ("""
-         [ link ]
-         [ molmeta ]
-         by_atom_ID true
-         [ angles ]
-         2  3  4  1  125  250
-         """,
-                                  [vermouth.molecule.Interaction(
-                                      atoms=(1, 2, 3), parameters=['1', '125', '250'], meta={})],
-                                  2,
-                                  'angles')
-                              ))
+    @pytest.mark.parametrize('links, interactions, edges, inttype',(
+       ("""
+       [ link ]
+       [ molmeta ]
+       by_atom_ID true
+       [ bonds ]
+       1   2  1  0.350  1250
+       """,
+       [vermouth.molecule.Interaction(atoms=(0, 1),
+                                      parameters=['1', '0.350', '1250'],
+                                      meta={})],
+       1,
+       'bonds'
+       ),
+       ("""
+       [ link ]
+       [ molmeta ]
+       by_atom_ID true
+       [ angles ]
+       2  3  4  1  125  250
+       """,
+       [vermouth.molecule.Interaction(atoms=(1, 2, 3),
+                                      parameters=['1', '125', '250'],
+                                      meta={})],
+       2,
+       'angles')
+       ))
     def test_add_explicit_link(links, interactions, edges, inttype):
         lines = """
         [ moleculetype ]
