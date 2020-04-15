@@ -51,9 +51,11 @@ def main():
                             help='Input file (ITP|FF)', nargs="*")
     file_group.add_argument('-o', dest='outpath', type=Path,
                             help='Output ITP (ITP)')
-    file_group.add_argument('-seq', dest='seq', required=False, type=str,
+
+    seq_group = add_mutually_exclusive_group("Sequence Input",required=True)
+    seq_group.add_argument('-seq', dest='seq', type=str,
                             help='A linear sequence of residue names.')
-    file_group.add_argument('-seqf', dest='seq_file', required=False, type=Path,
+    seq_group.add_argument('-seqf', dest='seq_file', type=Path,
                             help='A graph input file (JSON|ITP)')
 
    #martini_group = parser_gen_itp.add_argument_group('Martini specifics for protein and DNA.')

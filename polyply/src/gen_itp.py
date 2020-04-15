@@ -90,15 +90,17 @@ def gen_itp(args):
                                                             mol_name=args.name)
     elif args.seq_file:
        extension = args.seq_file.suffix.casefold()[1:]
-       print(extension)
-       if extension in ["json", "itp"]:
+
+       if extension == "json":
           meta_molecule = MetaMolecule.from_json(json_file=args.seq_file,
+                                            force_field=force_field,
+                                            mol_name=args.name)
+       elif extension == "itp":
+          meta_molecule = MetaMolecule.from_itp(itp_file=args.seq_file,
                                             force_field=force_field,
                                             mol_name=args.name)
        else:
          raise IOError("Cannot parse file with extension {}.".format(extension))
-    else:
-         raise IOError("You need to provide a sequence either via -seqf or -seq flag.")
 
     # Do transformationa and apply link
     meta_molecule = MapToMolecule().run_molecule(meta_molecule)
