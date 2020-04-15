@@ -1,22 +1,67 @@
+#!/usr/bin/env python3
 """
 High level API for the polyply coordinate generator
 """
-import argparse
+
 from pathlib import Path
-import vermouth
 import vermouth.forcefield
-import polyply
-import polyply.src.parsers
-from polyply import (DATA_PATH, MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
+from vermouth.gmx.gro import read_gro
+from polyply import (MetaMolecule, DATA_PATH)
+from polyply.src.generate_templates import GenerateTemplates
+from polyply.src.random_walk import RandomWalk
+from polyply.src.backmap import Backmap
+from .gen_itp import read_ff_from_file
+
+def read_system(path, system, ignore_resnames=(), ignh=None, modelidx=None):
+    """
+    Read a system from a PDB or GRO file.
+    This function guesses the file type based on the file extension.
+    The resulting system does not have a force field and may not have edges.
+    """
+    file_extension = path.suffix.upper()[1:]  # We do not keep the dot
+    if file_extension in ['PDB', 'ENT']:
+        vermouth.PDBInput(str(path), exclude=ignore_resnames, ignh=ignh,
+                          modelidx=modelidx).run_system(system)
+    elif file_extension in ['GRO']:
+        vermouth.GROInput(str(path), exclude=ignore_resnames,
+                          ignh=ignh).run_system(system)
+    else:
+        raise ValueError('Unknown file extension "{}".'.format(file_extension))
+    return system
+
+
+def assign_vdw_radii(molecule, radii):
+    for node in molecule.nodes:
+        atom_type = molecule.nodes[node]["atomname"]
+        for key in radii:
+            if key in atom_type:
+               molecule.nodes[node]["vdwradius"] = radii[key]
+
+
+def assign_coordinates(molecule, coord_molecule, ignore=None):
+    for node in molecule.nodes:
+        point = coord_molecule[node]
+        molecule.nodes[node]["position"] = point
+        molecule.nodes[node]["build"] = False
+
+
+def read_vdw_file(path):
+    vdwradii = {}
+    with open(path, 'r') as _file:
+        lines = _file.readlines()
+        for line in lines:
+            atom, rad = line.split()[:2]
+            vdwradii[atom] = float(rad)
+
+    return vdwradii
+
 
 def gen_coords(args):
 
+    # Import the force field definitions
     known_force_fields = vermouth.forcefield.find_force_fields(
         Path(DATA_PATH) / 'force_fields'
     )
-
-    known_mappings = read_mapping_directory(Path(DATA_PATH) / 'mappings',
-                                            known_force_fields)
 
     if args.lib:
         force_field = known_force_fields[args.lib]
@@ -26,58 +71,32 @@ def gen_coords(args):
     if args.inpath:
         read_ff_from_file(args.inpath, force_field)
 
-    read_mapping_directory("./", known_force_fields)
+    vdw_radii = read_vdw_file(args.vdw_path)
+
+    # Assing vdw-raddi
+    for _, block in force_field.blocks.items():
+        assign_vdw_radii(block, vdw_radii)
 
 
-    meta_molecule = MetaMolecule.from_itp(args.inpath, force_field, args.name)
-    meta_molecule.molecule = meta_molecule.force_field[args.name].to_molecule()
-    AssignVolume.run_molecule(meta_molecule, vdwradii)
-    RandomWalk.run_molecule(meta_molecule)
+    # Generate a meta-molecule from an itp file
+    meta_molecule = MetaMolecule.from_itp(force_field, args.itppath, args.name)
+    assign_vdw_radii(meta_molecule.molecule, vdw_radii)
 
+    # Import coordinates if there are any
+    if args.coordpath:
+        coord_molecule = read_gro(
+            args.coord_file, exclude=('SOL',), ignh=False)
+        assign_coordinates(meta_molecule.molecule, coord_molecule)
 
-import vermouth.forcefield
-from polyply.src.assing_volume import GenerateTemplates
-from polyply.src.random_walk import RandomWalk
-from polyply.src.backmap import Backmap
-from polyply import MetaMolecule
-from polyply.src.parsers import read_polyply
-import time
-import numpy as np
-#FF = vermouth.forcefield.ForceField("/coarse/fabian/current-projects/polymer_itp_builder/polyply_2.0/polyply/data/force_fields/martini30b32")
+    # Build polymer structure
+    GenerateTemplates().run_molecule(meta_molecule)
+    RandomWalk().run_molecule(meta_molecule)
+    Backmap().run_molecule(meta_molecule)
 
-FF = vermouth.forcefield.ForceField("test")
+    # Write output
+    system= vermouth.System()
+    system.molecules = [meta_molecule.molecule]
+    system.force_field = force_field
 
-with open("PMMA.gromos.2016.itp", 'r') as _file:
-      lines = _file.readlines()
-      read_polyply(lines, FF)
-
-meta_mol = MetaMolecule.from_itp(FF, "test.itp", "test")
-GenerateTemplates().run_molecule(meta_mol)
-RandomWalk().run_molecule(meta_mol)
-Backmap().run_molecule(meta_mol)
-
-#with open("cg.xyz", 'w') as _file:
-#    _file.write('{}\n\n'.format(str(len(meta_mol.nodes))))
-#    for node in meta_mol.nodes:
-#        xyz = 10* meta_mol.nodes[node]["position"]
-#        _file.write('{} {} {} {}\n'.format('B', xyz[0], xyz[1], xyz[2]))
-
-def write_gro_file(meta_molecule, name, box):
-
-    out_file = open(name, 'w')
-    out_file.write('Monte Carlo generated PEO'+'\n')
-    n = len(meta_mol.molecule.nodes)
-    out_file.write('{:>3.3s}{:<8d}{}'.format('',n,'\n'))
-    count = 0
-    resnum = 1
-    atomtype="BB"
-    for xyz in meta_molecule.coords:
-        resname = "PMA" #meta_mol.nodes[node]["resname"]
-        resnum = count +1
-        out_file.write('{:>5d}{:<5.5s}{:>5.5s}{:5d}{:8.3F}{:8.3F}{:8.3F}{}'.format(resnum, resname, atomtype, count, xyz[0], xyz[1], xyz[2],'\n'))
-        count += 1
-
-    out_file.write('{:>2s}{:<.5F} {:<.5F} {:<.5F}'.format('',float(box[0]), float(box[1]), float(box[2])))
-    out_file.close()
-
-write_gro_file(meta_mol, "cg_init.gro", np.array([20.,20.,20.]))
+    vermouth.gmx.gro.write_gro(system, args.outpath, precision=7,
+              title='polyply structure', box=(10, 10, 10))
