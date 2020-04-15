@@ -97,16 +97,15 @@ def radius_of_gyration(traj):
 def center_of_geomtry(points):
     return np.average(points, axis=0)
 
-def compute_volume(block, coords, vdwradii):
+def compute_volume(block, coords):
     n_atoms = len(coords)
     points = np.array(list(coords.values()))
     CoG = center_of_geomtry(points)
     geom_vects = np.zeros((n_atoms, 3))
     idx = 0
     for atom_key, coord in coords.items():
-        atom = block.nodes[atom_key]["atomname"]
+        rad = block.nodes[atom_key]["vdwradius"]
         diff = coord - CoG
-        rad = vdwradii[atom]
         geom_vects[idx, :] = diff + u_vect(diff) * rad
         idx += 1
 
@@ -133,27 +132,16 @@ class GenerateTemplates(Processor):
         resnames = set(nx.get_node_attributes(meta_molecule.molecule,
                                               "resname").values())
         templates = {}
-        vdwradii = {'C1': 0.17,
-                    'C2'  : 0.17,
-                    'C3': 0.17,
-                    'C4'  : 0.17,
-                    'O1'  : 0.152,
-                    'O2' : 0.152,
-                    'C5': 0.17  }
         volumes = {}
+
         for resname in resnames:
             block = meta_molecule.force_field.blocks[resname]
             coords = _expand_inital_coords(block, {}, 'bonds')
             coords = _expand_inital_coords(block, coords, 'constraints')
             coords = energy_minimize(block, coords)
-            volumes[resname] = compute_volume(block, coords, vdwradii)
+            volumes[resname] = compute_volume(block, coords)
             coords = map_from_CoG(coords)
             templates[resname] = coords
-
-           # with open(resname + ".xyz", 'w') as _file:
-           #      _file.write("{} \n \n".format(len(coords)))
-           #      for name, xyz in coords.items():
-           #          _file.write('{} {} {} {}\n'.format(name, 10*xyz[0], 10*xyz[1],10* xyz[2]))
 
         return templates, volumes
 
