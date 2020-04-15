@@ -334,18 +334,18 @@ class TestITP:
          2  3
          #endif""",
          [vermouth.molecule.Interaction(
-               atoms=[0, 1], parameters=[], meta={"#ifdef":"FLEXIBLE"}),
+               atoms=[0, 1], parameters=[], meta={"ifdef":"FLEXIBLE"}),
           vermouth.molecule.Interaction(
-               atoms=[1, 2], parameters=[], meta={"#ifdef":"FLEXIBLE"})]),
+               atoms=[1, 2], parameters=[], meta={"ifdef":"FLEXIBLE"})]),
         ("""#ifndef FLEXIBLE
          [ bonds ]
          1   2
          2   3
          #endif""",
          [vermouth.molecule.Interaction(
-             atoms=[0, 1], parameters=[], meta={"#ifndef":"FLEXIBLE"}),
+             atoms=[0, 1], parameters=[], meta={"ifndef":"FLEXIBLE"}),
           vermouth.molecule.Interaction(
-             atoms=[1, 2], parameters=[], meta={"#ifndef":"FLEXIBLE"})]),
+             atoms=[1, 2], parameters=[], meta={"ifndef":"FLEXIBLE"})]),
         ("""[ bonds ]
          1   2
          #ifdef FLEXIBLE
@@ -355,7 +355,7 @@ class TestITP:
          [vermouth.molecule.Interaction(
               atoms=[0, 1], parameters=[], meta={}),
           vermouth.molecule.Interaction(
-              atoms=[1, 2], parameters=[],meta={"#ifdef":"FLEXIBLE"}),
+              atoms=[1, 2], parameters=[],meta={"ifdef":"FLEXIBLE"}),
           vermouth.molecule.Interaction(
               atoms=[2, 3], parameters=[],meta={})])
         ))
