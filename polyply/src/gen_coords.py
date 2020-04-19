@@ -12,6 +12,7 @@ from polyply.src.random_walk import RandomWalk
 from polyply.src.backmap import Backmap
 from .gen_itp import read_ff_from_file
 from .minimizer import optimize_geometry
+from .topology import Topology
 
 def read_system(path, system, ignore_resnames=(), ignh=None, modelidx=None):
     """
@@ -31,32 +32,6 @@ def read_system(path, system, ignore_resnames=(), ignh=None, modelidx=None):
     return system
 
 
-def assign_vdw_radii(molecule, radii):
-    for node in molecule.nodes:
-        atom_type = molecule.nodes[node]["atomname"]
-        for key in radii:
-            if key in atom_type:
-               molecule.nodes[node]["vdwradius"] = radii[key]
-
-
-def assign_coordinates(molecule, coord_molecule, ignore=None):
-    for node in molecule.nodes:
-        point = coord_molecule[node]
-        molecule.nodes[node]["position"] = point
-        molecule.nodes[node]["build"] = False
-
-
-def read_vdw_file(path):
-    vdwradii = {}
-    with open(path, 'r') as _file:
-        lines = _file.readlines()
-        for line in lines:
-            atom, rad = line.split()[:2]
-            vdwradii[atom] = float(rad)
-
-    return vdwradii
-
-
 def gen_coords(args):
 
     # Import the force field definitions
@@ -72,33 +47,17 @@ def gen_coords(args):
     if args.inpath:
         read_ff_from_file(args.inpath, force_field)
 
-    vdw_radii = read_vdw_file(args.vdw_path)
-
-    # Assing vdw-raddi
-    for _, block in force_field.blocks.items():
-        assign_vdw_radii(block, vdw_radii)
-
-
-    # Generate a meta-molecule from an itp file
-    meta_molecule = MetaMolecule.from_itp(force_field, args.itppath, args.name)
-    assign_vdw_radii(meta_molecule.molecule, vdw_radii)
-
-    # Import coordinates if there are any
+    # Read in the topology
+    topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
     if args.coordpath:
-        coord_molecule = read_gro(
-            args.coord_file, exclude=('SOL',), ignh=False)
-        assign_coordinates(meta_molecule.molecule, coord_molecule)
+       topology.add_positions_from_gro(args.coordpath)
 
     # Build polymer structure
-    GenerateTemplates().run_molecule(meta_molecule)
-    RandomWalk().run_molecule(meta_molecule)
-    Backmap().run_molecule(meta_molecule)
-    optimize_geometry(meta_molecule.molecule)
+    GenerateTemplates().run_system(topology)
+    RandomWalk().run_system(topology)
+    Backmap().run_system(topology)
+    energy_minimize().run_system(topology)
 
     # Write output
-    system= vermouth.System()
-    system.molecules = [meta_molecule.molecule]
-    system.force_field = force_field
-
-    vermouth.gmx.gro.write_gro(system, args.outpath, precision=7,
+    vermouth.gmx.gro.write_gro(topology, args.outpath, precision=7,
               title='polyply structure', box=(10, 10, 10))

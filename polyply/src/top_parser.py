@@ -2,7 +2,7 @@ import os
 from vermouth.parser_utils import SectionLineParser
 from vermouth.molecule import Interaction
 from vermouth.gmx.itp_read import read_itp
-
+from .meta_molecule import MetaMolecule
 
 class TOPDirector(SectionLineParser):
 
@@ -198,9 +198,15 @@ class TOPDirector(SectionLineParser):
             read_itp(lines, self.force_field)
 
         for mol_name, n_mol in self.molecules:
-            molecule = self.force_field.blocks[mol_name].to_molecule()
+            block = self.force_field.blocks[mol_name]
+            meta_molecule = MetaMolecule.from_block(self.force_field,
+                                                    block,
+                                                    mol_name)
+
+            meta_molecule.atom_types = self.topology.atom_types
+            meta_molecule.defaults = self.topology.defaults
             for idx in range(0, int(n_mol)):
-                 self.topology.add_molecule(molecule)
+                 self.topology.add_molecule(meta_molecule)
 
         super().finalize()
 

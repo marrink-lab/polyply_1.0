@@ -3,9 +3,20 @@ import numpy as np
 import numpy.linalg
 import scipy
 import scipy.optimize
+import vermouth
 import polyply
 from polyply.src.processor import Processor
 from polyply.src.linalg_functions import (angle, dih, u_vect)
+
+
+def find_atoms(molecule, attr, value):
+    nodes=[]
+    for node in molecule.nodes:
+        if attr in molecule.nodes[node]:
+           if molecule.nodes[node][attr] == value:
+              nodes.append(node)
+
+    return nodes
 
 def compute_bond(params, coords):
     dist = coords[0] - coords[1]
@@ -97,14 +108,22 @@ def radius_of_gyration(traj):
 def center_of_geomtry(points):
     return np.average(points, axis=0)
 
-def compute_volume(block, coords):
+def compute_volume(molecule, block, coords):
     n_atoms = len(coords)
     points = np.array(list(coords.values()))
     CoG = center_of_geomtry(points)
     geom_vects = np.zeros((n_atoms, 3))
     idx = 0
+
     for atom_key, coord in coords.items():
-        rad = block.nodes[atom_key]["vdwradius"]
+
+        if molecule.defaults["nb_func"] == 1:
+           A = molecule.atomtypes[atom_key]["nb1"]
+           B = molecule.atomtypes[atom_key]["nb2"]
+           rad = 1.22*(A/B)**(1/6.)
+        else:
+           rad = 1.22*molecule.atomtypes[atom_key]["nb1"]
+
         diff = coord - CoG
         geom_vects[idx, :] = diff + u_vect(diff) * rad
         idx += 1
@@ -123,6 +142,24 @@ def map_from_CoG(coords):
 
     return out_vectors
 
+def extract_block(molecule, resname):
+
+    nodes = find_atoms(molecule, "resname", resname)
+    resid = molecule.nodes[nodes[0]]
+    block = vermouth.molecule.Molecule()
+
+    for node in nodes:
+        attr_dict = molecule.nodes[node]
+        if attr_dict["resid"] == resid:
+           block.add_node(node, attr_dict=attr_dict)
+
+    for inter_type in molecule.interactions:
+        for interaction in molecule.interactions[inter_type]:
+            if interaction.atoms in nodes:
+               block.interactions[inter_type].append(interaction)
+
+    return block
+
 class GenerateTemplates(Processor):
     """
 
@@ -135,11 +172,11 @@ class GenerateTemplates(Processor):
         volumes = {}
 
         for resname in resnames:
-            block = meta_molecule.force_field.blocks[resname]
+            block = extract_block(meta_molecule.molecule, resname)
             coords = _expand_inital_coords(block, {}, 'bonds')
             coords = _expand_inital_coords(block, coords, 'constraints')
             coords = energy_minimize(block, coords)
-            volumes[resname] = compute_volume(block, coords)
+            volumes[resname] = compute_volume(meta_molecule.molecule, block, coords)
             coords = map_from_CoG(coords)
             templates[resname] = coords
 

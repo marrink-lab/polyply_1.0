@@ -79,21 +79,21 @@ def main():
     #============================================================================
     #           Input Arguments for the coordinate generation tool
     #============================================================================
- 
+
     parser_gen_coords.add_argument('-name', required=True, type=str, dest="name",
                           help="name of the final molecule")
 
     file_group = parser_gen_coords.add_argument_group('Input and output files')
-    file_group.add_argument('-f', dest='inpath', required=False, type=Path,
-                            help='Input file (GRO|PDB)', nargs='*')
-    file_group.add_argument('-i', dest='itppath', required=False, type=Path,
-                            help='Input file (ITP)')
+    file_group.add_argument('-p', dest='toppath', required=False, type=Path,
+                            help='topology file (.top)')
+    file_group.add_argument('-f', dest='ffpath', required=False, type=Path,
+                            help='force-field files (.ff|.itp)', nargs='*')
+    file_group.add_argument('-i', dest='inpath', required=False, type=Path,
+                            help='Input file (.itp)')
     file_group.add_argument('-o', dest='outpath', type=Path,
-                            help='Output GRO (GRO)')
+                            help='Output GRO (.gro)')
     file_group.add_argument('-c', dest='coordpath', type=Path,
-                            help='Input file (GRO)', default=None)
-    file_group.add_argument('-vdwrad', dest='vdw_path', type=Path,
-                            help='radii inpu')
+                            help='Input file (.gro)', default=None)
 
     parser_gen_coords.set_defaults(func=gen_coords)
 
