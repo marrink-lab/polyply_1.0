@@ -1,3 +1,4 @@
+import os
 from vermouth.parser_utils import SectionLineParser
 from vermouth.molecule import Interaction
 from vermouth.gmx.itp_read import read_itp
@@ -5,13 +6,18 @@ from vermouth.gmx.itp_read import read_itp
 
 class TOPDirector(SectionLineParser):
 
+    COMMENT_CHAR = ';'
+
     atom_idxs = {'bonds': [0, 1],
+                 'bondtypes':[0, 1],
                  'position_restraints': [0],
                  'angles': [0, 1, 2],
+                 'angletypes':[0, 1, 2],
                  'constraints': [0, 1],
                  'dihedrals': [0, 1, 2, 3],
+                 'dihedraltypes': [0, 1, 2, 3],
                  'pairs': [0, 1],
-                 'pair': [0, 1],
+                 'pairtypes': [0, 1],
                  'exclusions': [slice(None, None)],
                  'virtual_sitesn': [0, slice(2, None)],
                  'virtual_sites2': [0, 1, 2, 3],
@@ -25,7 +31,7 @@ class TOPDirector(SectionLineParser):
                  'angle_restraints': [slice(0, 4)],
                  'angle_restraints_z': [0, 1]}
 
-    def __init__(self, force_field, topology):
+    def __init__(self, topology, cwdir=None):
         super().__init__()
         self.force_field = topology.force_field
         self.topology = topology
@@ -33,12 +39,13 @@ class TOPDirector(SectionLineParser):
         self.current_itp = None
         self.itp_lines = []
         self.molecules = []
+        self.cwdir = cwdir
         self.header_actions = {
-            ('moleculetype', ): self._new_itp
+            ('moleculetype',): self._new_itp
         }
         self.pragma_actions = {
-            ('#define', ): self.parse_define,
-            ('#include',): self.parse_include
+            '#define': self.parse_define,
+            '#include': self.parse_include
         }
 
     def dispatch(self, line):
@@ -103,7 +110,6 @@ class TOPDirector(SectionLineParser):
         IOError
             If the def sections are missformatted
         """
-
         if line == '#endif':
             if self.current_meta is not None:
                 self.current_meta = None
@@ -122,7 +128,7 @@ class TOPDirector(SectionLineParser):
                               "an open #ifdef/#ifndef section from"
                               "before.".format(lineno, line.split()[0]))
         elif line.split()[0] in self.pragma_actions:
-            action = self.header_actions[line.split()[0]]
+            action = self.pragma_actions[line.split()[0]]
             action(line)
         else:
             raise IOError("Don't know how to parse pargma {} at"
@@ -171,6 +177,9 @@ class TOPDirector(SectionLineParser):
         if action:
             action()
 
+        if not isinstance(self.current_itp, type(None)):
+           self.current_itp.append(line)
+
         return result
 
     def finalize(self, lineno=0):
@@ -188,9 +197,10 @@ class TOPDirector(SectionLineParser):
         for lines in self.itp_lines:
             read_itp(lines, self.force_field)
 
-        for mol_name in self.molecules:
-            molecule = self.force_field[mol_name].to_molecule()
-            topology.add_molecule(molecule)
+        for mol_name, n_mol in self.molecules:
+            molecule = self.force_field.blocks[mol_name].to_molecule()
+            for idx in range(0, int(n_mol)):
+                 self.topology.add_molecule(molecule)
 
         super().finalize()
 
@@ -233,20 +243,20 @@ class TOPDirector(SectionLineParser):
                                      "fudgeQQ": fudgeQQ}
 
     @SectionLineParser.section_parser('atomtypes')
-    def _atomtypes(self, line, lineno):
+    def _atomtypes(self, line, lineno=0):
         """
         Parse and store atomtypes section
         """
         atom_name, atom_num, charge, ptype, hbond_type, nb1, nb2 = line.split()
-        self.topology.types["atomtypes"][atom_name] = {"atom_num": atom_num,
-                                                       "charge": charge,
-                                                       "ptype": ptype,
-                                                       "hbond_type": hbond_type,
-                                                       "nb1": nb1,
-                                                       "nb2": nb2}
+        self.topology.atom_types[atom_name] = {"atom_num": atom_num,
+                                              "charge": charge,
+                                              "ptype": ptype,
+                                              "hbond_type": hbond_type,
+                                              "nb1": nb1,
+                                              "nb2": nb2}
 
     @SectionLineParser.section_parser('nonbond_params')
-    def _nonbond_params(self, line, lineno):
+    def _nonbond_params(self, line, lineno=0):
         """angletypes
         Parse and store nonbond params
         """
@@ -258,19 +268,19 @@ class TOPDirector(SectionLineParser):
     @SectionLineParser.section_parser('angletypes')
     @SectionLineParser.section_parser('dihedraltypes')
     @SectionLineParser.section_parser('bondtypes')
-    def _nonbond_params(self, line, lineno):
+    def _type_params(self, line, lineno=0):
         """
         Parse and store bonded types
         """
         section_name = self.section[-1]
-        inter_type = self.section.split("type")[0]
         atoms, params = self._split_atoms_and_parameters(line.split(),
-                                                         self.atom_idxs[inter_type])
+                                                         self.atom_idxs[section_name])
         new_interaction = Interaction(atoms=atoms,
                                       parameters=params,
                                       meta=self.current_meta)
         self.topology.types[section_name].append(new_interaction)
 
+    @SectionLineParser.section_parser('moleculetype')
     @SectionLineParser.section_parser('moleculetype', 'atoms')
     @SectionLineParser.section_parser('moleculetype', 'bonds')
     @SectionLineParser.section_parser('moleculetype', 'angles')
@@ -303,7 +313,8 @@ class TOPDirector(SectionLineParser):
         tokens = line.split()
 
         if len(tokens) > 2:
-            _, tag, parameters = line.split()
+            tag = line.split()[1]
+            parameters = line.split()[2:]
         else:
             _, tag = line.split()
             parameters = True
@@ -315,13 +326,19 @@ class TOPDirector(SectionLineParser):
         """
         parse include statemnts
         """
-        path = line.split(line)[1].replace("\"", "")
+        path = line.split()[1].strip('\"')
 
-        with open(path, 'r') as _file:
+        if self.cwdir:
+           filename = os.path.join(self.cwdir, path)
+           cwdir = os.path.dirname(filename)
+        else:
+           cwdir = os.path.dirname(path)
+           filename = path
+
+        with open(filename, 'r') as _file:
             lines = _file.readlines()
 
-        read_topology(lines, force_field=self.force_field,
-                      topology=self.topology)
+        read_topology(lines, topology=self.topology, cwdir=cwdir)
 
     def _split_atoms_and_parameters(self, tokens, atom_idxs):
         """
@@ -363,7 +380,7 @@ class TOPDirector(SectionLineParser):
         return atoms, tokens
 
 
-def read_topology(lines, topology):
+def read_topology(lines, topology, cwdir=None):
     """
     Parses `lines` of itp format and adds the
     molecule as a block to `force_field`.
@@ -374,5 +391,5 @@ def read_topology(lines, topology):
         list of lines of an itp file
     force_field: :class:`vermouth.forcefield.ForceField`
     """
-    director = TOPDirector(topology)
+    director = TOPDirector(topology, cwdir)
     return list(director.parse(iter(lines)))

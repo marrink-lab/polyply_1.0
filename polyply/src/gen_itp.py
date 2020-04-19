@@ -7,7 +7,7 @@ from pathlib import Path
 import vermouth
 import vermouth.forcefield
 import polyply
-import polyply.src.parsers
+import polyply.src.polyply_parser
 from polyply import (DATA_PATH, MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
 
 def read_ff_from_file(paths, force_field):
@@ -27,7 +27,7 @@ def read_ff_from_file(paths, force_field):
 
     """
     line_parsers = {"ff": vermouth.ffinput.read_ff,
-                    "itp": polyply.src.parsers.read_polyply,
+                    "itp": polyply.src.polyply_parser.read_polyply,
                     "rtp":  vermouth.gmx.rtp.read_rtp}
 
     def wrapper(parser, path, force_field):

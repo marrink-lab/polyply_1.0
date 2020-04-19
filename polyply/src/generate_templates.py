@@ -5,7 +5,7 @@ import scipy
 import scipy.optimize
 import polyply
 from polyply.src.processor import Processor
-from polyply.src.geometrical_functions import (angle, dih, u_vect)
+from polyply.src.linalg_functions import (angle, dih, u_vect)
 
 def compute_bond(params, coords):
     dist = coords[0] - coords[1]
