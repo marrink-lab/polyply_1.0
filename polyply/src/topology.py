@@ -8,6 +8,7 @@ from vermouth.forcefield import ForceField
 from vermouth.gmx.gro import read_gro
 from vermouth.pdb import read_pdb
 from .top_parser import read_topology
+from .meta_molecule import MetaMolecule
 
 coord_parsers = {"pdb": read_pdb,
                  "gro": read_gro}
@@ -58,14 +59,15 @@ class Topology(System):
         reader = coord_parsers[extension]
         molecules = read_gro(path, exclude=())
         total = 0
-        for mol in self.molecules:
-            for node in mol.nodes:
+        for meta_mol in self.molecules:
+            for node in meta_mol.molecule.nodes:
                 try:
                    position = molecules.nodes[total]["position"]
-                   mol.nodes[node]["position"] = position
+                   meta_mol.molecule.nodes[node]["position"] = position
+                   meta_mol.molecule.nodes[node]["build"] = False
                    total += 1
                 except KeyError:
-                   break
+                   meta_mol.molecule.nodes[node]["build"] = True
 
     @classmethod
     def from_gmx_topfile(cls, path, name):

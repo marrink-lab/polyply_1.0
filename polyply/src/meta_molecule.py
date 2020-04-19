@@ -103,3 +103,13 @@ class MetaMolecule(nx.Graph):
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
         meta_mol.molecule = force_field.blocks[mol_name].to_molecule()
         return meta_mol
+
+    @classmethod
+    def from_block(cls, force_field, block, mol_name):
+       """
+       Constructs a :class::`MetaMolecule` from an vermoth.molecule.
+       """
+       graph = MetaMolecule._block_graph_to_res_graph(block)
+       meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
+       meta_mol.molecule = force_field.blocks[mol_name].to_molecule()
+       return meta_mol
