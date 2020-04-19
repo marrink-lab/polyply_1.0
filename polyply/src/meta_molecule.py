@@ -2,12 +2,9 @@ from collections import namedtuple
 import json
 import networkx as nx
 from networkx.readwrite import json_graph
-<<<<<<< HEAD
 from vermouth.graph_utils import make_residue_graph
 from polyply.src.parsers import read_polyply
-=======
-from .parsers import read_polyply
->>>>>>> inital draft for coordinate generator
+from .polyply_parser import read_polyply
 
 Monomer = namedtuple('Monomer', 'resname, n_blocks')
 

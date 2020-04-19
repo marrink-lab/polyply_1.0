@@ -7,7 +7,7 @@ from pathlib import Path
 import vermouth
 import vermouth.forcefield
 import polyply
-import polyply.src.parsers
+import polyply.src.polyply_parser
 from polyply import (DATA_PATH, MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
 from .load_library import load_library
 

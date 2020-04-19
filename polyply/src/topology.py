@@ -1,10 +1,16 @@
 """
 Provides a class used to describe a gromacs topology and all assciated data.
 """
-
+from pathlib import Path
+from collections import defaultdict
 from vermouth.system import System
 from vermouth.forcefield import ForceField
+from vermouth.gmx.gro import read_gro
+from vermouth.pdb import read_pdb
 from .top_parser import read_topology
+
+coord_parsers = {"pdb": read_pdb,
+                 "gro": read_gro}
 
 class Topology(System):
     """
@@ -39,8 +45,27 @@ class Topology(System):
         self.defaults = {}
         self.defines = {}
         self.discription = []
-        self.types = {}
+        self.atom_types = {}
+        self.types = defaultdict(list)
         self.nonbond_params = {}
+
+    def add_positions_from_gro(self, path):
+        """
+        Add positions to topology from coordinate file.
+        """
+        path = Path(path)
+        extension = path.suffix.casefold()[1:]
+        reader = coord_parsers[extension]
+        molecules = read_gro(path, exclude=())
+        total = 0
+        for mol in self.molecules:
+            for node in mol.nodes:
+                try:
+                   position = molecules.nodes[total]["position"]
+                   mol.nodes[node]["position"] = position
+                   total += 1
+                except KeyError:
+                   break
 
     @classmethod
     def from_gmx_topfile(cls, path, name):
@@ -59,5 +84,5 @@ class Topology(System):
 
         force_field = ForceField(name)
         topology = cls(force_field=force_field, name=name)
-        topology = read_topology(lines, topology)
+        read_topology(lines=lines, topology=topology)
         return topology
