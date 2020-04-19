@@ -11,6 +11,7 @@ from polyply.src.generate_templates import GenerateTemplates
 from polyply.src.random_walk import RandomWalk
 from polyply.src.backmap import Backmap
 from .gen_itp import read_ff_from_file
+from .minimizer import optimize_geometry
 
 def read_system(path, system, ignore_resnames=(), ignh=None, modelidx=None):
     """
@@ -92,6 +93,7 @@ def gen_coords(args):
     GenerateTemplates().run_molecule(meta_molecule)
     RandomWalk().run_molecule(meta_molecule)
     Backmap().run_molecule(meta_molecule)
+    optimize_geometry(meta_molecule.molecule)
 
     # Write output
     system= vermouth.System()
