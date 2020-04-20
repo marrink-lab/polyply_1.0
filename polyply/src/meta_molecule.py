@@ -65,8 +65,8 @@ class MetaMolecule(nx.Graph):
         #3. add all missing edges
         block.make_edges_from_interaction_type(type_="bonds")
         block.make_edges_from_interaction_type(type_="constraints")
-        print(block.edges)
-        print(node_to_resid)
+        #print(block.edges)
+        #print(node_to_resid)
         for edge in block.edges:
             v1 = node_to_resid[edge[0]]
             v2 = node_to_resid[edge[1]]

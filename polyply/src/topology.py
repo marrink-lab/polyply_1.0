@@ -69,6 +69,16 @@ class Topology(System):
                 except KeyError:
                    meta_mol.molecule.nodes[node]["build"] = True
 
+    def convert_to_vermouth_system(self):
+        system = System()
+        system.molecules = []
+        system.force_field = self.force_field
+
+        for meta_mol in self.molecules:
+            system.molecules.append(meta_mol.molecule)
+
+        return system
+
     @classmethod
     def from_gmx_topfile(cls, path, name):
         """
