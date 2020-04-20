@@ -9,41 +9,7 @@ import vermouth.forcefield
 import polyply
 import polyply.src.parsers
 from polyply import (DATA_PATH, MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
-
-def read_ff_from_file(paths, force_field):
-    """
-    read the input files for the defintion of blocks and links.
-
-    Parameters
-    ----------
-    paths: list
-           List of vaild file paths
-    force_field: class:`vermouth.force_field.ForceField`
-
-    Returns
-    -------
-    force_field: class:`vermouth.force_field.ForceField`
-       updated forcefield
-
-    """
-    line_parsers = {"ff": vermouth.ffinput.read_ff,
-                    "itp": polyply.src.parsers.read_polyply,
-                    "rtp":  vermouth.gmx.rtp.read_rtp}
-
-    def wrapper(parser, path, force_field):
-        with open(path, 'r') as file_:
-             lines = file_.readlines()
-             parser(lines, force_field=force_field)
-
-    for path in paths:
-        file_extension = path.suffix.casefold()[1:]
-        try:
-           parser = line_parsers[file_extension]
-           wrapper(parser, path, force_field)
-        except KeyError:
-            raise IOError("Cannot parse file with extension {}.".format(file_extension))
-
-    return force_field
+from .load_library import load_library
 
 def split_seq_string(sequence):
     """
@@ -69,18 +35,9 @@ def split_seq_string(sequence):
 
 def gen_itp(args):
 
-    known_force_fields = vermouth.forcefield.find_force_fields(
-        Path(DATA_PATH) / 'force_fields'
-    )
 
     # Import of Itp and FF files
-    if args.lib:
-        force_field = known_force_fields[args.lib]
-    else:
-        force_field = vermouth.forcefield.ForceField(name=args.name)
-
-    if args.inpath:
-        read_ff_from_file(args.inpath, force_field)
+    force_field = load_library(args.name, args.lib, args.inpath)
 
     # Generate the MetaMolecule
     if args.seq:
