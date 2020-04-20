@@ -57,7 +57,7 @@ class RandomWalk(Processor):
     def _random_walk(self, meta_molecule):
         first_node = list(meta_molecule.nodes)[0]
         meta_molecule.nodes[first_node]["position"] = np.array([0, 0, 0])
-        vector_bundel = polyply.src.geometrical_functions.norm_sphere(5000)
+        vector_bundel = polyply.src.linalg_functions.norm_sphere(5000)
 
         for prev_node, current_node in nx.dfs_edges(meta_molecule, source=0):
             update_positions(vector_bundel, meta_molecule,

@@ -56,8 +56,9 @@ def gen_coords(args):
     GenerateTemplates().run_system(topology)
     RandomWalk().run_system(topology)
     Backmap().run_system(topology)
-    energy_minimize().run_system(topology)
+    #energy_minimize().run_system(topology)
 
+    system = topology.convert_to_vermouth_system()
     # Write output
-    vermouth.gmx.gro.write_gro(topology, args.outpath, precision=7,
+    vermouth.gmx.gro.write_gro(system, args.outpath, precision=7,
               title='polyply structure', box=(10, 10, 10))
