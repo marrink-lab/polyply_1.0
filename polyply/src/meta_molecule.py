@@ -7,6 +7,18 @@ from polyply.src.polyply_parser import read_polyply
 
 Monomer = namedtuple('Monomer', 'resname, n_blocks')
 
+
+def _make_edges(force_field):
+   for block in force_field.blocks.values():
+       inter_types = list(block.interactions.keys())
+       for inter_type in inter_types:
+           block.make_edges_from_interaction_type(type_=inter_type)
+
+   for link in force_field.links:
+       inter_types = list(link.interactions.keys())
+       for inter_type in inter_types:
+           block.make_edges_from_interaction_type(type_=inter_type)
+
 class MetaMolecule(nx.Graph):
     """
     Graph that describes molecules at the residue level.
@@ -108,6 +120,7 @@ class MetaMolecule(nx.Graph):
        """
        Constructs a :class::`MetaMolecule` from an vermoth.molecule.
        """
+       _make_edges(force_field)
        graph = MetaMolecule._block_graph_to_res_graph(block)
        meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
        meta_mol.molecule = force_field.blocks[mol_name].to_molecule()
