@@ -25,6 +25,7 @@ def _resolve_lib_paths(lib_names, data_path):
     for name in lib_names:
         directory = os.path.join(data_path, name)
         for _file in os.listdir(directory):
+            _file = os.path.join(directory, _file)
             files.append(_file)
     return files
 
@@ -56,7 +57,6 @@ def read_ff_from_files(paths, force_field):
         file_extension = path.suffix.casefold()[1:]
 
         try:
-            print(file_extension)
             parser = FORCE_FIELD_PARSERS[file_extension]
             wrapper(parser, path, force_field)
         except KeyError:
