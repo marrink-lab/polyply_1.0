@@ -202,7 +202,6 @@ class TOPDirector(SectionLineParser):
             meta_molecule = MetaMolecule.from_block(self.force_field,
                                                     block,
                                                     mol_name)
-
             meta_molecule.atom_types = self.topology.atom_types
             meta_molecule.defaults = self.topology.defaults
             for idx in range(0, int(n_mol)):
