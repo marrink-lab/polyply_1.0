@@ -1,5 +1,6 @@
 import numpy as np
 from .processor import Processor
+import networkx as nx
 
 def find_atoms(molecule, attr, value):
     nodes=[]

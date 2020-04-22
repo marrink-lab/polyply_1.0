@@ -56,11 +56,12 @@ def energy_minimize(block, coords):
     opt_results = scipy.optimize.minimize(target_function, positions, method='L-BFGS-B',
                                           options={'ftol':0.001, 'maxiter': 100})
 
-    print(opt_results)
+    #print(opt_results)
     positions = opt_results['x'].reshape((-1, 3))
-
+    #print(coords)
+    #print(positions)
     for idx in coords:
-        coords[idx] = positions[idx]
+        coords[idx] = positions[idx-1]
 
     return coords
 
@@ -73,24 +74,23 @@ def _take_random_step(ref, step_length, values=50):
 
 def _expand_inital_coords(block, coords, inter_type):
 
+    if not coords:
+       atom = list(block.nodes)[0]
+       coords[atom] = np.array([0, 0, 0])
+
     for bond in block.interactions[inter_type]:
         atoms = bond.atoms
         params = bond.parameters
-        if not coords:
-            coords[atoms[0]] = np.array([0, 0, 0])
+        if atoms[0] in coords and atoms[1] not in coords:
             dist = float(params[1])
-            coords[atoms[1]] = np.array([0, 0, dist])
+            coords[atoms[1]] = _take_random_step(coords[atoms[0]], dist)
+
+        elif atoms[1] in coords and atoms[0] not in coords:
+            dist = float(params[1])
+            coords[atoms[0]] = _take_random_step(coords[atoms[1]], dist)
+
         else:
-            if atoms[0] in coords and atoms[1] not in coords:
-                dist = float(params[1])
-                coords[atoms[1]] = _take_random_step(coords[atoms[0]], dist)
-
-            elif atoms[1] in coords and atoms[0] not in coords:
-                dist = float(params[1])
-                coords[atoms[0]] = _take_random_step(coords[atoms[1]], dist)
-
-            else:
-                continue
+            continue
 
     return coords
 
@@ -129,7 +129,10 @@ def compute_volume(molecule, block, coords):
         geom_vects[idx, :] = diff + u_vect(diff) * rad
         idx += 1
 
-    radgyr = radius_of_gyration(geom_vects)
+    if geom_vects.shape[0] > 1:
+       radgyr = radius_of_gyration(geom_vects)
+    else:
+       radgyr = rad
     return radgyr
 
 def map_from_CoG(coords):

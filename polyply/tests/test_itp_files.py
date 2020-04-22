@@ -20,7 +20,7 @@ import pytest
 import numpy as np
 import vermouth.forcefield
 import vermouth.molecule
-import polyply.src.parsers
+import polyply.src.polyply_parser
 
 class TestITP:
     @staticmethod
@@ -31,7 +31,7 @@ class TestITP:
         """
         lines = textwrap.dedent(lines).splitlines()
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.src.parsers.read_polyply(lines, ff)
+        polyply.src.polyply_parser.read_polyply(lines, ff)
         assert 'GLY' in ff.blocks
         assert ff.blocks['GLY'].nrexcl == 3
 
@@ -46,7 +46,7 @@ class TestITP:
             """
         lines = textwrap.dedent(lines).splitlines()
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.src.parsers.read_polyply(lines, ff)
+        polyply.src.polyply_parser.read_polyply(lines, ff)
         assert set(ff.blocks) == set(['GLY', 'VAL'])
         assert ff.blocks['GLY'].nrexcl == 3
         assert ff.blocks['VAL'].nrexcl == 2
@@ -64,7 +64,7 @@ class TestITP:
         """
         lines = textwrap.dedent(lines).splitlines()
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.src.parsers.read_polyply(lines, ff)
+        polyply.src.polyply_parser.read_polyply(lines, ff)
         block = ff.blocks['GLY']
         assert len(block.nodes) == 3
         assert block.nodes[0] == {'index':1,'atomname': 'BB', 'atype': 'P4',
@@ -101,7 +101,7 @@ class TestITP:
         """
         lines = textwrap.dedent(lines).splitlines()
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.src.parsers.read_polyply(lines, ff)
+        polyply.src.polyply_parser.read_polyply(lines, ff)
         block = ff.blocks['GLY']
 
         bonds = [
@@ -145,7 +145,7 @@ class TestITP:
 
         lines = textwrap.dedent(lines).splitlines()
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.src.parsers.read_polyply(lines, ff)
+        polyply.src.polyply_parser.read_polyply(lines, ff)
         block = ff.blocks['GLY']
 
         bonds = [
@@ -247,7 +247,7 @@ class TestITP:
 
         ff = vermouth.forcefield.ForceField(name='test_ff')
         with pytest.raises(IOError):
-             polyply.src.parsers.read_polyply(lines, ff)
+             polyply.src.polyply_parser.read_polyply(lines, ff)
 
     @staticmethod
     def test_atomname_not_unique():
@@ -266,7 +266,7 @@ class TestITP:
         lines = lines.splitlines()
 
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.src.parsers.read_polyply(lines, ff)
+        polyply.src.polyply_parser.read_polyply(lines, ff)
 
     @staticmethod
     def test_index_unique():
@@ -286,7 +286,7 @@ class TestITP:
 
         ff = vermouth.forcefield.ForceField(name='test_ff')
         with pytest.raises(IOError):
-             polyply.src.parsers.read_polyply(lines, ff)
+             polyply.src.polyply_parser.read_polyply(lines, ff)
 
     @staticmethod
     def test_virtual_sitesn():
@@ -314,7 +314,7 @@ class TestITP:
         lines = lines.splitlines()
 
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.src.parsers.read_polyply(lines, ff)
+        polyply.src.polyply_parser.read_polyply(lines, ff)
         VS1 = vermouth.molecule.Interaction(
                 atoms=[5, 0, 1, 2, 3], parameters=['2'], meta={},
             )
@@ -380,7 +380,7 @@ class TestITP:
         new_lines = textwrap.dedent(new_lines)
         new_lines = new_lines.splitlines()
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.src.parsers.read_polyply(new_lines, ff)
+        polyply.src.polyply_parser.read_polyply(new_lines, ff)
         assert ff.blocks['GLY'].interactions['bonds'] == bonds
 
     @staticmethod
@@ -455,7 +455,7 @@ class TestITP:
         new_lines = new_lines.splitlines()
         ff = vermouth.forcefield.ForceField(name='test_ff')
         with pytest.raises(IOError):
-             polyply.src.parsers.read_polyply(new_lines, ff)
+             polyply.src.polyply_parser.read_polyply(new_lines, ff)
 
     @staticmethod
     def test_multiple_interactions():
@@ -483,7 +483,7 @@ class TestITP:
         lines = lines.splitlines()
 
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.src.parsers.read_polyply(lines, ff)
+        polyply.src.polyply_parser.read_polyply(lines, ff)
 
         dih = [vermouth.molecule.Interaction(
                 atoms=[0, 1, 2, 3], parameters=['1','A'], meta={}),
@@ -519,7 +519,7 @@ class TestITP:
         lines = lines.splitlines()
 
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.src.parsers.read_polyply(lines, ff)
+        polyply.src.polyply_parser.read_polyply(lines, ff)
 
         excl = [vermouth.molecule.Interaction(
                  atoms=[0, 1, 2, 3], parameters=[], meta={}),
@@ -557,5 +557,5 @@ class TestITP:
         new_lines = new_lines.splitlines()
         ff = vermouth.forcefield.ForceField(name='test_ff')
         with pytest.raises(IOError):
-             polyply.src.parsers.read_polyply(new_lines, ff)
+             polyply.src.polyply_parser.read_polyply(new_lines, ff)
 
