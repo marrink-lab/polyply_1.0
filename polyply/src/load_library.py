@@ -1,4 +1,5 @@
 import os
+import pathlib
 import vermouth
 from vermouth.ffinput import read_ff
 from vermouth.gmx.rtp import read_rtp
@@ -51,8 +52,11 @@ def read_ff_from_files(paths, force_field):
             parser(lines, force_field=force_field)
 
     for path in paths:
+        path = pathlib.Path(path)
         file_extension = path.suffix.casefold()[1:]
+
         try:
+            print(file_extension)
             parser = FORCE_FIELD_PARSERS[file_extension]
             wrapper(parser, path, force_field)
         except KeyError:
