@@ -118,7 +118,7 @@ class TestPolyply:
     @staticmethod
     def test_from_itp():
        file_name = "test_data/itp/PEO.itp"
-       edges = [(0,1),(1,2)]
+       edges = [(0,1), (1,2)]
        nodes = [0, 1, 2]
        attrs = {0: 'PEO', 1: 'PEO', 2: 'PEO'}
 

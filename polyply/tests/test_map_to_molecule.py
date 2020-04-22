@@ -23,7 +23,7 @@ import vermouth.forcefield
 import vermouth.molecule
 import polyply.src.meta_molecule
 import polyply.src.map_to_molecule
-import polyply.src.parsers
+import polyply.src.polyply_parser
 from polyply.src.meta_molecule import (MetaMolecule, Monomer)
 from vermouth.molecule import Interaction
 
@@ -49,7 +49,7 @@ class TestMapToMolecule:
         """
         lines = textwrap.dedent(lines).splitlines()
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.src.parsers.read_polyply(lines, ff)
+        polyply.src.polyply_parser.read_polyply(lines, ff)
         meta_mol = MetaMolecule(name="test", force_field=ff)
         meta_mol.add_monomer(0,"PEO",[])
         meta_mol.add_monomer(1,"PEO",[(1,0)])
@@ -90,7 +90,7 @@ class TestMapToMolecule:
         """
         lines = textwrap.dedent(lines).splitlines()
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.src.parsers.read_polyply(lines, ff)
+        polyply.src.polyply_parser.read_polyply(lines, ff)
         meta_mol = MetaMolecule(name="test", force_field=ff)
         meta_mol.add_monomer(0,"PEO",[])
         meta_mol.add_monomer(1,"MIX",[(1,0)])

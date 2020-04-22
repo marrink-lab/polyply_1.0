@@ -10,7 +10,6 @@ from polyply import (MetaMolecule, DATA_PATH)
 from polyply.src.generate_templates import GenerateTemplates
 from polyply.src.random_walk import RandomWalk
 from polyply.src.backmap import Backmap
-from .gen_itp import read_ff_from_file
 from .minimizer import optimize_geometry
 from .topology import Topology
 
@@ -33,19 +32,6 @@ def read_system(path, system, ignore_resnames=(), ignh=None, modelidx=None):
 
 
 def gen_coords(args):
-
-    # Import the force field definitions
-    known_force_fields = vermouth.forcefield.find_force_fields(
-        Path(DATA_PATH) / 'force_fields'
-    )
-
-    if args.lib:
-        force_field = known_force_fields[args.lib]
-    else:
-        force_field = vermouth.forcefield.ForceField(name=args.name)
-
-    if args.inpath:
-        read_ff_from_file(args.inpath, force_field)
 
     # Read in the topology
     topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)

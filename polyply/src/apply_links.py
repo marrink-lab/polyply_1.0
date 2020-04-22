@@ -148,7 +148,7 @@ def apply_explicit_link(molecule, link):
                 raise IOError("Atoms of link interaction {} are not "
                               "part of the molecule.".format(interaction))
 
-def neighborhood(graph, source, cutoff, start=1):
+def neighborhood(graph, source, max_length, min_length=1):
     """
     Returns all neighbours of `source` that are less or equal
     to `cutoff` nodes away and more or equal to `start` away
@@ -160,10 +160,10 @@ def neighborhood(graph, source, cutoff, start=1):
         A networkx graph definintion
     source:
         A node key matching one in the graph
-    cut_off: :type:`int`
+    max_length: :type:`int`
         The maxdistance between the node and its
         neighbours.
-    start: :type:`int`
+    min_length: :type:`int`
         The minimum length of a path. Default
         is zero
 
@@ -172,8 +172,8 @@ def neighborhood(graph, source, cutoff, start=1):
     list
        list of all nodes distance away from reference
     """
-    paths = nx.single_source_shortest_path(G=graph, source=source, cutoff=cutoff)
-    neighbours = [ node for node, path in paths.items() if start <= len(path)]
+    paths = nx.single_source_shortest_path(G=graph, source=source, cutoff=max_length)
+    neighbours = [ node for node, path in paths.items() if min_length <= len(path)]
     return neighbours
 
 def _check_relative_order(resids, orders):
@@ -360,7 +360,7 @@ def _get_links(meta_molecule, edge):
     meta_molecule: :class:`polyply.MetaMolecule`
         A polyply meta_molecule definition
     edge:
-        Single node matching one in the meta_molecule
+        Single edge matching one in the meta_molecule
     Returns
     ---------
     tuple

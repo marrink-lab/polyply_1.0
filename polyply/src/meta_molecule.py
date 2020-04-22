@@ -2,7 +2,8 @@ from collections import namedtuple
 import json
 import networkx as nx
 from networkx.readwrite import json_graph
-from .polyply_parser import read_polyply
+from vermouth.graph_utils import make_residue_graph
+from polyply.src.polyply_parser import read_polyply
 
 Monomer = namedtuple('Monomer', 'resname, n_blocks')
 
@@ -38,41 +39,17 @@ class MetaMolecule(nx.Graph):
     @staticmethod
     def _block_graph_to_res_graph(block):
         """
-        generate a residue graph from the nodes
-        of `block`.
+        generate a residue graph from the nodes of `block`.
+
+        Parameters
+        -----------
+        block: `:class:vermouth.molecule.Block`
+
+        Returns
+        -------
+        :class:`nx.Graph`
         """
-        res_graph = nx.Graph()
-
-        #1. generate mapping of nodes to residues
-        node_to_resid = {}
-        resids = nx.get_node_attributes(block, "resid")
-        for node, resid in resids.items():
-               node_to_resid[node] = resid - 1
-
-        res_graph.add_nodes_from(set(node_to_resid.values()))
-
-        #2. set node attributes
-        name_dict = {}
-        ignore_dict = {}
-        resnames = nx.get_node_attributes(block, "resname")
-        for idx, value in resnames.items():
-            name_dict.update({node_to_resid[idx]:value})
-            ignore_dict.update({node_to_resid[idx]:False})
-
-        nx.set_node_attributes(res_graph, name_dict, "resname")
-        nx.set_node_attributes(res_graph, ignore_dict, "links")
-
-        #3. add all missing edges
-        block.make_edges_from_interaction_type(type_="bonds")
-        block.make_edges_from_interaction_type(type_="constraints")
-        #print(block.edges)
-        #print(node_to_resid)
-        for edge in block.edges:
-            v1 = node_to_resid[edge[0]]
-            v2 = node_to_resid[edge[1]]
-            if v1 != v2:
-               res_graph.add_edge(v1, v2)
-
+        res_graph = make_residue_graph(block, attrs=('resid', 'resname'))
         return res_graph
 
     @classmethod
