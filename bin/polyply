@@ -4,13 +4,14 @@
 Perform the parsing and input redirect for the
 different subcommands. This is the main executable.
 """
-
+import os
 import argparse
 from pathlib import Path
 import vermouth
 import vermouth.forcefield
 import polyply
 from polyply import (gen_itp, gen_coords, DATA_PATH)
+from polyply.src.load_library import load_library
 
 VERSION = 'polyply version {}'.format(polyply.__version__)
 
@@ -28,7 +29,7 @@ def main():
                           help='List all known force fields, and exit.')
     ff_group.add_argument('-list-blocks', type=str, dest='list_blocks',
                           help='List all Blocks known to the'
-                          ' force field selected, and exit.')
+                          ' force field selected, and exit.', nargs='*')
    # ff_group.add_argument('-list-links', type=str, dest='list_links',
    #                       help='List all Links known to the'
    #                       ' force field selected, and exit.')
@@ -89,14 +90,18 @@ def main():
     args = parser.parse_args()
 
     if args.list_ff:
-        print('The following force fields are known:')
-        for idx, ff_name in enumerate(reversed(list(known_force_fields)), 1):
+        libs = os.listdir(DATA_PATH)
+        libs = [ lib for lib in libs if not lib.startswith("__")]
+        print('The following libraries are known:')
+        for idx, ff_name in enumerate(libs):
             print('{:3d}. {}'.format(idx, ff_name))
         parser.exit()
 
     if args.list_blocks:
-        print('The following Blocks are known to force field {}:'.format(args.list_blocks))
-        print(', '.join(known_force_fields[args.list_blocks].blocks))
+        force_field = load_library("libs", args.list_blocks, [])
+        print('The following Blocks are present in the following libraries: {}:'.format(args.list_blocks))
+        for block in force_field.blocks:
+            print(block)
         parser.exit()
 #    if args.list_links:
 #        print('The following Links are known to force field {}:'.format(args.list_links))
