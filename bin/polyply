@@ -22,8 +22,6 @@ def main():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    parser.add_argument('-lib', dest='lib', required=False, type=str,
-                          help='force-fields to include from library')
     parser.add_argument('-V', '--version', action='version', version=VERSION)
     ff_group = parser.add_argument_group('Library Files')
     ff_group.add_argument('-list-lib', action='store_true', dest='list_ff',
@@ -47,6 +45,8 @@ def main():
                         help="name of the final molecule")
 
     file_group = parser_gen_itp.add_argument_group('input and output options')
+    file_group.add_argument('-lib', dest='lib', required=False, type=str,
+                          help='force-fields to include from library', nargs='*')
     file_group.add_argument('-f', dest='inpath', required=False, type=Path,
                             help='Input file (ITP|FF)', nargs="*")
     file_group.add_argument('-o', dest='outpath', type=Path,
@@ -87,9 +87,6 @@ def main():
 
     # Deal with queries of the polyply library
     args = parser.parse_args()
-    known_force_fields = vermouth.forcefield.find_force_fields(
-        Path(DATA_PATH) / 'force_fields'
-    )
 
     if args.list_ff:
         print('The following force fields are known:')
