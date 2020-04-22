@@ -104,12 +104,23 @@ class PolyplyParser(ITPDirector):
 
         for link in links:
             self._treat_link_atoms(block, link, key)
-            link.make_edges_from_interaction_type(type_=key)
             self.force_field.links.append(link)
+
+    def _make_edges(self):
+       for block in self.force_field.blocks.values():
+           inter_types = list(block.interactions.keys())
+           for inter_type in inter_types:
+               block.make_edges_from_interaction_type(type_=inter_type)
+
+       for link in self.force_field.links:
+           inter_types = list(link.interactions.keys())
+           for inter_type in inter_types:
+               block.make_edges_from_interaction_type(type_=inter_type)
 
     # overwrites the finalize method to deal with dangling bonds
     # and to deal with multiple interactions in the way needed
     # for polyply to work
+
     def finalize(self, lineno=0):
 
         if self.current_meta is not None:
@@ -127,6 +138,7 @@ class PolyplyParser(ITPDirector):
                 n_atoms = len(block.nodes)
                 self._split_links_and_blocks(block)
                 self.treat_link_multiple()
+                self._make_edges()
 
 def read_polyply(lines, force_field):
     director = PolyplyParser(force_field)

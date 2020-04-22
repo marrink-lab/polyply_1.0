@@ -49,8 +49,6 @@ class MetaMolecule(nx.Graph):
         -------
         :class:`nx.Graph`
         """
-        block.make_edges_from_interaction_type(type_="bonds")
-        block.make_edges_from_interaction_type(type_="constraints")
         res_graph = make_residue_graph(block, attrs=('resid', 'resname'))
         return res_graph
 
