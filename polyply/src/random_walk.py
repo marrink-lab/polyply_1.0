@@ -33,15 +33,19 @@ def update_positions(vector_bundel, meta_molecule, current_node, prev_node):
     current_vectors = np.zeros(vector_bundel.shape)
     current_vectors[:] = vector_bundel[:]
     last_point = meta_molecule.nodes[prev_node]["position"]
-    resname = meta_molecule.nodes[prev_node]["resname"]
 
-    # add combination rule
-    vdw_radius = meta_molecule.volumes[resname]
+    prev_resname = meta_molecule.nodes[prev_node]["resname"]
+    current_resname = meta_molecule.nodes[current_node]["resname"]
+
+    current_vdwr = meta_molecule.volumes[current_resname]
+    prev_vdwr = meta_molecule.volumes[prev_resname]
+    vdw_radius = _combination(current_vdwr, prev_vdwr)
+
     step_length = 2*vdw_radius
+    print(step_length)
 
     while True:
         new_point, index = _take_step(vector_bundel, step_length, last_point)
-
         if not _is_overlap(meta_molecule, new_point, tol=vdw_radius):
             meta_molecule.nodes[current_node]["position"] = new_point
             break
@@ -58,7 +62,6 @@ class RandomWalk(Processor):
         first_node = list(meta_molecule.nodes)[0]
         meta_molecule.nodes[first_node]["position"] = np.array([0, 0, 0])
         vector_bundel = polyply.src.linalg_functions.norm_sphere(5000)
-
         for prev_node, current_node in nx.dfs_edges(meta_molecule, source=0):
             update_positions(vector_bundel, meta_molecule,
                              current_node, prev_node)
