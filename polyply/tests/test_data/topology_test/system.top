@@ -1,0 +1,9 @@
+#include "test.itp"
+
+[ System ]
+;Name
+test
+
+[ molecules ]
+; compound #mols
+test 1

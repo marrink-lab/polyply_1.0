@@ -1,6 +1,7 @@
 """
 Provides a class used to describe a gromacs topology and all assciated data.
 """
+import os
 from pathlib import Path
 from collections import defaultdict
 from vermouth.system import System
@@ -94,7 +95,8 @@ class Topology(System):
         with open(path, 'r') as _file:
             lines = _file.readlines()
 
+        cwdir = os.path.dirname(path)
         force_field = ForceField(name)
         topology = cls(force_field=force_field, name=name)
-        read_topology(lines=lines, topology=topology)
+        read_topology(lines=lines, topology=topology, cwdir=cwdir)
         return topology
