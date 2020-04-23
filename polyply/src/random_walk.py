@@ -15,7 +15,7 @@ def _is_overlap(meta_molecule, new_point, tol, fudge=1):
 
     for node in meta_molecule:
         try:
-            coord = meta_molecule[node]["position"]
+            coord = meta_molecule.nodes[node]["position"]
         except KeyError:
             continue
 
@@ -42,7 +42,6 @@ def update_positions(vector_bundel, meta_molecule, current_node, prev_node):
     vdw_radius = _combination(current_vdwr, prev_vdwr)
 
     step_length = 2*vdw_radius
-    print(step_length)
 
     while True:
         new_point, index = _take_step(vector_bundel, step_length, last_point)
@@ -55,7 +54,9 @@ def update_positions(vector_bundel, meta_molecule, current_node, prev_node):
 
 class RandomWalk(Processor):
     """
-
+    Add coordinates at the meta_molecule level
+    through a random walk for all nodes which have
+    build defined as true.
     """
 
     def _random_walk(self, meta_molecule):

@@ -69,7 +69,7 @@ class TOPDirector(SectionLineParser):
         if self.is_section_header(line):
             return self.parse_header
         elif self.is_pragma(line):
-            return self.parse_pragma
+            return self.parse_top_pragma
         else:
             return self.parse_section
 
@@ -88,7 +88,7 @@ class TOPDirector(SectionLineParser):
         """
         return line.startswith('#')
 
-    def parse_pragma(self, line, lineno=0):
+    def parse_top_pragma(self, line, lineno=0):
         """
         Parses the beginning and end of define sections
         with line number `lineno`. Sets attr current_meta
@@ -111,14 +111,17 @@ class TOPDirector(SectionLineParser):
             If the def sections are missformatted
         """
         if line == '#endif':
-            if self.current_meta is not None:
-                self.current_meta = None
+            if self.current_itp:
+                self.current_itp.append(line)
             elif self.current_meta is None:
                 raise IOError("Your #ifdef section is orderd incorrectly."
                               "At line {} I read #endif but I haven not read"
                               "a ifdef before.".format(lineno))
+
         elif line.startswith("#ifdef") or line.startswith("#ifndef"):
-            if self.current_meta is None:
+            if self.current_itp:
+                self.current_itp.append(line)
+            elif self.current_meta is None:
                 condition, tag = line.split()
                 self.current_meta = {'tag': tag,
                                      'condition': condition.replace("#", "")}
@@ -127,6 +130,7 @@ class TOPDirector(SectionLineParser):
                               "At line {} I read {} but there is still"
                               "an open #ifdef/#ifndef section from"
                               "before.".format(lineno, line.split()[0]))
+
         elif line.split()[0] in self.pragma_actions:
             action = self.pragma_actions[line.split()[0]]
             action(line)
@@ -241,11 +245,11 @@ class TOPDirector(SectionLineParser):
         Parse and store the defaults section.
         """
         nbfunc, comb_rule, gen_pairs, fudgeLJ, fudgeQQ = line.split()
-        self.topology.defaults = {"nbfunc": nbfunc,
-                                     "comb-rule": comb_rule,
+        self.topology.defaults = {"nbfunc": int(nbfunc),
+                                     "comb-rule": int(comb_rule),
                                      "gen-pairs": gen_pairs,
-                                     "fudgeLJ": fudgeLJ,
-                                     "fudgeQQ": fudgeQQ}
+                                     "fudgeLJ": float(fudgeLJ),
+                                     "fudgeQQ": float(fudgeQQ)}
 
     @SectionLineParser.section_parser('atomtypes')
     def _atomtypes(self, line, lineno=0):
@@ -253,12 +257,12 @@ class TOPDirector(SectionLineParser):
         Parse and store atomtypes section
         """
         atom_name, atom_num, charge, ptype, hbond_type, nb1, nb2 = line.split()
-        self.topology.atom_types[atom_name] = {"atom_num": atom_num,
-                                              "charge": charge,
-                                              "ptype": ptype,
+        self.topology.atom_types[atom_name] = {"atom_num": int(atom_num),
+                                              "charge": float(charge),
+                                              "ptype": float(ptype),
                                               "hbond_type": hbond_type,
-                                              "nb1": nb1,
-                                              "nb2": nb2}
+                                              "nb1": float(nb1),
+                                              "nb2": float(nb2)}
 
     @SectionLineParser.section_parser('nonbond_params')
     def _nonbond_params(self, line, lineno=0):
@@ -266,9 +270,9 @@ class TOPDirector(SectionLineParser):
         Parse and store nonbond params
         """
         atom_1, atom_2, func, nb1, nb2 = line.split()
-        self.topology.nonbond_params[(atom_1, atom_2)] = {"f": func,
-                                                          "nb1": nb1,
-                                                          "nb2": nb2}
+        self.topology.nonbond_params[(atom_1, atom_2)] = {"f": int(func),
+                                                          "nb1": float(nb1),
+                                                          "nb2": float(nb2)}
     @SectionLineParser.section_parser('pairtypes')
     @SectionLineParser.section_parser('angletypes')
     @SectionLineParser.section_parser('dihedraltypes')
@@ -332,7 +336,7 @@ class TOPDirector(SectionLineParser):
         parse include statemnts
         """
         path = line.split()[1].strip('\"')
-
+        print(self.cwdir)
         if self.cwdir:
            filename = os.path.join(self.cwdir, path)
            cwdir = os.path.dirname(filename)
@@ -367,10 +371,10 @@ class TOPDirector(SectionLineParser):
         # ints or slices
         for idx in atom_idxs:
             if isinstance(idx, int):
-                atoms.append([tokens[idx], {}])
+                atoms.append(tokens[idx])
                 remove.append(idx)
             elif isinstance(idx, slice):
-                atoms += [[atom, {}] for atom in tokens[idx]]
+                atoms += [atom for atom in tokens[idx]]
                 idx_range = range(0, len(tokens))
                 remove += idx_range[idx]
             else:

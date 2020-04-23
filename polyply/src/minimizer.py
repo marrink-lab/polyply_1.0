@@ -15,46 +15,39 @@ def compute_angle(params, coords):
 
 def compute_dih(params, coords):
     dih_angle = dih(coords[0], coords[1], coords[2], coords[3])
-    return 100*np.abs(dih_angle - float(params[1]))
+    return np.abs(dih_angle - float(params[1]))
 
 
 INTER_METHODS = {"bonds": compute_bond,
                  "angles": compute_angle,
                  "dihedrals": compute_dih}
 
-def callbackF():
-    global Nfeval
-    print('{0:4d}'.format(Nfeval))
-    Nfeval += 1
-
-def optimize_geometry(molecule):
-    """
-    Simple geometry optimizer for vermuth molecules.
-    """
-    n_atoms = len(molecule.nodes)
-    initial_positions = np.array(list(nx.get_node_attributes(molecule, "position").values()))
-    node_to_coord = dict(zip(list(molecule.nodes),range(0, n_atoms)))
-
+def energy_minimize(block, coords):
+    n_atoms = len(coords)
+    atom_to_idx = dict(zip(list(coords.keys()),range(0, n_atoms)))
+    positions = np.array(list(coords.values()))
     def target_function(positions):
         energy = 0
         positions = positions.reshape((-1, 3))
-        for inter_type in molecule.interactions:
-            for interaction in molecule.interactions[inter_type]:
+        for inter_type in block.interactions:
+            for interaction in block.interactions[inter_type]:
                 atoms = interaction.atoms
                 params = interaction.parameters
-                atom_coords = [positions[node_to_coord[name]]
+                atom_coords = [positions[name - 1 ]
                                for name in atoms]
                 if inter_type in ['bonds', 'angles', 'dihedrals']:
                    new = INTER_METHODS[inter_type](params, atom_coords)
                    energy += new
-
         return energy
 
-    opt_results = scipy.optimize.minimize(target_function, initial_positions, method='L-BFGS-B',
+    opt_results = scipy.optimize.minimize(target_function, positions, method='L-BFGS-B',
                                           options={'ftol':0.001, 'maxiter': 100})
 
-    print(opt_results)
+    #print(opt_results)
     positions = opt_results['x'].reshape((-1, 3))
+    #print(coords)
+    #print(positions)
+    for idx in coords:
+        coords[idx] = positions[idx-1]
 
-    for name, idx in node_to_coord.items():
-        molecule.nodes[name]["positions"] = positions[idx]
+    return coords
