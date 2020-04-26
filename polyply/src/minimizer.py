@@ -22,7 +22,7 @@ INTER_METHODS = {"bonds": compute_bond,
                  "angles": compute_angle,
                  "dihedrals": compute_dih}
 
-def energy_minimize(block, coords):
+def optimize_geometry(block, coords):
     n_atoms = len(coords)
     atom_to_idx = dict(zip(list(coords.keys()),range(0, n_atoms)))
     positions = np.array(list(coords.values()))

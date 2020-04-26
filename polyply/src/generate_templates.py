@@ -5,10 +5,11 @@ import scipy
 import scipy.optimize
 import vermouth
 import polyply
-from polyply.src.minimzre import optimize_geometry
+from polyply.src.minimizer import optimize_geometry
 from polyply.src.processor import Processor
-from polyply.src.linalg_functions import (angle, dih, u_vect)
-
+from polyply.src.linalg_functions import (angle, dih, u_vect, center_of_geometry,
+                                          norm_sphere, radius_of_gyration)
+from polyply.src.random_walk import _take_step
 
 def find_atoms(molecule, attr, value):
     nodes=[]
@@ -19,52 +20,34 @@ def find_atoms(molecule, attr, value):
 
     return nodes
 
-def _take_random_step(ref, step_length, values=50):
-    vectors = polyply.src.linalg_functions.norm_sphere(values=values)
-    index = np.random.randint(0, len(vectors) - 1)
-    new_point = ref + vectors[index] * step_length
-    return new_point
-
 def _expand_inital_coords(block, coords, inter_type):
 
     if not coords:
        atom = list(block.nodes)[0]
        coords[atom] = np.array([0, 0, 0])
 
+    vectors = norm_sphere(values=1000)
     for bond in block.interactions[inter_type]:
         atoms = bond.atoms
         params = bond.parameters
         if atoms[0] in coords and atoms[1] not in coords:
             dist = float(params[1])
-            coords[atoms[1]] = _take_random_step(coords[atoms[0]], dist)
+            coords[atoms[1]], _ = _take_step(vectors, dist ,coords[atoms[0]])
 
         elif atoms[1] in coords and atoms[0] not in coords:
             dist = float(params[1])
-            coords[atoms[0]] = _take_random_step(coords[atoms[1]], dist)
+            coords[atoms[0]], _ = _take_step(vectors, dist, coords[atoms[1]])
 
         else:
             continue
 
     return coords
 
-def radius_of_gyration(traj):
-    N = len(traj)
-    diff=np.zeros((N**2))
-    count=0
-    for i in traj:
-        for j in traj:
-            diff[count]=np.dot((i - j),(i-j))
-            count = count + 1
-    Rg= 1/np.float(N)**2 * sum(diff)
-    return(np.float(np.sqrt(Rg)))
-
-def center_of_geomtry(points):
-    return np.average(points, axis=0)
 
 def compute_volume(molecule, block, coords):
     n_atoms = len(coords)
     points = np.array(list(coords.values()))
-    CoG = center_of_geomtry(points)
+    CoG = center_of_geometry(points)
     geom_vects = np.zeros((n_atoms, 3))
     idx = 0
 
@@ -91,7 +74,7 @@ def compute_volume(molecule, block, coords):
 def map_from_CoG(coords):
     n_atoms = len(coords)
     points = np.array(list(coords.values()))
-    CoG = center_of_geomtry(points)
+    CoG = center_of_geometry(points)
     out_vectors = {}
     for key, coord in coords.items():
         diff = coord - CoG
@@ -139,7 +122,7 @@ class GenerateTemplates(Processor):
             block = extract_block(meta_molecule.molecule, resname)
             coords = _expand_inital_coords(block, {}, 'bonds')
             coords = _expand_inital_coords(block, coords, 'constraints')
-            coords = energy_minimize(block, coords)
+            coords = optimize_geometry(block, coords)
             volumes[resname] = compute_volume(meta_molecule, block, coords)
             coords = map_from_CoG(coords)
             templates[resname] = coords

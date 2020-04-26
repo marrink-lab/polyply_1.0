@@ -19,9 +19,22 @@ def dih(A, B, C, D):
     return(degrees(arccos(np.clip(dot(u_vect(n1), u_vect(n2)), -1.0, 1.0))))
 
 
-def geometrical_center(coord):
-    return(sum(coord)/float(len(coord)))
+def center_of_geometry(points):
+    return np.average(points, axis=0)
 
 def norm_sphere(values=50):
     v_sphere = np.random.normal(0.0, 1, (values,3))
     return(np.array([ u_vect(vect) for vect in v_sphere]))
+
+
+def radius_of_gyration(traj):
+    N = len(traj)
+    diff=np.zeros((N**2))
+    count=0
+    for i in traj:
+        for j in traj:
+            diff[count]=np.dot((i - j),(i-j))
+            count = count + 1
+    Rg= 1/np.float(N)**2 * sum(diff)
+    return(np.float(np.sqrt(Rg)))
+
