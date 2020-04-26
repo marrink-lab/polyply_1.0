@@ -1,4 +1,5 @@
 import os
+import pathlib
 import vermouth
 from vermouth.ffinput import read_ff
 from vermouth.gmx.rtp import read_rtp
@@ -24,6 +25,7 @@ def _resolve_lib_paths(lib_names, data_path):
     for name in lib_names:
         directory = os.path.join(data_path, name)
         for _file in os.listdir(directory):
+            _file = os.path.join(directory, _file)
             files.append(_file)
     return files
 
@@ -51,7 +53,9 @@ def read_ff_from_files(paths, force_field):
             parser(lines, force_field=force_field)
 
     for path in paths:
+        path = pathlib.Path(path)
         file_extension = path.suffix.casefold()[1:]
+
         try:
             parser = FORCE_FIELD_PARSERS[file_extension]
             wrapper(parser, path, force_field)

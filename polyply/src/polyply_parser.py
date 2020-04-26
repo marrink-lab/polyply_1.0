@@ -51,7 +51,6 @@ class PolyplyParser(ITPDirector):
 
         # we need to convert the atom index to an atom-name
         n_atoms = len(block.nodes)
-
         # the uncommented statement does not work because node and
         # atom name are couple for blocks, which is debatably useful
         #atom_names = list(nx.get_node_attributes(block, 'atomname'))
@@ -141,7 +140,7 @@ class PolyplyParser(ITPDirector):
                 n_atoms = len(block.nodes)
                 self._split_links_and_blocks(block)
                 self.treat_link_multiple()
-                self._make_edges()
+        self._make_edges()
 
 def read_polyply(lines, force_field):
     director = PolyplyParser(force_field)
