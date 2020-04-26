@@ -55,8 +55,17 @@ class TestLinAlg:
                           [0, -1, 0],
                           [0, 0, -1]])
 
-       center = geometrical_center(coords)
+       center = center_of_geometry(coords)
        assert math.isclose(norm(center),0)
 
-   #@staticmethod
-   #def test_norm_sphere():
+    @staticmethod
+    def test_radius_of_gyration():
+        coords = np.array([[0, 0, 1],
+                           [0, 1, 0],
+                           [1, 0, 0],
+                           [-1, 0, 0],
+                           [0, -1, 0],
+                           [0, 0, -1]])
+
+        rg = radius_of_gyration(coords)
+        assert math.isclose(rg, np.sqrt(2))

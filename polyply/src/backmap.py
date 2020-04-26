@@ -1,15 +1,8 @@
 import numpy as np
-from .processor import Processor
 import networkx as nx
+from .processor import Processor
+from .generate_templates import find_atoms
 
-def find_atoms(molecule, attr, value):
-    nodes=[]
-    for node in molecule.nodes:
-        if attr in molecule.nodes[node]:
-           if molecule.nodes[node][attr] == value:
-              nodes.append(node)
-
-    return nodes
 
 class Backmap(Processor):
 
