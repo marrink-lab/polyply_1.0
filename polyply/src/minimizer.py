@@ -33,7 +33,7 @@ def optimize_geometry(block, coords):
             for interaction in block.interactions[inter_type]:
                 atoms = interaction.atoms
                 params = interaction.parameters
-                atom_coords = [positions[name - 1 ]
+                atom_coords = [positions[atom_to_idx[name]]
                                for name in atoms]
                 if inter_type in ['bonds', 'angles', 'dihedrals']:
                    new = INTER_METHODS[inter_type](params, atom_coords)
@@ -43,11 +43,8 @@ def optimize_geometry(block, coords):
     opt_results = scipy.optimize.minimize(target_function, positions, method='L-BFGS-B',
                                           options={'ftol':0.001, 'maxiter': 100})
 
-    #print(opt_results)
     positions = opt_results['x'].reshape((-1, 3))
-    #print(coords)
-    #print(positions)
-    for idx in coords:
-        coords[idx] = positions[idx-1]
+    for node_key, idx in atom_to_idx.items():
+        coords[node_key] = positions[idx]
 
     return coords

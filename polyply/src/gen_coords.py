@@ -4,6 +4,7 @@ High level API for the polyply coordinate generator
 """
 
 from pathlib import Path
+import networkx as nx
 import vermouth.forcefield
 from vermouth.gmx.gro import read_gro
 from polyply import (MetaMolecule, DATA_PATH)
@@ -37,6 +38,10 @@ def gen_coords(args):
     topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
     if args.coordpath:
        topology.add_positions_from_gro(args.coordpath)
+
+    print(len(topology.molecules[0].nodes))
+    print(nx.is_connected(topology.molecules[0]))
+    print([ i for i in nx.dfs_edges(topology.molecules[0], source=0)])
 
     # Build polymer structure
     GenerateTemplates().run_system(topology)

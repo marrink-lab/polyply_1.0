@@ -4,12 +4,15 @@ Provides a class used to describe a gromacs topology and all assciated data.
 import os
 from pathlib import Path
 from collections import defaultdict
+import numpy as np
 from vermouth.system import System
 from vermouth.forcefield import ForceField
 from vermouth.gmx.gro import read_gro
 from vermouth.pdb import read_pdb
 from .top_parser import read_topology
 from .meta_molecule import MetaMolecule
+from .generate_templates import find_atoms
+from .linalg_functions import center_of_geometry
 
 coord_parsers = {"pdb": read_pdb,
                  "gro": read_gro}
@@ -69,6 +72,17 @@ class Topology(System):
                    total += 1
                 except KeyError:
                    meta_mol.molecule.nodes[node]["build"] = True
+                   last_atom = total
+
+            for node in meta_mol:
+                atoms_in_res = find_atoms(meta_mol.molecule, "resid", node+1)
+                if last_atom not in atoms_in_res:
+                   positions = np.array([ meta_mol.molecule.nodes[atom]["position"] for
+                                         atom in atoms_in_res])
+                   center = center_of_geometry(positions)
+                   meta_mol.nodes[node]["position"] = center
+                else:
+                   break
 
     def convert_to_vermouth_system(self):
         system = System()

@@ -20,6 +20,13 @@ def find_atoms(molecule, attr, value):
 
     return nodes
 
+def construct_vs(atoms, coords):
+   coord = np.array([0., 0., 0.])
+   for atom in atoms[1:]:
+       if atom in coords:
+          coord += coords[atom]
+   return coord
+
 def _expand_inital_coords(block, coords, inter_type):
 
     if not coords:
@@ -27,19 +34,24 @@ def _expand_inital_coords(block, coords, inter_type):
        coords[atom] = np.array([0, 0, 0])
 
     vectors = norm_sphere(values=1000)
-    for bond in block.interactions[inter_type]:
-        atoms = bond.atoms
-        params = bond.parameters
-        if atoms[0] in coords and atoms[1] not in coords:
-            dist = float(params[1])
-            coords[atoms[1]], _ = _take_step(vectors, dist ,coords[atoms[0]])
+    if inter_type != "virtual_sitesn":
+       for bond in block.interactions[inter_type]:
+           atoms = bond.atoms
+           params = bond.parameters
+           if atoms[0] in coords and atoms[1] not in coords:
+               dist = float(params[1])
+               coords[atoms[1]], _ = _take_step(vectors, dist ,coords[atoms[0]])
 
-        elif atoms[1] in coords and atoms[0] not in coords:
-            dist = float(params[1])
-            coords[atoms[0]], _ = _take_step(vectors, dist, coords[atoms[1]])
+           elif atoms[1] in coords and atoms[0] not in coords:
+               dist = float(params[1])
+               coords[atoms[0]], _ = _take_step(vectors, dist, coords[atoms[1]])
+           else:
+               continue
 
-        else:
-            continue
+    elif inter_type == "virtual_sitesn":
+         for vs in block.interactions[inter_type]:
+             atoms = vs.atoms
+             coords[atoms[0]] = construct_vs(atoms, coords)
 
     return coords
 
@@ -57,9 +69,14 @@ def compute_volume(molecule, block, coords):
         if molecule.defaults["nbfunc"] == 1:
            A = float(molecule.atom_types[atom_key]["nb1"])
            B = float(molecule.atom_types[atom_key]["nb2"])
+           if A == 0 and B == 0:
+              A = float(molecule.nonbond_params[(atom_key, atom_key)]["nb1"])
+              B = float(molecule.nonbond_params[(atom_key, atom_key)]["nb2"])
            rad = 1.22*(A/B)**(1/6.)
         else:
            rad = 1.22*float(molecule.atom_types[atom_key]["nb1"])
+           if rad == 0:
+              rad = 1.22*float(molecule.nonbond_params[(atom_key, atom_key)]["nb1"])
 
         diff = coord - CoG
         geom_vects[idx, :] = diff + u_vect(diff) * rad
@@ -122,6 +139,7 @@ class GenerateTemplates(Processor):
             block = extract_block(meta_molecule.molecule, resname)
             coords = _expand_inital_coords(block, {}, 'bonds')
             coords = _expand_inital_coords(block, coords, 'constraints')
+            coords = _expand_inital_coords(block, coords, 'virtual_sitesn')
             coords = optimize_geometry(block, coords)
             volumes[resname] = compute_volume(meta_molecule, block, coords)
             coords = map_from_CoG(coords)

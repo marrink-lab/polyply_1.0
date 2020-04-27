@@ -208,6 +208,7 @@ class TOPDirector(SectionLineParser):
                                                     mol_name)
             meta_molecule.atom_types = self.topology.atom_types
             meta_molecule.defaults = self.topology.defaults
+            meta_molecule.nonbond_params = self.topology.nonbond_params
             for idx in range(0, int(n_mol)):
                  self.topology.add_molecule(meta_molecule)
 
@@ -244,24 +245,23 @@ class TOPDirector(SectionLineParser):
         """
         Parse and store the defaults section.
         """
-        nbfunc, comb_rule, gen_pairs, fudgeLJ, fudgeQQ = line.split()
-        self.topology.defaults = {"nbfunc": int(nbfunc),
-                                     "comb-rule": int(comb_rule),
-                                     "gen-pairs": gen_pairs,
-                                     "fudgeLJ": float(fudgeLJ),
-                                     "fudgeQQ": float(fudgeQQ)}
+        defaults = ["nbfunc", "comb-rule", "gen-pairs", "fudgeLJ", "fudgeQQ"]
+        numbered_terms = ["nbfunc", "comb-rule", "fudgeLJ", "fudgeQQ"]
+        tokens = line.split()
+
+        self.topology.defaults = dict(zip(defaults[0:len(tokens)], tokens))
+        for token_name in numbered_terms:
+            if token_name in self.topology.defaults:
+                 self.topology.defaults[token_name] = float(self.topology.defaults[token_name])
 
     @SectionLineParser.section_parser('atomtypes')
     def _atomtypes(self, line, lineno=0):
         """
         Parse and store atomtypes section
         """
-        atom_name, atom_num, charge, ptype, hbond_type, nb1, nb2 = line.split()
-        self.topology.atom_types[atom_name] = {"atom_num": int(atom_num),
-                                              "charge": float(charge),
-                                              "ptype": float(ptype),
-                                              "hbond_type": hbond_type,
-                                              "nb1": float(nb1),
+        atom_name = line.split()[0]
+        nb1, nb2 = line.split()[-2:]
+        self.topology.atom_types[atom_name] = {"nb1": float(nb1),
                                               "nb2": float(nb2)}
 
     @SectionLineParser.section_parser('nonbond_params')
