@@ -47,7 +47,7 @@ def main():
 
     file_group = parser_gen_itp.add_argument_group('input and output options')
     file_group.add_argument('-lib', dest='lib', required=False, type=str,
-                          help='force-fields to include from library', nargs='*')
+                            help='force-fields to include from library', nargs='*')
     file_group.add_argument('-f', dest='inpath', required=False, type=Path,
                             help='Input file (ITP|FF)', nargs="*")
     file_group.add_argument('-o', dest='outpath', type=Path,
