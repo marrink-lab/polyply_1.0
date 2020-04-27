@@ -20,7 +20,8 @@ class Backmap(Processor):
             for atom_super, atom_low  in zip(template,low_res_atoms):
                 vector = template[atom_super]
                 new_coords = CoG + vector
-                meta_molecule.molecule.nodes[atom_low]["position"] = new_coords
+                if meta_molecule.molecule.nodes[atom_low]["build"]:
+                   meta_molecule.molecule.nodes[atom_low]["position"] = new_coords
 
     def run_molecule(self, meta_molecule):
         self._place_init_coords(meta_molecule)

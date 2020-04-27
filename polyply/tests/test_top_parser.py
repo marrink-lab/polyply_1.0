@@ -32,11 +32,11 @@ class TestTopParsing:
         # Refers, by index, to an atom out of range
         ("""
         [ defaults ]
-        1   1   no   1.0     1.0
+        1.0   1.0   no   1.0     1.0
         """,
         "defaults",
-        {"nbfunc": 1,
-        "comb-rule": 1,
+        {"nbfunc": 1.0,
+        "comb-rule": 1.0,
         "gen-pairs": "no",
         "fudgeLJ": 1.0,
         "fudgeQQ": 1.0}
@@ -46,11 +46,7 @@ class TestTopParsing:
         O       8 0.000 0.000  A   1.7106496e-03  9.9002500e-07
         """,
         "atom_types",
-        {"O":{"atom_num": 8,
-              "charge": 0.000,
-              "ptype": 0.000,
-              "hbond_type": "A",
-              "nb1": 1.7106496e-03,
+        {"O":{"nb1": 1.7106496e-03,
               "nb2": 9.9002500e-07}}
         ),
         ("""

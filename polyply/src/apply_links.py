@@ -420,6 +420,7 @@ class ApplyLinks(Processor):
                     continue
 
         for link in force_field.links:
+            print(link.molecule_meta)
             if link.molecule_meta.get('by_atom_id'):
                 apply_explicit_link(molecule, link)
 

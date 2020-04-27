@@ -37,11 +37,15 @@ class TestTopology:
         top = Topology.from_gmx_topfile("test_data/topology_test/system.top", "test")
         top.add_positions_from_gro("test_data/topology_test/test.gro")
         for node in top.molecules[0].molecule.nodes:
-            if node != 6:
+            if node != 20:
                assert "position" in top.molecules[0].molecule.nodes[node].keys()
                assert top.molecules[0].molecule.nodes[node]["build"] == False
             else:
                assert top.molecules[0].molecule.nodes[node]["build"] == True
+
+        for node in top.molecules[0].nodes:
+            if node != 2:
+               assert "position" in top.molecules[0].nodes[node].keys()
 
     @staticmethod
     def test_convert_to_vermouth_system():
