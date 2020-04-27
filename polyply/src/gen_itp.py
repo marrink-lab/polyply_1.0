@@ -45,6 +45,8 @@ def gen_itp(args):
        meta_molecule = MetaMolecule.from_monomer_seq_linear(monomers=monomers,
                                                             force_field=force_field,
                                                             mol_name=args.name)
+    #ToDo
+    # fix too broad except
     elif args.seq_file:
        extension = args.seq_file.suffix.casefold()[1:]
        try:
