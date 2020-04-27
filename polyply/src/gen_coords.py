@@ -39,10 +39,6 @@ def gen_coords(args):
     if args.coordpath:
        topology.add_positions_from_gro(args.coordpath)
 
-    print(len(topology.molecules[0].nodes))
-    print(nx.is_connected(topology.molecules[0]))
-    print([ i for i in nx.dfs_edges(topology.molecules[0], source=0)])
-
     # Build polymer structure
     GenerateTemplates().run_system(topology)
     RandomWalk().run_system(topology)
