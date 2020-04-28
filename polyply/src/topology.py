@@ -11,11 +11,19 @@ from vermouth.gmx.gro import read_gro
 from vermouth.pdb import read_pdb
 from .top_parser import read_topology
 from .meta_molecule import MetaMolecule
-from .generate_templates import find_atoms
 from .linalg_functions import center_of_geometry
 
 coord_parsers = {"pdb": read_pdb,
                  "gro": read_gro}
+
+def find_atoms(molecule, attr, value):
+    nodes=[]
+    for node in molecule.nodes:
+        if attr in molecule.nodes[node]:
+           if molecule.nodes[node][attr] == value:
+              nodes.append(node)
+
+    return nodes
 
 class Topology(System):
     """
