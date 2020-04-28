@@ -3,7 +3,6 @@ import json
 import networkx as nx
 from networkx.readwrite import json_graph
 from vermouth.graph_utils import make_residue_graph
-from polyply.src.parsers import read_polyply
 from .polyply_parser import read_polyply
 
 Monomer = namedtuple('Monomer', 'resname, n_blocks')
