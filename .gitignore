@@ -13,7 +13,7 @@ polyply.egg-info
 **/.coverage
 .hypothesis
 
-**/test_data/gen_itp/output
+tests/test_data/gen_itp/output/*.itp
 
 **/htmlcov
 
