@@ -1,0 +1,115 @@
+#!/usr/bin/env python3
+
+"""
+Perform the parsing and input redirect for the
+different subcommands. This is the main executable.
+"""
+import os
+import argparse
+from pathlib import Path
+import vermouth
+import vermouth.forcefield
+import polyply
+from polyply import (gen_itp, gen_coords, DATA_PATH)
+from polyply.src.load_library import load_library
+
+VERSION = 'polyply version {}'.format(polyply.__version__)
+
+def main():
+    """
+    Parses commandline arguments and call relevant sub_programs.
+    """
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+
+    parser.add_argument('-V', '--version', action='version', version=VERSION)
+    ff_group = parser.add_argument_group('Library Files')
+    ff_group.add_argument('-list-lib', action='store_true', dest='list_ff',
+                          help='List all known force fields, and exit.')
+    ff_group.add_argument('-list-blocks', type=str, dest='list_blocks',
+                          help='List all Blocks known to the'
+                          ' force field selected, and exit.', nargs='*')
+   # ff_group.add_argument('-list-links', type=str, dest='list_links',
+   #                       help='List all Links known to the'
+   #                       ' force field selected, and exit.')
+
+    subparsers = parser.add_subparsers()
+
+    # List of Subparsers for the different tools
+    parser_gen_itp = subparsers.add_parser('gen_itp')
+    parser_gen_coords = subparsers.add_parser('gen_coords')
+
+    # Input Arguments for the itp generation tool
+
+    parser_gen_itp.add_argument('-name', required=True, type=str, dest="name",
+                        help="name of the final molecule")
+
+    file_group = parser_gen_itp.add_argument_group('input and output options')
+    file_group.add_argument('-lib', dest='lib', required=False, type=str,
+                            help='force-fields to include from library', nargs='*')
+    file_group.add_argument('-f', dest='inpath', required=False, type=Path,
+                            help='Input file (ITP|FF)', nargs="*")
+    file_group.add_argument('-o', dest='outpath', type=Path,
+                            help='Output ITP (ITP)')
+    seq_group = file_group.add_mutually_exclusive_group(required=True)
+    seq_group.add_argument('-seq', dest='seq', type=str,
+                            help='A linear sequence of residue names.')
+    seq_group.add_argument('-seqf', dest='seq_file', type=Path,
+                            help='A graph input file (JSON|ITP)')
+
+   #martini_group = parser_gen_itp.add_argument_group('Martini specifics for protein and DNA.')
+   #martini_group.add_argument('-nt', dest='neutral_termini',
+   #                        action='store_true', default=False,
+   #                        help='Set neutral termini (charged is default)')
+   #martini_group.add_argument('-scfix', dest='scfix',
+   #                        action='store_true', default=False,
+   #                        help='Apply side chain corrections.')
+   #martini_group.add_argument('-cys', dest='cystein_bridge',
+   #                        type=_cys_argument,
+   #                        default='none', help='Cystein bonds')
+
+   #PTM_group = parser.add_argument_group('Martini specifics for protein and DNA.')
+   #PTM_group.add_argument('-nt', dest='neutral_termini',
+   #                        action='store_true', default=False,
+   #                        help='Set neutral termini (charged is default)')
+   #                        default='none', help='Cystein bonds')
+
+    parser_gen_itp.set_defaults(func=gen_itp)
+
+   # Input Arguments for the coordinate generation tool
+    file_group = parser_gen_coords.add_argument_group('Input and output files')
+    file_group.add_argument('-f', dest='inpath', required=False, type=Path,
+                            help='Input file (GRO|PDB)', nargs="*")
+    file_group.add_argument('-o', dest='outpath', type=Path,
+                            help='Output GRO (GRO)')
+
+    parser_gen_coords.set_defaults(func=gen_coords)
+
+    # Deal with queries of the polyply library
+    args = parser.parse_args()
+
+    if args.list_ff:
+        libs = os.listdir(DATA_PATH)
+        libs = [ lib for lib in libs if not lib.startswith("__")]
+        print('The following libraries are known:')
+        for idx, ff_name in enumerate(libs):
+            print('{:3d}. {}'.format(idx, ff_name))
+        parser.exit()
+
+    if args.list_blocks:
+        force_field = load_library("libs", args.list_blocks, [])
+        print('The following Blocks are present in the following libraries: {}:'.format(args.list_blocks))
+        for block in force_field.blocks:
+            print(block)
+        parser.exit()
+#    if args.list_links:
+#        print('The following Links are known to force field {}:'.format(args.list_links))
+#        print(', '.join(known_force_fields[args.list_links]))
+#        parser.exit()
+
+    args.func(args)
+
+if __name__ == '__main__':
+    main()
+
