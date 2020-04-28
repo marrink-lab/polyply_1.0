@@ -1,0 +1,39 @@
+;;; N1
+ 
+[ moleculetype ]
+; molname       nrexcl
+N1            1
+
+[ atoms ]
+;id  type resnr residu atom cgnr   charge
+ 1   N1   1      N1     BB     1      0
+
+;;; N2
+
+[ moleculetype ]
+; molname       nrexcl
+N2            1
+
+[ atoms ]
+;id  type resnr residu atom cgnr   charge
+ 1   N2   1      N2     BB     1      0
+
+;;; N3
+
+[ moleculetype ]
+; molname       nrexcl
+N3            1
+
+[ atoms ]
+;id  type resnr residu atom cgnr   charge
+ 1   N3   1      N3     BB     1      0
+
+[ link ]
+resname "N1|N2"
+[ bonds ]
+BB >BB 1 0.350 1250 {"group": "inner"}
+
+[ link ]
+resname "N2|N3"
+[ bonds ]
+BB >BB 1 0.250 1250 {"group": "outer"}

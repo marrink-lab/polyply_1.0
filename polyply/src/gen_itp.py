@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+
+"""
+High level API for the polyply itp generator
+"""
+from pathlib import Path
+import vermouth
+import vermouth.forcefield
+import polyply
+import polyply.src.parsers
+from polyply import (DATA_PATH, MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
+from .load_library import load_library
+
+def split_seq_string(sequence):
+    """
+    Split a string definition for a linear sequence into monomer
+    blocks and raise errors if the sequence is not valid.
+    Parameters
+    -----------
+    sequence: str
+            string of residues format name:number
+
+    Returns:
+    ----------
+    list
+       list of `polyply.Monomers`
+    """
+    raw_monomers = sequence.split()
+    monomers = []
+    for monomer in raw_monomers:
+        resname, n_blocks = monomer.split(":")
+        n_blocks = int(n_blocks)
+        monomers.append(Monomer(resname=resname, n_blocks=n_blocks))
+    return monomers
+
+def gen_itp(args):
+
+
+    # Import of Itp and FF files
+    force_field = load_library(args.name, args.lib, args.inpath)
+
+    # Generate the MetaMolecule
+    if args.seq:
+       monomers = split_seq_string(args.seq)
+       meta_molecule = MetaMolecule.from_monomer_seq_linear(monomers=monomers,
+                                                            force_field=force_field,
+                                                            mol_name=args.name)
+    #ToDo
+    # fix too broad except
+    elif args.seq_file:
+       extension = args.seq_file.suffix.casefold()[1:]
+       try:
+           parser = getattr(MetaMolecule, 'from_{}'.format(extension))
+           meta_molecule = parser(json_file=args.seq_file,
+                                  force_field=force_field,
+                                  mol_name=args.name)
+       except AttributeError:
+         raise IOError("Cannot parse file with extension {}.".format(extension))
+
+    # Do transformationa and apply link
+    meta_molecule = MapToMolecule().run_molecule(meta_molecule)
+    meta_molecule = ApplyLinks().run_molecule(meta_molecule)
+
+    with open(args.outpath, 'w') as outpath:
+        vermouth.gmx.itp.write_molecule_itp(meta_molecule.molecule, outpath,
+                                            moltype=args.name, header=["polyply-itp"])

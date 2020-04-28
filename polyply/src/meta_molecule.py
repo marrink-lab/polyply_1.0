@@ -2,6 +2,8 @@ from collections import namedtuple
 import json
 import networkx as nx
 from networkx.readwrite import json_graph
+from vermouth.graph_utils import make_residue_graph
+from polyply.src.parsers import read_polyply
 
 Monomer = namedtuple('Monomer', 'resname, n_blocks')
 
@@ -33,6 +35,22 @@ class MetaMolecule(nx.Graph):
 
     def get_edge_resname(self, edge):
         return [self.nodes[edge[0]]["resname"],  self.nodes[edge[1]]["resname"]]
+
+    @staticmethod
+    def _block_graph_to_res_graph(block):
+        """
+        generate a residue graph from the nodes of `block`.
+
+        Parameters
+        -----------
+        block: `:class:vermouth.molecule.Block`
+
+        Returns
+        -------
+        :class:`nx.Graph`
+        """
+        res_graph = make_residue_graph(block, attrs=('resid', 'resname'))
+        return res_graph
 
     @classmethod
     def from_monomer_seq_linear(cls, force_field, monomers, mol_name):
@@ -71,3 +89,16 @@ class MetaMolecule(nx.Graph):
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
         return meta_mol
 
+    @classmethod
+    def from_itp(cls, force_field, itp_file, mol_name):
+        """
+        Constructs a :class::`MetaMolecule` from an itp file.
+        """
+        with open(itp_file) as file_:
+            lines = file_.readlines()
+            read_polyply(lines, force_field)
+
+        graph = MetaMolecule._block_graph_to_res_graph(force_field.blocks[mol_name])
+        meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
+        meta_mol.molecule = force_field.blocks[mol_name].to_molecule()
+        return meta_mol

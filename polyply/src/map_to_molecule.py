@@ -19,7 +19,8 @@ class MapToMolecule(Processor):
         """
         # 1. relable nodes to make space for new nodes to be inserted
         mapping = {}
-        offset = len(block.nodes) - 1
+        offset = len(set(nx.get_node_attributes(block, "resid").values())) - 1
+        print("offset", offset)
         for node in meta_molecule.nodes:
             if node > meta_mol_node:
                 mapping[node] = node + offset
@@ -67,14 +68,20 @@ class MapToMolecule(Processor):
         molecule graph to include the block at residue level.
         """
         force_field = meta_molecule.force_field
-        name = meta_molecule.nodes[0]["resname"]
-        new_mol = force_field.blocks[name].to_molecule()
+        block = force_field.blocks[meta_molecule.nodes[0]["resname"]]
+        new_mol = block.to_molecule()
+
+        if len(set(nx.get_node_attributes(block, "resname").values())) > 1:
+            MapToMolecule.expand_meta_graph(meta_molecule, block, 0)
 
         for node in list(meta_molecule.nodes.keys())[1:]:
             resname = meta_molecule.nodes[node]["resname"]
+
+            if node + 1 in nx.get_node_attributes(new_mol, "resid").values():
+               continue
+
             block = force_field.blocks[resname]
             new_mol.merge_molecule(block)
-
             if len(set(nx.get_node_attributes(block, "resname").values())) > 1:
                 MapToMolecule.expand_meta_graph(meta_molecule, block, node)
 
