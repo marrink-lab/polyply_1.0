@@ -27,34 +27,35 @@ def construct_vs(atoms, coords):
           coord += coords[atom]
    return coord
 
-def _expand_inital_coords(block, coords, inter_type):
 
-    if not coords:
-       atom = list(block.nodes)[0]
-       coords[atom] = np.array([0, 0, 0])
 
-    vectors = norm_sphere(values=1000)
-    if inter_type != "virtual_sitesn":
-       for bond in block.interactions[inter_type]:
-           atoms = bond.atoms
-           params = bond.parameters
-           if atoms[0] in coords and atoms[1] not in coords:
-               dist = float(params[1])
-               coords[atoms[1]], _ = _take_step(vectors, dist ,coords[atoms[0]])
+def find_step_length(interactions, current_node, prev_node):
+    for inter_type in interactions:
+        if inter_type in ["bonds", "constraints", "virtual_sitesn"]:
+           for interaction in interactions[inter_type]:
+               if current_node in interaction.atoms:
+                  if prev_node in interaction.atoms and inter_type != "virtual_sitesn":
+                     return False, float(interaction.parameters[1])
+                  elif inter_type == "virtual_sitesn":
+                     return True, interaction.atoms
 
-           elif atoms[1] in coords and atoms[0] not in coords:
-               dist = float(params[1])
-               coords[atoms[0]], _ = _take_step(vectors, dist, coords[atoms[1]])
-           else:
-               continue
+def _expand_inital_coords(block, coords):
 
-    elif inter_type == "virtual_sitesn":
-         for vs in block.interactions[inter_type]:
-             atoms = vs.atoms
-             coords[atoms[0]] = construct_vs(atoms, coords)
+   if not coords:
+      atom = list(block.nodes)[0]
+      coords[atom] = np.array([0, 0, 0])
 
-    return coords
+   vectors = norm_sphere(values=1000)
+   print([ i for i in nx.dfs_edges(block, source=atom)])
+   for prev_node, current_node in nx.dfs_edges(block, source=atom):
+       prev_coord = coords[prev_node]
+       is_vs, param = find_step_length(block.interactions, current_node, prev_node)
+       if is_vs:
+           coords[current_node] = construct_vs(atoms, coords)
+       else:
+          coords[current_node], _ = _take_step(vectors, param, prev_coord)
 
+   return coords
 
 def compute_volume(molecule, block, coords):
     n_atoms = len(coords)
@@ -106,11 +107,20 @@ def _atoms_in_node(atoms, nodes):
     else:
         return True
 
-def extract_block(molecule, resname):
+def replace_defines(interaction, defines):
+    def_key = interaction.parameters[-1]
+    if def_key in defines:
+       values = defines[def_key]
+       del interaction.parameters[-1]
+       [interaction.parameters.append(param) for param in values]
+
+    return interaction
+
+def extract_block(molecule, resname, defines):
 
     nodes = find_atoms(molecule, "resname", resname)
     resid = molecule.nodes[nodes[0]]["resid"]
-    block = vermouth.molecule.Molecule()
+    block = vermouth.molecule.Block()
 
     for node in nodes:
         attr_dict = molecule.nodes[node]
@@ -120,7 +130,9 @@ def extract_block(molecule, resname):
     for inter_type in molecule.interactions:
         for interaction in molecule.interactions[inter_type]:
             if _atoms_in_node(interaction.atoms, block.nodes):
+               interaction = replace_defines(interaction, defines)
                block.interactions[inter_type].append(interaction)
+        block.make_edges_from_interaction_type(inter_type)
 
     return block
 
@@ -136,10 +148,12 @@ class GenerateTemplates(Processor):
         volumes = {}
 
         for resname in resnames:
-            block = extract_block(meta_molecule.molecule, resname)
-            coords = _expand_inital_coords(block, {}, 'bonds')
-            coords = _expand_inital_coords(block, coords, 'constraints')
-            coords = _expand_inital_coords(block, coords, 'virtual_sitesn')
+            block = extract_block(meta_molecule.molecule, resname, 
+                                  meta_molecule.defines)
+            coords = _expand_inital_coords(block, {})
+            #coords = _expand_inital_coords(block, coords, 'constraints')
+            #coords = _expand_inital_coords(block, coords, 'virtual_sitesn')
+            print(resname, coords)
             coords = optimize_geometry(block, coords)
             volumes[resname] = compute_volume(meta_molecule, block, coords)
             coords = map_from_CoG(coords)

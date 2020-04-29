@@ -10,7 +10,7 @@ from pathlib import Path
 import vermouth
 import vermouth.forcefield
 import polyply
-from polyply import (gen_itp, gen_coords, DATA_PATH)
+from polyply import (gen_itp, gen_coords, gen_seq, DATA_PATH)
 from polyply.src.load_library import load_library
 
 VERSION = 'polyply version {}'.format(polyply.__version__)
@@ -39,6 +39,7 @@ def main():
     # List of Subparsers for the different tools
     parser_gen_itp = subparsers.add_parser('gen_itp')
     parser_gen_coords = subparsers.add_parser('gen_coords')
+    parser_gen_seq = subparsers.add_parser('gen_seq')
 
     #=============================================================================
     # Input Arguments for the itp generation tool
@@ -99,6 +100,15 @@ def main():
                             help='Input file (.gro)', default=None)
 
     parser_gen_coords.set_defaults(func=gen_coords)
+
+
+    #============================================================================
+    #           Input Arguments for the coordinate generation tool
+    #============================================================================
+    #parser_gen_seq.add_argument('-name', required=True, type=str, dest="name",
+    #                                help="name of the final molecule")
+    parser_gen_seq.set_defaults(func=gen_seq)
+
 
     #============================================================================
     # Deal with queries of the polyply library

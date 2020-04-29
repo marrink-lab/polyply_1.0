@@ -314,8 +314,17 @@ def is_subgraph(graph1, graph2):
     ----------
     bool
     """
-    graph_matcher = isomorphism.GraphMatcher(graph1, graph2)
-    return graph_matcher.subgraph_is_isomorphic()
+    #graph_matcher = isomorphism.GraphMatcher(graph1, graph2)
+    #return graph_matcher.subgraph_is_isomorphic()
+    for node in graph2.nodes:
+        if not node in graph1.nodes:
+           return False
+
+    for edge in graph2.edges:
+        if not edge in graph1.edges:
+           return False
+
+    return True
 
 
 def _get_link_resnames(link):
@@ -374,13 +383,13 @@ def _get_links(meta_molecule, edge):
 
     for link in meta_molecule.force_field.links:
         link_resnames = _get_link_resnames(link)
-
         if link.molecule_meta.get('by_atom_id'):
             continue
         elif res_names[0] in link_resnames and res_names[1] in link_resnames:
             orders = list(nx.get_node_attributes(link, "order").values())
             sub_graphs, resids = gen_link_fragments(meta_molecule, orders, edge[0])
             for idx, graph in enumerate(sub_graphs):
+              #  print(graph.nodes, is_subgraph(meta_molecule, graph))
                 if is_subgraph(meta_molecule, graph):
                     if len(resids[idx]) == len(orders):
                         link_resids.append([i+1 for i in resids[idx]])

@@ -1,7 +1,27 @@
+import code
+import readline
+import rlcompleter
 import networkx as nx
-import console
 import json
 from networkx.readwrite import json_graph
+import polyply.src.console
+
+"""
+Console module provide `copen` method for opening interactive python shell in
+the runtime.
+"""
+
+def copen(_globals, _locals):
+    """
+    Opens interactive console with current execution state.
+    Call it with: `console.open(globals(), locals())`
+    """
+    context = _globals.copy()
+    context.update(_locals)
+    readline.set_completer(rlcompleter.Completer(context).complete)
+    readline.parse_and_bind("tab: complete")
+    shell = code.InteractiveConsole(context)
+    shell.interact()
 
 class Block:
 
@@ -67,19 +87,37 @@ def write_sequence(file_name):
     g_json = json_graph.node_link_data(g)
     json.dump(g_json, open(file_name,'w'), indent=1)
 
-print("\n\n")
-print("Usage")
-print("----------------------------------")
-print("Here goes good text")
-print("----------------------------------")
-print("\n\n")
 
-global blocks
-blocks = Block("test")
-sequence = Sequence("seq")
+def gen_seq(args):
+    print("\n\n")
+    print("----------------------------------")
+    print("Usage")
+    print("Use the three commands below to")
+    print("build a polymer sequence.\n")
+    print("To do so first make a new block.")
+    print("Then add residues to that block specificing,")
+    print("how each new residue is connected to the one before.")
+    print("Finally to generate n-monomers use the expand command,")
+    print("followed by add to sequence and write_sequence.")
+    print("\nCommands")
+    print("new_block(name)")
+    print("add_residue_to_block(name, resname, connections)")
+    print("expand_block(name, n_monomers, connect)")
+    print("add_block_to_squence(name, connection)")
+    print("write_sequence(file_name)")
+    print("\nTips")
+    print("All variables name and resname need  to be ")
+    print("entered using \" at the end and start of the name.\n")
+    print("Connection are provided in the format:")
+    print("[(resid1, resid2), (resid2, resid3) ]")
+    print("----------------------------------")
+    print("\n\n")
 
-console.copen(globals(), locals())
+    global blocks
+    global sequence
+    blocks = Block("test")
+    sequence = Sequence("seq")
 
-print('You created a residue graph!')
+    copen(globals(), locals())
 
-
+    print('You created a residue graph!')
