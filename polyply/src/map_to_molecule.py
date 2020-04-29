@@ -74,7 +74,9 @@ class MapToMolecule(Processor):
         if len(set(nx.get_node_attributes(block, "resname").values())) > 1:
             MapToMolecule.expand_meta_graph(meta_molecule, block, 0)
 
-        for node in list(meta_molecule.nodes.keys())[1:]:
+        node_keys = list(meta_molecule.nodes.keys())
+        node_keys.sort()
+        for node in node_keys[1:]:
             resname = meta_molecule.nodes[node]["resname"]
 
             if node + 1 in nx.get_node_attributes(new_mol, "resid").values():

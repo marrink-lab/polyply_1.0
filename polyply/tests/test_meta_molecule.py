@@ -79,9 +79,9 @@ class TestPolyply:
     @pytest.mark.parametrize('file_name, edges, nodes, attrs', (
         # multiple blocks from single monomer
           ("test_data/json/linear.json",
-           [(1,2),(2,3)],
-           [1,2,3],
-           {1: 'PEO', 2: 'PEO', 3: 'PEO'}
+           [(0,1),(1,2)],
+           [0,1,2],
+           {0: 'PEO', 1: 'PEO', 2: 'PEO'}
           ),
        # two blocks from two monomers
          ("test_data/json/single_branch.json",
