@@ -30,7 +30,7 @@ def new_block(name):
     blocks.current_block = name
 
 def add_residue_to_block(name, resname, connections):
-    new_node = len(blocks.blocks[name].nodes) + 1
+    new_node = len(blocks.blocks[name].nodes)
     blocks.blocks[name].add_node(new_node, resname=resname)
     blocks.blocks[name].add_edges_from(connections)
 
@@ -65,7 +65,7 @@ def expand_block(name, n_monomers, connect):
 def write_sequence(file_name):
     g = sequence.graph
     g_json = json_graph.node_link_data(g)
-    json.dump(g_json, open(file_name,'w'), indent=2)
+    json.dump(g_json, open(file_name,'w'), indent=1)
 
 print("\n\n")
 print("Usage")
