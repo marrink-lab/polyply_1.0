@@ -42,7 +42,7 @@ def optimize_geometry(block, coords):
 
     opt_results = scipy.optimize.minimize(target_function, positions, method='L-BFGS-B',
                                           options={'ftol':0.001, 'maxiter': 1000})
-    print(opt_results)
+    print("optimization status:", opt_results["success"])
     positions = opt_results['x'].reshape((-1, 3))
     for node_key, idx in atom_to_idx.items():
         coords[node_key] = positions[idx]

@@ -12,7 +12,7 @@ nBA 3
  6 CH3 1 nBA C1  0   0.0   15.0
  7 CH2 1 nBA C2  0   0.0   14.0
  8 CH2 1 nBA C3  0   0.0   14.0
- 9 CH2 1 nBA C4  0   0.0   14.0
+ 9 CH2 1 nBA CN  0   0.0   14.0
 
 [ bonds ]
  2  3 2 gb_27

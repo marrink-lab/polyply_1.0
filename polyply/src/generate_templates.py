@@ -46,11 +46,8 @@ def _expand_inital_coords(block, coords):
       coords[atom] = np.array([0, 0, 0])
 
    vectors = norm_sphere(values=1000)
-   print(block.edges)
-   print([ i for i in nx.dfs_edges(block, source=atom)])
    for prev_node, current_node in nx.dfs_edges(block, source=atom):
        prev_coord = coords[prev_node]
-       print(current_node)
        is_vs, param = find_step_length(block.interactions, current_node, prev_node)
        if is_vs:
            coords[current_node] = construct_vs(atoms, coords)
@@ -72,14 +69,19 @@ def compute_volume(molecule, block, coords):
         if molecule.defaults["nbfunc"] == 1:
            A = float(molecule.atom_types[atom_key]["nb1"])
            B = float(molecule.atom_types[atom_key]["nb2"])
-           if A == 0 and B == 0:
+           if A == 0 and B == 0 and atom_key != "H":
               A = float(molecule.nonbond_params[(atom_key, atom_key)]["nb1"])
               B = float(molecule.nonbond_params[(atom_key, atom_key)]["nb2"])
-           rad = 1.22*(A/B)**(1/6.)
+              rad = 1.22*(A/B)**(1/6.)
+           else:
+              rad = 0
+
         else:
            rad = 1.22*float(molecule.atom_types[atom_key]["nb1"])
-           if rad == 0:
+           if rad == 0 and atom_key != "H":
               rad = 1.22*float(molecule.nonbond_params[(atom_key, atom_key)]["nb1"])
+           else:
+              rad =0
 
         diff = coord - CoG
         geom_vects[idx, :] = diff + u_vect(diff) * rad
@@ -155,9 +157,6 @@ class GenerateTemplates(Processor):
             block = extract_block(meta_molecule.molecule, resname, 
                                   meta_molecule.defines)
             coords = _expand_inital_coords(block, {})
-            #coords = _expand_inital_coords(block, coords, 'constraints')
-            #coords = _expand_inital_coords(block, coords, 'virtual_sitesn')
-            print(resname, coords)
             coords = optimize_geometry(block, coords)
             volumes[resname] = compute_volume(meta_molecule, block, coords)
             coords = map_from_CoG(coords)

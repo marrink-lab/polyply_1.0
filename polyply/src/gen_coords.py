@@ -43,6 +43,7 @@ def gen_coords(args):
            for node in molecule.molecule.nodes:
                molecule.molecule.nodes[node]["build"] = True
 
+ 
     # Build polymer structure
     GenerateTemplates().run_system(topology)
     RandomWalk().run_system(topology)

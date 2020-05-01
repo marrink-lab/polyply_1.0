@@ -4,13 +4,13 @@ PMMA     3
 ;
 [ atoms ]
 ;  nr  type  resnr  resid  atom  cgnr  charge    mass    total_charge
-    1   CH2    1    PMMA   C1    1     0.00     14.0            ;  0.000
-    2   C      1    PMMA   C2    2     0.00     12.0    
-    3   CH3    1    PMMA   C3    3     0.00     15.0 
-    4   C      1    PMMA   C4    4     0.63     12.0        
-    5   O      1    PMMA   O1    5    -0.37     16.0
-    6   OE     1    PMMA   O2    6    -0.55     16.0
-    7   CH3    1    PMMA   C5    7     0.29     15.0
+    1   CH2    1    PMMA   VC1   1     0.00     14.0            ;  0.000
+    2   C      1    PMMA   VC2   2     0.00     12.0    
+    3   CH3    1    PMMA   VC3   3     0.00     15.0 
+    4   C      1    PMMA   SC1   4     0.63     12.0        
+    5   O      1    PMMA   SO1   5    -0.37     16.0
+    6   OE     1    PMMA   SO2   6    -0.55     16.0
+    7   CH3    1    PMMA   CN    7     0.29     15.0
 ;
 ;
 [ bonds ]

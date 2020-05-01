@@ -12,7 +12,7 @@ MXMA 3
  6 CH3 1 MXMA C1  0  0.29 15.0
  7 OE  1 MXMA O1  0 -0.58 16.0
  8 CH2 1 MXMA C2  0  0.29 14.0
- 9 CH2 1 MXMA C3  1   0.0 14.0
+ 9 CH2 1 MXMA CN  1   0.0 14.0
 
 [ bonds ]
  2  3 2 gb_27

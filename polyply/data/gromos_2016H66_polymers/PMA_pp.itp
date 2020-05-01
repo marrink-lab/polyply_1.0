@@ -9,7 +9,7 @@ PMA 3
  3 C   1 PMA SC1 3  0.63 12.0
  4 O   1 PMA SO1 4 -0.55 16.0
  5 OE  1 PMA SO2 5 -0.37 16.0
- 6 CH3 1 PMA CH3 6   0.0 15.0
+ 6 CH3 1 PMA CN  6   0.0 15.0
 
 [ bonds ]
 

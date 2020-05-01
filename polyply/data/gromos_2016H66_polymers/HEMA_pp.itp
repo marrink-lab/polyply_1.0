@@ -12,7 +12,7 @@ HEMA 3
  6 H   1 HEMA H1  0  0.41  1.0
  7 OA  1 HEMA O1  0  -0.7 16.0
  8 CH2 1 HEMA C1  0  0.29 14.0
- 9 CH2 1 HEMA C2  1   0.0 14.0
+ 9 CH2 1 HEMA CN  1   0.0 14.0
 
 [ bonds ]
  2  3 2 gb_27

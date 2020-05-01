@@ -31,7 +31,7 @@ def _combination(radius_A, radius_B):
 
 def update_positions(vector_bundel, meta_molecule, current_node, prev_node):
     if "position" in meta_molecule.nodes[current_node]:
-        #print("skipped", meta_molecule.nodes[current_node]["resname"])
+        print("skipped", meta_molecule.nodes[current_node]["resname"])
         return
 
     current_vectors = np.zeros(vector_bundel.shape)
@@ -46,7 +46,6 @@ def update_positions(vector_bundel, meta_molecule, current_node, prev_node):
     vdw_radius = _combination(current_vdwr, prev_vdwr)
 
     step_length = 2*vdw_radius
-
     while True:
         new_point, index = _take_step(vector_bundel, step_length, last_point)
         if not _is_overlap(meta_molecule, new_point, tol=vdw_radius):

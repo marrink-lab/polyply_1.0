@@ -1,0 +1,23 @@
+[link]
+resname "PMA|MXMA|nBA|HEMA|PMMA|CH3"
+[ bonds ]
+CH3    +VC1    2     1.5300000e-01  7.1500000e+06 {"group": "connect"}
+[ pairs ]
+  CH3    +CN      1 {"group": "connect"}
+  CH3    +SO1     1 {"group": "connect"}
+[ angles ]
+CH3      +VC1       +VC2       2       1.1100000e+02  5.3000000e+02 {"group": "connect"}
+[ dihedrals ]
+CH3  +VC1      +VC2       ++VC1  1  0.0000000  5.9200000  3 {"group": "connect"}
+
+[link]
+resname "PMA|MXMA|nBA|HEMA|PMMA|CH3"
+[ bonds ]
+VC2    +CH3    2     1.5300000e-01  7.1500000e+06 {"group": "connect"}
+[ pairs ]
+CN  +CH3        1 {"group": "connect"}
+SO1  +CH3        1 {"group": "connect"}
+[ angles ]
+VC1  VC2  +CH3     2       1.1100000e+02  5.3000000e+02 {"group": "connect"}
+[ dihedrals ]
+-VC2     VC1      VC2       +CH3  1  0.0000000  5.9200000  3 {"group": "connect"}
