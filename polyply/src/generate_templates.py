@@ -46,9 +46,11 @@ def _expand_inital_coords(block, coords):
       coords[atom] = np.array([0, 0, 0])
 
    vectors = norm_sphere(values=1000)
+   print(block.edges)
    print([ i for i in nx.dfs_edges(block, source=atom)])
    for prev_node, current_node in nx.dfs_edges(block, source=atom):
        prev_coord = coords[prev_node]
+       print(current_node)
        is_vs, param = find_step_length(block.interactions, current_node, prev_node)
        if is_vs:
            coords[current_node] = construct_vs(atoms, coords)
@@ -132,6 +134,8 @@ def extract_block(molecule, resname, defines):
             if _atoms_in_node(interaction.atoms, block.nodes):
                interaction = replace_defines(interaction, defines)
                block.interactions[inter_type].append(interaction)
+
+    for inter_type in ["bonds", "constraints"]:
         block.make_edges_from_interaction_type(inter_type)
 
     return block
