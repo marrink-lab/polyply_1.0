@@ -83,9 +83,9 @@ MXE 3
 2 3 4 2 ga_15
 
 [ dihedrals ]
-4 3 2 1 1
-1 2 3 4 1
-
+1 2 3 4 1   gd_42
+1 2 3 4 1   gd_43
+1 2 3 4 1   gd_44
 
 [ moleculetype ]
 ; Name  nrexcl
@@ -119,9 +119,9 @@ VC2   ++VC1   2  gb_27  {"group" : "main-link"}
 [ link ]
 resname "PA|PA"
 [ angles ]
-VC1 VC2 ++VC1  2  ga_15 {"group" : "main-link"}
-VC2 VC1 ++VC2  2  ga_15 {"group" : "main-link"}
-SC1 VC2 ++VC1  2  ga_15 {"group" : "main-link"}
+VC1   VC2 ++VC1  2  ga_15 {"group" : "main-link"}
+VC2 ++VC1 ++VC2  2  ga_15 {"group" : "main-link"}
+SC1   VC2 ++VC1  2  ga_15 {"group" : "main-link"}
 [ link ]
 resname "PA|PA"
 [ dihedrals ]
