@@ -7,7 +7,7 @@ setup(
     author_email='f.grunewald@rug.nl',
     packages=find_packages(),
     include_package_data=True,
-    scripts=['bin/polyply.gen_itp', ],
+    scripts=['bin/polyply', ],
     license='Apache 2.0',
     description='tool for generating GROMACS (bio)-macromolecule itps and structures',
     long_description=open('README.md').read(),
