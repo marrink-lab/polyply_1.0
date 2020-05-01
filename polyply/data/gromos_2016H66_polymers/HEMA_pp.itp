@@ -1,0 +1,69 @@
+; polyply-itp
+
+[ moleculetype ]
+HEMA 3
+
+[ atoms ]
+ 1 CH2 1 HEMA VC1 0   0.0 14.0
+ 2 CH1 1 HEMA VC2 0   0.0 13.0
+ 3 C   1 HEMA SC1 0  0.63 12.0
+ 4 O   1 HEMA SO1 0 -0.55 16.0
+ 5 OE  1 HEMA SO2 0 -0.37 16.0
+ 6 H   1 HEMA H1  0  0.41  1.0
+ 7 OA  1 HEMA O1  0  -0.7 16.0
+ 8 CH2 1 HEMA C1  0  0.29 14.0
+ 9 CH2 1 HEMA C2  1   0.0 14.0
+
+[ bonds ]
+ 2  3 2 gb_27
+ 4  3 2 gb_5
+ 5  3 2 gb_13
+ 1  2 2 gb_27
+ 6  7 2 gb_1
+ 7  8 2 gb_18
+ 8  9 2 gb_27
+
+; main-link
+ 2 10 2 gb_27
+
+; side-chain-link
+ 5  9 2 gb_18
+
+[ angles ]
+ 2  3  4 2 ga_35
+ 2  3  5 2 ga_16
+ 4  3  5 2 ga_31
+ 1  2  3 2 ga_15
+ 6  7  8 2 ga_12
+ 7  8  9 2 ga_15
+
+; main-link
+ 1  2  10 2 ga_15
+ 2  10 11 2 ga_15
+ 3  2  10 2 ga_15
+
+; side-chain-link
+ 3  5  9 2 ga_22
+ 5  9  8 2 ga_15
+
+[ dihedrals ]
+ 1  2  3  5 1 gd_29
+ 9  8  7  6 1 gd_29
+ 6  7  8  9 1 gd_29
+
+; main-link
+ 1  2  10 11 1 gd_19
+ 2  10 11 19 1 gd_19
+
+; side-chain-link
+ 3  5  9  8 1 gd_29
+ 1  3  5  9 1 gd_12
+
+[ pairs ]
+ 1  4 1
+ 1  5 1
+
+; side-chain-link
+ 2  9 1
+ 4  9 1
+ 3  8 1
