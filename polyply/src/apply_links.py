@@ -1,6 +1,7 @@
 from itertools import combinations
 import networkx as nx
 from networkx.algorithms import isomorphism
+from tqdm import tqdm
 import vermouth.molecule
 from vermouth.processors.do_links import match_order
 from .processor import Processor
@@ -420,7 +421,7 @@ class ApplyLinks(Processor):
         molecule = meta_molecule.molecule
         force_field = meta_molecule.force_field
 
-        for edge in meta_molecule.edges:
+        for edge in tqdm(meta_molecule.edges):
             links, resids = _get_links(meta_molecule, edge)
             for link, idxs in zip(links, resids):
                 try:
