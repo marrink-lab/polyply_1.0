@@ -103,7 +103,13 @@ class TestPolyply:
           [0,1,2,3,4,5,6,7,8,9,10,11,12,13],
           {0: 'N1', 1: 'N2', 2: 'N3', 3: 'N3', 4: 'N2', 5: 'N3', 6: 'N3',
            7: 'N1', 8: 'N2', 9: 'N3', 10: 'N3', 11: 'N2', 12: 'N3', 13: 'N3'}
-          )
+          ),
+        # check that ordering is restored
+          ("test_data/json/linear_rev.json",
+           [(0,1),(1,2)],
+           [0,1,2],
+           {0: 'PEO', 1: 'PEO', 2: 'PEO'}
+          ),
            ))
     def test_from_json(file_name, edges, nodes, attrs):
         ff = vermouth.forcefield.ForceField(name='test_ff')
