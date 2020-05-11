@@ -13,7 +13,7 @@ from .top_parser import read_topology
 from .meta_molecule import MetaMolecule
 from .linalg_functions import center_of_geometry
 
-coord_parsers = {"pdb": read_pdb,
+COORD_PARSERS = {"pdb": read_pdb,
                  "gro": read_gro}
 
 def find_atoms(molecule, attr, value):
@@ -27,7 +27,7 @@ def find_atoms(molecule, attr, value):
 
 class Topology(System):
     """
-    Ties together vermoth molecule definitions, and
+    Ties together vermouth molecule definitions, and
     Gromacs topology information.
 
     Parameters
@@ -51,10 +51,8 @@ class Topology(System):
     """
 
     def __init__(self, force_field, name=None):
+        super().__init__(force_field)
         self.name = name
-        self.molecules = []
-        self._force_field = None
-        self.force_field = force_field
         self.defaults = {}
         self.defines = {}
         self.description = []
@@ -68,19 +66,20 @@ class Topology(System):
         """
         path = Path(path)
         extension = path.suffix.casefold()[1:]
-        reader = coord_parsers[extension]
+        reader = COORD_PARSERS[extension]
         molecules = read_gro(path, exclude=())
         total = 0
         for meta_mol in self.molecules:
             for node in meta_mol.molecule.nodes:
                 try:
                    position = molecules.nodes[total]["position"]
-                   meta_mol.molecule.nodes[node]["position"] = position
-                   meta_mol.molecule.nodes[node]["build"] = False
-                   total += 1
                 except KeyError:
                    meta_mol.molecule.nodes[node]["build"] = True
                    last_atom = total
+                else:
+                   meta_mol.molecule.nodes[node]["position"] = position
+                   meta_mol.molecule.nodes[node]["build"] = False
+                   total += 1
 
             for node in meta_mol:
                 atoms_in_res = find_atoms(meta_mol.molecule, "resid", node+1)
