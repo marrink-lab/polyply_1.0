@@ -57,7 +57,7 @@ class Topology(System):
         self.force_field = force_field
         self.defaults = {}
         self.defines = {}
-        self.discription = []
+        self.description = []
         self.atom_types = {}
         self.types = defaultdict(list)
         self.nonbond_params = {}

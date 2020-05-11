@@ -117,7 +117,7 @@ class MetaMolecule(nx.Graph):
     @classmethod
     def from_block(cls, force_field, block, mol_name):
         """
-        Constructs a :class::`MetaMolecule` from an vermoth.molecule.
+        Constructs a :class::`MetaMolecule` from an vermouth.molecule.
         """
         _make_edges(force_field)
         graph = MetaMolecule._block_graph_to_res_graph(block)
