@@ -88,16 +88,20 @@ class MetaMolecule(nx.Graph):
             data = json.load(file_)
 
         init_graph = nx.Graph(json_graph.node_link_graph(data))
-        # we need to order the incoming graph
+        # we need to order the incoming graph and let's also
+        # do the edges. Better safe than sorry.
 
-        graph = nx.Graph()
-        graph.add_edges_from(init_graph.edges)
+        graph = nx.Graph(node_dict_factory=OrderedDict)
         nodes = list(init_graph.nodes)
         nodes.sort()
 
         for node in nodes:
             attrs = init_graph.nodes[node]
             graph.add_node(node, **attrs)
+
+        for edge in init_graph.edges:
+            list(edge).sort()
+            graph.add_edge(edge[0], edge[1])
 
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
         return meta_mol
