@@ -65,13 +65,10 @@ class TOPDirector(SectionLineParser):
         collections.abc.Callable
             The method that should be used to parse `line`.
         """
-
-        if self.is_section_header(line):
-            return self.parse_header
-        elif self.is_pragma(line):
+        if self.is_pragma(line):
             return self.parse_top_pragma
         else:
-            return self.parse_section
+            return super().dispatch(line)
 
     @staticmethod
     def is_pragma(line):
@@ -101,9 +98,8 @@ class TOPDirector(SectionLineParser):
 
         Returns
         -------
-        object
-            The result of calling :meth:`finalize_section`, which is called
-            if a section ends.
+         The result of calling :meth:`finalize_section`, which is called
+         if a section ends.
 
         Raises
         ------
@@ -116,7 +112,7 @@ class TOPDirector(SectionLineParser):
             elif self.current_meta is None:
                 raise IOError("Your #ifdef section is orderd incorrectly."
                               "At line {} I read #endif but I haven not read"
-                              "a ifdef before.".format(lineno))
+                              "an ifdef before.".format(lineno))
 
         elif line.startswith("#ifdef") or line.startswith("#ifndef"):
             if self.current_itp:
@@ -126,10 +122,10 @@ class TOPDirector(SectionLineParser):
                 self.current_meta = {'tag': tag,
                                      'condition': condition.replace("#", "")}
             elif self.current_meta is not None:
-                raise IOError("Your #ifdef/#ifndef section is orderd incorrectly."
+                raise IOError("Your {} section is orderd incorrectly."
                               "At line {} I read {} but there is still"
                               "an open #ifdef/#ifndef section from"
-                              "before.".format(lineno, line.split()[0]))
+                              "before.".format(self.current_meta['tag'], lineno, line.split()[0]))
 
         elif line.split()[0] in self.pragma_actions:
             action = self.pragma_actions[line.split()[0]]
@@ -161,29 +157,38 @@ class TOPDirector(SectionLineParser):
         KeyError
             If the section header is unknown.
         """
-        prev_section = self.section
+      # prev_section = self.section
 
-        ended = []
-        section = self.section + [line.strip('[ ]').casefold()]
-        if tuple(section[-1:]) in self.METH_DICT:
-            self.section = section[-1:]
-        else:
-            while tuple(section) not in self.METH_DICT and len(section) > 1:
-                ended.append(section.pop(-2))  # [a, b, c, d] -> [a, b, d]
-            self.section = section
+      # ended = []
+      # section = self.section + [line.strip('[ ]').casefold()]
+      # if tuple(section[-1:]) in self.METH_DICT:
+      #     self.section = section[-1:]
+      # else:
+      #     while tuple(section) not in self.METH_DICT and len(section) > 1:
+      #         ended.append(section.pop(-2))  # [a, b, c, d] -> [a, b, d]
+      #     self.section = section
 
-        result = None
+      # result = None
 
-        if len(prev_section) != 0:
-            result = self.finalize_section(prev_section, ended)
+      # if len(prev_section) != 0:
+      #     result = self.finalize_section(prev_section, ended)
 
+      # action = self.header_actions.get(tuple(self.section))
+      # if action:
+      #     action()
+
+      # if not isinstance(self.current_itp, type(None)):
+      #    self.current_itp.append(line)
+
+      # return result
+
+        result = super().parse_header(line, lineno)
         action = self.header_actions.get(tuple(self.section))
         if action:
-            action()
+           action()
 
         if not isinstance(self.current_itp, type(None)):
            self.current_itp.append(line)
-
         return result
 
     def finalize(self, lineno=0):
@@ -195,8 +200,8 @@ class TOPDirector(SectionLineParser):
            self.itp_lines.append(self.current_itp)
 
         if self.current_meta is not None:
-            raise IOError("Your #ifdef/#ifndef section is orderd incorrectly."
-                          "There is no #endif for the last pragma.")
+            raise IOError("Your {} section is orderd incorrectly."
+                          "There is no #endif for this pragma.".format(self.current_meta))
 
         for lines in self.itp_lines:
             read_itp(lines, self.force_field)
@@ -225,9 +230,9 @@ class TOPDirector(SectionLineParser):
         Parses the lines in the '[system]'
         directive and stores it.
         """
-        system_lines = self.topology.discription
+        system_lines = self.topology.description
         system_lines.append(line)
-        self.discription = system_lines
+        self.description = system_lines
 
     @SectionLineParser.section_parser('molecules')
     def _molecules(self, line, lineno=0):
@@ -262,11 +267,11 @@ class TOPDirector(SectionLineParser):
         atom_name = line.split()[0]
         nb1, nb2 = line.split()[-2:]
         self.topology.atom_types[atom_name] = {"nb1": float(nb1),
-                                              "nb2": float(nb2)}
+                                               "nb2": float(nb2)}
 
     @SectionLineParser.section_parser('nonbond_params')
     def _nonbond_params(self, line, lineno=0):
-        """angletypes
+        """
         Parse and store nonbond params
         """
         atom_1, atom_2, func, nb1, nb2 = line.split()
@@ -336,7 +341,6 @@ class TOPDirector(SectionLineParser):
         parse include statemnts
         """
         path = line.split()[1].strip('\"')
-        print(self.cwdir)
         if self.cwdir:
            filename = os.path.join(self.cwdir, path)
            cwdir = os.path.dirname(filename)
@@ -374,7 +378,7 @@ class TOPDirector(SectionLineParser):
                 atoms.append(tokens[idx])
                 remove.append(idx)
             elif isinstance(idx, slice):
-                atoms += [atom for atom in tokens[idx]]
+                atoms.extend(tokens[idx])
                 idx_range = range(0, len(tokens))
                 remove += idx_range[idx]
             else:
