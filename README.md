@@ -63,4 +63,4 @@ Polyply is distributed under the Apache 2.0 license.
 	See the License for the specific language governing permissions and
 	limitations under the License.
 
-The [full text of the license][license] is available in the source repository.
+The full text of the license is available in the source repository.
