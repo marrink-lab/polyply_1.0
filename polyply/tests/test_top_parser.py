@@ -15,16 +15,14 @@
 Test that force field files are properly read.
 """
 
+from collections import defaultdict
 import textwrap
 import pytest
-import numpy as np
-from collections import defaultdict
-import networkx as nx
 import vermouth.forcefield
 import vermouth.molecule
 import polyply
-from polyply.src.meta_molecule import (MetaMolecule, Monomer)
 from polyply.src.topology import Topology
+
 
 class TestTopParsing:
     @staticmethod
@@ -34,52 +32,70 @@ class TestTopParsing:
         [ defaults ]
         1.0   1.0   no   1.0     1.0
         """,
-        "defaults",
-        {"nbfunc": 1.0,
-        "comb-rule": 1.0,
-        "gen-pairs": "no",
-        "fudgeLJ": 1.0,
-        "fudgeQQ": 1.0}
-        ),
+         "defaults",
+         {"nbfunc": 1.0,
+          "comb-rule": 1.0,
+          "gen-pairs": "no",
+          "fudgeLJ": 1.0,
+          "fudgeQQ": 1.0}
+         ),
+        #martini style defaults
+        ("""
+        [ defaults ]
+        1.0   1.0
+        """,
+         "defaults",
+         {"nbfunc": 1.0,
+          "comb-rule": 1.0}
+         ),
         ("""
         [ atomtypes ]
         O       8 0.000 0.000  A   1.7106496e-03  9.9002500e-07
         """,
-        "atom_types",
-        {"O":{"nb1": 1.7106496e-03,
-              "nb2": 9.9002500e-07}}
-        ),
+         "atom_types",
+         {"O": {"nb1": 1.7106496e-03,
+                "nb2": 9.9002500e-07}}
+         ),
+        # check GROMOS/OPLS type atom defs.
+        ("""
+        [ atomtypes ]
+        O     8      0.000      0.000     A  0.0022619536  7.4149321e-07
+        """,
+         "atom_types",
+         {"O": {"nb1": 0.0022619536,
+                "nb2": 7.4149321e-07}}
+         ),
         ("""
         [ nonbond_params ]
         OM      O         1    1.9670816e-03  8.5679450e-07
         """,
-        "nonbond_params",
-        {("OM", "O"):{"f": 1,
-                      "nb1": 1.9670816e-03,
-                      "nb2": 8.5679450e-07}}
-        ),
+         "nonbond_params",
+         {("OM", "O"): {"f": 1,
+                        "nb1": 1.9670816e-03,
+                        "nb2": 8.5679450e-07}}
+         ),
         ("""
         [ bondtypes ]
         OM      O         1    1.9670816e-03  8.5679450e-07
         """,
-        "types",
-        defaultdict(list,{"bondtypes":[vermouth.molecule.Interaction(
-                      atoms=["OM", "O"], parameters=["1", "1.9670816e-03", "8.5679450e-07"],
-                      meta=None)]})
-        ),
+         "types",
+         defaultdict(list, {"bondtypes": [vermouth.molecule.Interaction(
+             atoms=["OM", "O"], parameters=["1", "1.9670816e-03", "8.5679450e-07"],
+             meta=None)]})
+         ),
         ("""
         [ system ]
         some multiline
         description of a system
         """,
-        "discription",
-        ["some multiline", "description of a system"]
-        )))
+         "description",
+         ["some multiline", "description of a system"]
+         )))
     def test_directives(lines, attr, value):
         new_lines = textwrap.dedent(lines)
         new_lines = new_lines.splitlines()
         force_field = vermouth.forcefield.ForceField(name='test_ff')
-        top =  Topology(force_field, name="test")
+        top = Topology(force_field, name="test")
         polyply.src.top_parser.read_topology(new_lines, top)
         print(getattr(top, attr))
         print(value)
@@ -87,38 +103,38 @@ class TestTopParsing:
 
     @staticmethod
     @pytest.mark.parametrize('def_statements, bonds',
-        (("""#ifdef FLEXIBLE
+         (("""#ifdef FLEXIBLE
          [ bonds ]
          1  2
          2  3
          #endif""",
          [vermouth.molecule.Interaction(
-               atoms=[0, 1], parameters=[], meta={"ifdef":"FLEXIBLE"}),
+             atoms=[0, 1], parameters=[], meta={"ifdef": "FLEXIBLE"}),
           vermouth.molecule.Interaction(
-               atoms=[1, 2], parameters=[], meta={"ifdef":"FLEXIBLE"})]),
-        ("""#ifndef FLEXIBLE
+              atoms=[1, 2], parameters=[], meta={"ifdef": "FLEXIBLE"})]),
+         ("""#ifndef FLEXIBLE
          [ bonds ]
          1   2
          2   3
          #endif""",
          [vermouth.molecule.Interaction(
-             atoms=[0, 1], parameters=[], meta={"ifndef":"FLEXIBLE"}),
+             atoms=[0, 1], parameters=[], meta={"ifndef": "FLEXIBLE"}),
           vermouth.molecule.Interaction(
-             atoms=[1, 2], parameters=[], meta={"ifndef":"FLEXIBLE"})]),
-        ("""[ bonds ]
+             atoms=[1, 2], parameters=[], meta={"ifndef": "FLEXIBLE"})]),
+         ("""[ bonds ]
          1   2
          #ifdef FLEXIBLE
          2   3
          #endif
          3  4""",
          [vermouth.molecule.Interaction(
-              atoms=[0, 1], parameters=[], meta={}),
+             atoms=[0, 1], parameters=[], meta={}),
           vermouth.molecule.Interaction(
-              atoms=[1, 2], parameters=[],meta={"ifdef":"FLEXIBLE"}),
+             atoms=[1, 2], parameters=[], meta={"ifdef": "FLEXIBLE"}),
           vermouth.molecule.Interaction(
-              atoms=[2, 3], parameters=[],meta={})])
-        )
-        )
+             atoms=[2, 3], parameters=[], meta={})])
+         )
+         )
     def test_ifdefs(def_statements, bonds):
         """
         test the handling if ifdefs and ifndefs at
@@ -138,20 +154,19 @@ class TestTopParsing:
         new_lines = textwrap.dedent(new_lines)
         new_lines = new_lines.splitlines()
         force_field = vermouth.forcefield.ForceField(name='test_ff')
-        top =  Topology(force_field, name="test")
+        top = Topology(force_field, name="test")
         polyply.src.top_parser.read_topology(new_lines, top)
         print(top.force_field.blocks["GLY"].interactions['bonds'])
         assert top.force_field.blocks["GLY"].interactions['bonds'] == bonds
 
-
     @staticmethod
     @pytest.mark.parametrize('def_statements, result',
         (("""#define pH5""",
-         {"pH5":True}
+          {"pH5": True}
          ),
         ("""#define ga25 1.025
          """,
-        {"ga25":["1.025"]}
+          {"ga25": ["1.025"]}
         ),
         ("""
          [ moleculetype ]
@@ -160,10 +175,8 @@ class TestTopParsing:
          1 P4 1 ALA BB 1
          #define FLEXIBLE
          """,
-         {"FLEXIBLE":True}
-         )
-        )
-        )
+        {"FLEXIBLE": True}
+        )))
     def test_define(def_statements, result):
         """
         test the handling of define statements in
@@ -171,16 +184,16 @@ class TestTopParsing:
         new_lines = textwrap.dedent(def_statements)
         new_lines = new_lines.splitlines()
         force_field = vermouth.forcefield.ForceField(name='test_ff')
-        top =  Topology(force_field, name="test")
+        top = Topology(force_field, name="test")
         polyply.src.top_parser.read_topology(new_lines, top)
         assert top.defines == result
 
     @staticmethod
     def test_itp_handling():
-       """
-       test if multiple itps are read correctly
-       """
-       lines="""
+        """
+        test if multiple itps are read correctly
+        """
+        lines = """
        [ defaults ]
        1   1   no   1.0     1.0
        [ moleculetype ]
@@ -194,43 +207,43 @@ class TestTopParsing:
        [ molecules ]
        LYS  2
        """
-       new_lines = textwrap.dedent(lines).splitlines()
-       force_field = vermouth.forcefield.ForceField(name='test_ff')
-       top =  Topology(force_field, name="test")
-       polyply.src.top_parser.read_topology(new_lines, top)
-       assert top.defaults == {"nbfunc": 1,
-                              "comb-rule": 1,
-                              "gen-pairs": "no",
-                              "fudgeLJ": 1.0,
-                              "fudgeQQ": 1.0}
-       #we just assert that one of the molecules is there
-       #because parsing is done via itp reader and thus covered
-       assert len(top.molecules[0]) == 1
-       #we also should have each molecule as block in the force
-       #field. Again we only check that it is there because
-       #the actual parsing is done elsewhere
-       assert len(force_field.blocks) == 2
+        new_lines = textwrap.dedent(lines).splitlines()
+        force_field = vermouth.forcefield.ForceField(name='test_ff')
+        top = Topology(force_field, name="test")
+        polyply.src.top_parser.read_topology(new_lines, top)
+        assert top.defaults == {"nbfunc": 1,
+                                "comb-rule": 1,
+                                "gen-pairs": "no",
+                                "fudgeLJ": 1.0,
+                                "fudgeQQ": 1.0}
+        # we just assert that one of the molecules is there
+        # because parsing is done via itp reader and thus covered
+        assert len(top.molecules[0]) == 1
+        # we also should have each molecule as block in the force
+        # field. Again we only check that it is there because
+        # the actual parsing is done elsewhere
+        assert len(force_field.blocks) == 2
 
     @staticmethod
-    @pytest.mark.parametrize('lines',(
-         """
+    @pytest.mark.parametrize('lines', (
+        """
          #fdef FLEXIBLE
          #define A
          #endif
          """,
-         """
+        """
          #ifdef FLEXIBLE
          """,
-         """
+        """
          #endif
          """,
-         """
+        """
          #ifdef FLEXIBLE
          #define A
          #ifdef RANDOM
          #define B
          """,
-         """
+        """
          #if
          """))
     def test_def_fails(lines):
@@ -241,6 +254,6 @@ class TestTopParsing:
         new_lines = textwrap.dedent(lines)
         new_lines = new_lines.splitlines()
         force_field = vermouth.forcefield.ForceField(name='test_ff')
-        top =  Topology(force_field, name="test")
+        top = Topology(force_field, name="test")
         with pytest.raises(IOError):
-             polyply.src.top_parser.read_topology(new_lines, top)
+            polyply.src.top_parser.read_topology(new_lines, top)
