@@ -314,8 +314,15 @@ def is_subgraph(graph1, graph2):
     ----------
     bool
     """
-    graph_matcher = isomorphism.GraphMatcher(graph1, graph2)
-    return graph_matcher.subgraph_is_isomorphic()
+    for node in graph2.nodes:
+        if not node in graph1.nodes:
+           return False
+
+    for edge in graph2.edges:
+        if not graph1.has_edge(edge[0], edge[1]):
+           return False
+
+    return True
 
 
 def _get_link_resnames(link):

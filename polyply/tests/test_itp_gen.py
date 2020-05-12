@@ -18,7 +18,7 @@ class TestGenItp():
          """,
          "test_data/gen_itp/ref/PEO_10.itp"),
         ("""-f test_data/gen_itp/input/PS.martini.2.itp
-         -seq PS:10
+         -seqf test_data/gen_itp/input/PS.json
          -name PS
          -o test_data/gen_itp/output/PS_out.itp
          """,
@@ -92,5 +92,7 @@ class TestGenItp():
         assert int_types_ref == int_types_new
 
         for key in force_field.blocks[ref_name].interactions:
+            print(key)
             for term in force_field.blocks[ref_name].interactions[key]:
+                print(term)
                 assert term in force_field.blocks[args.name].interactions[key]
