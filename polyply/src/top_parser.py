@@ -178,7 +178,7 @@ class TOPDirector(SectionLineParser):
         if action:
            action()
 
-        if not isinstance(self.current_itp, type(None)):
+        if self.current_itp is not None:
            self.current_itp.append(line)
         return result
 
