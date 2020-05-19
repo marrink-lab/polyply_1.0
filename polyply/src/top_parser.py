@@ -14,6 +14,7 @@ class TOPDirector(SectionLineParser):
                  'angles': [0, 1, 2],
                  'angletypes':[0, 1, 2],
                  'constraints': [0, 1],
+                 'constrainttypes': [0, 1],
                  'dihedrals': [0, 1, 2, 3],
                  'dihedraltypes': [0, 1, 2, 3],
                  'pairs': [0, 1],
@@ -111,8 +112,23 @@ class TOPDirector(SectionLineParser):
                 self.current_itp.append(line)
             elif self.current_meta is None:
                 raise IOError("Your #ifdef section is orderd incorrectly."
-                              "At line {} I read #endif but I haven not read"
-                              "an ifdef before.".format(lineno))
+                              "At line {} I read {} but I haven not read"
+                              "an #ifdef before.".format(lineno, line))
+            else:
+               self.current_meta = None
+
+        elif line.startswith("#else"):
+            if self.current_itp:
+                self.current_itp.append(line)
+            elif self.current_meta is None:
+               raise IOError("Your #ifdef section is orderd incorrectly."
+                             "At line {} I read #endif but I haven not read"
+                             "a ifdef before.".format(lineno))
+            else:
+               inverse = {"ifdef": "ifndef", "ifndef": "ifdef"}
+               tag = self.current_meta["tag"]
+               condition = inverse[self.current_meta["condition"]]
+               self.current_meta = {'tag': tag, 'condition': condition.replace("#", "")}
 
         elif line.startswith("#ifdef") or line.startswith("#ifndef"):
             if self.current_itp:
@@ -157,31 +173,6 @@ class TOPDirector(SectionLineParser):
         KeyError
             If the section header is unknown.
         """
-      # prev_section = self.section
-
-      # ended = []
-      # section = self.section + [line.strip('[ ]').casefold()]
-      # if tuple(section[-1:]) in self.METH_DICT:
-      #     self.section = section[-1:]
-      # else:
-      #     while tuple(section) not in self.METH_DICT and len(section) > 1:
-      #         ended.append(section.pop(-2))  # [a, b, c, d] -> [a, b, d]
-      #     self.section = section
-
-      # result = None
-
-      # if len(prev_section) != 0:
-      #     result = self.finalize_section(prev_section, ended)
-
-      # action = self.header_actions.get(tuple(self.section))
-      # if action:
-      #     action()
-
-      # if not isinstance(self.current_itp, type(None)):
-      #    self.current_itp.append(line)
-
-      # return result
-
         result = super().parse_header(line, lineno)
         action = self.header_actions.get(tuple(self.section))
         if action:
@@ -282,6 +273,7 @@ class TOPDirector(SectionLineParser):
     @SectionLineParser.section_parser('angletypes')
     @SectionLineParser.section_parser('dihedraltypes')
     @SectionLineParser.section_parser('bondtypes')
+    @SectionLineParser.section_parser('constrainttypes')
     def _type_params(self, line, lineno=0):
         """
         Parse and store bonded types
@@ -293,6 +285,10 @@ class TOPDirector(SectionLineParser):
                                       parameters=params,
                                       meta=self.current_meta)
         self.topology.types[section_name].append(new_interaction)
+
+    @SectionLineParser.section_parser('cmaptypes')
+    def _skip(self, line, lineno=0):
+        pass
 
     @SectionLineParser.section_parser('moleculetype')
     @SectionLineParser.section_parser('moleculetype', 'atoms')
