@@ -31,7 +31,7 @@ def u_vect(vect):
     -----------
     np.array
     """
-    return(vect/norm(vect))
+    return vect/norm(vect)
 
 def angle(A, B, C):
     """
@@ -105,7 +105,6 @@ def norm_sphere(values=50):
     """
     v_sphere = np.random.normal(0.0, 1, (values, 3))
     return np.array([u_vect(vect) for vect in v_sphere])
-
 
 def radius_of_gyration(points):
     """
