@@ -101,7 +101,7 @@ def norm_sphere(values=50):
 
     Returns
     ---------
-    np.array
+    np.array shape (values, 3)
     """
     v_sphere = np.random.normal(0.0, 1, (values, 3))
     return np.array([u_vect(vect) for vect in v_sphere])
@@ -118,7 +118,7 @@ def radius_of_gyration(points):
     Returns
     ---------
     float
-         angle in degrees
+         radius of gyration
     """
     N = len(points)
     diff=np.zeros((N**2))

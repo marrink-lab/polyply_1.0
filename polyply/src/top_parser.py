@@ -99,8 +99,8 @@ class TOPDirector(SectionLineParser):
 
         Returns
         -------
-         The result of calling :meth:`finalize_section`, which is called
-         if a section ends.
+        Object The result of calling :meth:`finalize_section`, which is called
+               if a section ends.
 
         Raises
         ------
