@@ -1,4 +1,4 @@
-# Copyright 2018 University of Groningen
+# Copyright 2020 University of Groningen
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -121,7 +121,7 @@ class TestApplyLinks:
         resname "PEO"
         [ angles ]
         CO1 +CO1 ++CO1""",
-         [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6]]),
+         [[1, 2, 3], [2, 3, 4], [3, 4, 5]]),
         ("""[ moleculetype ]
         ; name nexcl.
         PEO         1
@@ -132,7 +132,7 @@ class TestApplyLinks:
         resname "PEO"
         [ dihedrals ]
         CO1 +CO1 >CO1 >>CO1""",
-         [[1, 2, 2, 3], [1, 2, 2, 4], [1, 2, 3, 4], [2, 3, 3, 4], [2, 3, 3, 5],
+         [[1, 2, 2, 3], [1, 2, 3, 4], [2, 3, 3, 4],
           [2, 3, 4, 5], [3, 4, 4, 5]])
     ))
     def test_get_links(lines, ref_ids):
@@ -147,6 +147,7 @@ class TestApplyLinks:
         for edge in meta_mol.edges:
             _, ids = polyply.src.apply_links._get_links(meta_mol, edge)
             resids += ids
+        print(resids, '\n' , ref_ids)
         assert resids == ref_ids
 
     @staticmethod

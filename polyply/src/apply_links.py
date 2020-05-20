@@ -1,3 +1,17 @@
+# Copyright 2020 University of Groningen
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from itertools import combinations
 import networkx as nx
 from networkx.algorithms import isomorphism
@@ -314,8 +328,15 @@ def is_subgraph(graph1, graph2):
     ----------
     bool
     """
-    graph_matcher = isomorphism.GraphMatcher(graph1, graph2)
-    return graph_matcher.subgraph_is_isomorphic()
+    for node in graph2.nodes:
+        if not node in graph1.nodes:
+           return False
+
+    for edge in graph2.edges:
+        if not graph1.has_edge(edge[0], edge[1]):
+           return False
+
+    return True
 
 
 def _get_link_resnames(link):
