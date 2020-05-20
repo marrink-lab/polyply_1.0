@@ -10,12 +10,13 @@ polyply.egg-info
 *.swp
 .pytest_cache
 *.egg-info
-.coverage
+**/.coverage
 .hypothesis
 
-**/test_high_level_API
+tests/test_data/gen_itp/output/*.itp
 
 **/htmlcov
+
 
 doc/build
 doc/source/api
