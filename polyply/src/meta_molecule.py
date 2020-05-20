@@ -16,9 +16,20 @@ import json
 import networkx as nx
 from networkx.readwrite import json_graph
 from vermouth.graph_utils import make_residue_graph
-from polyply.src.parsers import read_polyply
+from .polyply_parser import read_polyply
 
 Monomer = namedtuple('Monomer', 'resname, n_blocks')
+
+def _make_edges(force_field):
+    for block in force_field.blocks.values():
+        inter_types = list(block.interactions.keys())
+        for inter_type in inter_types:
+            block.make_edges_from_interaction_type(type_=inter_type)
+
+    for link in force_field.links:
+        inter_types = list(link.interactions.keys())
+        for inter_type in inter_types:
+            link.make_edges_from_interaction_type(type_=inter_type)
 
 class MetaMolecule(nx.Graph):
     """
@@ -49,7 +60,7 @@ class MetaMolecule(nx.Graph):
                 raise IOError(msg.format(edge))
 
     def get_edge_resname(self, edge):
-        return [self.nodes[edge[0]]["resname"],  self.nodes[edge[1]]["resname"]]
+        return [self.nodes[edge[0]]["resname"], self.nodes[edge[1]]["resname"]]
 
     @staticmethod
     def _block_graph_to_res_graph(block):
@@ -126,6 +137,17 @@ class MetaMolecule(nx.Graph):
             read_polyply(lines, force_field)
 
         graph = MetaMolecule._block_graph_to_res_graph(force_field.blocks[mol_name])
+        meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
+        meta_mol.molecule = force_field.blocks[mol_name].to_molecule()
+        return meta_mol
+
+    @classmethod
+    def from_block(cls, force_field, block, mol_name):
+        """
+        Constructs a :class::`MetaMolecule` from an vermouth.molecule.
+        """
+        _make_edges(force_field)
+        graph = MetaMolecule._block_graph_to_res_graph(block)
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
         meta_mol.molecule = force_field.blocks[mol_name].to_molecule()
         return meta_mol

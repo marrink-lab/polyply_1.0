@@ -24,7 +24,7 @@ import vermouth.forcefield
 import vermouth.ffinput
 import polyply.src.meta_molecule
 import polyply.src.map_to_molecule
-import polyply.src.parsers
+import polyply.src.polyply_parser
 import polyply.src.apply_links
 from polyply.src.meta_molecule import (MetaMolecule, Monomer)
 from polyply.src.apply_links import MatchError

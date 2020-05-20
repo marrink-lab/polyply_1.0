@@ -23,7 +23,7 @@ import pytest
 import numpy as np
 import vermouth.forcefield
 import vermouth.molecule
-import polyply.src.parsers
+import polyply.src.polyply_parser
 
 class TestPolyply:
     @staticmethod
@@ -41,7 +41,7 @@ class TestPolyply:
         """
         lines = textwrap.dedent(lines).splitlines()
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.src.parsers.read_polyply(lines, ff)
+        polyply.src.polyply_parser.read_polyply(lines, ff)
 
         link_bond = vermouth.molecule.Interaction(
                 atoms=["COC", "+COC"], parameters=['1', '0.37', '7000'], meta={"version":1},)
@@ -64,7 +64,7 @@ class TestPolyply:
         """
         lines = textwrap.dedent(lines).splitlines()
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.src.parsers.read_polyply(lines, ff)
+        polyply.src.polyply_parser.read_polyply(lines, ff)
 
         dih  = [vermouth.molecule.Interaction(
                 atoms=["COC", "+COC", "++COC", "+++COC"], parameters=['1','180.00','1.96','1'], meta={'version':3}),
@@ -90,7 +90,7 @@ class TestPolyply:
         """
         lines = textwrap.dedent(lines).splitlines()
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.src.parsers.read_polyply(lines, ff)
+        polyply.src.polyply_parser.read_polyply(lines, ff)
 
         excl = [vermouth.molecule.Interaction(
                 atoms=["COC", "++COC"], parameters=[], meta={"version":1},)]
@@ -163,7 +163,7 @@ class TestPolyply:
     def test_split_link_block(lines, total, blocks, links):
         lines = textwrap.dedent(lines).splitlines()
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        polyply.src.parsers.read_polyply(lines, ff)
+        polyply.src.polyply_parser.read_polyply(lines, ff)
         # test the correct total number of links is produced
         assert len(ff.links) == total
         # check if each link has the length one
