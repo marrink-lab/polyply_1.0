@@ -112,7 +112,7 @@ class TOPDirector(SectionLineParser):
 
         Returns
         -------
-        Object The result of calling :meth:`finalize_section`, which is called
+        object The result of calling :meth:`finalize_section`, which is called
                if a section ends.
 
         Raises
@@ -135,13 +135,13 @@ class TOPDirector(SectionLineParser):
                 self.current_itp.append(line)
             elif self.current_meta is None:
                raise IOError("Your #ifdef section is orderd incorrectly."
-                             "At line {} I read #endif but I haven not read"
-                             "a ifdef before.".format(lineno))
+                             "At line {} I read {} but I haven not read"
+                             "a ifdef before.".format(lineno, line))
             else:
                inverse = {"ifdef": "ifndef", "ifndef": "ifdef"}
                tag = self.current_meta["tag"]
                condition = inverse[self.current_meta["condition"]]
-               self.current_meta = {'tag': tag, 'condition': condition.replace("#", "")}
+               self.current_meta = {'tag': tag, 'condition': condition}
 
         elif line.startswith("#ifdef") or line.startswith("#ifndef"):
             if self.current_itp:
@@ -258,7 +258,12 @@ class TOPDirector(SectionLineParser):
         numbered_terms = ["nbfunc", "comb-rule", "fudgeLJ", "fudgeQQ"]
         tokens = line.split()
 
+        #Parse all defaults to a dict up to the last default metioned
+        #Note that gen_pairs, fudgeLJ and fudgeQQ not need to be set
         self.topology.defaults = dict(zip(defaults[0:len(tokens)], tokens))
+
+        #converts the defaults that are numbers to numbers
+        #we need to parse them first because they are not guaranteed to be provided
         for token_name in numbered_terms:
             if token_name in self.topology.defaults:
                  self.topology.defaults[token_name] = float(self.topology.defaults[token_name])
