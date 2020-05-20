@@ -112,10 +112,7 @@ class MetaMolecule(nx.Graph):
             attrs = init_graph.nodes[node]
             graph.add_node(node, **attrs)
 
-        for edge in init_graph.edges:
-            list(edge).sort()
-            graph.add_edge(edge[0], edge[1])
-
+        graph.add_edges_from(init_graph.edges)
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
         return meta_mol
 
