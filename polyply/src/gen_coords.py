@@ -1,4 +1,17 @@
-#!/usr/bin/env python3
+# Copyright 2020 University of Groningen
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """
 High level API for the polyply coordinate generator
 """
@@ -13,24 +26,6 @@ from polyply.src.random_walk import RandomWalk
 from polyply.src.backmap import Backmap
 from .minimizer import optimize_geometry
 from .topology import Topology
-
-def read_system(path, system, ignore_resnames=(), ignh=None, modelidx=None):
-    """
-    Read a system from a PDB or GRO file.
-    This function guesses the file type based on the file extension.
-    The resulting system does not have a force field and may not have edges.
-    """
-    file_extension = path.suffix.upper()[1:]  # We do not keep the dot
-    if file_extension in ['PDB', 'ENT']:
-        vermouth.PDBInput(str(path), exclude=ignore_resnames, ignh=ignh,
-                          modelidx=modelidx).run_system(system)
-    elif file_extension in ['GRO']:
-        vermouth.GROInput(str(path), exclude=ignore_resnames,
-                          ignh=ignh).run_system(system)
-    else:
-        raise ValueError('Unknown file extension "{}".'.format(file_extension))
-    return system
-
 
 def gen_coords(args):
 

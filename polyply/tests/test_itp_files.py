@@ -1,4 +1,4 @@
-# Copyright 2018 University of Groningen
+# Copyright 2020 University of Groningen
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
