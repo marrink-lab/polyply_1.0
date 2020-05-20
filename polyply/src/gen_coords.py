@@ -38,6 +38,10 @@ def gen_coords(args):
     topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
     if args.coordpath:
        topology.add_positions_from_gro(args.coordpath)
+    else:
+       for molecule in topology.molecules:
+           for node in molecule.molecule.nodes:
+               molecule.molecule.nodes[node]["build"] = True
 
     # Build polymer structure
     GenerateTemplates().run_system(topology)
