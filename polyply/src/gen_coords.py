@@ -31,8 +31,13 @@ def gen_coords(args):
 
     # Read in the topology
     topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
+    topology.gen_pairs()
+    # convert all parameters to sigma epsilon if they are in C6C12 form
+    if topology.defaults["comb-rule"] == 2:
+       topology.convert_nonbond_to_sig_eps()
+
     if args.coordpath:
-       topology.add_positions_from_gro(args.coordpath)
+       topology.add_positions_from_file(args.coordpath)
     else:
        for molecule in topology.molecules:
            for node in molecule.molecule.nodes:

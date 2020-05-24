@@ -2,8 +2,8 @@ import random
 import networkx as nx
 import numpy as np
 import polyply
-from polyply.src.processor import Processor
-
+from .processor import Processor
+from .linalg_functions import norm_sphere
 
 def _take_step(vectors, step_length, coord):
     index = random.randint(0, len(vectors) - 1)
@@ -31,7 +31,6 @@ def _combination(radius_A, radius_B):
 
 def update_positions(vector_bundel, meta_molecule, current_node, prev_node):
     if "position" in meta_molecule.nodes[current_node]:
-        #print("skipped", meta_molecule.nodes[current_node]["resname"])
         return
 
     current_vectors = np.zeros(vector_bundel.shape)
@@ -67,7 +66,7 @@ class RandomWalk(Processor):
     def _random_walk(self, meta_molecule):
         first_node = list(meta_molecule.nodes)[0]
         meta_molecule.nodes[first_node]["position"] = np.array([0, 0, 0])
-        vector_bundel = polyply.src.linalg_functions.norm_sphere(5000)
+        vector_bundel = norm_sphere(5000)
         for prev_node, current_node in nx.dfs_edges(meta_molecule, source=0):
             update_positions(vector_bundel, meta_molecule,
                              current_node, prev_node)
