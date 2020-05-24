@@ -50,7 +50,7 @@ class TestGenTemps:
           assert nodes == [1, 2]
           nodes = find_atoms(G, "id", "A")
           assert nodes == [1, 3]
- 
+
       @staticmethod
       def test_expand_inital_coords():
         lines = """
@@ -72,7 +72,7 @@ class TestGenTemps:
         ff = vermouth.forcefield.ForceField(name='test_ff')
         polyply.src.polyply_parser.read_polyply(lines, ff)
         block = ff.blocks['GLY']
-        coords = _expand_inital_coords(block, {}, "bonds")
+        coords = _expand_inital_coords(block)
         assert len(coords) == 4
         for pos in coords.values():
             assert len(pos) == 3
@@ -95,14 +95,14 @@ class TestGenTemps:
           3 4 1 0.2 700
           """
           meta_mol = polyply.MetaMolecule()
-          meta_mol.atom_types = {"P1": {"nb1": 0.47}}
+          meta_mol.nonbond_params = {frozenset(["P1", "P1"]): {"nb1": 0.47, "nb2":0.5}}
           meta_mol.defaults = {"nbfunc": 2}
 
           lines = textwrap.dedent(lines).splitlines()
           ff = vermouth.forcefield.ForceField(name='test_ff')
           polyply.src.polyply_parser.read_polyply(lines, ff)
           block = ff.blocks['GLY']
-          coords = _expand_inital_coords(block, {}, "bonds")
+          coords = _expand_inital_coords(block)
           vol = compute_volume(meta_mol, block, coords)
           assert vol > 0.
 
@@ -125,7 +125,7 @@ class TestGenTemps:
          ff = vermouth.forcefield.ForceField(name='test_ff')
          polyply.src.polyply_parser.read_polyply(lines, ff)
          block = ff.blocks['GLY']
-         coords = _expand_inital_coords(block, {}, "bonds")
+         coords = _expand_inital_coords(block)
          points = np.array(list(coords.values()))
          CoG = center_of_geometry(points)
          new_coords = map_from_CoG(coords)
@@ -159,7 +159,7 @@ class TestGenTemps:
          polyply.src.polyply_parser.read_polyply(lines, ff)
          block = ff.blocks['test']
          molecule = block.to_molecule()
-         new_block = extract_block(molecule, "GLY")
+         new_block = extract_block(molecule, "GLY", {})
          for node in ff.blocks["GLY"]:
              assert ff.blocks["GLY"].nodes[node] == new_block.nodes[node]
          for inter_type in ff.blocks["GLY"].interactions:
@@ -168,7 +168,8 @@ class TestGenTemps:
       @staticmethod
       def test_run_molecule():
           top = polyply.src.topology.Topology.from_gmx_topfile("test_data/topology_test/system.top", "test")
-          print(top.defaults)
+          top.gen_pairs()
+          top.convert_nonbond_to_sig_eps()
           GenerateTemplates().run_molecule(top.molecules[0])
           assert "PMMA" in top.molecules[0].volumes
           assert "PMMA" in top.molecules[0].templates

@@ -209,6 +209,8 @@ class TOPDirector(SectionLineParser):
             meta_molecule.atom_types = self.topology.atom_types
             meta_molecule.defaults = self.topology.defaults
             meta_molecule.nonbond_params = self.topology.nonbond_params
+            meta_molecule.defines = self.topology.defines
+
             for idx in range(0, int(n_mol)):
                  self.topology.add_molecule(meta_molecule)
 
@@ -270,9 +272,9 @@ class TOPDirector(SectionLineParser):
         Parse and store nonbond params
         """
         atom_1, atom_2, func, nb1, nb2 = line.split()
-        self.topology.nonbond_params[(atom_1, atom_2)] = {"f": int(func),
-                                                          "nb1": float(nb1),
-                                                          "nb2": float(nb2)}
+        self.topology.nonbond_params[frozenset([atom_1, atom_2])] = {"f": int(func),
+                                                                     "nb1": float(nb1),
+                                                                     "nb2": float(nb2)}
     @SectionLineParser.section_parser('pairtypes')
     @SectionLineParser.section_parser('angletypes')
     @SectionLineParser.section_parser('dihedraltypes')

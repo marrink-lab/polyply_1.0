@@ -54,9 +54,9 @@ class TestTopParsing:
         OM      O         1    1.9670816e-03  8.5679450e-07
         """,
         "nonbond_params",
-        {("OM", "O"):{"f": 1,
-                      "nb1": 1.9670816e-03,
-                      "nb2": 8.5679450e-07}}
+        {frozenset(["OM", "O"]):{"f": 1,
+                                 "nb1": 1.9670816e-03,
+                                 "nb2": 8.5679450e-07}}
         ),
         ("""
         [ bondtypes ]
