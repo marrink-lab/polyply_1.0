@@ -7,7 +7,7 @@ from polyply.src.linalg_functions import (angle, dih, u_vect)
 
 def compute_bond(params, coords):
     dist = coords[0] - coords[1]
-    return 1000* np.abs(np.linalg.norm(dist) - float(params[1]))
+    return 1000 * np.abs(np.linalg.norm(dist) - float(params[1]))
 
 def compute_angle(params, coords):
     angle_value = angle(coords[0], coords[1], coords[2])
@@ -24,7 +24,7 @@ INTER_METHODS = {"bonds": compute_bond,
 
 def optimize_geometry(block, coords):
     n_atoms = len(coords)
-    atom_to_idx = dict(zip(list(coords.keys()),range(0, n_atoms)))
+    atom_to_idx = dict(zip(list(coords.keys()), range(0, n_atoms)))
     positions = np.array(list(coords.values()))
     def target_function(positions):
         energy = 0
