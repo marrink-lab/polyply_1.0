@@ -34,7 +34,6 @@ def find_step_length(interactions, current_node, prev_node):
                if prev_node in interaction.atoms and inter_type != "virtual_sitesn":
                   return False, float(interaction.parameters[1])
                elif inter_type == "virtual_sitesn":
-                  print("go here")
                   return True, interaction.atoms
 
 def _expand_inital_coords(block):
@@ -118,7 +117,7 @@ def extract_block(molecule, resname, defines):
                interaction = replace_defines(interaction, defines)
                block.interactions[inter_type].append(interaction)
 
-    for inter_type in ["bonds", "constraints"]:
+    for inter_type in ["bonds", "constraints", "virtual_sitesn"]:
         block.make_edges_from_interaction_type(inter_type)
 
     return block
@@ -135,11 +134,21 @@ class GenerateTemplates(Processor):
         volumes = {}
 
         for resname in resnames:
-            print(resname)
             block = extract_block(meta_molecule.molecule, resname, 
                                   meta_molecule.defines)
-            coords = _expand_inital_coords(block)
-            coords = optimize_geometry(block, coords)
+            opt_counter=0
+            while True:
+                coords = _expand_inital_coords(block)
+                success, coords = optimize_geometry(block, coords)
+                if success:
+                   break
+                elif opt_counter > 10:
+                   print("Warning: Failed to optimize structure for block {}.".format(resname))
+                   print("Proceeding with unoptimized coordinates.")
+                   break
+                else:
+                   opt_counter += 1
+
             volumes[resname] = compute_volume(meta_molecule, block, coords)
             coords = map_from_CoG(coords)
             templates[resname] = coords
