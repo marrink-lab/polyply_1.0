@@ -4,40 +4,90 @@ import numpy as np
 import numpy.linalg
 import scipy
 import scipy.optimize
-from polyply.src.linalg_functions import (angle, dih, u_vect)
-
-def compute_bond(params, coords):
-    dist = coords[0] - coords[1]
-    return 1000 *(np.linalg.norm(dist) - float(params[1]))**2.0
-
-def compute_angle(params, coords):
-    angle_value = angle(coords[0], coords[1], coords[2])
-    return (angle_value - float(params[1]))**2.0
-
-def compute_dih(params, coords):
-    dih_angle = dih(coords[0], coords[1], coords[2], coords[3])
-    return (dih_angle - float(params[1]))**2.0
-
-
-#def compute_bond(params, coords):
-#   dist = coords[0] - coords[1]
-#   return 1000 *np.abs(np.linalg.norm(dist) - float(params[1]))
-
-#def compute_angle(params, coords):
-#   angle_value = angle(coords[0], coords[1], coords[2])
-#   return np.abs(angle_value - float(params[1]))
-
-#def compute_dih(params, coords):
-#   dih_angle = dih(coords[0], coords[1], coords[2], coords[3])
-#   return np.abs(dih_angle - float(params[1]))
-
-
+from .linalg_functions import (angle, dih, u_vect)
 
 INTER_METHODS = {"bonds": compute_bond,
                  "angles": compute_angle,
                  "dihedrals": compute_dih}
 
+def compute_bond(params, coords):
+    """
+    Compute the distance between two points in `coords`
+    and then take the MSD with repsect to a reference
+    value provided in `params` multiplyed by 1000. The
+    factor 1000 enforces that the bounds get a higher
+    weight in optimization than angles and dihedrals,
+    as we deal in units of nm.
+
+    Parameters
+    -----------
+    params   list
+    coods    numpy array
+
+    Returns
+    -------
+    float
+    """
+    dist = np.linalg.norm(coords[0] - coords[1])
+    return 1000 *(dist - float(params[1]))**2.0
+
+def compute_angle(params, coords):
+    """
+    Compute the angle between three points in `coords`
+    and then take the MSD with repsect to a reference
+    value provided in `params`.
+
+    Parameters
+    -----------
+    params   list
+    coods    numpy array
+
+    Returns
+    -------
+    float
+    """
+    angle_value = angle(coords[0], coords[1], coords[2])
+    return (angle_value - float(params[1]))**2.0
+
+def compute_dih(params, coords):
+    """
+    Compute the dihedral angle between four points in `coords`
+    and then take the MSD with repsect to a reference
+    value provided in `params`.
+
+    Parameters
+    -----------
+    params   list
+    coods    numpy array
+
+    Returns
+    -------
+    float
+    """
+    dih_angle = dih(coords[0], coords[1], coords[2], coords[3])
+    return (dih_angle - float(params[1]))**2.0
+
+
 def optimize_geometry(block, coords):
+    """
+    Take the definitions of a `block` and associated
+    `coords` and optimize the geometry based on the
+    bonds, angles and dihedrals provided in the
+    block definition.
+
+    Parameters
+    ----------
+    Block  :class:vermouth.molecule.Block
+    coords dict
+        dictionary of coordinates in form atom_name:np.ndarray
+
+    Returns
+    -------
+    bool
+      status of the optimization i.e. failure or success
+    dict
+      dictionary of optimized coordinates
+    """
     n_atoms = len(coords)
     atom_to_idx = OrderedDict(zip(list(coords.keys()), range(0, n_atoms)))
     positions = np.array(list(coords.values()))
