@@ -10,6 +10,7 @@ from .processor import Processor
 from .linalg_functions import (angle, dih, u_vect, center_of_geometry,
                                           norm_sphere, radius_of_gyration)
 from .random_walk import _take_step
+from .topology import replace_defined_interaction
 """
 Processor generating coordinates for all residues
 of a meta_molecule matching those in the meta_molecule.molecule attribute.
@@ -183,31 +184,6 @@ def _atoms_in_node(atoms, nodes):
 
     return True
 
-def replace_defines(interaction, defines):
-    """
-    Given a `vermouth.Interaction` replace check
-    if parameters are defined in a list of defines
-    and replace by the corresponding numeric value.
-
-    Parameters
-    -----------
-    interaction: :tuple:`vermouth.Interaction`
-    defines:  dict
-      dictionary of type [define]:value
-
-    Returns
-    --------
-    interaction
-      interaction with replaced defines
-    """
-    def_key = interaction.parameters[-1]
-    if def_key in defines:
-       values = defines[def_key]
-       del interaction.parameters[-1]
-       [interaction.parameters.append(param) for param in values]
-
-    return interaction
-
 def extract_block(molecule, resname, defines):
     """
     Given a `vermouth.molecule` and a `resname`
@@ -238,7 +214,7 @@ def extract_block(molecule, resname, defines):
     for inter_type in molecule.interactions:
         for interaction in molecule.interactions[inter_type]:
             if any(atom in block for atom in interaction.atoms):
-               interaction = replace_defines(interaction, defines)
+               interaction = replace_defined_interaction(interaction, defines)
                block.interactions[inter_type].append(interaction)
 
     for inter_type in ["bonds", "constraints", "virtual_sitesn"]:
