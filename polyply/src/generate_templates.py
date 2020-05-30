@@ -5,13 +5,34 @@ import scipy
 import scipy.optimize
 import vermouth
 import polyply
-from polyply.src.minimizer import optimize_geometry
-from polyply.src.processor import Processor
-from polyply.src.linalg_functions import (angle, dih, u_vect, center_of_geometry,
+from .minimizer import optimize_geometry
+from .processor import Processor
+from .linalg_functions import (angle, dih, u_vect, center_of_geometry,
                                           norm_sphere, radius_of_gyration)
-from polyply.src.random_walk import _take_step
+from .random_walk import _take_step
+"""
+Processor generating coordinates for all residues
+of a meta_molecule matching those in the meta_molecule.molecule attribute.
+"""
 
 def find_atoms(molecule, attr, value):
+    """
+    Find all nodes of a `vermouth.molecule.Molecule` that have the
+    attribute `attr` with the corresponding value of `value`.
+
+    Parameters
+    ----------
+    molecule: :class:vermouth.molecule.Molecule
+    attr: str
+         attribute that a node needs to have
+    value:
+         corresponding value
+
+    Returns
+    ----------
+    list
+       list of nodes found
+    """
     nodes=[]
     for node in molecule.nodes:
         if molecule.nodes[node][attr] == value and attr in molecule.nodes[node]:
@@ -27,6 +48,29 @@ def construct_vs(atoms, coords):
     return coord
 
 def find_step_length(interactions, current_node, prev_node):
+    """
+    Given a list of `interactions` in vermouth format, find an
+    interaction from bonds, constraints, or virtual-sites that
+    involves the `current_node` and `prev_node`. Return if this
+    interaction is a virtual-site and the corresponding parameter.
+
+    Parameters
+    -----------
+    interactions:  :class:dict
+         interaction dictionary
+    current_node:   int
+         node index
+    prev_node:      int
+         node index
+
+    Returns:
+    ---------
+    bool
+      is the interaction a virtual-site
+    parameter
+      either an atom-list if it is a virtual-site or
+      a parameter
+    """
     for inter_type in ["bonds", "constraints", "virtual_sitesn"]:
         inters = interactions.get(inter_type, [])
         for interaction in inters:
@@ -37,22 +81,55 @@ def find_step_length(interactions, current_node, prev_node):
                   return True, interaction.atoms
 
 def _expand_inital_coords(block):
-   coords = {}
-   atom = list(block.nodes)[0]
-   coords[atom] = np.array([0, 0, 0])
+    """
+    Given a `block` generate initial random coordinates
+    for all atoms in the block. Note that the initial
+    coordinates though random, have a defined distance
+    correspodning to a bond , constaint or virtual-site.
 
-   vectors = norm_sphere(values=1000)
-   for prev_node, current_node in nx.dfs_edges(block, source=atom):
-       prev_coord = coords[prev_node]
-       is_vs, param = find_step_length(block.interactions, current_node, prev_node)
-       if is_vs:
-           coords[current_node] = construct_vs(atoms, coords)
-       else:
-           coords[current_node], _ = _take_step(vectors, param, prev_coord)
+    Parameters
+    -----------
+    block:   :class:`vermouth.molecule.Block`
 
-   return coords
+    Returns
+    ---------
+    dict
+      dictonary of node index and position
+    """
+    coords = {}
+    atom = list(block.nodes)[0]
+    coords[atom] = np.array([0, 0, 0])
+
+    vectors = norm_sphere(values=1000)
+    for prev_node, current_node in nx.dfs_edges(block, source=atom):
+        prev_coord = coords[prev_node]
+        is_vs, param = find_step_length(block.interactions, current_node, prev_node)
+        if is_vs:
+            coords[current_node] = construct_vs(atoms, coords)
+        else:
+            coords[current_node], _ = _take_step(vectors, param, prev_coord)
+
+    return coords
 
 def compute_volume(molecule, block, coords):
+    """
+    Given a `block`, which is part of `molecule` and
+    has the coordinates `coord` compute the radius
+    of gyration taking into account the volume of each
+    particle. The volume of a particle is considered to be
+    the sigma value of it's LJ self interaction parameter.
+
+    Parameters
+    ----------
+    molecule:  :class:vermouth.molecule.Molecule
+    block:     :class:vermouth.molecule.Block
+    coords:    :class:dict
+      dictionary of positions in from node_idx: np.array
+
+    Returns
+    -------
+    radius of gyration
+    """
     n_atoms = len(coords)
     points = np.array(list(coords.values()))
     CoG = center_of_geometry(points)
@@ -73,6 +150,22 @@ def compute_volume(molecule, block, coords):
     return radgyr
 
 def map_from_CoG(coords):
+    """
+    Compute the center of geometry
+    of `coords` and return each position
+    as vector between the center of geometry
+    and the original positon.
+
+    Parameters
+    ----------
+    coords:   :class:dict
+        dictionary of coordinates
+
+    Returns
+    --------
+    dict
+     dictionary of node idx and CoG vector
+    """
     n_atoms = len(coords)
     points = np.array(list(coords.values()))
     CoG = center_of_geometry(points)
@@ -91,6 +184,22 @@ def _atoms_in_node(atoms, nodes):
     return True
 
 def replace_defines(interaction, defines):
+    """
+    Given a `vermouth.Interaction` replace check
+    if parameters are defined in a list of defines
+    and replace by the corresponding numeric value.
+
+    Parameters
+    -----------
+    interaction: :tuple:`vermouth.Interaction`
+    defines:  dict
+      dictionary of type [define]:value
+
+    Returns
+    --------
+    interaction
+      interaction with replaced defines
+    """
     def_key = interaction.parameters[-1]
     if def_key in defines:
        values = defines[def_key]
@@ -100,7 +209,23 @@ def replace_defines(interaction, defines):
     return interaction
 
 def extract_block(molecule, resname, defines):
+    """
+    Given a `vermouth.molecule` and a `resname`
+    extract the information of a block form the
+    molecule definition and replace all defines
+    if any are found.
 
+    Parameters
+    ----------
+    molecule:  :class:vermouth.molecule.Molecule
+    resname:   str
+    defines:   dict
+      dict of type define:value
+
+    Returns
+    -------
+    :class:vermouth.molecule.Block
+    """
     nodes = find_atoms(molecule, "resname", resname)
     resid = molecule.nodes[nodes[0]]["resid"]
     block = vermouth.molecule.Block()
@@ -113,7 +238,6 @@ def extract_block(molecule, resname, defines):
     for inter_type in molecule.interactions:
         for interaction in molecule.interactions[inter_type]:
             if any(atom in block for atom in interaction.atoms):
-            #if _atoms_in_node(interaction.atoms, block.nodes):
                interaction = replace_defines(interaction, defines)
                block.interactions[inter_type].append(interaction)
 
@@ -124,10 +248,30 @@ def extract_block(molecule, resname, defines):
 
 class GenerateTemplates(Processor):
     """
-
+    This processor takes a a class:`polyply.src.MetaMolecule` and
+    creates a block for each unique residue type in the molecule
+    as well as positions for that block. These blocks are stored
+    in the templates attribute. The processor also stores the volume
+    of each block in the volume attribute.
     """
 
     def _gen_templates(self, meta_molecule):
+        """
+        Generate blocks for each unique residue by extracting the
+        block information, placining inital cooridnates, and geometry
+        optimizing those coordinates. Subsquently compute volume.
+
+        Parameters
+        ----------
+        meta_molecule: :class:`polyply.src.meta_molecule.MetaMolecule`
+
+        Returns
+        ---------
+        templates  dict
+           dict of resname:block
+        volumes    dict
+           dict of name:volume
+        """
         resnames = set(nx.get_node_attributes(meta_molecule.molecule,
                                               "resname").values())
         templates = {}
@@ -156,6 +300,10 @@ class GenerateTemplates(Processor):
         return templates, volumes
 
     def run_molecule(self, meta_molecule):
+        """
+        Execute the generation of templates and set the template
+        and volume attribute.
+        """
         templates, volumes = self._gen_templates(meta_molecule)
         meta_molecule.templates = templates
         meta_molecule.volumes = volumes

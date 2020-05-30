@@ -21,14 +21,13 @@ import networkx as nx
 import vermouth.forcefield
 from vermouth.gmx.gro import read_gro
 from polyply import (MetaMolecule, DATA_PATH)
-from polyply.src.generate_templates import GenerateTemplates
-from polyply.src.random_walk import RandomWalk
-from polyply.src.backmap import Backmap
+from .generate_templates import GenerateTemplates
+from .random_walk import RandomWalk
+from .backmap import Backmap
 from .minimizer import optimize_geometry
 from .topology import Topology
 
 def gen_coords(args):
-
     # Read in the topology
     topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
     topology.gen_pairs()

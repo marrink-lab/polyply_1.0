@@ -2,7 +2,11 @@ import numpy as np
 import networkx as nx
 from .processor import Processor
 from .generate_templates import find_atoms
-
+"""
+Processor implementing a template based back
+mapping to lower resolution coordinates for
+a meta molecule.
+"""
 
 class Backmap(Processor):
     """
@@ -20,7 +24,7 @@ class Backmap(Processor):
 
         Parameters
         ----------
-        class:`polyply.src.MetaMolecule`
+        meta_molecule: :class:`polyply.src.MetaMolecule`
         """
         coords = np.zeros((len(meta_molecule.molecule.nodes), 3))
         idx = 0

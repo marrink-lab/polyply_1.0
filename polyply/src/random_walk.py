@@ -4,15 +4,53 @@ import numpy as np
 import polyply
 from .processor import Processor
 from .linalg_functions import norm_sphere
+"""
+Processor implementing a random-walk to generate
+coordinates for a meta-molecule.
+"""
+
 
 def _take_step(vectors, step_length, coord):
+    """
+    Given a list of unit `vectors` choose one randomly,
+    multiply it by the `step_length` and add to `coord`.
+
+    Parameters
+    ----------
+    vectors: list[np.ndarray(n,3)]
+    step_length: float
+    coord: np.ndarray(3)
+
+    Returns
+    -------
+    np.ndarray(3)
+      the new coordinate
+    int
+      the index of the vector choosen
+    """
     index = random.randint(0, len(vectors) - 1)
     new_coord = coord + vectors[index] * step_length
     return new_coord, index
 
 
-def _is_overlap(meta_molecule, new_point, tol, fudge=1):
+def _is_overlap(meta_molecule, point, tol, fudge=1):
+    """
+    Given a `meta_molecule` and a `point`, check if any of
+    the positions of in meta_molecule are closer to the
+    point than the tolerance `tol` multiplied by a `fudge`
+    factor.
 
+    Parameters
+    ----------
+    meta_molecule:  :class:`polyply.src.meta_molecule.MetaMolecule`
+    point: np.ndarray(3)
+    tol: float
+    fudge: float
+
+    Returns
+    -------
+    bool
+    """
     for node in meta_molecule:
         try:
             coord = meta_molecule.nodes[node]["position"]
@@ -29,7 +67,20 @@ def _combination(radius_A, radius_B):
     return (radius_A + radius_B) / 2.
 
 
-def update_positions(vector_bundel, meta_molecule, current_node, prev_node):
+def update_positions(vector_bundle, meta_molecule, current_node, prev_node):
+    """
+    Take an array of unit vectors `vector_bundle` and generate the coordinates
+    for `current_node` by adding a random vector to the position of the previous
+    node `prev_node`. The length of that vevtor is defined as 2 times the vdw-radius
+    of the two nodes. The position is updated in place.
+
+    Parameters
+    ----------
+    vector_bunde: np.ndarray(m,3)
+    meta_molecule: :class:polyply.src.meta_molecule.MetaMolecule
+    current_node: node_key[int, str]
+    prev_node: node_key[int, str]
+    """
     if "position" in meta_molecule.nodes[current_node]:
         return
 
@@ -64,6 +115,14 @@ class RandomWalk(Processor):
     """
 
     def _random_walk(self, meta_molecule):
+        """
+        Perform a random_walk to build positions for a meta_molecule, if
+        no position is present for an atom.
+
+        Parameters
+        ----------
+        meta_molecule:  :class:`polyply.src.meta_molecule.MetaMolecule`
+        """
         first_node = list(meta_molecule.nodes)[0]
         meta_molecule.nodes[first_node]["position"] = np.array([0, 0, 0])
         vector_bundel = norm_sphere(5000)
@@ -72,5 +131,8 @@ class RandomWalk(Processor):
                              current_node, prev_node)
 
     def run_molecule(self, meta_molecule):
+        """
+        Perform the random walk for a single molecule.
+        """
         self._random_walk(meta_molecule)
         return meta_molecule
