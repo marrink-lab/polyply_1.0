@@ -11,8 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-from collections import namedtuple
+from collections import (namedtuple, OrderedDict)
 import json
 import networkx as nx
 from networkx.readwrite import json_graph
@@ -36,6 +35,8 @@ class MetaMolecule(nx.Graph):
     """
     Graph that describes molecules at the residue level.
     """
+
+    node_dict_factory = OrderedDict
 
     def __init__(self, *args, **kwargs):
         self.force_field = kwargs.pop('force_field', None)
@@ -110,7 +111,19 @@ class MetaMolecule(nx.Graph):
         with open(json_file) as file_:
             data = json.load(file_)
 
-        graph = json_graph.node_link_graph(data)
+        init_graph = nx.Graph(json_graph.node_link_graph(data))
+        # we need to order the incoming graph and let's also
+        # do the edges. Better safe than sorry.
+
+        graph = nx.Graph(node_dict_factory=OrderedDict)
+        nodes = list(init_graph.nodes)
+        nodes.sort()
+
+        for node in nodes:
+            attrs = init_graph.nodes[node]
+            graph.add_node(node, **attrs)
+
+        graph.add_edges_from(init_graph.edges)
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
         return meta_mol
 

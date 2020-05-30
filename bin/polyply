@@ -105,8 +105,6 @@ def main():
                             help='topology file (.top)')
     file_group.add_argument('-f', dest='ffpath', required=False, type=Path,
                             help='force-field files (.ff|.itp)', nargs='*')
-    file_group.add_argument('-i', dest='inpath', required=False, type=Path,
-                            help='Input file (.itp)')
     file_group.add_argument('-o', dest='outpath', type=Path,
                             help='Output GRO (.gro)')
     file_group.add_argument('-c', dest='coordpath', type=Path,

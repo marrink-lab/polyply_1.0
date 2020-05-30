@@ -1,3 +1,17 @@
+# Copyright 2020 University of Groningen
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """
 Provides a class used to describe a gromacs topology and all assciated data.
 """
@@ -73,7 +87,7 @@ def find_atoms(molecule, attr, value):
 
 class Topology(System):
     """
-    Ties together vermoth molecule definitions, and
+    Ties together vermouth molecule definitions, and
     Gromacs topology information.
 
     Parameters
@@ -97,13 +111,11 @@ class Topology(System):
     """
 
     def __init__(self, force_field, name=None):
+        super().__init__(force_field)
         self.name = name
-        self.molecules = []
-        self._force_field = None
-        self.force_field = force_field
         self.defaults = {}
         self.defines = {}
-        self.discription = []
+        self.description = []
         self.atom_types = {}
         self.types = defaultdict(list)
         self.nonbond_params = {}
@@ -175,13 +187,14 @@ class Topology(System):
         for meta_mol in self.molecules:
             for node in meta_mol.molecule.nodes:
                 try:
-                    position = molecules.nodes[total]["position"]
-                    meta_mol.molecule.nodes[node]["position"] = position
-                    meta_mol.molecule.nodes[node]["build"] = False
-                    total += 1
+                   position = molecules.nodes[total]["position"]
                 except KeyError:
-                    meta_mol.molecule.nodes[node]["build"] = True
-                    last_atom = total
+                   meta_mol.molecule.nodes[node]["build"] = True
+                   last_atom = total
+                else:
+                   meta_mol.molecule.nodes[node]["position"] = position
+                   meta_mol.molecule.nodes[node]["build"] = False
+                   total += 1
 
             for node in meta_mol:
                 atoms_in_res = find_atoms(meta_mol.molecule, "resid", node+1)

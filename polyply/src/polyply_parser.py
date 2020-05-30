@@ -102,7 +102,7 @@ class PolyplyParser(ITPDirector):
         for key in block.interactions:
             block_interactions = []
             for interaction in block.interactions[key]:
-                if any([isinstance(atom, str) for atom in interaction.atoms]):
+                if any(isinstance(atom, str) for atom in interaction.atoms):
                    return
 
                 if np.sum(np.array(interaction.atoms) > n_atoms - 1) > 0:
