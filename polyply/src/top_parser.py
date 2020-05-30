@@ -1,3 +1,16 @@
+# Copyright 2020 University of Groningen
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 import os
 from vermouth.parser_utils import SectionLineParser
 from vermouth.molecule import Interaction
@@ -14,6 +27,7 @@ class TOPDirector(SectionLineParser):
                  'angles': [0, 1, 2],
                  'angletypes':[0, 1, 2],
                  'constraints': [0, 1],
+                 'constrainttypes': [0, 1],
                  'dihedrals': [0, 1, 2, 3],
                  'dihedraltypes': [0, 1, 2, 3],
                  'pairs': [0, 1],
@@ -65,13 +79,10 @@ class TOPDirector(SectionLineParser):
         collections.abc.Callable
             The method that should be used to parse `line`.
         """
-
-        if self.is_section_header(line):
-            return self.parse_header
-        elif self.is_pragma(line):
+        if self.is_pragma(line):
             return self.parse_top_pragma
         else:
-            return self.parse_section
+            return super().dispatch(line)
 
     @staticmethod
     def is_pragma(line):
@@ -102,8 +113,8 @@ class TOPDirector(SectionLineParser):
         Returns
         -------
         object
-            The result of calling :meth:`finalize_section`, which is called
-            if a section ends.
+               The result of calling :meth:`finalize_section`, which is called
+               if a section ends.
 
         Raises
         ------
@@ -115,8 +126,23 @@ class TOPDirector(SectionLineParser):
                 self.current_itp.append(line)
             elif self.current_meta is None:
                 raise IOError("Your #ifdef section is orderd incorrectly."
-                              "At line {} I read #endif but I haven not read"
-                              "a ifdef before.".format(lineno))
+                              "At line {} I read {} but I haven not read"
+                              "an #ifdef before.".format(lineno, line))
+            else:
+               self.current_meta = None
+
+        elif line.startswith("#else"):
+            if self.current_itp:
+                self.current_itp.append(line)
+            elif self.current_meta is None:
+               raise IOError("Your #ifdef section is orderd incorrectly."
+                             "At line {} I read {} but I haven not read"
+                             "a ifdef before.".format(lineno, line))
+            else:
+               inverse = {"ifdef": "ifndef", "ifndef": "ifdef"}
+               tag = self.current_meta["tag"]
+               condition = inverse[self.current_meta["condition"]]
+               self.current_meta = {'tag': tag, 'condition': condition}
 
         elif line.startswith("#ifdef") or line.startswith("#ifndef"):
             if self.current_itp:
@@ -126,10 +152,10 @@ class TOPDirector(SectionLineParser):
                 self.current_meta = {'tag': tag,
                                      'condition': condition.replace("#", "")}
             elif self.current_meta is not None:
-                raise IOError("Your #ifdef/#ifndef section is orderd incorrectly."
+                raise IOError("Your {} section is orderd incorrectly."
                               "At line {} I read {} but there is still"
                               "an open #ifdef/#ifndef section from"
-                              "before.".format(lineno, line.split()[0]))
+                              "before.".format(self.current_meta['tag'], lineno, line.split()[0]))
 
         elif line.split()[0] in self.pragma_actions:
             action = self.pragma_actions[line.split()[0]]
@@ -161,29 +187,13 @@ class TOPDirector(SectionLineParser):
         KeyError
             If the section header is unknown.
         """
-        prev_section = self.section
-
-        ended = []
-        section = self.section + [line.strip('[ ]').casefold()]
-        if tuple(section[-1:]) in self.METH_DICT:
-            self.section = section[-1:]
-        else:
-            while tuple(section) not in self.METH_DICT and len(section) > 1:
-                ended.append(section.pop(-2))  # [a, b, c, d] -> [a, b, d]
-            self.section = section
-
-        result = None
-
-        if len(prev_section) != 0:
-            result = self.finalize_section(prev_section, ended)
-
+        result = super().parse_header(line, lineno)
         action = self.header_actions.get(tuple(self.section))
         if action:
-            action()
+           action()
 
-        if not isinstance(self.current_itp, type(None)):
+        if self.current_itp is not None:
            self.current_itp.append(line)
-
         return result
 
     def finalize(self, lineno=0):
@@ -195,8 +205,8 @@ class TOPDirector(SectionLineParser):
            self.itp_lines.append(self.current_itp)
 
         if self.current_meta is not None:
-            raise IOError("Your #ifdef/#ifndef section is orderd incorrectly."
-                          "There is no #endif for the last pragma.")
+            raise IOError("Your {} section is orderd incorrectly."
+                          "There is no #endif for this pragma.".format(self.current_meta))
 
         for lines in self.itp_lines:
             read_itp(lines, self.force_field)
@@ -227,9 +237,9 @@ class TOPDirector(SectionLineParser):
         Parses the lines in the '[system]'
         directive and stores it.
         """
-        system_lines = self.topology.discription
+        system_lines = self.topology.description
         system_lines.append(line)
-        self.discription = system_lines
+        self.description = system_lines
 
     @SectionLineParser.section_parser('molecules')
     def _molecules(self, line, lineno=0):
@@ -251,7 +261,12 @@ class TOPDirector(SectionLineParser):
         numbered_terms = ["nbfunc", "comb-rule", "fudgeLJ", "fudgeQQ"]
         tokens = line.split()
 
+        #Parse all defaults to a dict up to the last default metioned
+        #Note that gen_pairs, fudgeLJ and fudgeQQ not need to be set
         self.topology.defaults = dict(zip(defaults[0:len(tokens)], tokens))
+
+        #converts the defaults that are numbers to numbers
+        #we need to parse them first because they are not guaranteed to be provided
         for token_name in numbered_terms:
             if token_name in self.topology.defaults:
                  self.topology.defaults[token_name] = float(self.topology.defaults[token_name])
@@ -264,11 +279,11 @@ class TOPDirector(SectionLineParser):
         atom_name = line.split()[0]
         nb1, nb2 = line.split()[-2:]
         self.topology.atom_types[atom_name] = {"nb1": float(nb1),
-                                              "nb2": float(nb2)}
+                                               "nb2": float(nb2)}
 
     @SectionLineParser.section_parser('nonbond_params')
     def _nonbond_params(self, line, lineno=0):
-        """angletypes
+        """
         Parse and store nonbond params
         """
         atom_1, atom_2, func, nb1, nb2 = line.split()
@@ -279,6 +294,7 @@ class TOPDirector(SectionLineParser):
     @SectionLineParser.section_parser('angletypes')
     @SectionLineParser.section_parser('dihedraltypes')
     @SectionLineParser.section_parser('bondtypes')
+    @SectionLineParser.section_parser('constrainttypes')
     def _type_params(self, line, lineno=0):
         """
         Parse and store bonded types
@@ -290,6 +306,10 @@ class TOPDirector(SectionLineParser):
                                       parameters=params,
                                       meta=self.current_meta)
         self.topology.types[section_name].append(new_interaction)
+
+    @SectionLineParser.section_parser('cmaptypes')
+    def _skip(self, line, lineno=0):
+        pass
 
     @SectionLineParser.section_parser('moleculetype')
     @SectionLineParser.section_parser('moleculetype', 'atoms')
@@ -338,7 +358,6 @@ class TOPDirector(SectionLineParser):
         parse include statemnts
         """
         path = line.split()[1].strip('\"')
-        print(self.cwdir)
         if self.cwdir:
            filename = os.path.join(self.cwdir, path)
            cwdir = os.path.dirname(filename)
@@ -376,7 +395,7 @@ class TOPDirector(SectionLineParser):
                 atoms.append(tokens[idx])
                 remove.append(idx)
             elif isinstance(idx, slice):
-                atoms += [atom for atom in tokens[idx]]
+                atoms.extend(tokens[idx])
                 idx_range = range(0, len(tokens))
                 remove += idx_range[idx]
             else:

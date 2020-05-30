@@ -57,7 +57,7 @@ def _is_overlap(meta_molecule, point, tol, fudge=1):
         except KeyError:
             continue
 
-        if np.linalg.norm(coord - new_point) < tol * fudge:
+        if np.linalg.norm(coord - point) < tol * fudge:
            return True
 
     return False
@@ -84,8 +84,8 @@ def update_positions(vector_bundle, meta_molecule, current_node, prev_node):
     if "position" in meta_molecule.nodes[current_node]:
         return
 
-    current_vectors = np.zeros(vector_bundel.shape)
-    current_vectors[:] = vector_bundel[:]
+    current_vectors = np.zeros(vector_bundle.shape)
+    current_vectors[:] = vector_bundle[:]
     last_point = meta_molecule.nodes[prev_node]["position"]
 
     prev_resname = meta_molecule.nodes[prev_node]["resname"]
@@ -98,13 +98,13 @@ def update_positions(vector_bundle, meta_molecule, current_node, prev_node):
     step_length = 2*vdw_radius
 
     while True:
-        new_point, index = _take_step(vector_bundel, step_length, last_point)
+        new_point, index = _take_step(vector_bundle, step_length, last_point)
         if not _is_overlap(meta_molecule, new_point, tol=vdw_radius):
             meta_molecule.nodes[current_node]["position"] = new_point
          #   print(meta_molecule.nodes[current_node]["resname"])
             break
         else:
-            vector_bundel = np.delete(vector_bundel, index, axis=0)
+            vector_bundel = np.delete(vector_bundle, index, axis=0)
 
 
 class RandomWalk(Processor):
@@ -125,9 +125,9 @@ class RandomWalk(Processor):
         """
         first_node = list(meta_molecule.nodes)[0]
         meta_molecule.nodes[first_node]["position"] = np.array([0, 0, 0])
-        vector_bundel = norm_sphere(5000)
+        vector_bundle = norm_sphere(5000)
         for prev_node, current_node in nx.dfs_edges(meta_molecule, source=0):
-            update_positions(vector_bundel, meta_molecule,
+            update_positions(vector_bundle, meta_molecule,
                              current_node, prev_node)
 
     def run_molecule(self, meta_molecule):

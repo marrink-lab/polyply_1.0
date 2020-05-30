@@ -6,9 +6,6 @@ import scipy
 import scipy.optimize
 from .linalg_functions import (angle, dih, u_vect)
 
-INTER_METHODS = {"bonds": compute_bond,
-                 "angles": compute_angle,
-                 "dihedrals": compute_dih}
 
 def compute_bond(params, coords):
     """
@@ -67,6 +64,10 @@ def compute_dih(params, coords):
     dih_angle = dih(coords[0], coords[1], coords[2], coords[3])
     return (dih_angle - float(params[1]))**2.0
 
+
+INTER_METHODS = {"bonds": compute_bond,
+                 "angles": compute_angle,
+                 "dihedrals": compute_dih}
 
 def optimize_geometry(block, coords):
     """
