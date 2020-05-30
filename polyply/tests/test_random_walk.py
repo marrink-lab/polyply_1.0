@@ -24,7 +24,7 @@ import networkx as nx
 import vermouth
 import polyply
 from polyply import MetaMolecule
-from polyply.src.random_walk import (RandomWalk, _take_step, _is_overlap, _combination, update_positions)
+from polyply.src.random_walk import (RandomWalk, _take_step, _is_overlap, update_positions)
 
 class TestRandomWalk:
 
@@ -60,10 +60,6 @@ class TestRandomWalk:
       meta_mol.nodes[1]["position"] = np.array([0, 0, 0.5])
       result =  _is_overlap(meta_mol, new_point, tol, fudge)
       assert result == reference
-
-    @staticmethod
-    def test__combination():
-        assert math.isclose(_combination(0.5, 0.25), 0.375)
 
     @staticmethod
     def test_update_positions():

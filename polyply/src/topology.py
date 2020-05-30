@@ -30,6 +30,31 @@ from .linalg_functions import center_of_geometry
 COORD_PARSERS = {"pdb": read_pdb,
                  "gro": read_gro}
 
+def replace_defined_interaction(interaction, defines):
+    """
+    Given a `vermouth.Interaction` replace check
+    if parameters are defined in a list of defines
+    and replace by the corresponding numeric value.
+
+    Parameters
+    -----------
+    interaction: :tuple:`vermouth.Interaction`
+    defines:  dict
+      dictionary of type [define]:value
+
+    Returns
+    --------
+    interaction
+      interaction with replaced defines
+    """
+    def_key = interaction.parameters[-1]
+    if def_key in defines:
+       values = defines[def_key]
+       del interaction.parameters[-1]
+       [interaction.parameters.append(param) for param in values]
+
+    return interaction
+
 def LorentzBerthelotRule(sig_A, sig_B, eps_A, eps_B):
     """
     Lorentz-Berthelot rules for combining LJ paramters.
@@ -119,6 +144,18 @@ class Topology(System):
         self.atom_types = {}
         self.types = defaultdict(list)
         self.nonbond_params = {}
+
+    def replace_defines(self):
+        """
+        Replace all interaction paramers with defined parameters.
+        """
+        for block in self.blocks.items():
+            for interaction in block.interactions.items():
+                new_interaction = replace_defined_interaction(interaction, defines)
+
+        for link in self.links:
+            for interaction in link.interactions.items():
+                new_interaction = replace_defined_interaction(interaction, defines)
 
     def gen_pairs(self):
         """

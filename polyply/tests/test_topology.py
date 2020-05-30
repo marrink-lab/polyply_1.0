@@ -127,3 +127,8 @@ class TestTopology:
             print(math.isclose(nb2, nb2_ref))
             assert math.isclose(nb1, nb1_ref)
             assert math.isclose(nb2, nb2_ref)
+
+
+   #@staticmethod
+   #def test__combination():
+   #    assert math.isclose(_combination(0.5, 0.25), 0.375)
