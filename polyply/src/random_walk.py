@@ -4,6 +4,7 @@ import numpy as np
 import polyply
 from .processor import Processor
 from .linalg_functions import norm_sphere
+from .topology import LorentzBerthelotRule
 """
 Processor implementing a random-walk to generate
 coordinates for a meta-molecule.
@@ -62,11 +63,6 @@ def _is_overlap(meta_molecule, point, tol, fudge=1):
 
     return False
 
-
-def _combination(radius_A, radius_B):
-    return (radius_A + radius_B) / 2.
-
-
 def update_positions(vector_bundle, meta_molecule, current_node, prev_node):
     """
     Take an array of unit vectors `vector_bundle` and generate the coordinates
@@ -93,7 +89,7 @@ def update_positions(vector_bundle, meta_molecule, current_node, prev_node):
 
     current_vdwr = meta_molecule.volumes[current_resname]
     prev_vdwr = meta_molecule.volumes[prev_resname]
-    vdw_radius = _combination(current_vdwr, prev_vdwr)
+    vdw_radius, _ = LorentzBerthelotRule(current_vdwr, prev_vdwr, 1, 1)
 
     step_length = 2*vdw_radius
 
