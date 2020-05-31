@@ -47,7 +47,11 @@ def replace_defined_interaction(interaction, defines):
     interaction
       interaction with replaced defines
     """
-    def_key = interaction.parameters[-1]
+    if len(interaction.parameters) != 0:
+       def_key = interaction.parameters[-1]
+    else:
+       return interaction
+
     if def_key in defines:
        values = defines[def_key]
        del interaction.parameters[-1]
@@ -149,13 +153,14 @@ class Topology(System):
         """
         Replace all interaction paramers with defined parameters.
         """
-        for block in self.blocks.items():
-            for interaction in block.interactions.items():
-                new_interaction = replace_defined_interaction(interaction, defines)
+        for block in self.force_field.blocks.values():
+            for interactions in block.interactions.values():
+                for interaction in interactions:
+                    new_interaction = replace_defined_interaction(interaction, self.defines)
 
-        for link in self.links:
-            for interaction in link.interactions.items():
-                new_interaction = replace_defined_interaction(interaction, defines)
+        for link in self.force_field.links:
+            for interaction in link.interactions.values():
+                new_interaction = replace_defined_interaction(interaction, self.defines)
 
     def gen_pairs(self):
         """
