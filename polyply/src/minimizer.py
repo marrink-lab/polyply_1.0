@@ -64,8 +64,34 @@ def compute_dih(params, coords):
     dih_angle = dih(coords[0], coords[1], coords[2], coords[3])
     return (dih_angle - float(params[1]))**2.0
 
+def renew_vs(positions, block):
+    """
+    Given `positions` update the virtual-sites
+    that are specified in block using the current
+    positions of the other atoms.
+
+    Parameters
+    ----------
+    positions: dict
+    block: :class:vermouth.molecule.Block
+
+    Returns
+    -------
+    positions
+      the positions with new vs coordinates
+    """
+    vs_types = ["virtual_sitesn", "virtual_sites2", "virtual_sites3", "virtual_sites4"]
+    for vs_type in vs_types:
+        interactions = block.interactions.get(vs_type, [])
+        for vs in interactions:
+            vs_tb = interaction.atoms[0]
+            new_vs = construct_vs(vs_type, interaction, positions)
+            positions[vs_tb] = new_vs
+    return positions
+
 
 INTER_METHODS = {"bonds": compute_bond,
+                 "constraints": compute_bond,
                  "angles": compute_angle,
                  "dihedrals": compute_dih}
 
@@ -96,6 +122,7 @@ def optimize_geometry(block, coords):
     def target_function(positions):
         energy = 0
         positions = positions.reshape((-1, 3))
+        positions = renew_vs(positions, block)
         for inter_type in INTER_METHODS:
             interactions = block.interactions.get(inter_type, [])
             for interaction in interactions:

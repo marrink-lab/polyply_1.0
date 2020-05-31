@@ -11,6 +11,7 @@ from .linalg_functions import (angle, dih, u_vect, center_of_geometry,
                                           norm_sphere, radius_of_gyration)
 from .random_walk import _take_step
 from .topology import replace_defined_interaction
+from .virtual_site_builder import construct_vs
 """
 Processor generating coordinates for all residues
 of a meta_molecule matching those in the meta_molecule.molecule attribute.
@@ -41,13 +42,6 @@ def find_atoms(molecule, attr, value):
 
     return nodes
 
-def construct_vs(atoms, coords):
-    coord = np.array([0., 0., 0.])
-    for atom in atoms[1:]:
-        if atom in coords:
-           coord += coords[atom]
-    return coord
-
 def find_step_length(interactions, current_node, prev_node):
     """
     Given a list of `interactions` in vermouth format, find an
@@ -68,18 +62,17 @@ def find_step_length(interactions, current_node, prev_node):
     ---------
     bool
       is the interaction a virtual-site
-    parameter
-      either an atom-list if it is a virtual-site or
-      a parameter
+    :tuple:vermouth.interaction
     """
-    for inter_type in ["bonds", "constraints", "virtual_sitesn"]:
+    for inter_type in ["bonds", "constraints", "virtual_sitesn",
+                       "virtual_sites2", "virtual_sites3", "virtual_sites4" ]:
         inters = interactions.get(inter_type, [])
         for interaction in inters:
             if current_node in interaction.atoms:
-               if prev_node in interaction.atoms and inter_type != "virtual_sitesn":
-                  return False, float(interaction.parameters[1])
-               elif inter_type == "virtual_sitesn":
-                  return True, interaction.atoms
+               if prev_node in interaction.atoms and inter_type in ["bonds", "constraints"]:
+                  return False, interaction, inter_type
+               elif prev_node in interaction.atoms and inter_type.split("_")[0] == "virtual":
+                  return True, interaction, inter_type
 
 def _expand_inital_coords(block):
     """
@@ -98,18 +91,22 @@ def _expand_inital_coords(block):
       dictonary of node index and position
     """
     coords = {}
+    #TODO this should actually be the index
     atom = list(block.nodes)[0]
     coords[atom] = np.array([0, 0, 0])
 
     vectors = norm_sphere(values=1000)
     for prev_node, current_node in nx.dfs_edges(block, source=atom):
         prev_coord = coords[prev_node]
-        is_vs, param = find_step_length(block.interactions, current_node, prev_node)
+        is_vs, interaction, inter_type = find_step_length(block.interactions,
+                                                          current_node,
+                                                          prev_node)
         if is_vs:
-            coords[current_node] = construct_vs(atoms, coords)
+            coords[current_node] = construct_vs(inter_type, interaction, coords)
         else:
-            coords[current_node], _ = _take_step(vectors, param, prev_coord)
-
+            coords[current_node], _ = _take_step(vectors,
+                                                 float(interaction.parameters[1]),
+                                                 prev_coord)
     return coords
 
 def compute_volume(molecule, block, coords):
