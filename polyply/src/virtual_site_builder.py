@@ -182,6 +182,8 @@ def vserr(interaction, positions):
 # structure generation
 
 VIRTUAL_SITES = {('virtual_sitesn', '1'): vsn,
+                 ('virtual_sitesn', '2'): vsn,
+                 ('virtual_sitesn', '3'): vsn,
                  ('virtual_sites4', '2'): vs4fdn,
                  ('virtual_sites4', '1'): vserr,
                  ('virtual_sites3', '4'): vs3out,
