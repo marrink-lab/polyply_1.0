@@ -5,7 +5,7 @@ import numpy.linalg
 import scipy
 import scipy.optimize
 from .linalg_functions import (angle, dih, u_vect)
-
+from .virtual_site_builder import construct_vs
 
 def compute_bond(params, coords):
     """
@@ -64,7 +64,7 @@ def compute_dih(params, coords):
     dih_angle = dih(coords[0], coords[1], coords[2], coords[3])
     return (dih_angle - float(params[1]))**2.0
 
-def renew_vs(positions, block):
+def renew_vs(positions, block, atom_to_idx):
     """
     Given `positions` update the virtual-sites
     that are specified in block using the current
@@ -84,8 +84,11 @@ def renew_vs(positions, block):
     for vs_type in vs_types:
         interactions = block.interactions.get(vs_type, [])
         for vs in interactions:
-            vs_tb = interaction.atoms[0]
-            new_vs = construct_vs(vs_type, interaction, positions)
+            vs_tb = atom_to_idx[vs.atoms[0]]
+            pos_dict={}
+            for atom in vs.atoms:
+                pos_dict[atom] = positions[atom_to_idx[atom]]
+            new_vs = construct_vs(vs_type, vs, pos_dict)
             positions[vs_tb] = new_vs
     return positions
 
@@ -122,7 +125,7 @@ def optimize_geometry(block, coords):
     def target_function(positions):
         energy = 0
         positions = positions.reshape((-1, 3))
-        positions = renew_vs(positions, block)
+        positions = renew_vs(positions, block, atom_to_idx)
         for inter_type in INTER_METHODS:
             interactions = block.interactions.get(inter_type, [])
             for interaction in interactions:

@@ -271,6 +271,10 @@ class TOPDirector(SectionLineParser):
             if token_name in self.topology.defaults:
                  self.topology.defaults[token_name] = float(self.topology.defaults[token_name])
 
+        #sets gen-pairs to no when it is not provied
+        if "gen-pairs" not in self.topology.defaults:
+            self.topology.defaults["gen-pairs"] = "no"
+
     @SectionLineParser.section_parser('atomtypes')
     def _atomtypes(self, line, lineno=0):
         """

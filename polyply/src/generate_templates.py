@@ -210,7 +210,7 @@ def extract_block(molecule, resname, defines):
 
     for inter_type in molecule.interactions:
         for interaction in molecule.interactions[inter_type]:
-            if any(atom in block for atom in interaction.atoms):
+            if all(atom in block for atom in interaction.atoms):
                interaction = replace_defined_interaction(interaction, defines)
                block.interactions[inter_type].append(interaction)
 
@@ -251,7 +251,7 @@ class GenerateTemplates(Processor):
         volumes = {}
 
         for resname in resnames:
-            block = extract_block(meta_molecule.molecule, resname, 
+            block = extract_block(meta_molecule.molecule, resname,
                                   meta_molecule.defines)
             opt_counter=0
             while True:
