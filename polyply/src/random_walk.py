@@ -95,7 +95,7 @@ def update_positions(vector_bundle, meta_molecule, current_node, prev_node):
         return
 
     current_vectors = np.zeros(vector_bundle.shape)
-    current_vectors[:] = vector_bundle[:]
+    current_vectors = vector_bundle.copy()
     last_point = meta_molecule.nodes[prev_node]["position"]
 
     prev_resname = meta_molecule.nodes[prev_node]["resname"]

@@ -55,7 +55,8 @@ def replace_defined_interaction(interaction, defines):
     if def_key in defines:
        values = defines[def_key]
        del interaction.parameters[-1]
-       [interaction.parameters.append(param) for param in values]
+       for param in values:
+           interaction.parameters.append(param)
 
     return interaction
 
