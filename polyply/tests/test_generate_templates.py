@@ -22,8 +22,8 @@ import math
 import networkx as nx
 import vermouth
 import polyply
-from polyply.src.linalg_functions import center_of_geometry
-from polyply.src.generate_templates import (_atoms_in_node, find_atoms,
+from ..src.linalg_functions import center_of_geometry
+from ..src.generate_templates import (_atoms_in_node, find_atoms,
                                             _expand_inital_coords,
                                             compute_volume, map_from_CoG,
                                             extract_block, GenerateTemplates)

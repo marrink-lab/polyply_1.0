@@ -24,7 +24,7 @@ import networkx as nx
 import vermouth
 import polyply
 from polyply import MetaMolecule
-from polyply.src.random_walk import (RandomWalk, _take_step, _is_overlap, update_positions)
+from ..src.random_walk import (RandomWalk, _take_step, _is_overlap, update_positions)
 
 class TestRandomWalk:
 

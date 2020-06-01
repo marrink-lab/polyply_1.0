@@ -19,7 +19,7 @@ a GROMACS energy minimization.
 import numpy as np
 import pytest
 from vermouth.molecule import Interaction
-from polyply.src.virtual_site_builder import construct_vs
+from ..src.virtual_site_builder import construct_vs
 
 
 @pytest.mark.parametrize('vs_type, interaction, positions, result', (
