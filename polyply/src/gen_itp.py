@@ -16,6 +16,7 @@
 High level API for the polyply itp generator
 """
 from pathlib import Path
+import networkx as nx
 import vermouth
 import vermouth.forcefield
 import polyply
@@ -72,6 +73,10 @@ def gen_itp(args):
     # Do transformationa and apply link
     meta_molecule = MapToMolecule().run_molecule(meta_molecule)
     meta_molecule = ApplyLinks().run_molecule(meta_molecule)
+
+    if not nx.is_connected(meta_molecule.molecule):
+       print("Warning \n The itp contains two disconnected fragments.")
+       print("Most likely you are missing a link.")
 
     with open(args.outpath, 'w') as outpath:
         vermouth.gmx.itp.write_molecule_itp(meta_molecule.molecule, outpath,
