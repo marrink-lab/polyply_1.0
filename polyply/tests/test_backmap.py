@@ -34,8 +34,9 @@ class TestBackmap():
           meta_molecule.add_edges_from([(0, 1)])
           nx.set_node_attributes(meta_molecule, {0: {"resname": "test", "position": np.array([0, 0, 0])},
                                                  1: {"resname": "test", "position": np.array([0, 0, 1.0])}})
-          meta_molecule.templates = {"test": {1: np.array([0, 0, 0]),
-                                              2: np.array([0, 0, 0.5]),
+          # test if disordered template works
+          meta_molecule.templates = {"test": {2: np.array([0, 0, 0]),
+                                              1: np.array([0, 0, 0.5]),
                                               3: np.array([0, 0.5, 0])}}
           meta_molecule.molecule = vermouth.molecule.Molecule()
           meta_molecule.molecule.add_edges_from([(1, 2), (2, 3), (3, 4), (4, 5), (5, 6)])

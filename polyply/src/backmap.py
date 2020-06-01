@@ -42,19 +42,19 @@ class Backmap(Processor):
         """
         coords = np.zeros((len(meta_molecule.molecule.nodes), 3))
         idx = 0
+        count = 0
         for node in meta_molecule.nodes:
             resname = meta_molecule.nodes[node]["resname"]
             CoG = meta_molecule.nodes[node]["position"]
             template = meta_molecule.templates[resname]
             resid = node + 1
             low_res_atoms = find_atoms(meta_molecule.molecule, "resid", resid)
-            #print(low_res_atoms)
-            #print(template)
             for atom_low  in low_res_atoms:
-                vector = template[atom_low]
+                vector = template[atom_low-count]
                 new_coords = CoG + vector
                 if meta_molecule.molecule.nodes[atom_low]["build"]:
                    meta_molecule.molecule.nodes[atom_low]["position"] = new_coords
+                count += 1
 
     def run_molecule(self, meta_molecule):
         """

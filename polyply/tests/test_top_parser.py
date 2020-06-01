@@ -40,13 +40,15 @@ class TestTopParsing:
           "fudgeQQ": 1.0}
          ),
         #martini style defaults
+        #gen-pairs set by default
         ("""
         [ defaults ]
         1.0   1.0
         """,
          "defaults",
          {"nbfunc": 1.0,
-          "comb-rule": 1.0}
+          "comb-rule": 1.0,
+          "gen-pairs": "no"}
          ),
         ("""
         [ atomtypes ]
