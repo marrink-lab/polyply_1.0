@@ -135,7 +135,6 @@ def optimize_geometry(block, coords):
     n_atoms = len(coords)
     atom_to_idx = OrderedDict(zip(list(coords.keys()), range(0, n_atoms)))
     positions = np.array(list(coords.values()))
-
     def target_function(positions):
         energy = 0
         positions = positions.reshape((-1, 3))

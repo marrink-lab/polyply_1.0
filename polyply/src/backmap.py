@@ -48,9 +48,10 @@ class Backmap(Processor):
             template = meta_molecule.templates[resname]
             resid = node + 1
             low_res_atoms = find_atoms(meta_molecule.molecule, "resid", resid)
-
-            for atom_super, atom_low  in zip(template, low_res_atoms):
-                vector = template[atom_super]
+            #print(low_res_atoms)
+            #print(template)
+            for atom_low  in low_res_atoms:
+                vector = template[atom_low]
                 new_coords = CoG + vector
                 if meta_molecule.molecule.nodes[atom_low]["build"]:
                    meta_molecule.molecule.nodes[atom_low]["position"] = new_coords
