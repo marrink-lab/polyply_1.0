@@ -36,6 +36,15 @@ def gen_coords(args):
     if topology.defaults["comb-rule"] == 2:
        topology.convert_nonbond_to_sig_eps()
 
+    # check if molecules are all connected
+    for molecule in topology.molecules:
+        if not nx.is_connected(molecule):
+           msg=('\n Molecule {} consistes of two disconnected parts. '
+                'Make sure all atoms/particles in a molecule are '
+                'connected by bonds, constraints or virual-sites')
+           raise IOError(msg.format(molecule.name))
+
+    # read in coordinates if there are any
     if args.coordpath:
        topology.add_positions_from_file(args.coordpath)
     else:
