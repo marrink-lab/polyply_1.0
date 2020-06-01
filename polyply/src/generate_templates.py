@@ -231,6 +231,12 @@ def extract_block(molecule, resname, defines):
     for inter_type in ["bonds", "constraints", "virtual_sitesn"]:
         block.make_edges_from_interaction_type(inter_type)
 
+    if not nx.is_connected(block):
+        msg=('\n Residue {} with id {} consistes of two disconnected parts. '
+             'Make sure all atoms/particles in a residue are connected by bonds,'
+             ' constraints or virual-sites.')
+        raise IOError(msg.format(resname, resid))
+
     return block
 
 class GenerateTemplates(Processor):
