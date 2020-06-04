@@ -118,12 +118,13 @@ def norm_sphere(values=50):
     """
     v_sphere = np.random.normal(0.0, 1, (values, 3))
     return np.array([u_vect(vect) for vect in v_sphere])
+    #return v_sphere/norm(v_sphere, axis=0, keepdims=True)
 
 def radius_of_gyration(points):
     """
     Compute radius of gyration of points.
 
-    Paramters
+    Parameters
     ---------
     points: np.array
 

@@ -24,7 +24,7 @@ import networkx as nx
 import vermouth
 import polyply
 from polyply import MetaMolecule
-from ..src.backmap import Backmap
+from polyply.src.backmap import Backmap
 
 class TestBackmap():
 

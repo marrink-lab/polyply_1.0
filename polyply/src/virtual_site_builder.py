@@ -24,7 +24,7 @@ def vsn(interaction, positions):
     Construct a virtual-siten of type
     1,2,3 from interaction and positions.
 
-    Paratmers
+    Parameters
     ---------
     interaction
     positions
@@ -44,7 +44,7 @@ def vs2(interaction, positions):
     """
     Constructs virtual-site 2.
 
-    Paratmers
+    Parameters
     ---------
     interaction
     positions
@@ -66,7 +66,7 @@ def vs3(interaction, positions):
     """
     Constructs virtual-site 3.
 
-    Paratmers
+    Parameters
     ---------
     interaction
     positions
@@ -90,7 +90,7 @@ def vs3fd(interaction, positions):
     """
     Construct virtual-site 3fd.
 
-    Paratmers
+    Parameters
     ---------
     interaction
     positions
@@ -113,7 +113,7 @@ def vs3fad(interaction, positions):
     """
     Construct virtual-site 3fad.
 
-    Paratmers
+    Parameters
     ---------
     interaction
     positions
@@ -138,7 +138,7 @@ def vs3out(interaction, positions):
     """
     Construct virtual-site 3out.
 
-    Paratmers
+    Parameters
     ---------
     interaction
     positions
@@ -162,7 +162,7 @@ def vs4fdn(interaction, positions):
     """
     Construct virtual-site 4fdn.
 
-    Paratmers
+    Parameters
     ---------
     interaction
     positions

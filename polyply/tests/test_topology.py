@@ -122,13 +122,90 @@ class TestTopology:
             nb2 = top.nonbond_params[atom_pair]["nb2"]
             nb1_ref = outcome[atom_pair]["nb1"]
             nb2_ref = outcome[atom_pair]["nb2"]
-            print(atom_pair)
-            print(math.isclose(nb1, nb1_ref))
-            print(math.isclose(nb2, nb2_ref))
             assert math.isclose(nb1, nb1_ref)
             assert math.isclose(nb2, nb2_ref)
 
-
-   #@staticmethod
-   #def test__combination():
-   #    assert math.isclose(_combination(0.5, 0.25), 0.375)
+    @staticmethod
+    @pytest.mark.parametrize('lines, outcome', (
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ atomtypes ]
+        O       8 0.000 0.000  A   2.7106496e-03  9.9002500e-07
+        C       8 0.000 0.000  A   1.7106496e-03  9.9002500e-07
+        #define ga_1  100  250
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 CH3   1 test C1 1   0.0 14.0
+        2 CH2   1 test C2 2   0.0 12.0
+        3 CH3   1 test C3 3   0.0 12.0
+        [ angles ]
+        1 2  3 2 ga_1
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        ["2", "100", "250"]
+        ),
+        # different location of define statement
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        #define ga_1  100  250
+        [ atomtypes ]
+        O       8 0.000 0.000  A   2.7106496e-03  9.9002500e-07
+        C       8 0.000 0.000  A   1.7106496e-03  9.9002500e-07
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 CH3   1 test C1 1   0.0 14.0
+        2 CH2   1 test C2 2   0.0 12.0
+        3 CH3   1 test C3 3   0.0 12.0
+        [ angles ]
+        1 2  3 2 ga_1
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        ["2", "100", "250"]
+        ),
+        # two defines for one statement
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        #define ga_1  100
+        #define gk_1  250
+        [ atomtypes ]
+        O       8 0.000 0.000  A   2.7106496e-03  9.9002500e-07
+        C       8 0.000 0.000  A   1.7106496e-03  9.9002500e-07
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 CH3   1 test C1 1   0.0 14.0
+        2 CH2   1 test C2 2   0.0 12.0
+        3 CH3   1 test C3 3   0.0 12.0
+        [ angles ]
+        1 2  3 2 ga_1 gk_1
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        ["2", "100", "250"]
+        )
+	))
+    def test_replace_defines(lines, outcome):
+        new_lines = textwrap.dedent(lines)
+        new_lines = new_lines.splitlines()
+        force_field = vermouth.forcefield.ForceField(name='test_ff')
+        top =  Topology(force_field, name="test")
+        polyply.src.top_parser.read_topology(new_lines, top)
+        top.replace_defines()
+        print(top.molecules)
+        assert top.molecules[0].molecule.interactions["angles"][0].parameters == outcome

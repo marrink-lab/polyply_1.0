@@ -32,16 +32,16 @@ def _take_step(vectors, step_length, coord):
 
     Parameters
     ----------
-    vectors: list[np.ndarray(n,3)]
+    vectors: list[np.ndarray(n, 3)]
     step_length: float
     coord: np.ndarray(3)
 
     Returns
     -------
     np.ndarray(3)
-      the new coordinate
+        the new coordinate
     int
-      the index of the vector choosen
+        the index of the vector choosen
     """
     index = random.randint(0, len(vectors) - 1)
     new_coord = coord + vectors[index] * step_length
@@ -81,7 +81,7 @@ def update_positions(vector_bundle, meta_molecule, current_node, prev_node):
     """
     Take an array of unit vectors `vector_bundle` and generate the coordinates
     for `current_node` by adding a random vector to the position of the previous
-    node `prev_node`. The length of that vevtor is defined as 2 times the vdw-radius
+    node `prev_node`. The length of that vector is defined as 2 times the vdw-radius
     of the two nodes. The position is updated in place.
 
     Parameters
