@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Test consructions of virutal-sites. Reference values come from
+Test constructions of virutal-sites. Reference values come from
 a GROMACS energy minimization.
 """
 

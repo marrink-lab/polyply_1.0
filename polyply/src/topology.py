@@ -32,13 +32,13 @@ COORD_PARSERS = {"pdb": read_pdb,
 
 def replace_defined_interaction(interaction, defines):
     """
-    Given a `vermouth.Interaction` replace check
-    if parameters are defined in a list of defines
-    and replace by the corresponding numeric value.
+    Given an `interaction` check if parameters
+    are defined in a list of defines and replace
+    by the corresponding numeric value.
 
     Parameters
     -----------
-    interaction: :tuple:`vermouth.Interaction`
+    interaction: :tuple:`vermouth.molecule.Interaction`
     defines:  dict
       dictionary of type [define]:value
 
@@ -47,16 +47,16 @@ def replace_defined_interaction(interaction, defines):
     interaction
       interaction with replaced defines
     """
-    if len(interaction.parameters) != 0:
-       def_key = interaction.parameters[-1]
-    else:
-       return interaction
+    new_parameters = []
+    for parameter in interaction.parameters:
+        if parameter in defines:
+            values = defines[parameter]
+            for new_param in values:
+                 new_parameters.append(new_param)
+        else:
+            new_parameters.append(parameter)
 
-    if def_key in defines:
-       values = defines[def_key]
-       del interaction.parameters[-1]
-       for param in values:
-           interaction.parameters.append(param)
+    interaction.parameters[:] = new_parameters[:]
 
     return interaction
 
@@ -64,19 +64,21 @@ def LorentzBerthelotRule(sig_A, sig_B, eps_A, eps_B):
     """
     Lorentz-Berthelot rules for combining LJ paramters.
 
-    Parameters:
+    Parameters
     -----------
-    sig_A  float
-    sig_B  float
+    sig_A:  float
+    sig_B:  float
         input sigma values
-    eps_A  float
-    eps_B  float
+    eps_A:  float
+    eps_B:  float
         input epsilon values
 
-    Returns:
+    Returns
     --------
-    sig   float
-    eps   float
+    float
+        sigma
+    float
+        epsilon
     """
     sig = (sig_A + sig_B)/2.0
     eps = (eps_A * eps_B)**0.5
@@ -89,17 +91,19 @@ def GeometricRule(C6_A, C6_B, C12_A, C12_B):
 
     Parameters:
     -----------
-    C6_A  float
-    C6_B  float
+    C6_A:  float
+    C6_B:  float
         input C6 values
-    C12_A  float
-    C12_B  float
+    C12_A:  float
+    C12_B:  float
         input C12 values
 
     Returns:
     --------
-    C6   float
-    C12   float
+    float
+         C6
+    float
+         C12
     """
     C6 = (C6_A * C6_B)**0.5
     C12 = (C12_A * C12_B)**0.5
@@ -180,7 +184,7 @@ class Topology(System):
 
         if self.defaults["gen-pairs"] == "yes":
             for atom_type_A, atom_type_B in combinations(self.atom_types, r=2):
-                if not frozenset([atom_type_A, atom_type_B]) in self.nonbond_params:
+                if frozenset([atom_type_A, atom_type_B]) not in self.nonbond_params:
                     nb1_A = self.atom_types[atom_type_A]["nb1"]
                     nb2_A = self.atom_types[atom_type_A]["nb2"]
                     nb1_B = self.atom_types[atom_type_B]["nb1"]
@@ -190,7 +194,7 @@ class Topology(System):
                                                {"nb1": nb1, "nb2": nb2}})
 
         for atom_type in self.atom_types:
-            if not frozenset([atom_type, atom_type]) in self.nonbond_params:
+            if frozenset([atom_type, atom_type]) not in self.nonbond_params:
                 nb1 = self.atom_types[atom_type]["nb1"]
                 nb2 = self.atom_types[atom_type]["nb2"]
                 self.nonbond_params.update({frozenset([atom_type, atom_type]):

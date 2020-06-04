@@ -22,13 +22,13 @@ import polyply
 from .minimizer import optimize_geometry
 from .processor import Processor
 from .linalg_functions import (angle, dih, u_vect, center_of_geometry,
-                                          norm_sphere, radius_of_gyration)
+                               norm_sphere, radius_of_gyration)
 from .random_walk import _take_step
 from .topology import replace_defined_interaction
 from .virtual_site_builder import construct_vs
 """
-Processor generating coordinates for all residues
-of a meta_molecule matching those in the meta_molecule.molecule attribute.
+Processor generating coordinates for all residues of a meta_molecule
+matching those in the meta_molecule.molecule attribute.
 """
 
 def find_atoms(molecule, attr, value):
@@ -49,14 +49,14 @@ def find_atoms(molecule, attr, value):
     list
        list of nodes found
     """
-    nodes=[]
+    nodes = []
     for node in molecule.nodes:
-        if molecule.nodes[node][attr] == value and attr in molecule.nodes[node]:
-              nodes.append(node)
+        if attr in molecule.nodes[node] and molecule.nodes[node][attr] == value:
+            nodes.append(node)
 
     return nodes
 
-def find_step_length(interactions, current_node, prev_node):
+def find_bond(interactions, current_node, prev_node):
     """
     Given a list of `interactions` in vermouth format, find an
     interaction from bonds, constraints, or virtual-sites that
@@ -76,17 +76,20 @@ def find_step_length(interactions, current_node, prev_node):
     ---------
     bool
       is the interaction a virtual-site
-    :tuple:vermouth.interaction
+    vermouth.Interaction
+      interaction definition
+    str
+      interaction type
     """
     for inter_type in ["bonds", "constraints", "virtual_sitesn",
-                       "virtual_sites2", "virtual_sites3", "virtual_sites4" ]:
+                       "virtual_sites2", "virtual_sites3", "virtual_sites4"]:
         inters = interactions.get(inter_type, [])
         for interaction in inters:
             if current_node in interaction.atoms:
-               if prev_node in interaction.atoms and inter_type in ["bonds", "constraints"]:
-                  return False, interaction, inter_type
-               elif prev_node in interaction.atoms and inter_type.split("_")[0] == "virtual":
-                  return True, interaction, inter_type
+                if prev_node in interaction.atoms and inter_type in ["bonds", "constraints"]:
+                    return False, interaction, inter_type
+                elif prev_node in interaction.atoms and inter_type.split("_")[0] == "virtual":
+                    return True, interaction, inter_type
 
 def _expand_inital_coords(block):
     """
@@ -112,7 +115,7 @@ def _expand_inital_coords(block):
     vectors = norm_sphere(values=1000)
     for prev_node, current_node in nx.dfs_edges(block, source=atom):
         prev_coord = coords[prev_node]
-        is_vs, interaction, inter_type = find_step_length(block.interactions,
+        is_vs, interaction, inter_type = find_bond(block.interactions,
                                                           current_node,
                                                           prev_node)
         if is_vs:
@@ -144,14 +147,14 @@ def compute_volume(molecule, block, coords):
     """
     n_atoms = len(coords)
     points = np.array(list(coords.values()))
-    CoG = center_of_geometry(points)
+    res_center_of_geometry = center_of_geometry(points)
     geom_vects = np.zeros((n_atoms, 3))
     idx = 0
 
     for node, coord in coords.items():
         atom_key = block.nodes[node]["atype"]
         rad = float(molecule.nonbond_params[frozenset([atom_key, atom_key])]["nb1"])
-        diff = coord - CoG
+        diff = coord - res_center_of_geometry
         geom_vects[idx, :] = diff + u_vect(diff) * rad
         idx += 1
 
@@ -180,10 +183,10 @@ def map_from_CoG(coords):
     """
     n_atoms = len(coords)
     points = np.array(list(coords.values()))
-    CoG = center_of_geometry(points)
+    res_center_of_geometry = center_of_geometry(points)
     out_vectors = {}
     for key, coord in coords.items():
-        diff = coord - CoG
+        diff = coord - res_center_of_geometry
         out_vectors[key] = diff
 
     return out_vectors
@@ -191,7 +194,7 @@ def map_from_CoG(coords):
 def _atoms_in_node(atoms, nodes):
     for atom in atoms:
         if atom not in nodes:
-           return False
+            return False
 
     return True
 
@@ -207,7 +210,7 @@ def extract_block(molecule, resname, defines):
     molecule:  :class:vermouth.molecule.Molecule
     resname:   str
     defines:   dict
-      dict of type define:value
+      dict of type define: value
 
     Returns
     -------
@@ -225,8 +228,8 @@ def extract_block(molecule, resname, defines):
     for inter_type in molecule.interactions:
         for interaction in molecule.interactions[inter_type]:
             if all(atom in block for atom in interaction.atoms):
-               interaction = replace_defined_interaction(interaction, defines)
-               block.interactions[inter_type].append(interaction)
+                interaction = replace_defined_interaction(interaction, defines)
+                block.interactions[inter_type].append(interaction)
 
     for inter_type in ["bonds", "constraints", "virtual_sitesn"]:
         block.make_edges_from_interaction_type(inter_type)
@@ -251,8 +254,8 @@ class GenerateTemplates(Processor):
     def _gen_templates(self, meta_molecule):
         """
         Generate blocks for each unique residue by extracting the
-        block information, placining inital cooridnates, and geometry
-        optimizing those coordinates. Subsquently compute volume.
+        block information, placing initial coordinates, and geometry
+        optimizing those coordinates. Subsequently compute volume
 
         Parameters
         ----------
@@ -260,10 +263,10 @@ class GenerateTemplates(Processor):
 
         Returns
         ---------
-        templates  dict
-           dict of resname:block
-        volumes    dict
-           dict of name:volume
+        templates:  dict
+           dict of resname: block
+        volumes:    dict
+           dict of name: volume
         """
         resnames = set(nx.get_node_attributes(meta_molecule.molecule,
                                               "resname").values())
@@ -278,13 +281,13 @@ class GenerateTemplates(Processor):
                 coords = _expand_inital_coords(block)
                 success, coords = optimize_geometry(block, coords)
                 if success:
-                   break
+                    break
                 elif opt_counter > 10:
-                   print("Warning: Failed to optimize structure for block {}.".format(resname))
-                   print("Proceeding with unoptimized coordinates.")
-                   break
+                    print("Warning: Failed to optimize structure for block {}.".format(resname))
+                    print("Proceeding with unoptimized coordinates.")
+                    break
                 else:
-                   opt_counter += 1
+                    opt_counter += 1
 
             volumes[resname] = compute_volume(meta_molecule, block, coords)
             coords = map_from_CoG(coords)

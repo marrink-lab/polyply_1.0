@@ -32,8 +32,8 @@ def compute_bond(params, coords):
 
     Parameters
     -----------
-    params   list
-    coods    numpy array
+    params:   list
+    coodrs:    numpy.ndarray
 
     Returns
     -------
@@ -45,13 +45,13 @@ def compute_bond(params, coords):
 def compute_angle(params, coords):
     """
     Compute the angle between three points in `coords`
-    and then take the MSD with repsect to a reference
+    and then take the MSD with respect to a reference
     value provided in `params`.
 
     Parameters
     -----------
-    params   list
-    coods    numpy array
+    params:   list
+    coords:    numpy.ndarray
 
     Returns
     -------
@@ -68,8 +68,8 @@ def compute_dih(params, coords):
 
     Parameters
     -----------
-    params   list
-    coods    numpy array
+    params:   list
+    coords:    numpy.ndarray
 
     Returns
     -------
@@ -99,7 +99,7 @@ def renew_vs(positions, block, atom_to_idx):
         interactions = block.interactions.get(vs_type, [])
         for vs in interactions:
             vs_tb = atom_to_idx[vs.atoms[0]]
-            pos_dict={}
+            pos_dict = {}
             for atom in vs.atoms:
                 pos_dict[atom] = positions[atom_to_idx[atom]]
             new_vs = construct_vs(vs_type, vs, pos_dict)
@@ -121,8 +121,8 @@ def optimize_geometry(block, coords):
 
     Parameters
     ----------
-    Block  :class:vermouth.molecule.Block
-    coords dict
+    block:  :class:vermouth.molecule.Block
+    coords: dict
         dictionary of coordinates in form atom_name:np.ndarray
 
     Returns
@@ -153,13 +153,14 @@ def optimize_geometry(block, coords):
     opt_results = scipy.optimize.minimize(target_function, positions, method='L-BFGS-B',
                                           options={'ftol':0.001, 'maxiter': 100})
 
+    positions = opt_results['x'].reshape((-1, 3))
+    for node_key, idx in atom_to_idx.items():
+        coords[node_key] = positions[idx]
+
     # optimization failed; we want to relaunch
     if not opt_results['success']:
        return False, coords
 
     # optimization succeded let's return coordinates
     else:
-       positions = opt_results['x'].reshape((-1, 3))
-       for node_key, idx in atom_to_idx.items():
-           coords[node_key] = positions[idx]
        return True, coords
