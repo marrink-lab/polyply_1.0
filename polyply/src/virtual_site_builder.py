@@ -19,10 +19,10 @@ Rules for constructing virtual sites according
 to GROMACS definitions.
 """
 
-def vsn(interaction, positions):
+def vsn1(interaction, positions):
     """
     Construct a virtual-siten of type
-    1,2,3 from interaction and positions.
+    1 from interaction and positions.
 
     Parameters
     ---------
@@ -195,9 +195,9 @@ def vserr(interaction, positions):
 # is accaptable in terms of approximate
 # structure generation
 
-VIRTUAL_SITES = {('virtual_sitesn', '1'): vsn,
-                 ('virtual_sitesn', '2'): vsn,
-                 ('virtual_sitesn', '3'): vsn,
+VIRTUAL_SITES = {('virtual_sitesn', '1'): vsn1,
+                 ('virtual_sitesn', '2'): vsn1,
+                 ('virtual_sitesn', '3'): vsn1,
                  ('virtual_sites4', '2'): vs4fdn,
                  ('virtual_sites4', '1'): vserr,
                  ('virtual_sites3', '4'): vs3out,

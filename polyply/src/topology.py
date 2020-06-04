@@ -60,7 +60,7 @@ def replace_defined_interaction(interaction, defines):
 
     return interaction
 
-def LorentzBerthelotRule(sig_A, sig_B, eps_A, eps_B):
+def lorentz_berthelot_rule(sig_A, sig_B, eps_A, eps_B):
     """
     Lorentz-Berthelot rules for combining LJ paramters.
 
@@ -84,7 +84,7 @@ def LorentzBerthelotRule(sig_A, sig_B, eps_A, eps_B):
     eps = (eps_A * eps_B)**0.5
     return sig, eps
 
-def GeometricRule(C6_A, C6_B, C12_A, C12_B):
+def geometric_rule(C6_A, C6_B, C12_A, C12_B):
     """
     Geometric combination rule for combining
     LJ parameters.
@@ -176,9 +176,9 @@ class Topology(System):
         Note that nonbond_params takes precedence over atomtypes and
         generated pairs.
         """
-        comb_funcs = {1.0: LorentzBerthelotRule,
-                      2.0: GeometricRule,
-                      3.0: LorentzBerthelotRule}
+        comb_funcs = {1.0: lorentz_berthelot_rule,
+                      2.0: geometric_rule,
+                      3.0: lorentz_berthelot_rule}
 
         comb_rule = comb_funcs[self.defaults["comb-rule"]]
 

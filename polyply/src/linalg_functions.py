@@ -107,6 +107,12 @@ def norm_sphere(values=50):
     cover the sphere with equal probablility
     around the sphere.
 
+    For more information see:
+    https://stackoverflow.com/questions/33976911/generate-a-
+    random-sample-of-points-distributed-on-the-surface-of-a-unit-sphere
+
+    https://mathworld.wolfram.com/SpherePointPicking.html
+
     Paramters
     ---------
     values: int
@@ -118,7 +124,6 @@ def norm_sphere(values=50):
     """
     v_sphere = np.random.normal(0.0, 1, (values, 3))
     return np.array([u_vect(vect) for vect in v_sphere])
-    #return v_sphere/norm(v_sphere, axis=0, keepdims=True)
 
 def radius_of_gyration(points):
     """

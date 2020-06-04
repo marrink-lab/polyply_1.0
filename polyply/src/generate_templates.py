@@ -56,7 +56,7 @@ def find_atoms(molecule, attr, value):
 
     return nodes
 
-def find_bond(interactions, current_node, prev_node):
+def find_interaction_involving(interactions, current_node, prev_node):
     """
     Given a list of `interactions` in vermouth format, find an
     interaction from bonds, constraints, or virtual-sites that
@@ -115,9 +115,9 @@ def _expand_inital_coords(block):
     vectors = norm_sphere(values=1000)
     for prev_node, current_node in nx.dfs_edges(block, source=atom):
         prev_coord = coords[prev_node]
-        is_vs, interaction, inter_type = find_bond(block.interactions,
-                                                          current_node,
-                                                          prev_node)
+        is_vs, interaction, inter_type = find_interaction_involving(block.interactions,
+                                                                    current_node,
+                                                                    prev_node)
         if is_vs:
             coords[current_node] = construct_vs(inter_type, interaction, coords)
         else:
@@ -201,7 +201,7 @@ def _atoms_in_node(atoms, nodes):
 def extract_block(molecule, resname, defines):
     """
     Given a `vermouth.molecule` and a `resname`
-    extract the information of a block form the
+    extract the information of a block from the
     molecule definition and replace all defines
     if any are found.
 

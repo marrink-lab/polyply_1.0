@@ -18,7 +18,7 @@ import numpy as np
 import polyply
 from .processor import Processor
 from .linalg_functions import norm_sphere
-from .topology import LorentzBerthelotRule
+from .topology import lorentz_berthelot_rule
 """
 Processor implementing a random-walk to generate
 coordinates for a meta-molecule.
@@ -103,7 +103,7 @@ def update_positions(vector_bundle, meta_molecule, current_node, prev_node):
 
     current_vdwr = meta_molecule.volumes[current_resname]
     prev_vdwr = meta_molecule.volumes[prev_resname]
-    vdw_radius, _ = LorentzBerthelotRule(current_vdwr, prev_vdwr, 1, 1)
+    vdw_radius, _ = lorentz_berthelot_rule(current_vdwr, prev_vdwr, 1, 1)
 
     step_length = 2*vdw_radius
 
