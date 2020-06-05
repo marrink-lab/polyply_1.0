@@ -15,7 +15,6 @@
 import random
 import networkx as nx
 import numpy as np
-import polyply
 from .processor import Processor
 from .linalg_functions import norm_sphere
 from .topology import lorentz_berthelot_rule
@@ -73,7 +72,7 @@ def _is_overlap(meta_molecule, point, tol, fudge=1):
             continue
 
         if np.linalg.norm(coord - point) < tol * fudge:
-           return True
+            return True
 
     return False
 
@@ -94,7 +93,6 @@ def update_positions(vector_bundle, meta_molecule, current_node, prev_node):
     if "position" in meta_molecule.nodes[current_node]:
         return
 
-    current_vectors = np.zeros(vector_bundle.shape)
     current_vectors = vector_bundle.copy()
     last_point = meta_molecule.nodes[prev_node]["position"]
 
@@ -114,7 +112,7 @@ def update_positions(vector_bundle, meta_molecule, current_node, prev_node):
          #   print(meta_molecule.nodes[current_node]["resname"])
             break
         else:
-            vector_bundel = np.delete(vector_bundle, index, axis=0)
+            vector_bundle = np.delete(vector_bundle, index, axis=0)
 
 
 class RandomWalk(Processor):
@@ -124,7 +122,8 @@ class RandomWalk(Processor):
     build defined as true.
     """
 
-    def _random_walk(self, meta_molecule):
+    @staticmethod
+    def _random_walk(meta_molecule):
         """
         Perform a random_walk to build positions for a meta_molecule, if
         no position is present for an atom.

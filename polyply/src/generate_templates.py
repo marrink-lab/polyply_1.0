@@ -14,14 +14,10 @@
 
 import networkx as nx
 import numpy as np
-import numpy.linalg
-import scipy
-import scipy.optimize
 import vermouth
-import polyply
 from .minimizer import optimize_geometry
 from .processor import Processor
-from .linalg_functions import (angle, dih, u_vect, center_of_geometry,
+from .linalg_functions import (u_vect, center_of_geometry,
                                norm_sphere, radius_of_gyration)
 from .random_walk import _take_step
 from .topology import replace_defined_interaction
@@ -56,7 +52,7 @@ def find_atoms(molecule, attr, value):
 
     return nodes
 
-def find_interaction_involving(interactions, current_node, prev_node):
+def find_interaction_involving(block, current_node, prev_node):
     """
     Given a list of `interactions` in vermouth format, find an
     interaction from bonds, constraints, or virtual-sites that
@@ -65,8 +61,8 @@ def find_interaction_involving(interactions, current_node, prev_node):
 
     Parameters
     -----------
-    interactions:  :class:dict
-         interaction dictionary
+    block:  :class:`vermouth.molecule.Block`
+         vermouth block
     current_node:   int
          node index
     prev_node:      int
@@ -81,6 +77,7 @@ def find_interaction_involving(interactions, current_node, prev_node):
     str
       interaction type
     """
+    interactions = block.interactions
     for inter_type in ["bonds", "constraints", "virtual_sitesn",
                        "virtual_sites2", "virtual_sites3", "virtual_sites4"]:
         inters = interactions.get(inter_type, [])
@@ -90,6 +87,10 @@ def find_interaction_involving(interactions, current_node, prev_node):
                     return False, interaction, inter_type
                 elif prev_node in interaction.atoms and inter_type.split("_")[0] == "virtual":
                     return True, interaction, inter_type
+    else:
+        msg = ('Cannot build template for residue {}. No constraint, bond, virtual-site'
+               'linking atom {} and atom {}.')
+        raise IOError(msg.format(block.nodes[0]["resname"], prev_node, current_node))
 
 def _expand_inital_coords(block):
     """
@@ -115,7 +116,7 @@ def _expand_inital_coords(block):
     vectors = norm_sphere(values=1000)
     for prev_node, current_node in nx.dfs_edges(block, source=atom):
         prev_coord = coords[prev_node]
-        is_vs, interaction, inter_type = find_interaction_involving(block.interactions,
+        is_vs, interaction, inter_type = find_interaction_involving(block,
                                                                     current_node,
                                                                     prev_node)
         if is_vs:
@@ -181,7 +182,6 @@ def map_from_CoG(coords):
     dict
      dictionary of node idx and CoG vector
     """
-    n_atoms = len(coords)
     points = np.array(list(coords.values()))
     res_center_of_geometry = center_of_geometry(points)
     out_vectors = {}
@@ -235,9 +235,9 @@ def extract_block(molecule, resname, defines):
         block.make_edges_from_interaction_type(inter_type)
 
     if not nx.is_connected(block):
-        msg=('\n Residue {} with id {} consistes of two disconnected parts. '
-             'Make sure all atoms/particles in a residue are connected by bonds,'
-             ' constraints or virual-sites.')
+        msg = ('\n Residue {} with id {} consistes of two disconnected parts. '
+               'Make sure all atoms/particles in a residue are connected by bonds,'
+               ' constraints or virual-sites.')
         raise IOError(msg.format(resname, resid))
 
     return block
@@ -251,7 +251,8 @@ class GenerateTemplates(Processor):
     of each block in the volume attribute.
     """
 
-    def _gen_templates(self, meta_molecule):
+    @staticmethod
+    def _gen_templates(meta_molecule):
         """
         Generate blocks for each unique residue by extracting the
         block information, placing initial coordinates, and geometry
@@ -276,7 +277,7 @@ class GenerateTemplates(Processor):
         for resname in resnames:
             block = extract_block(meta_molecule.molecule, resname,
                                   meta_molecule.defines)
-            opt_counter=0
+            opt_counter = 0
             while True:
                 coords = _expand_inital_coords(block)
                 success, coords = optimize_geometry(block, coords)
