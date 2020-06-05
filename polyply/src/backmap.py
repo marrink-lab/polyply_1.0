@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import numpy as np
-import networkx as nx
 from .processor import Processor
 from .generate_templates import find_atoms
 """
@@ -28,8 +26,8 @@ class Backmap(Processor):
     places coordinates form a higher resolution createing positions
     for the lower resolution molecule associated with the MetaMolecule.
     """
-
-    def _place_init_coords(self, meta_molecule):
+    @staticmethod
+    def _place_init_coords(meta_molecule):
         """
         For each residue in a class:`polyply.src.MetaMolecule` the
         positions of the atoms associated with that residue stored in
@@ -40,20 +38,18 @@ class Backmap(Processor):
         ----------
         meta_molecule: :class:`polyply.src.MetaMolecule`
         """
-        coords = np.zeros((len(meta_molecule.molecule.nodes), 3))
-        idx = 0
         count = 0
         for node in meta_molecule.nodes:
             resname = meta_molecule.nodes[node]["resname"]
-            CoG = meta_molecule.nodes[node]["position"]
+            cg_coord = meta_molecule.nodes[node]["position"]
             template = meta_molecule.templates[resname]
             resid = node + 1
             low_res_atoms = find_atoms(meta_molecule.molecule, "resid", resid)
             for atom_low  in low_res_atoms:
                 vector = template[atom_low-count]
-                new_coords = CoG + vector
+                new_coords = cg_coord + vector
                 if meta_molecule.molecule.nodes[atom_low]["build"]:
-                   meta_molecule.molecule.nodes[atom_low]["position"] = new_coords
+                    meta_molecule.molecule.nodes[atom_low]["position"] = new_coords
             count += len(low_res_atoms)
 
     def run_molecule(self, meta_molecule):

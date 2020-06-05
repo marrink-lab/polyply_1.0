@@ -16,15 +16,11 @@
 High level API for the polyply coordinate generator
 """
 
-from pathlib import Path
 import networkx as nx
 import vermouth.forcefield
-from vermouth.gmx.gro import read_gro
-from polyply import (MetaMolecule, DATA_PATH)
 from .generate_templates import GenerateTemplates
 from .random_walk import RandomWalk
 from .backmap import Backmap
-from .minimizer import optimize_geometry
 from .topology import Topology
 
 def gen_coords(args):
@@ -35,18 +31,18 @@ def gen_coords(args):
     # check if molecules are all connected
     for molecule in topology.molecules:
         if not nx.is_connected(molecule):
-           msg=('\n Molecule {} consistes of two disconnected parts. '
-                'Make sure all atoms/particles in a molecule are '
-                'connected by bonds, constraints or virual-sites')
-           raise IOError(msg.format(molecule.name))
+            msg = ('\n Molecule {} consistes of two disconnected parts. '
+                   'Make sure all atoms/particles in a molecule are '
+                   'connected by bonds, constraints or virual-sites')
+            raise IOError(msg.format(molecule.name))
 
     # read in coordinates if there are any
     if args.coordpath:
-       topology.add_positions_from_file(args.coordpath)
+        topology.add_positions_from_file(args.coordpath)
     else:
-       for molecule in topology.molecules:
-           for node in molecule.molecule.nodes:
-               molecule.molecule.nodes[node]["build"] = True
+        for molecule in topology.molecules:
+            for node in molecule.molecule.nodes:
+                molecule.molecule.nodes[node]["build"] = True
 
     # Build polymer structure
     GenerateTemplates().run_system(topology)
@@ -57,4 +53,4 @@ def gen_coords(args):
     system = topology.convert_to_vermouth_system()
     # Write output
     vermouth.gmx.gro.write_gro(system, args.outpath, precision=7,
-              title='polyply structure', box=(10, 10, 10))
+                               title='polyply structure', box=(10, 10, 10))

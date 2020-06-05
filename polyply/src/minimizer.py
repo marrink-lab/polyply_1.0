@@ -13,13 +13,15 @@
 # limitations under the License.
 
 from collections import OrderedDict
-import networkx as nx
 import numpy as np
-import numpy.linalg
 import scipy
 import scipy.optimize
-from .linalg_functions import (angle, dih, u_vect)
+from .linalg_functions import (angle, dih)
 from .virtual_site_builder import construct_vs
+"""
+Processor and functions for optimizing the geomtry
+of vermoth molecules.
+"""
 
 def compute_bond(params, coords):
     """
@@ -97,12 +99,12 @@ def renew_vs(positions, block, atom_to_idx):
     vs_types = ["virtual_sitesn", "virtual_sites2", "virtual_sites3", "virtual_sites4"]
     for vs_type in vs_types:
         interactions = block.interactions.get(vs_type, [])
-        for vs in interactions:
-            vs_tb = atom_to_idx[vs.atoms[0]]
+        for virtual_site in interactions:
+            vs_tb = atom_to_idx[virtual_site.atoms[0]]
             pos_dict = {}
-            for atom in vs.atoms:
+            for atom in virtual_site.atoms:
                 pos_dict[atom] = positions[atom_to_idx[atom]]
-            new_vs = construct_vs(vs_type, vs, pos_dict)
+            new_vs = construct_vs(vs_type, virtual_site, pos_dict)
             positions[vs_tb] = new_vs
     return positions
 
@@ -159,8 +161,8 @@ def optimize_geometry(block, coords):
 
     # optimization failed; we want to relaunch
     if not opt_results['success']:
-       return False, coords
+        return False, coords
 
     # optimization succeded let's return coordinates
     else:
-       return True, coords
+        return True, coords
