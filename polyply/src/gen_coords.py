@@ -30,11 +30,7 @@ from .topology import Topology
 def gen_coords(args):
     # Read in the topology
     topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
-    topology.gen_pairs()
-    topology.replace_defines()
-    # convert all parameters to sigma epsilon if they are in C6C12 form
-    if topology.defaults["comb-rule"] == 2:
-       topology.convert_nonbond_to_sig_eps()
+    topology.preprocess()
 
     # check if molecules are all connected
     for molecule in topology.molecules:

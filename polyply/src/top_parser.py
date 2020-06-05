@@ -265,6 +265,11 @@ class TOPDirector(SectionLineParser):
         # Note that gen_pairs, fudgeLJ and fudgeQQ not need to be set
         self.topology.defaults = dict(zip(defaults[0:len(tokens)], tokens))
 
+        # we cannot interpret Buckingham Potentials at the moment so we crash
+        if self.topology.defaults["nbfunc"] == "2":
+           raise IOError("Buckingham Potential requested but this potential form"
+                         "currently is not implemented.")
+
         # converts the defaults that are numbers to numbers
         # we need to parse them first because they are not guaranteed to be provided
         for token_name in numbered_terms:

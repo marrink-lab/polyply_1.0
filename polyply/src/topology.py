@@ -154,6 +154,16 @@ class Topology(System):
         self.types = defaultdict(list)
         self.nonbond_params = {}
 
+    def preprocess(self):
+        """
+        Apply all defaults, generate pairs, convert non-bonded
+        units. It performs most of the conversion which otherwise
+        is done by grompp.
+        """
+        self.gen_pairs()
+        self.replace_defines()
+        self.convert_nonbond_to_sig_eps()
+
     def replace_defines(self):
         """
         Replace all interaction paramers with defined parameters.
