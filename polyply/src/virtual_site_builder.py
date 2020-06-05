@@ -34,11 +34,11 @@ def vsn1(interaction, positions):
     np.ndarray(3)
     """
     weights = np.full((len(interaction.atoms[1:])), 1.)
-    coord = np.array([0., 0., 0.])
-    for atom, weight in zip(interaction.atoms[1:], weights):
-        coord += positions[atom] * weight /np.sum(weights)
+    coords = np.array([positions[atom] for atom in interaction.atoms[1:]])
+    vs_coord = np.average(coords, axis=0, weights=weights)
+    return vs_coord
 
-    return coord
+    #return coord
 
 def vs2(interaction, positions):
     """
@@ -57,10 +57,10 @@ def vs2(interaction, positions):
     wi = 1 - a
     wj = a
     weights = [wi, wj]
-    coord = np.array([0., 0., 0.])
-    for atom, weight in zip(interaction.atoms[1:], weights):
-        coord += positions[atom] * weight
-    return coord
+    weights = np.full((len(interaction.atoms[1:])), 1.)
+    coords = np.array([positions[atom] for atom in interaction.atoms[1:]])
+    vs_coord = np.average(coords, axis=0, weights=weights)
+    return vs_coord
 
 def vs3(interaction, positions):
     """
@@ -81,10 +81,9 @@ def vs3(interaction, positions):
     wj = a
     wk = b
     weights = [wi, wj, wk]
-    coord = np.array([0., 0., 0.])
-    for atom, weight in zip(interaction.atoms[1:], weights):
-        coord += positions[atom] * weight
-    return coord
+    coords = np.array([positions[atom] for atom in interaction.atoms[1:]])
+    vs_coord = np.average(coords, axis=0, weights=weights)
+    return vs_coord
 
 def vs3fd(interaction, positions):
     """
