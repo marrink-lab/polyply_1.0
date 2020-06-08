@@ -190,10 +190,10 @@ class TOPDirector(SectionLineParser):
         result = super().parse_header(line, lineno)
         action = self.header_actions.get(tuple(self.section))
         if action:
-           action()
+            action()
 
         if self.current_itp is not None:
-           self.current_itp.append(line)
+            self.current_itp.append(line)
         return result
 
     def finalize(self, lineno=0):
@@ -202,7 +202,7 @@ class TOPDirector(SectionLineParser):
         before calling the parent method.
         """
         if self.current_itp:
-           self.itp_lines.append(self.current_itp)
+            self.itp_lines.append(self.current_itp)
 
         if self.current_meta is not None:
             raise IOError("Your {} section is orderd incorrectly."
@@ -219,6 +219,8 @@ class TOPDirector(SectionLineParser):
             meta_molecule.atom_types = self.topology.atom_types
             meta_molecule.defaults = self.topology.defaults
             meta_molecule.nonbond_params = self.topology.nonbond_params
+            meta_molecule.defines = self.topology.defines
+            meta_molecule.name = mol_name
             for idx in range(0, int(n_mol)):
                  self.topology.add_molecule(meta_molecule)
 
@@ -259,15 +261,24 @@ class TOPDirector(SectionLineParser):
         numbered_terms = ["nbfunc", "comb-rule", "fudgeLJ", "fudgeQQ"]
         tokens = line.split()
 
-        #Parse all defaults to a dict up to the last default metioned
-        #Note that gen_pairs, fudgeLJ and fudgeQQ not need to be set
+        # Parse all defaults to a dict up to the last default metioned
+        # Note that gen_pairs, fudgeLJ and fudgeQQ not need to be set
         self.topology.defaults = dict(zip(defaults[0:len(tokens)], tokens))
 
-        #converts the defaults that are numbers to numbers
-        #we need to parse them first because they are not guaranteed to be provided
+        # we cannot interpret Buckingham Potentials at the moment so we crash
+        if self.topology.defaults["nbfunc"] == "2":
+           raise IOError("Buckingham Potential requested but this potential form"
+                         "currently is not implemented.")
+
+        # converts the defaults that are numbers to numbers
+        # we need to parse them first because they are not guaranteed to be provided
         for token_name in numbered_terms:
             if token_name in self.topology.defaults:
                  self.topology.defaults[token_name] = float(self.topology.defaults[token_name])
+
+        # sets gen-pairs to no when it is not provied
+        if "gen-pairs" not in self.topology.defaults:
+            self.topology.defaults["gen-pairs"] = "no"
 
     @SectionLineParser.section_parser('atomtypes')
     def _atomtypes(self, line, lineno=0):
@@ -285,9 +296,9 @@ class TOPDirector(SectionLineParser):
         Parse and store nonbond params
         """
         atom_1, atom_2, func, nb1, nb2 = line.split()
-        self.topology.nonbond_params[(atom_1, atom_2)] = {"f": int(func),
-                                                          "nb1": float(nb1),
-                                                          "nb2": float(nb2)}
+        self.topology.nonbond_params[frozenset([atom_1, atom_2])] = {"f": int(func),
+                                                                     "nb1": float(nb1),
+                                                                     "nb2": float(nb2)}
     @SectionLineParser.section_parser('pairtypes')
     @SectionLineParser.section_parser('angletypes')
     @SectionLineParser.section_parser('dihedraltypes')

@@ -107,6 +107,12 @@ def norm_sphere(values=50):
     cover the sphere with equal probablility
     around the sphere.
 
+    For more information see:
+    https://stackoverflow.com/questions/33976911/generate-a-
+    random-sample-of-points-distributed-on-the-surface-of-a-unit-sphere
+
+    https://mathworld.wolfram.com/SpherePointPicking.html
+
     Paramters
     ---------
     values: int
@@ -123,7 +129,7 @@ def radius_of_gyration(points):
     """
     Compute radius of gyration of points.
 
-    Paramters
+    Parameters
     ---------
     points: np.array
 
