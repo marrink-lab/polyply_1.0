@@ -191,12 +191,24 @@ def map_from_CoG(coords):
 
     return out_vectors
 
-def _atoms_in_node(atoms, nodes):
-    for atom in atoms:
-        if atom not in nodes:
-            return False
+def _relabel_interaction_atoms(interaction, mapping):
+    """
+    Relables the atoms in interaction according to the
+    rules defined in mapping.
 
-    return True
+    Parameters
+    ----------
+    interaction: `vermouth.molecule.Interaction`
+    mapping: `:class:dict`
+
+    Returns
+    -------
+    interaction: `vermouth.molecule.Interaction`
+        the new interaction with updated atoms
+    """
+    new_atoms = [mapping[atom] for atom in interaction.atoms]
+    new_interaction = interaction._replace(atoms=new_atoms)
+    return new_interaction
 
 def extract_block(molecule, resname, defines):
     """
@@ -220,18 +232,27 @@ def extract_block(molecule, resname, defines):
     resid = molecule.nodes[nodes[0]]["resid"]
     block = vermouth.molecule.Block()
 
+    # select all nodes with the same first resid and
+    # make sure the block node labels are atomnames
+    # also build a correspondance dict between node
+    # label in the molecule and in the block for
+    # relabeling the interactions
+    mapping = {}
     for node in nodes:
         attr_dict = molecule.nodes[node]
         if attr_dict["resid"] == resid:
-            block.add_node(node, **attr_dict)
+            block.add_node(attr_dict["atomname"], **attr_dict)
+            mapping[node] = attr_dict["atomname"]
 
     for inter_type in molecule.interactions:
         for interaction in molecule.interactions[inter_type]:
-            if all(atom in block for atom in interaction.atoms):
+            if all(atom in mapping for atom in interaction.atoms):
                 interaction = replace_defined_interaction(interaction, defines)
+                interaction = _relabel_interaction_atoms(interaction, mapping)
                 block.interactions[inter_type].append(interaction)
 
-    for inter_type in ["bonds", "constraints", "virtual_sitesn"]:
+    for inter_type in ["bonds", "constraints", "virtual_sitesn",
+                       "virtual-sites2", "virtual-sites3", "virtual-sites4"]:
         block.make_edges_from_interaction_type(inter_type)
 
     if not nx.is_connected(block):
