@@ -57,7 +57,6 @@ def vs2(interaction, positions):
     wi = 1 - a
     wj = a
     weights = [wi, wj]
-    weights = np.full((len(interaction.atoms[1:])), 1.)
     coords = np.array([positions[atom] for atom in interaction.atoms[1:]])
     vs_coord = np.average(coords, axis=0, weights=weights)
     return vs_coord

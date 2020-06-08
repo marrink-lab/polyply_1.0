@@ -159,10 +159,4 @@ def optimize_geometry(block, coords):
     for node_key, idx in atom_to_idx.items():
         coords[node_key] = positions[idx]
 
-    # optimization failed; we want to relaunch
-    if not opt_results['success']:
-        return False, coords
-
-    # optimization succeded let's return coordinates
-    else:
-        return True, coords
+    return opt_results['success'], coords
