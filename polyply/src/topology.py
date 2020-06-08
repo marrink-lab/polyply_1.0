@@ -168,14 +168,12 @@ class Topology(System):
         """
         Replace all interaction paramers with defined parameters.
         """
+        # Note that a topology cannot define and generate links so
+        # they don't need to be replaced or handled elsewhere
         for block in self.force_field.blocks.values():
             for interactions in block.interactions.values():
                 for interaction in interactions:
                     new_interaction = replace_defined_interaction(interaction, self.defines)
-
-        for link in self.force_field.links:
-            for interaction in link.interactions.values():
-                new_interaction = replace_defined_interaction(interaction, self.defines)
 
     def gen_pairs(self):
         """
