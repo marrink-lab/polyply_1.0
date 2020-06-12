@@ -1,8 +1,5 @@
-attrs >= 19.2.0  # Comes from hypothesis, but is not automatically picked up by
-                 # pip. See pypa/pip#7135 and pypa/pip#988
 pytest
 coverage
 pytest-cov
 pylint
-pytest
 codecov
