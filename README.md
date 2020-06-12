@@ -3,7 +3,7 @@
 [![codecov](https://codecov.io/gh/marrink-lab/polyply_1.0/branch/master/graph/badge.svg)](https://codecov.io/gh/marrink-lab/polyply_1.0)
 
 ## Functionality
-Polyply is a python suite designed to facilitate the generation of inpute files for simulating
+Polyply is a python suite designed to facilitate the generation of input files for simulating
 bio-macromolecules with GROMACS. It is possible to generate both itp and coordinates files for most
 (bio) macromolecules such as synthetic polymers or polysaccharides. It also facilitates
 manipulation of itp files and structures to extend or change already existing files. A library for
