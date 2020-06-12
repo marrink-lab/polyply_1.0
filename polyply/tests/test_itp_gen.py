@@ -20,37 +20,33 @@ import networkx as nx
 import vermouth.forcefield
 import vermouth.molecule
 import vermouth.gmx.itp_read
-from polyply import gen_itp
+from polyply import gen_itp, TEST_DATA
 
 class TestGenItp():
     @staticmethod
-    @pytest.mark.parametrize('arg_string, ref_file', (
-        ("""-f test_data/gen_itp/input/PEO.martini.3.itp
-         -seq PEO:10
-         -name PEO
-         -o test_data/gen_itp/output/PEO_out.itp
-         """,
-         "test_data/gen_itp/ref/PEO_10.itp"),
-        ("""-f test_data/gen_itp/input/PS.martini.2.itp
-         -seqf test_data/gen_itp/input/PS.json
-         -name PS
-         -o test_data/gen_itp/output/PS_out.itp
-         """,
-         "test_data/gen_itp/ref/PS_10.itp"),
-        ("""-f test_data/gen_itp/input/P3HT.martini.2.itp
-         -seq P3HT:10
-         -name P3HT
-         -o test_data/gen_itp/output/P3HT_out.itp
-         """,
-         "test_data/gen_itp/ref/P3HT_10.itp"),
-        ("""-f test_data/gen_itp/input/PPI.ff
-         -seqf test_data/gen_itp/input/PPI.json
-         -name PPI
-         -o test_data/gen_itp/output/PPI_out.itp
-         """,
-         "test_data/gen_itp/ref/G3.itp")
+    @pytest.mark.parametrize('args_in, ref_file', (
+        (["-f", TEST_DATA + "/gen_itp/input/PEO.martini.3.itp"
+         ,"-seq", "PEO:10", "-name", "PEO", "-o",
+         TEST_DATA + "/gen_itp/output/PEO_out.itp"],
+         TEST_DATA + "/gen_itp/ref/PEO_10.itp"),
+        (["-f", TEST_DATA + "/gen_itp/input/PS.martini.2.itp",
+         "-seqf", TEST_DATA + "/gen_itp/input/PS.json",
+         "-name", "PS",
+         "-o", TEST_DATA + "/gen_itp/output/PS_out.itp"]
+         ,
+         TEST_DATA + "/gen_itp/ref/PS_10.itp"),
+        (["-f", TEST_DATA + "/gen_itp/input/P3HT.martini.2.itp",
+         "-seq", "P3HT:10",
+         "-name", "P3HT",
+         "-o", TEST_DATA + "/gen_itp/output/P3HT_out.itp"],
+         TEST_DATA + "/gen_itp/ref/P3HT_10.itp"),
+        (["-f", TEST_DATA + "/gen_itp/input/PPI.ff",
+         "-seqf", TEST_DATA + "/gen_itp/input/PPI.json",
+         "-name", "PPI",
+         "-o", TEST_DATA + "/gen_itp/output/PPI_out.itp"],
+         TEST_DATA + "/gen_itp/ref/G3.itp")
         ))
-    def test_gen_itp(arg_string, ref_file):
+    def test_gen_itp(args_in, ref_file):
         parser = argparse.ArgumentParser(
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
@@ -80,8 +76,7 @@ class TestGenItp():
                               help='List all Links known to the'
                               ' force field, and exit.')
 
-        arg_in = [arg.lstrip() for arg in textwrap.dedent(arg_string).split()]
-        args = parser.parse_args(arg_in)
+        args = parser.parse_args(args_in)
         gen_itp(args)
 
         force_field = vermouth.forcefield.ForceField(name='test_ff')
