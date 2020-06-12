@@ -7,3 +7,4 @@ pylint
 hypothesis
 hypothesis-networkx
 codecov
+vermouth
