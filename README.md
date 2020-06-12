@@ -90,3 +90,7 @@ Polyply is distributed under the Apache 2.0 license.
 	limitations under the License.
 
 The full text of the license is available in the source repository.
+
+[github]: https://github.com/marrink-lab/vermouth-martinize
+[bug reports]: https://github.com/marrink-lab/vermouth-martinize/issues
+[pull requests]: https://github.com/marrink-lab/vermouth-martinize/pulls
