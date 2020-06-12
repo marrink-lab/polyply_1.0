@@ -15,6 +15,7 @@ env:
     - WITH_SCIPY=true WITH_CODECOV=true
 before_install:
   - pip install --upgrade setuptools pip
+  - pip install git+https://github.com/marrink-lab/vermouth-martinize.git#vermouth
 install:
   - if [[ ${WITH_SCIPY} == true ]]; then pip install scipy; fi
   - pip install --upgrade .
