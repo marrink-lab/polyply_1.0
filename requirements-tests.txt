@@ -4,6 +4,5 @@ pytest
 coverage
 pytest-cov
 pylint
-hypothesis
-hypothesis-networkx
+pytest
 codecov
