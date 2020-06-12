@@ -23,6 +23,7 @@ import networkx as nx
 import vermouth
 from vermouth.molecule import Interaction
 import polyply
+from polyply import TEST_DATA
 from polyply.src.linalg_functions import center_of_geometry
 from polyply.src.generate_templates import (find_atoms,
                                             _expand_inital_coords,
@@ -178,7 +179,7 @@ class TestGenTemps:
 
       @staticmethod
       def test_run_molecule():
-          top = polyply.src.topology.Topology.from_gmx_topfile("test_data/topology_test/system.top", "test")
+          top = polyply.src.topology.Topology.from_gmx_topfile(TEST_DATA + "/topology_test/system.top", "test")
           top.gen_pairs()
           top.convert_nonbond_to_sig_eps()
           GenerateTemplates().run_molecule(top.molecules[0])

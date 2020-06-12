@@ -21,19 +21,20 @@ import math
 import vermouth.forcefield
 import vermouth.molecule
 import polyply.src.meta_molecule
+from polyply import TEST_DATA
 from polyply.src.topology import Topology
 
 class TestTopology:
 
     @staticmethod
     def test_from_gmx_topfile():
-        top = Topology.from_gmx_topfile("test_data/topology_test/system.top", "test")
+        top = Topology.from_gmx_topfile(TEST_DATA+"/topology_test/system.top", "test")
         assert len(top.molecules) == 1
 
     @staticmethod
     def test_add_positions_from_gro():
-        top = Topology.from_gmx_topfile("test_data/topology_test/system.top", "test")
-        top.add_positions_from_file("test_data/topology_test/test.gro")
+        top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/system.top", "test")
+        top.add_positions_from_file(TEST_DATA + "/topology_test/test.gro")
         for node in top.molecules[0].molecule.nodes:
             if node != 20:
                 assert "position" in top.molecules[0].molecule.nodes[node].keys()
@@ -47,7 +48,7 @@ class TestTopology:
 
     @staticmethod
     def test_convert_to_vermouth_system():
-        top = Topology.from_gmx_topfile("test_data/topology_test/system.top", "test")
+        top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/system.top", "test")
         system = top.convert_to_vermouth_system()
         assert isinstance(system, vermouth.system.System)
         assert len(system.molecules) == 1

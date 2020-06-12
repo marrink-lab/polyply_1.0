@@ -63,7 +63,9 @@ class TestApplyLinks:
         graph = nx.Graph()
         graph.add_edges_from(edges)
         paths = polyply.src.apply_links._orders_to_paths(graph, orders, node)
-        assert paths == result
+        assert len(result) == len(paths)
+        for ref_path in result:
+            assert ref_path in paths
 
     @staticmethod
     def test_orders_to_paths_error():
@@ -147,8 +149,9 @@ class TestApplyLinks:
         for edge in meta_mol.edges:
             _, ids = polyply.src.apply_links._get_links(meta_mol, edge)
             resids += ids
-        print(resids, '\n' , ref_ids)
-        assert resids == ref_ids
+        assert len(resids) == len(ref_ids)
+        for resid in ids:
+            assert resid in ref_ids
 
     @staticmethod
     @pytest.mark.parametrize('links, interactions, edges, idx, inttype',
