@@ -21,8 +21,6 @@ different subcommands. This is the main executable.
 import os
 import argparse
 from pathlib import Path
-import vermouth
-import vermouth.forcefield
 import polyply
 from polyply import (gen_itp, gen_coords, DATA_PATH)
 from polyply.src.load_library import load_library
@@ -59,7 +57,7 @@ def main():
     #=============================================================================
 
     parser_gen_itp.add_argument('-name', required=True, type=str, dest="name",
-                        help="name of the final molecule")
+                                help="name of the final molecule")
 
     file_group = parser_gen_itp.add_argument_group('input and output options')
     file_group.add_argument('-lib', dest='lib', required=False, type=str,
@@ -70,9 +68,9 @@ def main():
                             help='Output ITP (ITP)')
     seq_group = file_group.add_mutually_exclusive_group(required=True)
     seq_group.add_argument('-seq', dest='seq', type=str,
-                            help='A linear sequence of residue names.')
+                           help='A linear sequence of residue names.')
     seq_group.add_argument('-seqf', dest='seq_file', type=Path,
-                            help='A graph input file (JSON|ITP)')
+                           help='A graph input file (JSON|ITP)')
 
    #martini_group = parser_gen_itp.add_argument_group('Martini specifics for protein and DNA.')
    #martini_group.add_argument('-nt', dest='neutral_termini',
@@ -98,7 +96,7 @@ def main():
     #============================================================================
 
     parser_gen_coords.add_argument('-name', required=True, type=str, dest="name",
-                                    help="name of the final molecule")
+                                   help="name of the final molecule")
 
     file_group = parser_gen_coords.add_argument_group('Input and output files')
     file_group.add_argument('-p', dest='toppath', required=False, type=Path,
@@ -120,7 +118,7 @@ def main():
 
     if args.list_ff:
         libs = os.listdir(DATA_PATH)
-        libs = [ lib for lib in libs if not lib.startswith("__")]
+        libs = [lib for lib in libs if not lib.startswith("__")]
         print('The following libraries are known:')
         for idx, ff_name in enumerate(libs):
             print('{:3d}. {}'.format(idx, ff_name))
@@ -128,7 +126,8 @@ def main():
 
     if args.list_blocks:
         force_field = load_library("libs", args.list_blocks, [])
-        print('The following Blocks are present in the following libraries: {}:'.format(args.list_blocks))
+        msg = 'The following Blocks are present in the following libraries: {}:'
+        print(msg.format(args.list_blocks))
         for block in force_field.blocks:
             print(block)
         parser.exit()
@@ -141,4 +140,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
