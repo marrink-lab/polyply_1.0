@@ -12,18 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 from setuptools import find_packages, setup
 
+def package_files(directory):
+    paths = []
+    for (path, directories, filenames) in os.walk(directory):
+        for filename in filenames:
+            paths.append(os.path.join('..', path, filename))
+    return paths
+
 setup(
-    name='polyply',
-    version='0.1.1',
-    author='Fabian Grünewald',
-    author_email='f.grunewald@rug.nl',
-    packages=find_packages(),
-    include_package_data=True,
-    scripts=['bin/polyply.gen_itp', ],
-    license='Apache 2.0',
-    description='tool for generating GROMACS (bio)-macromolecule itps and structures',
-    long_description=open('README.md').read(),
-    install_requires=['numpy', 'scipy','networkx','tqdm'],
+    package_data={'': package_files('polyply/data')
+                  + package_files('polyply/tests/test_data'),},
+    scripts=['bin/polyply'],
+    pbr=True,
 )
