@@ -12,11 +12,13 @@ env:
     - SKIP_GENERATE_AUTHORS=1
     - SKIP_WRITE_GIT_CHANGELOG=1
   matrix:
-    - WITH_SCIPY=true WITH_CODECOV=true
+    WITH_CODECOV=true
 before_install:
   - pip install --upgrade setuptools pip
 install:
-  - if [[ ${WITH_SCIPY} == true ]]; then pip install scipy; fi
+  # this is needed because polyply at the moment only works with the vermouth
+  # dev version
+  - pip install git+https://github.com/marrink-lab/vermouth-martinize.git#vermouth
   - pip install --upgrade .
 before_script:
   - pip install --upgrade -r requirements-tests.txt
@@ -29,39 +31,37 @@ after_success:
 jobs:
   fast_finish: true
   allow_failures:
-    - python: "3.5-dev"
     - python: "3.6-dev"
     - python: "3.7-dev"
     - python: "3.8-dev"
   include:
-    - python: "3.5"
     - python: "3.6"
     - python: "3.7"
     - python: "3.8"
-    - python: "3.5-dev"
     - python: "3.6-dev"
     - python: "3.7-dev"
     - python: "3.8-dev"
-      env: WITH_SCIPY=false WITH_CODECOV=false
+      env: WITH_CODECOV=false
 
-    - stage: docs
-      python: "3.7"
-      install:
-        - pip install --upgrade -r requirements-docs.txt
-        - pip install --upgrade .[full]
-      # script: python setup.py build_sphinx
-      script: mkdir -p doc/source/_static; sphinx-build -EnW -b html doc/source/ doc/build/html
-      after_success: skip
+#   - stage: docs
+#     python: "3.7"
+#     install:
+#       - pip install --upgrade -r requirements-docs.txt
+#       - pip install --upgrade .[full]
+#     # script: python setup.py build_sphinx
+#     script: mkdir -p doc/source/_static; sphinx-build -EnW -b html doc/source/ doc/build/html
+#     after_success: skip
 
     - stage: pylint
       python: "3.7"
       install:
+        # for now we need development version
+        - pip install git+https://github.com/marrink-lab/vermouth-martinize.git#vermouth
         - pip install --upgrade -r requirements-tests.txt
         - pip install pylint
       script:
-        - python run_pylint.py --disable=fixme --fail-under=8.5 polyply
-        - python run_pylint.py --disable=fixme --fail-under=9.5 bin/polyply.gen_itp
-#        - python run_pylint.py --disable=fixme --fail-under=9.5 bin/polyply.structure_generator
+        - python run_pylint.py --disable=fixme --fail-under=8.0 polyply
+        - python run_pylint.py --disable=fixme --fail-under=9.5 bin/polyply
       after_success: skip
 
 #    - stage: deploy
