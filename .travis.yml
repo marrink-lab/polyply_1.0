@@ -12,12 +12,13 @@ env:
     - SKIP_GENERATE_AUTHORS=1
     - SKIP_WRITE_GIT_CHANGELOG=1
   matrix:
-    - WITH_SCIPY=true WITH_CODECOV=true
+    WITH_CODECOV=true
 before_install:
   - pip install --upgrade setuptools pip
-  - pip install git+https://github.com/marrink-lab/vermouth-martinize.git#vermouth
 install:
-  - if [[ ${WITH_SCIPY} == true ]]; then pip install scipy; fi
+  # this is needed because polyply at the moment only works with the vermouth
+  # dev version
+  - pip install git+https://github.com/marrink-lab/vermouth-martinize.git#vermouth
   - pip install --upgrade .
 before_script:
   - pip install --upgrade -r requirements-tests.txt
@@ -43,7 +44,7 @@ jobs:
     - python: "3.6-dev"
     - python: "3.7-dev"
     - python: "3.8-dev"
-      env: WITH_SCIPY=false WITH_CODECOV=false
+      env: WITH_CODECOV=false
 
     - stage: docs
       python: "3.7"
