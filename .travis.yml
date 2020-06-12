@@ -58,9 +58,8 @@ jobs:
         - pip install --upgrade -r requirements-tests.txt
         - pip install pylint
       script:
-        - python run_pylint.py --disable=fixme --fail-under=8.5 polyply
-        - python run_pylint.py --disable=fixme --fail-under=9.5 bin/polyply.gen_itp
-#        - python run_pylint.py --disable=fixme --fail-under=9.5 bin/polyply.structure_generator
+        - python run_pylint.py --disable=fixme --fail-under=8.0 polyply
+        - python run_pylint.py --disable=fixme --fail-under=9.5 bin/polyply
       after_success: skip
 
 #    - stage: deploy
