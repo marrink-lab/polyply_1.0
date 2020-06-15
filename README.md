@@ -7,7 +7,7 @@ Polyply is a python suite designed to facilitate the generation of input files f
 bio-macromolecules with GROMACS. It is possible to generate both itp and coordinates files for most
 (bio) macromolecules such as synthetic polymers or polysaccharides. It also facilitates
 manipulation of itp files and structures to extend or change already existing files. A library for
-of some commonly used macro molecules using different force-fields (martini, gromos) is included.
+some commonly used macro molecules using different force-fields (martini, gromos) is included.
 In principle the program can be used with any type of force-field (FF).
 
 Make sure to always verify the results and give appropriate credit to the developers of the
@@ -15,17 +15,18 @@ force-field, molecule parameters and this program.
 
 ### Installation
 Polyply can be installed from GitHub directly and currently needs the vermouth development
-package as requirement. To install polyply first run:
+package as requirement. To install polyply first install the development version of vermouth
+by running:
 ```
 pip install git+https://github.com/marrink-lab/vermouth-martinize.git#vermouth
 ```
 Then downloads this repository and within the downloaded repository execute the following command:
 ```
-pip3 install ./
+pip install ./
 ```
 Alternatively when using pip, polyply can be installed directly via the following command:
 ```
-pip3 install git+https://github.com/fgrunewald/polyply_1.0.git#polyply_1.0
+pip install git+https://github.com/fgrunewald/polyply_1.0.git#polyply_1.0
 ```
 
 ### Polymer Library
