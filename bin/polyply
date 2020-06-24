@@ -67,7 +67,7 @@ def main():
     file_group.add_argument('-o', dest='outpath', type=Path,
                             help='Output ITP (ITP)')
     seq_group = file_group.add_mutually_exclusive_group(required=True)
-    seq_group.add_argument('-seq', dest='seq', type=str,
+    seq_group.add_argument('-seq', dest='seq', type=str, nargs='+',
                            help='A linear sequence of residue names.')
     seq_group.add_argument('-seqf', dest='seq_file', type=Path,
                            help='A graph input file (JSON|ITP)')

@@ -37,7 +37,7 @@ def split_seq_string(sequence):
     list
        list of `polyply.Monomers`
     """
-    raw_monomers = sequence.split()
+    raw_monomers = sequence
     monomers = []
     for monomer in raw_monomers:
         resname, n_blocks = monomer.split(":")
