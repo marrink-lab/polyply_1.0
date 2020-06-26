@@ -57,8 +57,8 @@ class TestGenItp():
                                 help='Input file (ITP|FF)', nargs="*")
         file_group.add_argument('-o', dest='outpath', type=Path,
                                 help='Output ITP (ITP)')
-        file_group.add_argument('-seq', dest='seq', required=False, type=str,
-                                help='linear sequence')
+        file_group.add_argument('-seq', dest='seq', required=False, nargs='+',
+                                type=str, help='linear sequence')
         file_group.add_argument('-seqf', dest='seq_file', required=False, type=Path,
                                 help='linear sequence')
         ff_group = parser.add_argument_group('Force field selection')
