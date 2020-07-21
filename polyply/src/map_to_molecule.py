@@ -74,8 +74,7 @@ class MapToMolecule(Processor):
             if v1 != v2:
                meta_molecule.add_edge(v1, v2)
 
-    @staticmethod
-    def add_blocks(meta_molecule):
+    def add_blocks(self, meta_molecule):
         """
         Add disconnected blocks to :class:`vermouth.molecule.Molecue`
         and if a multiresidue block is encountered expand the meta
@@ -85,8 +84,10 @@ class MapToMolecule(Processor):
         block = force_field.blocks[meta_molecule.nodes[0]["resname"]]
         new_mol = block.to_molecule()
 
-        if len(set(nx.get_node_attributes(block, "resname").values())) > 1:
-            MapToMolecule.expand_meta_graph(meta_molecule, block, 0)
+        # TODO: Make a residue graph and check its length instead to make sure
+        # you don't get tripped up by e.g. chains and insertion codes.
+        if len(set(nx.get_node_attributes(block, "resid").values())) > 1:
+            self.expand_meta_graph(meta_molecule, block, 0)
 
         node_keys = list(meta_molecule.nodes.keys())
         node_keys.sort()
@@ -95,11 +96,10 @@ class MapToMolecule(Processor):
 
             if node + 1 in nx.get_node_attributes(new_mol, "resid").values():
                continue
-
             block = force_field.blocks[resname]
             new_mol.merge_molecule(block)
-            if len(set(nx.get_node_attributes(block, "resname").values())) > 1:
-                MapToMolecule.expand_meta_graph(meta_molecule, block, node)
+            if len(set(nx.get_node_attributes(block, "resid").values())) > 1:
+                self.expand_meta_graph(meta_molecule, block, node)
 
         return new_mol
 
