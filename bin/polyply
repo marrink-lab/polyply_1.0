@@ -111,6 +111,35 @@ def main():
     parser_gen_coords.set_defaults(func=gen_coords)
 
     #============================================================================
+    #           Input Arguments for the sequence generation tool
+    #============================================================================
+
+    parser_gen_seq.add_argument('-name', required=True, type=str, dest="name",
+                                   help="name of the final molecule")
+
+    file_group = parser_gen_seq.add_argument_group('Input and output files')
+    file_group.add_argument('-f', dest='ffpath', required=False, type=Path,
+                            help='force-field files (.ff|.itp)', nargs='*')
+    file_group.add_argument('-o', dest='outpath', type=Path,
+                            help='Output GRO (.json)')
+    file_group = parser_gen_seq.add_argument_group('Block-Macros')
+    file_group.add_argument('-linear', dest='linear_macros', nargs='+', type=str,
+                            help="linear macro block of format ID:RESNAME:#blocks")
+    file_group.add_argument('-branched', dest='branched_macros', nargs='+', type=str,
+                            help="branched macro block of format ID:RESNAME:#branches:#generations")
+    file_group.add_argument('-from_file', dest='file_macros', nargs='+', type=str,
+                            help="macros to be taken from input file ID:RESNAME")
+    file_group.add_argument('-random_linear', dest='random_linear_macros', nargs='+', type=str,
+                            help="macros to be taken from input file ID:#blocks:RESNAME-WEIHGT,RESNAME-WEIGHT")
+
+    file_group = parser_gen_seq.add_argument_group('Sequence')
+    file_group.add_argument('-seq', dest='seq', nargs='+', type=str,
+                            help="sequence of blocks and/or macros: SEQ_ID:MACRO_ID")
+    file_group.add_argument('-connect', dest='connect', nargs='+', type=str,
+                            help="connection of macors SEQ_ID_A:SEQ_ID_B:1-2,2-3. ")
+    parser_gen_coords.set_defaults(func=gen_seq)
+
+    #============================================================================
     # Deal with queries of the polyply library
     #============================================================================
 
