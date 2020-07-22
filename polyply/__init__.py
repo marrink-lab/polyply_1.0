@@ -38,3 +38,4 @@ from .src.apply_links import ApplyLinks
 from .src.map_to_molecule import MapToMolecule
 from .src.gen_itp import gen_itp
 from .src.gen_coords import gen_coords
+from .src.gen_seq import gen_seq
