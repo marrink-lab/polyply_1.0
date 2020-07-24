@@ -145,5 +145,5 @@ def radius_of_gyration(points):
         for j in points:
             diff[count]=np.dot((i - j),(i-j))
             count = count + 1
-    return np.sqrt(1/N**2.0 * sum(diff))
+    return np.sqrt(1/(2*N**2.0) * sum(diff))
 
