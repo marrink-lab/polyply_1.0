@@ -18,6 +18,7 @@ import argparse
 import json
 from pathlib import Path
 import textwrap
+from collections import Counter
 from polyply import gen_seq, TEST_DATA
 from polyply.src.gen_seq import _add_edges, _macro_to_graph, _random_macro_to_graph
 
@@ -56,10 +57,12 @@ def test_random_macro_to_graph(residues):
     res_prob_A, res_prob_B = residues.split(",")
     res_A, prob_A = res_prob_A.split("-")
     res_B, prob_B = res_prob_B.split("-")
+    resnames = Counter(nx.get_node_attributes("resname").values())
+    assert math.isclose(resnames[res_A]/total, res_prob_A)
+    assert math.isclose(resnames[res_B]/total, res_prob_B)
 
+#def test_generate_seq_graph():
+#     generate_seq_graph(sequence, macros, connects)
 
-def test_generate_seq_graph():
-     generate_seq_graph(sequence, macros, connects)
-
-def test_interpret_macro_string():
-    interpret_macro_string
+#def test_interpret_macro_string():
+#    interpret_macro_string
