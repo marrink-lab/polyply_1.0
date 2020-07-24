@@ -208,5 +208,20 @@ class TestTopology:
         top =  Topology(force_field, name="test")
         polyply.src.top_parser.read_topology(new_lines, top)
         top.replace_defines()
-        print(top.molecules)
         assert top.molecules[0].molecule.interactions["angles"][0].parameters == outcome
+
+    @staticmethod
+    def test_convert_nonbond_to_sig_eps():
+        """
+        Simply test if the conversion from C6 C12 to simga epsilon
+        is done properly.
+        """
+
+        force_field = vermouth.forcefield.ForceField(name='test_ff')
+        top =  Topology(force_field, name="test")
+        top.nonbond_params = {frozenset(["EO", "EO"]):
+                             {"nb1":6.44779031E-02 , "nb2": 4.07588234E-04}}
+        top.convert_nonbond_to_sig_eps()
+        assert math.isclose(top.nonbond_params[frozenset(["EO", "EO"])]["nb1"], 0.43)
+        assert math.isclose(top.nonbond_params[frozenset(["EO", "EO"])]["nb2"], 3.4*0.75)
+
