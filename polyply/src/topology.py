@@ -163,7 +163,7 @@ class Topology(System):
         self.gen_pairs()
         self.replace_defines()
         # only convert if we not already have sig-eps form
-        if self.defaults[0] == 1:
+        if self.defaults['comb-rule'] == 1:
            self.convert_nonbond_to_sig_eps()
 
     def replace_defines(self):
