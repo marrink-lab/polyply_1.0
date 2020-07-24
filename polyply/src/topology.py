@@ -162,7 +162,9 @@ class Topology(System):
         """
         self.gen_pairs()
         self.replace_defines()
-        self.convert_nonbond_to_sig_eps()
+        # only convert if we not already have sig-eps form
+        if self.defaults[0] == 1:
+           self.convert_nonbond_to_sig_eps()
 
     def replace_defines(self):
         """
@@ -219,12 +221,12 @@ class Topology(System):
             nb2 = self.nonbond_params[atom_pair]["nb2"]
 
             if nb2 != 0:
-                sig = (nb1/nb2)**(1.0/6.0 )
+                sig = (nb2/nb1)**(1.0/6.0 )
             else:
                 sig = 0
 
             if nb1 != 0:
-                eps = nb2*2.0/(4*nb1)
+                eps = nb1**2.0/(4*nb2)
             else:
                 eps = 0
 
