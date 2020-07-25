@@ -22,7 +22,7 @@ import os
 import argparse
 from pathlib import Path
 import polyply
-from polyply import (gen_itp, gen_coords, DATA_PATH)
+from polyply import (gen_itp, gen_coords, gen_seq, DATA_PATH)
 from polyply.src.load_library import load_library
 
 VERSION = 'polyply version {}'.format(polyply.__version__)
@@ -51,6 +51,7 @@ def main():
     # List of Subparsers for the different tools
     parser_gen_itp = subparsers.add_parser('gen_itp')
     parser_gen_coords = subparsers.add_parser('gen_coords')
+    parser_gen_seq = subparsers.add_parser('gen_seq')
 
     #=============================================================================
     # Input Arguments for the itp generation tool
@@ -121,21 +122,22 @@ def main():
     file_group.add_argument('-f', dest='ffpath', required=False, type=Path,
                             help='force-field files (.ff|.itp)', nargs='*')
     file_group.add_argument('-o', dest='outpath', type=Path,
-                            help='Output GRO (.json)')
+                            help='output file (.json)')
+
     file_group = parser_gen_seq.add_argument_group('Block-Macros')
-    file_group.add_argument('-linear', dest='linear_macros', nargs='+', type=str,
+    file_group.add_argument('-linear', dest='linear', nargs='+', type=str,
                             help="linear macro block of format ID:RESNAME:#blocks")
-    file_group.add_argument('-branched', dest='branched_macros', nargs='+', type=str,
+    file_group.add_argument('-branched', dest='branched', nargs='+', type=str,
                             help="branched macro block of format ID:RESNAME:#branches:#generations")
     file_group.add_argument('-from_file', dest='file_macros', nargs='+', type=str,
                             help="macros to be taken from input file ID:RESNAME")
-    file_group.add_argument('-random_linear', dest='random_linear_macros', nargs='+', type=str,
+    file_group.add_argument('-random_linear', dest='random_linear', nargs='+', type=str,
                             help="macros to be taken from input file ID:#blocks:RESNAME-WEIHGT,RESNAME-WEIGHT")
 
     file_group = parser_gen_seq.add_argument_group('Sequence')
     file_group.add_argument('-seq', dest='seq', nargs='+', type=str,
                             help="sequence of blocks and/or macros: SEQ_ID:MACRO_ID")
-    file_group.add_argument('-connect', dest='connect', nargs='+', type=str,
+    file_group.add_argument('-connects', dest='connects', nargs='+', type=str,
                             help="connection of macors SEQ_ID_A:SEQ_ID_B:1-2,2-3. ")
     parser_gen_coords.set_defaults(func=gen_seq)
 
