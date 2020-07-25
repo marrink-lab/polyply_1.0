@@ -13,6 +13,7 @@
 # limitations under the License.
 import math
 import networkx as nx
+from networkx.readwrite import json_graph
 import pytest
 import argparse
 import json
@@ -70,7 +71,7 @@ def test_random_macro_to_graph(residues):
 def test_interpret_macro_string(macro_str, macro_type, ref_edges):
     graph = nx.Graph()
     graph.add_edges_from(ref_edges)
-    macro = interpret_macro_string(macro_str, macro_type, force_field=None)
+    name, macro = interpret_macro_string(macro_str, macro_type, force_field=None)
     assert len(nx.get_node_attributes(macro, "resname")) == len(graph.nodes)
     assert graph.edges == macro.edges
 
@@ -94,3 +95,67 @@ def test_generate_seq_graph():
     assert nx.is_isomorphic(ref_graph, seq_graph)
 
 
+class args:
+     """
+     Inpute Arguments for the sequence generator.
+     """
+     def __init__(self,
+                  name=None,
+                  ffpath=None,
+                  outpath=None,
+                  linear=None,
+                  branched=None,
+                  file_macros=None,
+                  random_linear=None,
+                  seq=None,
+                  connects=None,
+                  lib=None,
+                  inpath=None):
+
+                  self.name=name
+                  self.lib=lib
+                  self.ffpath=ffpath
+                  self.outpath=outpath
+                  self.linear=linear
+                  self.branched=branched
+                  self.from_file=file_macros
+                  self.random_linear=random_linear
+                  self.seq=seq
+                  self.connects=connects
+                  self.inpath=inpath
+
+
+@pytest.mark.parametrize('_input, ref_file',(
+                        (dict(outpath=TEST_DATA + "/gen_seq/output/PPI.json",
+                          branched=["A:N1:2:3"],
+                          seq=["A", "A"],
+                          connects=["0:1:0-0"]),
+                          TEST_DATA + "/gen_seq/ref/PPI_ref.json"),
+                         (dict(outpath=TEST_DATA + "/gen_seq/output/PEO_PS.json",
+                          linear=["A:PEO:11", "B:PS:11"],
+                          connects=["0:1:10-0"],
+                          seq=["A", "B"]),
+                          TEST_DATA + "/gen_seq/ref/PEO_PS_ref.json"),
+                         (dict(outpath=TEST_DATA + "/gen_seq/output/lysoPEG.json",
+                          inpath=[TEST_DATA + "/gen_seq/input/molecule_0.itp"],
+                          linear=["A:PEG:5"],
+                          file_macros=["PROT:molecule_0"],
+                          seq=["PROT", "A"],
+                          connects=["0:1:0-0"]),
+                          TEST_DATA + "/gen_seq/ref/lyso_PEG.json")
+                          ))
+
+def test_gen_seq(_input, ref_file):
+    arguments = args(**_input)
+    gen_seq(arguments)
+
+    with open(ref_file) as _file:
+         js_graph = json.load(_file)
+         ref_graph = json_graph.node_link_graph(js_graph)
+
+    with open(_input["outpath"]) as _file:
+         js_graph = json.load(_file)
+         out_graph = json_graph.node_link_graph(js_graph)
+
+    assert nx.is_isomorphic(out_graph, ref_graph)
+    assert nx.get_node_attributes(out_graph, "resname") == nx.get_node_attributes(ref_graph, "resname")

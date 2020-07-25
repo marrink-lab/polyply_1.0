@@ -115,7 +115,8 @@ def interpret_macro_string(macro_str, macro_type, force_field=None):
     -------
     `:class:networkx.Graph`
     """
-    if macro_type == "file":
+    if macro_type == "from_file":
+        print(macro_str)
         name, mol_name = macro_str.split(":")
         macro = force_field.blocks[mol_name]
     elif macro_type == "linear":
@@ -127,7 +128,7 @@ def interpret_macro_string(macro_str, macro_type, force_field=None):
     elif macro_type == "random-linear":
         name, n_blocks, residues = macro_str.split(":")
         macro = _random_macro_to_graph(n_blocks, residues)
-    return macro
+    return name, macro
 
 def generate_seq_graph(sequence, macros, connects):
     """
@@ -169,16 +170,17 @@ def gen_seq(args):
     for macro_type in ["from_file", "linear", "branched", "random_linear"]:
         macro_strings = getattr(args, macro_type)
 
-        if macro_type == "from_file" and macro_strings:
-            force_field = load_library(args.name, args.lib, args.inpath)
-        else:
-            force_field = None
+        if macro_strings:
+           if macro_type == "from_file" and macro_strings:
+               force_field = load_library("seq", args.lib, args.inpath)
+           else:
+               force_field = None
 
-        for macro_string in macro_strings:
-            macro_graph, name = interpret_macro_string(macro_string,
-                                                       macro_type,
-                                                       force_field)
-            macros[name] = macro_graph
+           for macro_string in macro_strings:
+               name, macro_graph = interpret_macro_string(macro_string,
+                                                          macro_type,
+                                                          force_field)
+               macros[name] = macro_graph
 
     seq_graph = generate_seq_graph(args.seq, macros, args.connects)
 
