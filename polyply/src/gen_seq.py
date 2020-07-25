@@ -35,7 +35,7 @@ def _macro_to_graph(resname, branching_f, n_levels):
     -------
     `:class:networkx.Graph`
     """
-    graph = nx.balanced_tree(r=branching_f, h=n_levels)
+    graph = nx.balanced_tree(r=branching_f, h=n_levels-1)
     resnames = {idx: resname for idx in graph.nodes}
     nx.set_node_attributes(graph, resnames, "resname")
     return graph
@@ -126,7 +126,7 @@ def interpret_macro_string(macro_str, macro_type, force_field=None):
         macro = _macro_to_graph(resname, int(branching_f), int(n_levels))
     elif macro_type == "random-linear":
         name, n_blocks, residues = macro_str.split(":")
-        macro = _random_macro_to_graph(name, n_blocks, residues)
+        macro = _random_macro_to_graph(n_blocks, residues)
     return macro
 
 def generate_seq_graph(sequence, macros, connects):
