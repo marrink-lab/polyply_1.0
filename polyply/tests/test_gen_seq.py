@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import math
 import networkx as nx
 import pytest
 import argparse
@@ -20,7 +20,7 @@ from pathlib import Path
 import textwrap
 from collections import Counter
 from polyply import gen_seq, TEST_DATA
-from polyply.src.gen_seq import _add_edges, _macro_to_graph, _random_macro_to_graph
+from polyply.src.gen_seq import _add_edges, _macro_to_graph, _random_macro_to_graph, interpret_macro_string, generate_seq_graph
 
 def test_add_edge():
     graph = nx.Graph()
@@ -33,8 +33,8 @@ def test_add_edge():
     assert graph.has_edge(1, 5)
 
 @pytest.mark.parametrize("branching_f, n_levels, ref_edges",(
-                        (2, 2, [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)]),
-                        (1, 3, [(0, 1), (1, 2), (2, 3)])
+                        (2, 3, [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)]),
+                        (1, 4, [(0, 1), (1, 2), (2, 3)])
                         ))
 def test_macro_to_graph(branching_f, n_levels, ref_edges):
     graph = _macro_to_graph("test", branching_f, n_levels)
@@ -51,18 +51,46 @@ def test_macro_to_graph(branching_f, n_levels, ref_edges):
                         'PEO-0.1,PPO-0.9'
                         ))
 def test_random_macro_to_graph(residues):
-    graph = random_macro_to_graph(12, residues)
+    graph = _random_macro_to_graph(12, residues)
     resnames = nx.get_node_attributes(graph, "resname")
     total = len(graph.nodes)
     res_prob_A, res_prob_B = residues.split(",")
     res_A, prob_A = res_prob_A.split("-")
     res_B, prob_B = res_prob_B.split("-")
-    resnames = Counter(nx.get_node_attributes("resname").values())
-    assert math.isclose(resnames[res_A]/total, res_prob_A)
-    assert math.isclose(resnames[res_B]/total, res_prob_B)
+    resnames = Counter(nx.get_node_attributes(graph,"resname").values())
+    assert math.isclose(resnames[res_A]/total, float(prob_A), abs_tol=0.07)
+    assert math.isclose(resnames[res_B]/total, float(prob_B), abs_tol=0.07)
 
-#def test_generate_seq_graph():
-#     generate_seq_graph(sequence, macros, connects)
 
-#def test_interpret_macro_string():
-#    interpret_macro_string
+@pytest.mark.parametrize("macro_str, macro_type, ref_edges",(
+                        ("A:PEO:3", "linear", [(0, 1), (1, 2)]),
+                        ("A:PPI:2:3", "branched", [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)]),
+                        ("A:4:PEO-0.5,PPO-0.5","random-linear", [(0, 1), (1, 2), (2, 3)]),
+                        ))
+def test_interpret_macro_string(macro_str, macro_type, ref_edges):
+    graph = nx.Graph()
+    graph.add_edges_from(ref_edges)
+    macro = interpret_macro_string(macro_str, macro_type, force_field=None)
+    assert len(nx.get_node_attributes(macro, "resname")) == len(graph.nodes)
+    assert graph.edges == macro.edges
+
+
+def test_generate_seq_graph():
+    graphA = nx.Graph()
+    graphA.add_nodes_from(list(range(0, 6)))
+    graphA.add_edges_from([(0, 1), (1, 2),
+                          (3, 4), (4, 5)])
+    graphB = nx.Graph()
+    graphB.add_nodes_from(list(range(0, 5)))
+    graphB.add_edges_from([(0, 1), (0, 2),
+                          (0, 3), (0, 4)])
+
+    macros = {"A":graphA, "B":graphB}
+
+    seq_graph = generate_seq_graph(["A", "B", "A"], macros, ["0:1:2-0", "1:2:1-1"])
+    ref_graph = nx.disjoint_union(graphA, graphB)
+    ref_graph = nx.disjoint_union(ref_graph, graphA)
+    ref_graph.add_edges_from([(2, 6), (7, 12)])
+    assert nx.is_isomorphic(ref_graph, seq_graph)
+
+
