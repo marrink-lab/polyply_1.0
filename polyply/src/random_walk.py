@@ -103,13 +103,13 @@ def update_positions(vector_bundle, meta_molecule, current_node, prev_node):
     prev_vdwr = meta_molecule.volumes[prev_resname]
     vdw_radius, _ = lorentz_berthelot_rule(current_vdwr, prev_vdwr, 1, 1)
 
-    step_length = 2*vdw_radius
-
+    # we give 10 percent more than the vdw radius so we don't generate a
+    # self ovelap
+    step_length = 1.1*vdw_radius
     while True:
         new_point, index = _take_step(vector_bundle, step_length, last_point)
         if not _is_overlap(meta_molecule, new_point, tol=vdw_radius):
             meta_molecule.nodes[current_node]["position"] = new_point
-         #   print(meta_molecule.nodes[current_node]["resname"])
             break
         else:
             vector_bundle = np.delete(vector_bundle, index, axis=0)
