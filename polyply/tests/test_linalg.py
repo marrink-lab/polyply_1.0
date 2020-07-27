@@ -68,4 +68,4 @@ class TestLinAlg:
                            [0, 0, -1]])
 
         rg = radius_of_gyration(coords)
-        assert math.isclose(rg, np.sqrt(2))
+        assert math.isclose(rg, 1.0)
