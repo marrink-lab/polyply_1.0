@@ -33,7 +33,7 @@ pip install git+https://github.com/fgrunewald/polyply_1.0.git#polyply_1.0
 Some macro molecules are implemented in our library for a range of different force-fields.
 To get a list of all libraries available run:
 ```
-polyply -list-libs
+polyply -list-lib
 ```
 To get a detailed list of all the individual macro molecules:
 ```
@@ -92,6 +92,6 @@ Polyply is distributed under the Apache 2.0 license.
 
 The full text of the license is available in the source repository.
 
-[github]: https://github.com/marrink-lab/vermouth-martinize
-[bug reports]: https://github.com/marrink-lab/vermouth-martinize/issues
-[pull requests]: https://github.com/marrink-lab/vermouth-martinize/pulls
+[github]: https://github.com/marrink-lab/polyply_1.0
+[bug reports]: https://github.com/marrink-lab/polyply_1.0/issues
+[pull requests]: https://github.com/marrink-lab/polyply_1.0/pulls
