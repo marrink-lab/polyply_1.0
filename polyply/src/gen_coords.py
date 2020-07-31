@@ -23,6 +23,7 @@ from .generate_templates import GenerateTemplates
 from .random_walk import RandomWalk
 from .backmap import Backmap
 from .topology import Topology
+from .build_system import BuildSystem
 
 def gen_coords(args):
     # Read in the topology
@@ -47,7 +48,8 @@ def gen_coords(args):
 
     # Build polymer structure
     GenerateTemplates().run_system(topology)
-    RandomWalk().run_system(topology)
+    #RandomWalk().run_system(topology)
+    BuildSystem(args.density).run_system(topology)
     Backmap().run_system(topology)
 
     # Write output
