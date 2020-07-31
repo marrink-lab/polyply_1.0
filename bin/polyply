@@ -107,7 +107,8 @@ def main():
                             help='Output GRO (.gro)')
     file_group.add_argument('-c', dest='coordpath', type=Path,
                             help='Input file (.gro)', default=None)
-
+    file_group.add_argument('-dens', dest='density', type=float,
+                            help='density of system', default=None)
     parser_gen_coords.set_defaults(func=gen_coords)
 
     #============================================================================
