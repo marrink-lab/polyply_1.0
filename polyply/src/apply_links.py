@@ -118,13 +118,10 @@ def apply_link_between_residues(molecule, link, resids):
 
     for node in link.nodes:
         if "replace" in link.nodes[node]:
+            # if we don't find a key a MatchError is directly detected and the link
+            # not applied
             for key, item in link.nodes[node]["replace"].items():
-                try:
-                    molecule.nodes[link_to_mol[node]][key] = item
-                except KeyError:
-                    msg = ("Trying to replace attribute {} of atom {}"
-                           "but atom has no such attribute. Check your links.")
-                    raise IOError(msg.format(key, node))
+                molecule.nodes[link_to_mol[node]][key] = item
 
     for inter_type in link.interactions:
         for interaction in link.interactions[inter_type]:
