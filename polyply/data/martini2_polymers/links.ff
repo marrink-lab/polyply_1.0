@@ -1,0 +1,34 @@
+[ moleculetype ]
+OHTer 1
+[ atoms ]
+1   SP2    1   OHTer  OH  1  0.000  45
+
+[ link ]
+resname "DPPC|POPC|DOPC|DPPE|PEO"
+[ atoms ]
+NH3 {"replace": {"atype": "P5"}}
+[ bonds ]
+NH3    +COC    2   0.3220   7000    {"group": "lipid-PEG"}
+[ angles ]
+NH3      +COC      ++COC       2  135.00   50.0  {"group": "lipid-PEG", "version": 1}
+NH3      +COC      ++COC      10  135.00   75.0  {"group": "lipid-PEG", "version": 2}
+
+[ link ]
+resname "PEO|OHTer"
+[ bonds ]
+  +COC   ++OH         1       0.280  7000  {"group": "OHTer-PEG"}
+
+[ link ]
+resname "PEO|OHTer"
+[ angles ]
+COC   +COC   ++OH   2     140     25  {"group": "OHTer-PEG"}
+
+[ link ]
+resname "OHTer|PEO"
+[ bonds ]
+  OH   +COC        1       0.280   7000   {"group": "OHTer-PEG"}
+
+[ link ]
+resname "PEO|OHTer"
+[ angles ]
+ OH   +COC   ++COC   2     140     25  {"group": "OHTer-PEG"}
