@@ -154,7 +154,7 @@ class TestApplyLinks:
             assert resid in ref_ids
 
     @staticmethod
-    @pytest.mark.parametrize('links, interactions, edges, idx, inttype',
+    @pytest.mark.parametrize('links, interactions, edges, idx, inttype, atypes',
          (("""
          [ link ]
          [ bonds ]
@@ -165,7 +165,8 @@ class TestApplyLinks:
                                         meta={})],
          1,
          [1, 2],
-         'bonds'),
+         'bonds',
+         {0: 'SP2', 1: 'SP2', 2: 'SP2', 3: 'SC2'}),
          ("""
          [ link ]
          [ bonds ]
@@ -176,7 +177,22 @@ class TestApplyLinks:
                                         meta={})],
          1,
          [3, 3],
-         'bonds'),
+         'bonds',
+         {0: 'SP2', 1: 'SP2', 2: 'SP2', 3:'SC2'}),
+         ("""
+         [ link ]
+         [ atoms ]
+         BB  {"replace": {"atype": "P5"}}
+         [ bonds ]
+         BB   SC1   1  0.350  1250
+         """,
+         [vermouth.molecule.Interaction(atoms=(2, 3),
+                                        parameters=['1', '0.350', '1250'],
+                                        meta={})],
+         1,
+         [3, 3],
+         'bonds',
+         {0: 'SP2', 1: 'SP2', 2: 'P5', 3: 'SC2'}),
          ("""
          [ link ]
          [ angles ]
@@ -187,9 +203,10 @@ class TestApplyLinks:
                                        meta={})],
         2,
         [2, 3],
-        'angles')
+        'angles',
+        {0: 'SP2', 1: 'SP2', 2: 'SP2', 3: 'SC2'})
         ))
-    def test_add_interaction_and_edge(links, interactions, edges, idx, inttype):
+    def test_add_interaction_and_edge(links, interactions, edges, idx, inttype, atypes):
         lines = """
         [ moleculetype ]
         GLY  1
@@ -216,6 +233,7 @@ class TestApplyLinks:
             new_mol, force_field.links[0], idx)
         assert new_mol.interactions[inttype] == interactions
         assert len(new_mol.edges) == edges
+        assert nx.get_node_attributes(new_mol, "atype") == atypes
 
     @staticmethod
     @pytest.mark.parametrize('links, idx',(

@@ -105,7 +105,7 @@ def apply_link_between_residues(molecule, link, resids):
     link_to_mol = {}
     for node in link.nodes:
         attrs = link.nodes[node]
-        attrs.update({'ignore': ['order', 'charge_group']})
+        attrs.update({'ignore': ['order', 'charge_group', 'replace']})
         matchs = [atom for atom in find_atoms(molecule, **attrs)]
         if len(matchs) == 1:
             link_to_mol[node] = matchs[0]
@@ -115,6 +115,13 @@ def apply_link_between_residues(molecule, link, resids):
         else:
             msg = "Found {} matches for atom {} in resiue {}. Cannot apply link."
             raise MatchError(msg.format(len(matchs), attrs["atomname"], attrs["resid"]))
+
+    for node in link.nodes:
+        if "replace" in link.nodes[node]:
+            # if we don't find a key a MatchError is directly detected and the link
+            # not applied
+            for key, item in link.nodes[node]["replace"].items():
+                molecule.nodes[link_to_mol[node]][key] = item
 
     for inter_type in link.interactions:
         for interaction in link.interactions[inter_type]:
