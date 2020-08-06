@@ -128,7 +128,7 @@ def main():
                                  "block in a sequence, using a connection between the second "
                                  "and third residue in these blocks respectively the input "
                                  "would be <1,3-2,3>.")
-    seq_group.add_argument('-modf_ter', dest='modf_ter', nargs='+', type=str,
+    seq_group.add_argument('-modf_ter', dest='modifications', nargs='+', type=str,
                             help="change the resname of terminii of a specific block "
                                  "in the sequence. The format is <SeqID:new_resname>.")
 
