@@ -21,7 +21,7 @@ from pathlib import Path
 import textwrap
 from collections import Counter
 from polyply import gen_seq, TEST_DATA
-from polyply.src.gen_seq import _add_edges, _macro_to_graph, _random_macro_to_graph, interpret_macro_string, generate_seq_graph
+from polyply.src.gen_seq import _add_edges, _branched_graph, MacroString, generate_seq_graph
 
 def test_add_edge():
     graph = nx.Graph()
@@ -37,8 +37,8 @@ def test_add_edge():
                         (2, 3, [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)]),
                         (1, 4, [(0, 1), (1, 2), (2, 3)])
                         ))
-def test_macro_to_graph(branching_f, n_levels, ref_edges):
-    graph = _macro_to_graph("test", branching_f, n_levels)
+def test_branched_graph(branching_f, n_levels, ref_edges):
+    graph = _branched_graph("test", branching_f, n_levels)
     resnames = {idx: "test" for idx in graph.nodes}
     assert len(graph.edges) == len(ref_edges)
     for edge in ref_edges:
@@ -46,54 +46,49 @@ def test_macro_to_graph(branching_f, n_levels, ref_edges):
     assert nx.get_node_attributes(graph, "resname") == resnames
 
 
-@pytest.mark.parametrize("residues",(
-                        'PEO-0.5,PPO-0.5',
-                        'PEO-0.2,PPO-0.8',
-                        'PEO-0.1,PPO-0.9'
-                        ))
-def test_random_macro_to_graph(residues):
-    graph = _random_macro_to_graph(12, residues)
-    resnames = nx.get_node_attributes(graph, "resname")
-    total = len(graph.nodes)
-    res_prob_A, res_prob_B = residues.split(",")
-    res_A, prob_A = res_prob_A.split("-")
-    res_B, prob_B = res_prob_B.split("-")
-    resnames = Counter(nx.get_node_attributes(graph,"resname").values())
-    assert math.isclose(resnames[res_A]/total, float(prob_A), abs_tol=0.07)
-    assert math.isclose(resnames[res_B]/total, float(prob_B), abs_tol=0.07)
-
 
 @pytest.mark.parametrize("macro_str, macro_type, ref_edges",(
-                        ("A:PEO:3", "linear", [(0, 1), (1, 2)]),
-                        ("A:PPI:2:3", "branched", [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)]),
-                        ("A:4:PEO-0.5,PPO-0.5","random-linear", [(0, 1), (1, 2), (2, 3)]),
+                        ("A:3:1:PEO-1.", "linear", [(0, 1), (1, 2)]),
+                        ("A:3:2:PPI-1.", "branched", [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)]),
+                        ("A:4:1:PEO-0.5,PPO-0.5","random-linear", [(0, 1), (1, 2), (2, 3)]),
                         ))
 def test_interpret_macro_string(macro_str, macro_type, ref_edges):
-    graph = nx.Graph()
-    graph.add_edges_from(ref_edges)
-    name, macro = interpret_macro_string(macro_str, macro_type, force_field=None)
-    assert len(nx.get_node_attributes(macro, "resname")) == len(graph.nodes)
-    assert graph.edges == macro.edges
+    ref_graph = nx.Graph()
+    ref_graph.add_edges_from(ref_edges)
+    macro = MacroString(macro_str)
+    macro_graph = macro.gen_graph()
+    assert len(nx.get_node_attributes(macro_graph, "resname")) == len(ref_graph.nodes)
+    assert ref_graph.edges == macro_graph.edges
 
 
 def test_generate_seq_graph():
-    graphA = nx.Graph()
-    graphA.add_nodes_from(list(range(0, 6)))
-    graphA.add_edges_from([(0, 1), (1, 2),
-                          (3, 4), (4, 5)])
-    graphB = nx.Graph()
-    graphB.add_nodes_from(list(range(0, 5)))
-    graphB.add_edges_from([(0, 1), (0, 2),
-                          (0, 3), (0, 4)])
+    macro_strA = "A:6:1:A-1."
+    macro_strB = "B:2:4:B-1."
 
-    macros = {"A":graphA, "B":graphB}
+    macros = {"A": MacroString(macro_strA),
+              "B": MacroString(macro_strB)}
 
     seq_graph = generate_seq_graph(["A", "B", "A"], macros, ["0:1:2-0", "1:2:1-1"])
+    graphA = macros["A"].gen_graph()
+    graphB = macros["B"].gen_graph()
+
     ref_graph = nx.disjoint_union(graphA, graphB)
     ref_graph = nx.disjoint_union(ref_graph, graphA)
     ref_graph.add_edges_from([(2, 6), (7, 12)])
     assert nx.is_isomorphic(ref_graph, seq_graph)
 
+@pytest.mark.parametrize("edge_str",
+                         ("0:1:2-100",
+                         "0:100:2-0"))
+def test_generate_seq_edge_error(edge_str):
+    macro_strA = "A:6:1:A-1."
+    macro_strB = "B:2:4:B-1."
+
+    macros = {"A": MacroString(macro_strA),
+              "B": MacroString(macro_strB)}
+
+    with pytest.raises(IOError):
+        seq_graph = generate_seq_graph(["A", "B"], macros, [edge_str])
 
 class args:
      """
@@ -103,10 +98,8 @@ class args:
                   name=None,
                   ffpath=None,
                   outpath=None,
-                  linear=None,
-                  branched=None,
+                  macros=None,
                   file_macros=None,
-                  random_linear=None,
                   seq=None,
                   connects=None,
                   lib=None,
@@ -116,10 +109,8 @@ class args:
                   self.lib=lib
                   self.ffpath=ffpath
                   self.outpath=outpath
-                  self.linear=linear
-                  self.branched=branched
+                  self.macros=macros
                   self.from_file=file_macros
-                  self.random_linear=random_linear
                   self.seq=seq
                   self.connects=connects
                   self.inpath=inpath
@@ -127,18 +118,18 @@ class args:
 
 @pytest.mark.parametrize('_input, ref_file',(
                         (dict(outpath=TEST_DATA + "/gen_seq/output/PPI.json",
-                          branched=["A:N1:2:3"],
+                          macros=["A:3:2:N1-1.0"],
                           seq=["A", "A"],
                           connects=["0:1:0-0"]),
                           TEST_DATA + "/gen_seq/ref/PPI_ref.json"),
                          (dict(outpath=TEST_DATA + "/gen_seq/output/PEO_PS.json",
-                          linear=["A:PEO:11", "B:PS:11"],
+                          macros=["A:11:1:PEO-1", "B:11:1:PS-1"],
                           connects=["0:1:10-0"],
                           seq=["A", "B"]),
                           TEST_DATA + "/gen_seq/ref/PEO_PS_ref.json"),
                          (dict(outpath=TEST_DATA + "/gen_seq/output/lysoPEG.json",
                           inpath=[TEST_DATA + "/gen_seq/input/molecule_0.itp"],
-                          linear=["A:PEG:5"],
+                          macros=["A:5:1:PEG-1.0"],
                           file_macros=["PROT:molecule_0"],
                           seq=["PROT", "A"],
                           connects=["0:1:0-0"]),

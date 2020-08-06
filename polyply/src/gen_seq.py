@@ -19,7 +19,8 @@ from networkx.readwrite import json_graph
 from .load_library import load_library
 from .generate_templates import find_atoms
 
-def _macro_to_graph(resname, branching_f, n_levels):
+
+def _branched_graph(resname, branching_f, n_levels):
     """
     Generate a tree graph of branching factor `branching_f`
     and number of generations as `n_levels` - 1. Each node
@@ -40,10 +41,120 @@ def _macro_to_graph(resname, branching_f, n_levels):
     nx.set_node_attributes(graph, resnames, "resname")
     return graph
 
+def _random_replace_nodes(graph, residues, weights):
+    """
+    Randomly replace resname attribute of `graph`
+    based on the names in `residues` taking into
+    account `weights` provided.
+
+    Parameters
+    ----------
+    graph: `:class:networkx.Graph`
+    residues: list[str]
+    weights: list[float]
+
+    Returns:
+    --------
+    `:class:networkx.Graph`
+    """
+    for node in graph.nodes:
+        resname = random.choices(residues, weights=weights)
+        graph.nodes[node]["resname"] = resname[0]
+
+    return graph
+
+# def _expand_res_graph(graph, macros, connects):
+#   """
+#   Expand a `graph` if the node name is in `macros`
+#   and add connect records as defined in connects.
+
+#   Parameters
+#   ----------
+#   graph: `:class:networkx.Graph`
+#   macros: dict[`class.MacroString`]
+#   connects: dict[(resname, resname)]
+
+#   Returns:
+#   -------
+#   `:class:networkx.Graph`
+#   """
+#   expanded_graph = nx.Graph()
+#   had_edge = ()
+
+#   #start
+
+#   for prev_node, current_node in nx.dfs_edges(graph, source=0):
+#       current_tag = graph.nodes[current_node]["resname"]
+#       if current_tag in macros:
+#          prev_tag = graph.nodes[edge[1]]["resname"]
+#          macro = macros[tag].gen_graph(macros, connects)
+#          expanded_graph = nx.disjoint_union(expanded_graph, macro)
+
+#          if (current_tag, prev_tag) in connects:
+#            current_resid, prev_resid = connects[(current_tag, prev_tag)]
+#          elif (prev_tag, current_tag) in connects:
+#            prev_resid, current_resid = connects[(prev_tag, current_tag)]
+#          else:
+#            msg=("Trying to connect residue {} with residue {} but"
+#                 "can find a connect record. Please provide all connect"
+#                 "records when using nested macros.")
+#            raise IOError(msg)
+
+#          n_nodes = len(expanded_graph.nodes)
+#          n_nodes_current = len(macro)
+#          n_nodes_prev = len(prev_macro)
+#          edge = (n_nodes-n_nodes_macro+current_resid, n_nodes)
+#          expanded_graph.add_edge(n_nodes-n_nodes_macro+current_resid,
+#                                  n_nodes-n_nodes_macro-n_nodes_prev+prev_resid)
+
+#       else:
+#          expanded_graph.add_node(node, attrs=graph.nodes[node])
+
+
+class MacroString():
+    """
+    Define a (random) tree graph based on a string.
+    The graph is generated each time the `gen_graph`
+    attribute is run. For random graph they will be
+    independent.
+    """
+
+
+    def __init__(self, string):
+        """
+        Convert string into definitions of the
+        random tree graph.
+
+        Parameters:
+        -----------
+        string: str
+           the input string containing all definitions
+        """
+        input_params = string.split(":")
+        self.name = input_params[0]
+        self.levels = int(input_params[1])
+        self.bfact = int(input_params[2])
+        self.residues = []
+        self.weights = []
+
+        for res_prob in input_params[3].split(','):
+            name, prob = res_prob.split("-")
+            self.residues.append(name)
+            self.weights.append(float(prob))
+
+    def gen_graph(self, seed=None):
+        """
+        Generate a graph from the defnitions stored in this
+        instance.
+        """
+        graph = _branched_graph("dum", self.bfact, self.levels)
+        graph = _random_replace_nodes(graph, self.residues, self.weights)
+        return graph
+
 def _add_edges(graph, edges, idx, jdx):
     """
     Add edges to a graph using the edge format
-    'node_1,node_2', where the node keys refere
+    'node_1,node_2', where the node keys refer
     to the node relative to the nodes with the same
     attribute `seqid`. The sequence ids are provided by
     `idx` and `jdx`.
@@ -52,7 +163,7 @@ def _add_edges(graph, edges, idx, jdx):
     ----------
     graph: `:class:networkx.Graph`
     edges:  list[str]
-        str has the format `node_key,node_key`
+        str has the format `node_keyA,node_keyB-node_keyC,node_keyD`
     idx: int
     jdx: int
 
@@ -64,71 +175,34 @@ def _add_edges(graph, edges, idx, jdx):
         node_idx, node_jdx = edge.split("-")
         idx_nodes = find_atoms(graph, "seqid", idx)
         jdx_nodes = find_atoms(graph, "seqid", jdx)
-        graph.add_edge(idx_nodes[int(node_idx)], jdx_nodes[int(node_jdx)])
+
+        if len(idx_nodes) == 0:
+           msg=("Trying to add connect between block with seqid {} and block with"
+                "seqid {}. However, cannot find block with seqid {}.")
+           raise IOError(msg.format(idx, jdx, idx))
+        elif len(jdx_nodes) == 0:
+           msg=("Trying to add connect between block with seqid {} and block with"
+                "seqid {}. However, cannot find block with seqid {}.")
+           raise IOError(msg.format(idx, jdx, jdx))
+
+        try:
+           node_i = idx_nodes[int(node_idx)]
+        except IndexError:
+           msg=("Trying to add connect between block with seqid {} and block with"
+                "seqid {}. However, cannot find resid {} in block with seqid {}.")
+           raise IOError(msg.format(idx, jdx, node_idx, idx))
+
+        try:
+           node_j = jdx_nodes[int(node_jdx)]
+        except IndexError:
+           msg=("Trying to add connect between block with seqid {} and block with"
+                "seqid {}. However, cannot find resid {} in block with seqid {}.")
+           raise IOError(msg.format(idx, jdx, node_idx, idx))
+
+        graph.add_edge(node_i, node_j)
+
     return graph
 
-def _random_macro_to_graph(n_blocks, residues):
-    """
-    Generate a linear graph with `n_blocks` nodes,
-    and set a node attribute according to the probabilites
-    defined in `residues`. Residues is a list of strings
-    in the form of residue_1-precentage,residue_2-percantage.
-    The percantages needs to add up to 1.
-
-    Parameters
-    ----------
-    n_blocks: int
-    residues: list[str]
-
-    Returns:
-    --------
-    `:class:networkx.Graph`
-    """
-    macro_graph = _macro_to_graph("dum", 1, int(n_blocks))
-    nodes = list(macro_graph.nodes)
-    len_graph = len(nodes)
-    for res_prob in residues.split(','):
-        resname, percentage = res_prob.split('-')
-        # this can probably be done smater
-        nnodes = int(float(percentage) * len_graph)
-        chosen_nodes = random.sample(nodes, k=nnodes)
-        res_attr = {node: resname for node in chosen_nodes}
-        nx.set_node_attributes(macro_graph, res_attr, "resname")
-        for node in chosen_nodes:
-            nodes.remove(node)
-    return macro_graph
-
-def interpret_macro_string(macro_str, macro_type, force_field=None):
-    """
-    Given a `macro_str` corresponding to a molecular graph and a
-    `macro_type`, generate a graph given the specific requirements.
-
-    Parameters
-    ----------
-    macro_str:  str
-    macro_type: str
-         the type of the str; allowed are file, linear, branched,
-         random-linear
-    force_field: `:class:vermouth.forcefield.ForceField`
-
-    Returns
-    -------
-    `:class:networkx.Graph`
-    """
-    if macro_type == "from_file":
-        print(macro_str)
-        name, mol_name = macro_str.split(":")
-        macro = force_field.blocks[mol_name]
-    elif macro_type == "linear":
-        name, resname, n_blocks = macro_str.split(":")
-        macro = _macro_to_graph(resname, 1, int(n_blocks))
-    elif macro_type == "branched":
-        name, resname, branching_f, n_levels = macro_str.split(":")
-        macro = _macro_to_graph(resname, int(branching_f), int(n_levels))
-    elif macro_type == "random-linear":
-        name, n_blocks, residues = macro_str.split(":")
-        macro = _random_macro_to_graph(n_blocks, residues)
-    return name, macro
 
 def generate_seq_graph(sequence, macros, connects):
     """
@@ -138,10 +212,10 @@ def generate_seq_graph(sequence, macros, connects):
     Parameters:
     ----------
     sequence: list
-      a list of blocks defining a squence
-    macros: dict[name]:networkx.graph
+      a list of blocks defining a sequence
+    macros: dict[str, networkx.graph]
       a dictionary of graphs defining a macro block
-    connects:
+    connects: list[str]
       a list of connects
 
     Returns:
@@ -150,7 +224,12 @@ def generate_seq_graph(sequence, macros, connects):
     """
     seq_graph = nx.Graph()
     for idx, macro_name in enumerate(sequence):
-        sub_graph = macros[macro_name]
+
+        if hasattr(macros[macro_name], "gen_graph"):
+           sub_graph = macros[macro_name].gen_graph()
+        else:
+           sub_graph = macros[macro_name]
+
         nx.set_node_attributes(
             sub_graph, {node: idx for node in sub_graph.nodes}, "seqid")
         seq_graph = nx.disjoint_union(seq_graph, sub_graph)
@@ -167,20 +246,16 @@ def gen_seq(args):
 
     macros = {}
 
-    for macro_type in ["from_file", "linear", "branched", "random_linear"]:
-        macro_strings = getattr(args, macro_type)
+    if args.from_file:
+       force_field = load_library("seq", args.lib, args.inpath)
+       for tag_name in args.from_file:
+           tag, name = tag_name.split(":")
+           macros[tag] = force_field.blocks[name]
 
-        if macro_strings:
-           if macro_type == "from_file" and macro_strings:
-               force_field = load_library("seq", args.lib, args.inpath)
-           else:
-               force_field = None
-
-           for macro_string in macro_strings:
-               name, macro_graph = interpret_macro_string(macro_string,
-                                                          macro_type,
-                                                          force_field)
-               macros[name] = macro_graph
+    if args.macros:
+       for macro_string in args.macros:
+           macro = MacroString(macro_string)
+           macros[macro.name] = macro
 
     seq_graph = generate_seq_graph(args.seq, macros, args.connects)
 
