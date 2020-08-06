@@ -124,21 +124,38 @@ def main():
     file_group.add_argument('-o', dest='outpath', type=Path,
                             help='output file (.json)')
 
-    file_group = parser_gen_seq.add_argument_group('Block-Macros')
-    file_group.add_argument('-linear', dest='linear', nargs='+', type=str,
-                            help="linear macro block of format ID:RESNAME:#blocks")
-    file_group.add_argument('-branched', dest='branched', nargs='+', type=str,
-                            help="branched macro block of format ID:RESNAME:#branches:#generations")
-    file_group.add_argument('-from_file', dest='file_macros', nargs='+', type=str,
-                            help="macros to be taken from input file ID:RESNAME")
-    file_group.add_argument('-random_linear', dest='random_linear', nargs='+', type=str,
-                            help="macros to be taken from input file ID:#blocks:RESNAME-WEIHGT,RESNAME-WEIGHT")
 
-    file_group = parser_gen_seq.add_argument_group('Sequence')
-    file_group.add_argument('-seq', dest='seq', nargs='+', type=str,
-                            help="sequence of blocks and/or macros: SEQ_ID:MACRO_ID")
-    file_group.add_argument('-connects', dest='connects', nargs='+', type=str,
-                            help="connection of macors SEQ_ID_A:SEQ_ID_B:1-2,2-3. ")
+    macro_group = parser_gen_seq.add_argument_group('Definitions of macros')
+    macro_group.add_argument('-from_string', dest='macros', nargs='+', type=str,
+                            help=("Define small polymer fragments: "
+                                  "the format is <tag>:<#blocks>:<#branches>:<residues> "
+                                  "where residues has the format <resname-probability>. "
+                                  "Examples are linear PEG of length 10 <A:10:1:PEG-1.0> "
+                                  "or a random copolymer of PS-PEG <A:10:1:PS-0.5,PEG-0.5>. "
+                                  "But we can also generate branched polymer with 3 generations "
+                                  "using <A:3:3:NR3:1>."))
+    macro_group.add_argument('-from_file', dest='macros', nargs='+', type=str,
+                            help="Use a molecule defined in an input file as fragment. The format "
+                                 "is <tag:molecule name>")
+    seq_group.add_argument('-macro_connects', dest='macro_connects', nargs='+', type=str,
+                            help="Provide connect records for two macros. "
+                                 "The format is <macro_tag,macro_tag-res_id,res_id>. "
+                                 "For example if we want to connect the first and third "
+                                 "block in a sequence, using a connection between the second "
+                                 "and third residue in these blocks respectively the input "
+                                 "would be <1,3-2,3>.")
+    seq_group = parser_gen_seq.add_argument_group('Definition of sequence')
+    seq_group.add_argument('-seq', dest='seq', nargs='+', type=str,
+                            help="Define the sequence order in which to combine macros."
+                                 "The format is <macro_tag, macro_tag, ...>.")
+    seq_group.add_argument('-connects', dest='connects', nargs='+', type=str,
+                            help="Provide connect records for sequence. "
+                                 "The format is <seq-index,seq-index-res_id,res_id>. "
+                                 "For example if we want to connect the first and third "
+                                 "block in a sequence, using a connection between the second "
+                                 "and third residue in these blocks respectively the input "
+                                 "would be <1,3-2,3>.")
+
     parser_gen_coords.set_defaults(func=gen_seq)
 
     #============================================================================
