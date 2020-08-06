@@ -1,0 +1,7 @@
+#include "molecule_0.itp"
+
+[ system ]
+Title of the system
+
+[ molecules ]
+molecule_0      1
