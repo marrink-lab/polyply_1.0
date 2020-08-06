@@ -63,54 +63,6 @@ def _random_replace_nodes(graph, residues, weights):
 
     return graph
 
-# def _expand_res_graph(graph, macros, connects):
-#   """
-#   Expand a `graph` if the node name is in `macros`
-#   and add connect records as defined in connects.
-
-#   Parameters
-#   ----------
-#   graph: `:class:networkx.Graph`
-#   macros: dict[`class.MacroString`]
-#   connects: dict[(resname, resname)]
-
-#   Returns:
-#   -------
-#   `:class:networkx.Graph`
-#   """
-#   expanded_graph = nx.Graph()
-#   had_edge = ()
-
-#   #start
-
-#   for prev_node, current_node in nx.dfs_edges(graph, source=0):
-#       current_tag = graph.nodes[current_node]["resname"]
-#       if current_tag in macros:
-#          prev_tag = graph.nodes[edge[1]]["resname"]
-#          macro = macros[tag].gen_graph(macros, connects)
-#          expanded_graph = nx.disjoint_union(expanded_graph, macro)
-
-#          if (current_tag, prev_tag) in connects:
-#            current_resid, prev_resid = connects[(current_tag, prev_tag)]
-#          elif (prev_tag, current_tag) in connects:
-#            prev_resid, current_resid = connects[(prev_tag, current_tag)]
-#          else:
-#            msg=("Trying to connect residue {} with residue {} but"
-#                 "can find a connect record. Please provide all connect"
-#                 "records when using nested macros.")
-#            raise IOError(msg)
-
-#          n_nodes = len(expanded_graph.nodes)
-#          n_nodes_current = len(macro)
-#          n_nodes_prev = len(prev_macro)
-#          edge = (n_nodes-n_nodes_macro+current_resid, n_nodes)
-#          expanded_graph.add_edge(n_nodes-n_nodes_macro+current_resid,
-#                                  n_nodes-n_nodes_macro-n_nodes_prev+prev_resid)
-
-#       else:
-#          expanded_graph.add_node(node, attrs=graph.nodes[node])
-
-
 class MacroString():
     """
     Define a (random) tree graph based on a string.
