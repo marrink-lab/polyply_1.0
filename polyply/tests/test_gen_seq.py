@@ -21,7 +21,9 @@ from pathlib import Path
 import textwrap
 from collections import Counter
 from polyply import gen_seq, TEST_DATA
-from polyply.src.gen_seq import _add_edges, _branched_graph, MacroString, generate_seq_graph
+from polyply.src.gen_seq import (_add_edges, _branched_graph,
+                                MacroString, generate_seq_graph,
+                               _find_terminal_nodes, _apply_teminii_modifications)
 
 def test_add_edge():
     graph = nx.Graph()
@@ -90,6 +92,24 @@ def test_generate_seq_edge_error(edge_str):
     with pytest.raises(IOError):
         seq_graph = generate_seq_graph(["A", "B"], macros, [edge_str])
 
+def test_find_termini():
+    graph = nx.Graph()
+    graph.add_edges_from([(0, 1), (1, 2), (1, 3), (3, 4), (3, 5)])
+    termini = _find_terminal_nodes(graph)
+    for node in [0, 2, 4, 5]:
+        assert node in termini
+
+def test_annote_modifications():
+    modf = ["1:NH2", "2:NH3"]
+    graph = nx.Graph()
+    graph.add_edges_from([(0, 1), (1, 2), (1, 3), (3, 4), (3, 5)])
+    nx.set_node_attributes(graph, {0:1, 1:1, 2:1, 3:2, 4:2, 5:2}, "seqid")
+    nx.set_node_attributes(graph, {0:"PPI", 1:"PPI", 2:"PPI", 3:"PPI", 4:"PPI", 5:"PPI"}, "resname")
+    _apply_teminii_modifications(graph, modf)
+    assert nx.get_node_attributes(graph, "resname") == {0: "NH2", 1: "PPI",
+                                                        2: "NH2", 3: "PPI",
+                                                        4: "NH3", 5: "NH3"}
+
 class args:
      """
      Inpute Arguments for the sequence generator.
@@ -103,6 +123,7 @@ class args:
                   seq=None,
                   connects=None,
                   lib=None,
+                  modifications=[],
                   inpath=None):
 
                   self.name=name
@@ -114,6 +135,7 @@ class args:
                   self.seq=seq
                   self.connects=connects
                   self.inpath=inpath
+                  self.modifications=modifications
 
 
 @pytest.mark.parametrize('_input, ref_file',(

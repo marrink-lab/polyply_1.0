@@ -41,6 +41,7 @@ def _branched_graph(resname, branching_f, n_levels):
     nx.set_node_attributes(graph, resnames, "resname")
     return graph
 
+
 def _random_replace_nodes(graph, residues, weights):
     """
     Randomly replace resname attribute of `graph`
@@ -63,6 +64,7 @@ def _random_replace_nodes(graph, residues, weights):
 
     return graph
 
+
 class MacroString():
     """
     Define a (random) tree graph based on a string.
@@ -70,7 +72,6 @@ class MacroString():
     attribute is run. For random graph they will be
     independent.
     """
-
 
     def __init__(self, string):
         """
@@ -103,6 +104,7 @@ class MacroString():
         graph = _random_replace_nodes(graph, self.residues, self.weights)
         return graph
 
+
 def _add_edges(graph, edges, idx, jdx):
     """
     Add edges to a graph using the edge format
@@ -129,27 +131,27 @@ def _add_edges(graph, edges, idx, jdx):
         jdx_nodes = find_atoms(graph, "seqid", jdx)
 
         if len(idx_nodes) == 0:
-           msg=("Trying to add connect between block with seqid {} and block with"
-                "seqid {}. However, cannot find block with seqid {}.")
-           raise IOError(msg.format(idx, jdx, idx))
+            msg = ("Trying to add connect between block with seqid {} and block with"
+                   "seqid {}. However, cannot find block with seqid {}.")
+            raise IOError(msg.format(idx, jdx, idx))
         elif len(jdx_nodes) == 0:
-           msg=("Trying to add connect between block with seqid {} and block with"
-                "seqid {}. However, cannot find block with seqid {}.")
-           raise IOError(msg.format(idx, jdx, jdx))
+            msg = ("Trying to add connect between block with seqid {} and block with"
+                   "seqid {}. However, cannot find block with seqid {}.")
+            raise IOError(msg.format(idx, jdx, jdx))
 
         try:
-           node_i = idx_nodes[int(node_idx)]
+            node_i = idx_nodes[int(node_idx)]
         except IndexError:
-           msg=("Trying to add connect between block with seqid {} and block with"
-                "seqid {}. However, cannot find resid {} in block with seqid {}.")
-           raise IOError(msg.format(idx, jdx, node_idx, idx))
+            msg = ("Trying to add connect between block with seqid {} and block with"
+                   "seqid {}. However, cannot find resid {} in block with seqid {}.")
+            raise IOError(msg.format(idx, jdx, node_idx, idx))
 
         try:
-           node_j = jdx_nodes[int(node_jdx)]
+            node_j = jdx_nodes[int(node_jdx)]
         except IndexError:
-           msg=("Trying to add connect between block with seqid {} and block with"
-                "seqid {}. However, cannot find resid {} in block with seqid {}.")
-           raise IOError(msg.format(idx, jdx, node_idx, idx))
+            msg = ("Trying to add connect between block with seqid {} and block with"
+                   "seqid {}. However, cannot find resid {} in block with seqid {}.")
+            raise IOError(msg.format(idx, jdx, node_idx, idx))
 
         graph.add_edge(node_i, node_j)
 
@@ -177,10 +179,12 @@ def generate_seq_graph(sequence, macros, connects):
     seq_graph = nx.Graph()
     for idx, macro_name in enumerate(sequence):
 
+        # we need this because from_file macros
+        # are just graphs
         if hasattr(macros[macro_name], "gen_graph"):
-           sub_graph = macros[macro_name].gen_graph()
+            sub_graph = macros[macro_name].gen_graph()
         else:
-           sub_graph = macros[macro_name]
+            sub_graph = macros[macro_name]
 
         nx.set_node_attributes(
             sub_graph, {node: idx for node in sub_graph.nodes}, "seqid")
@@ -194,22 +198,56 @@ def generate_seq_graph(sequence, macros, connects):
     return seq_graph
 
 
+def _find_terminal_nodes(graph):
+    """
+    Find all termini of a graph and return the node key.
+    A termini is defined as a node with degree of 1. Note
+    that graph is assumed to be undirected.
+    """
+    termini = []
+    for node in graph.nodes:
+        if graph.degree(node) == 1:
+            termini.append(node)
+
+    return termini
+
+def _apply_teminii_modifications(graph, modifications):
+    """
+    Given a `graph` change the resname attribute of the end
+    nodes as specified in modifications.
+
+    Parameters:
+    -----------
+    graph: nx.Graph
+    modifications: list
+    """
+    terminal_nodes = _find_terminal_nodes(graph)
+    for modification in modifications:
+        seq_ID, resname = modification.split(':')
+        idx_nodes = find_atoms(graph, "seqid", int(seq_ID))
+        for node in idx_nodes:
+            if node in terminal_nodes:
+                graph.nodes[node]["resname"] = resname
+
+
 def gen_seq(args):
 
     macros = {}
 
     if args.from_file:
-       force_field = load_library("seq", args.lib, args.inpath)
-       for tag_name in args.from_file:
-           tag, name = tag_name.split(":")
-           macros[tag] = force_field.blocks[name]
+        force_field = load_library("seq", args.lib, args.inpath)
+        for tag_name in args.from_file:
+            tag, name = tag_name.split(":")
+            macros[tag] = force_field.blocks[name]
 
     if args.macros:
-       for macro_string in args.macros:
-           macro = MacroString(macro_string)
-           macros[macro.name] = macro
+        for macro_string in args.macros:
+            macro = MacroString(macro_string)
+            macros[macro.name] = macro
 
     seq_graph = generate_seq_graph(args.seq, macros, args.connects)
+
+    _apply_teminii_modifications(seq_graph, args.modifications)
 
     g_json = json_graph.node_link_data(seq_graph)
     with open(args.outpath, "w") as file_handle:
