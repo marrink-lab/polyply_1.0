@@ -42,9 +42,6 @@ def main():
     ff_group.add_argument('-list-blocks', type=str, dest='list_blocks',
                           help='List all Blocks known to the'
                           ' force field selected, and exit.', nargs='*')
-   # ff_group.add_argument('-list-links', type=str, dest='list_links',
-   #                       help='List all Links known to the'
-   #                       ' force field selected, and exit.')
 
     subparsers = parser.add_subparsers()
 
@@ -72,23 +69,6 @@ def main():
                            help='A linear sequence of residue names.')
     seq_group.add_argument('-seqf', dest='seq_file', type=Path,
                            help='A graph input file (JSON|ITP)')
-
-   #martini_group = parser_gen_itp.add_argument_group('Martini specifics for protein and DNA.')
-   #martini_group.add_argument('-nt', dest='neutral_termini',
-   #                        action='store_true', default=False,
-   #                        help='Set neutral termini (charged is default)')
-   #martini_group.add_argument('-scfix', dest='scfix',
-   #                        action='store_true', default=False,
-   #                        help='Apply side chain corrections.')
-   #martini_group.add_argument('-cys', dest='cystein_bridge',
-   #                        type=_cys_argument,
-   #                        default='none', help='Cystein bonds')
-
-   #PTM_group = parser.add_argument_group('Martini specifics for protein and DNA.')
-   #PTM_group.add_argument('-nt', dest='neutral_termini',
-   #                        action='store_true', default=False,
-   #                        help='Set neutral termini (charged is default)')
-   #                        default='none', help='Cystein bonds')
 
     parser_gen_itp.set_defaults(func=gen_itp)
 
@@ -137,13 +117,6 @@ def main():
     macro_group.add_argument('-from_file', dest='macros', nargs='+', type=str,
                             help="Use a molecule defined in an input file as fragment. The format "
                                  "is <tag:molecule name>")
-    seq_group.add_argument('-macro_connects', dest='macro_connects', nargs='+', type=str,
-                            help="Provide connect records for two macros. "
-                                 "The format is <macro_tag,macro_tag-res_id,res_id>. "
-                                 "For example if we want to connect the first and third "
-                                 "block in a sequence, using a connection between the second "
-                                 "and third residue in these blocks respectively the input "
-                                 "would be <1,3-2,3>.")
     seq_group = parser_gen_seq.add_argument_group('Definition of sequence')
     seq_group.add_argument('-seq', dest='seq', nargs='+', type=str,
                             help="Define the sequence order in which to combine macros."
