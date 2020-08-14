@@ -1,0 +1,131 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "resname": "N1",
+      "seqid": 0,
+      "id": 0
+    },
+    {
+      "resname": "N1",
+      "seqid": 0,
+      "id": 1
+    },
+    {
+      "resname": "N1",
+      "seqid": 0,
+      "id": 2
+    },
+    {
+      "resname": "N1",
+      "seqid": 0,
+      "id": 3
+    },
+    {
+      "resname": "N1",
+      "seqid": 0,
+      "id": 4
+    },
+    {
+      "resname": "N1",
+      "seqid": 0,
+      "id": 5
+    },
+    {
+      "resname": "N1",
+      "seqid": 0,
+      "id": 6
+    },
+    {
+      "resname": "N1",
+      "seqid": 1,
+      "id": 7
+    },
+    {
+      "resname": "N1",
+      "seqid": 1,
+      "id": 8
+    },
+    {
+      "resname": "N1",
+      "seqid": 1,
+      "id": 9
+    },
+    {
+      "resname": "N1",
+      "seqid": 1,
+      "id": 10
+    },
+    {
+      "resname": "N1",
+      "seqid": 1,
+      "id": 11
+    },
+    {
+      "resname": "N1",
+      "seqid": 1,
+      "id": 12
+    },
+    {
+      "resname": "N1",
+      "seqid": 1,
+      "id": 13
+    }
+  ],
+  "links": [
+    {
+      "source": 0,
+      "target": 1
+    },
+    {
+      "source": 0,
+      "target": 2
+    },
+    {
+      "source": 0,
+      "target": 7
+    },
+    {
+      "source": 1,
+      "target": 3
+    },
+    {
+      "source": 1,
+      "target": 4
+    },
+    {
+      "source": 2,
+      "target": 5
+    },
+    {
+      "source": 2,
+      "target": 6
+    },
+    {
+      "source": 7,
+      "target": 8
+    },
+    {
+      "source": 7,
+      "target": 9
+    },
+    {
+      "source": 8,
+      "target": 10
+    },
+    {
+      "source": 8,
+      "target": 11
+    },
+    {
+      "source": 9,
+      "target": 12
+    },
+    {
+      "source": 9,
+      "target": 13
+    }
+  ]
+}
