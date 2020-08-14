@@ -26,8 +26,9 @@ def test_add_edge():
     graph.add_nodes_from(list(range(0, 6)))
     graph.add_edges_from([(0, 1), (1, 2),
                           (3, 4), (4, 5)])
-    nx.set_node_attributes(
-        graph, {0: 1, 1: 1, 2: 1, 3: 2, 4: 2, 5: 2}, "seqid")
+    nx.set_node_attributes(graph,
+                           {0: 1, 1: 1, 2: 1, 3: 2, 4: 2, 5: 2},
+                           "seqid")
     edges = "1-2"
     _add_edges(graph, edges, 1, 2)
     assert graph.has_edge(1, 5)
@@ -46,27 +47,27 @@ def test_branched_graph(branching_f, n_levels, ref_edges):
     assert nx.get_node_attributes(graph, "resname") == resnames
 
 
-@pytest.mark.parametrize("macro_str, ref_edges, seeds, resnames", (
-    ("A:3:1:PEO-1.", [(0, 1), (1, 2)], [None, None, None],
+@pytest.mark.parametrize("macro_str, ref_edges, seed, resnames", (
+    ("A:3:1:PEO-1.", [(0, 1), (1, 2)], None,
      {0: "PEO", 1: "PEO", 2: "PEO"}),
     ("A:3:2:PPI-1.",
      [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)],
-     [None, None, None, None, None, None, None],
+     None,
      {0:"PPI", 1:"PPI", 2:"PPI", 3:"PPI", 4:"PPI", 5:"PPI", 6:"PPI"}),
     ("A:4:1:PEO-0.5,PPO-0.5",
      [(0, 1), (1, 2), (2, 3)],
-     [13243, 24940, 98503, 69034],
-     {0:"PPO", 1:"PPO", 2:"PEO", 3:"PPO"}),
+     69034,
+     {0:"PPO", 1:"PPO", 2:"PPO", 3:"PEO"}),
     ("A:4:1:PEO-0.3,PPO-0.2",
      [(0, 1), (1, 2), (2, 3)],
-     [13243, 24940, 98503, 69034],
-     {0:"PPO", 1:"PPO", 2:"PEO", 3:"PPO"})
+     69034,
+     {0:"PPO", 1:"PPO", 2:"PPO", 3:"PEO"})
 ))
-def test_interpret_macro_string(macro_str, ref_edges, seeds, resnames):
+def test_interpret_macro_string(macro_str, ref_edges, seed, resnames):
     ref_graph = nx.Graph()
     ref_graph.add_edges_from(ref_edges)
     macro = MacroString(macro_str)
-    macro_graph = macro.gen_graph(seeds=seeds)
+    macro_graph = macro.gen_graph(seed=seed)
     resnames_macro = nx.get_node_attributes(macro_graph, "resname")
     assert resnames == resnames_macro
     assert ref_graph.edges == macro_graph.edges
@@ -116,10 +117,14 @@ def test_annote_modifications():
     modf = ["1:NH2", "2:NH3"]
     graph = nx.Graph()
     graph.add_edges_from([(0, 1), (1, 2), (1, 3), (3, 4), (3, 5)])
-    nx.set_node_attributes(
-        graph, {0: 1, 1: 1, 2: 1, 3: 2, 4: 2, 5: 2}, "seqid")
-    nx.set_node_attributes(
-        graph, {0: "PPI", 1: "PPI", 2: "PPI", 3: "PPI", 4: "PPI", 5: "PPI"}, "resname")
+    nx.set_node_attributes(graph,
+                           {0: 1, 1: 1, 2: 1, 3: 2, 4: 2, 5: 2},
+                           "seqid"
+                          )
+    nx.set_node_attributes(graph,
+                           {0: "PPI", 1: "PPI", 2: "PPI", 3: "PPI", 4: "PPI", 5: "PPI"},
+                           "resname"
+                          )
     _apply_termini_modifications(graph, modf)
     assert nx.get_node_attributes(graph, "resname") == {0: "NH2", 1: "PPI",
                                                         2: "NH2", 3: "PPI",
