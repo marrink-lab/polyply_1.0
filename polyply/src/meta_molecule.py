@@ -143,6 +143,8 @@ class MetaMolecule(nx.Graph):
         """
         Constructs a :class::`MetaMolecule` from an vermouth.molecule.
         """
+        # ToDo can't we get block from force-field using mol-name?
+        # this function can be cleaned up a bit
         _make_edges(force_field)
         graph = MetaMolecule._block_graph_to_res_graph(block)
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
