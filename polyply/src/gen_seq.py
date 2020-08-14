@@ -43,7 +43,7 @@ def _branched_graph(resname, branching_f, n_levels):
     return graph
 
 
-def _random_replace_nodes_attribute(graph, residues, weights, attribute, seeds=None):
+def _random_replace_nodes_attribute(graph, residues, weights, attribute, seed=None):
     """
     Randomly replace resname attribute of `graph`
     based on the names in `residues` taking into
@@ -56,24 +56,14 @@ def _random_replace_nodes_attribute(graph, residues, weights, attribute, seeds=N
     weights: list[float]
     attribute: str
         the attribute to be replaced
-    seed: list[float]
-        a list of seeds to use in random selection
-        there needs to be one seed per node
+    seed: float
 
     Returns:
     --------
     `:class:networkx.Graph`
     """
-    if not seeds:
-       seeds = [None for _ in graph.nodes]
-
-    if len(seeds) != len(graph.nodes):
-       msg=("Too few seeds. The number of seeds must be the same as "
-            "the number of nodes in the graph.")
-       raise IOError(msg)
-
-    for node, seed in zip(graph.nodes, seeds):
-        random.seed(seed)
+    random.seed(seed)
+    for node in graph.nodes:
         resname = random.choices(residues, weights=weights)
         graph.nodes[node][attribute] = resname[0]
 
@@ -111,15 +101,14 @@ class MacroString():
             self.residues.append(name)
             self.weights.append(float(prob))
 
-    def gen_graph(self, seeds=[]):
+    def gen_graph(self, seed=None):
         """
         Generate a graph from the definitions stored in this
-        instance a list of seeds to be used in random placement
-        may be provided.
+        instance a random seed can be provided.
         """
         graph = _branched_graph("dum", self.bfact, self.levels)
         graph = _random_replace_nodes_attribute(graph, self.residues,
-                                                self.weights, "resname", seeds)
+                                                self.weights, "resname", seed)
         return graph
 
 class MacroFile():
@@ -176,8 +165,8 @@ def _add_edges(graph, edges, idx, jdx):
     --------
     `:class:networkx.Graph`
     """
-    for edge in edges.strip().split(","):
-        node_idx, node_jdx = edge.strip().split("-")
+    for edge in edges.split(","):
+        node_idx, node_jdx = map(str.strip, edge.split('-'))
         idx_nodes = find_atoms(graph, "seqid", idx)
         jdx_nodes = find_atoms(graph, "seqid", jdx)
 
