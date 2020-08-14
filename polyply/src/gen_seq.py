@@ -16,6 +16,7 @@ import random
 import json
 import networkx as nx
 from networkx.readwrite import json_graph
+from vermouth.graph_utils import make_residue_graph
 from .load_library import load_library
 from .generate_templates import find_atoms
 
@@ -42,7 +43,7 @@ def _branched_graph(resname, branching_f, n_levels):
     return graph
 
 
-def _random_replace_nodes(graph, residues, weights):
+def _random_replace_nodes_attribute(graph, residues, weights, attribute, seeds=None):
     """
     Randomly replace resname attribute of `graph`
     based on the names in `residues` taking into
@@ -53,14 +54,28 @@ def _random_replace_nodes(graph, residues, weights):
     graph: `:class:networkx.Graph`
     residues: list[str]
     weights: list[float]
+    attribute: str
+        the attribute to be replaced
+    seed: list[float]
+        a list of seeds to use in random selection
+        there needs to be one seed per node
 
     Returns:
     --------
     `:class:networkx.Graph`
     """
-    for node in graph.nodes:
+    if not seeds:
+       seeds = [None for _ in graph.nodes]
+
+    if len(seeds) != len(graph.nodes):
+       msg=("Too few seeds. The number of seeds must be the same as "
+            "the number of nodes in the graph.")
+       raise IOError(msg)
+
+    for node, seed in zip(graph.nodes, seeds):
+        random.seed(seed)
         resname = random.choices(residues, weights=weights)
-        graph.nodes[node]["resname"] = resname[0]
+        graph.nodes[node][attribute] = resname[0]
 
     return graph
 
@@ -87,21 +102,56 @@ class MacroString():
         self.name = input_params[0]
         self.levels = int(input_params[1])
         self.bfact = int(input_params[2])
+        self.res_probs = input_params[3].split(',')
+
         self.residues = []
         self.weights = []
-
-        for res_prob in input_params[3].split(','):
+        for res_prob in self.res_probs:
             name, prob = res_prob.split("-")
             self.residues.append(name)
             self.weights.append(float(prob))
 
-    def gen_graph(self, seed=None):
+    def gen_graph(self, seeds=[]):
         """
-        Generate a graph from the defnitions stored in this
-        instance.
+        Generate a graph from the definitions stored in this
+        instance a list of seeds to be used in random placement
+        may be provided.
         """
         graph = _branched_graph("dum", self.bfact, self.levels)
-        graph = _random_replace_nodes(graph, self.residues, self.weights)
+        graph = _random_replace_nodes_attribute(graph, self.residues,
+                                                self.weights, "resname", seeds)
+        return graph
+
+class MacroFile():
+    """
+    Define a macro as residue graph of a
+    vermouth molecule.
+    """
+
+    def __init__(self, name, force_field):
+        """
+        Select the appropiate molecule from
+        the force_field.
+
+        Parameters:
+        -----------
+        name: str
+        force_field: `:class:vermouth.froce_field.ForceField`
+        """
+        self.molecule = force_field.blocks[name]
+
+    def gen_graph(self, seed=None):
+        """
+        Generate a graph from the definitions stored in this
+        instance by converting a molecule to a residue graph
+        and setting the resname attribute.
+        """
+        block = make_residue_graph(self.molecule, attrs=('resid', 'resname'))
+        resnames = nx.get_node_attributes(block, 'resname')
+        graph = nx.Graph()
+        graph.add_nodes_from(block.nodes)
+        graph.add_edges_from(block.edges)
+        nx.set_node_attributes(graph, resnames, "resname")
         return graph
 
 
@@ -117,7 +167,8 @@ def _add_edges(graph, edges, idx, jdx):
     ----------
     graph: `:class:networkx.Graph`
     edges:  list[str]
-        str has the format `node_keyA,node_keyB-node_keyC,node_keyD`
+        str has the format `node_keyA-node_keyB,node_keyC-node_keyD`,
+        where edges will be added between nodes A and B, and C and D
     idx: int
     jdx: int
 
@@ -125,16 +176,16 @@ def _add_edges(graph, edges, idx, jdx):
     --------
     `:class:networkx.Graph`
     """
-    for edge in edges.split(","):
-        node_idx, node_jdx = edge.split("-")
+    for edge in edges.strip().split(","):
+        node_idx, node_jdx = edge.strip().split("-")
         idx_nodes = find_atoms(graph, "seqid", idx)
         jdx_nodes = find_atoms(graph, "seqid", jdx)
 
-        if len(idx_nodes) == 0:
+        if not idx_nodes:
             msg = ("Trying to add connect between block with seqid {} and block with"
                    "seqid {}. However, cannot find block with seqid {}.")
             raise IOError(msg.format(idx, jdx, idx))
-        elif len(jdx_nodes) == 0:
+        elif not jdx_nodes:
             msg = ("Trying to add connect between block with seqid {} and block with"
                    "seqid {}. However, cannot find block with seqid {}.")
             raise IOError(msg.format(idx, jdx, jdx))
@@ -178,22 +229,15 @@ def generate_seq_graph(sequence, macros, connects):
     """
     seq_graph = nx.Graph()
     for idx, macro_name in enumerate(sequence):
-
-        # we need this because from_file macros
-        # are just graphs
-        if hasattr(macros[macro_name], "gen_graph"):
-            sub_graph = macros[macro_name].gen_graph()
-        else:
-            sub_graph = macros[macro_name]
+        sub_graph = macros[macro_name].gen_graph()
 
         nx.set_node_attributes(
             sub_graph, {node: idx for node in sub_graph.nodes}, "seqid")
         seq_graph = nx.disjoint_union(seq_graph, sub_graph)
 
-    if connects:
-        for connect in connects:
-            idx, jdx, edges = connect.split(":")
-            _add_edges(seq_graph, edges, int(idx), int(jdx))
+    for connect in connects:
+        idx, jdx, edges = connect.split(":")
+        _add_edges(seq_graph, edges, int(idx), int(jdx))
 
     return seq_graph
 
@@ -211,7 +255,7 @@ def _find_terminal_nodes(graph):
 
     return termini
 
-def _apply_teminii_modifications(graph, modifications):
+def _apply_termini_modifications(graph, modifications):
     """
     Given a `graph` change the resname attribute of the end
     nodes as specified in modifications.
@@ -219,7 +263,10 @@ def _apply_teminii_modifications(graph, modifications):
     Parameters:
     -----------
     graph: nx.Graph
-    modifications: list
+    modifications: list[str:str]
+        list of seq_ID:resname, where resname is the name
+        to be applied to all terminal nodes part of block
+        with seq_ID
     """
     terminal_nodes = _find_terminal_nodes(graph)
     for modification in modifications:
@@ -231,23 +278,26 @@ def _apply_teminii_modifications(graph, modifications):
 
 
 def gen_seq(args):
-
+    """
+    Given a sequence definition and macros defining smaller
+    building blocks of the sequence, create a residue graph
+    and write it to a .json file to be used with gen_itp.
+    """
     macros = {}
 
     if args.from_file:
         force_field = load_library("seq", args.lib, args.inpath)
         for tag_name in args.from_file:
             tag, name = tag_name.split(":")
-            macros[tag] = force_field.blocks[name]
+            macros[tag] = MacroFile(name, force_field)
 
-    if args.macros:
-        for macro_string in args.macros:
-            macro = MacroString(macro_string)
-            macros[macro.name] = macro
+    for macro_string in args.macros:
+        macro = MacroString(macro_string)
+        macros[macro.name] = macro
 
     seq_graph = generate_seq_graph(args.seq, macros, args.connects)
 
-    _apply_teminii_modifications(seq_graph, args.modifications)
+    _apply_termini_modifications(seq_graph, args.modifications)
 
     g_json = json_graph.node_link_data(seq_graph)
     with open(args.outpath, "w") as file_handle:
