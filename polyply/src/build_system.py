@@ -24,6 +24,7 @@ from tqdm import tqdm
 from .random_walk import RandomWalk
 from .linalg_functions import u_vect
 from .topology import lorentz_berthelot_rule
+from .linalg_functions import norm_sphere
 
 def _compute_box_size(topology, density):
     total_mass = 0
@@ -63,7 +64,6 @@ def _prepare_topology(topology):
             nodes_to_gndx[(mol_count, node)] = idx
             idx += 1
         mol_count += 1
-    print(len(atom_types))
     inter_matrix = {}
     for res_A, res_B in itertools.combinations(set(atom_types), r=2):
         inter_matrix[frozenset([res_A, res_B])] = lorentz_berthelot_rule(topology.volumes[res_A],
@@ -74,34 +74,20 @@ def _prepare_topology(topology):
     return positions, atom_types, nodes_to_gndx, inter_matrix
 
 
-def _rescale_system(topology, scale_factor, nodes_to_gdx, positions):
-    for mol_idx, molecule in enumerate(topology.molecules):
-        # this works but only pythin 3.7 because depends on dict order
-        if not "position" in molecule.nodes[0]:
-            continue
-        trans_vect = u_vect(molecule.nodes[0]["position"])*scale_factor
-        for node in molecule.nodes:
-            if "position" in molecule.nodes[node]:
-                curr_pos = molecule.nodes[node]["position"]
-                molecule.nodes[node]["position"] = curr_pos + trans_vect
-                positions[nodes_to_gdx[(mol_idx, node)]] = curr_pos + trans_vect
-
-        return positions
-
 class BuildSystem():
     """
     Compose a system of molecules according
     to the definitions in the topology file.
     """
 
-    def __init__(self, density, n_grid_points=250, maxiter=80, box_size=None):
+    def __init__(self, density, n_grid_points=250, maxiter=20, box_size=None):
         self.density = density
         self.n_grid_points = n_grid_points
         self.maxiter = maxiter
         self.box_size = box_size
 
     def _handle_random_walk(self, molecule, topology, positions, inter_matrix,
-                            nodes_to_gndx, atom_types, mol_idx):
+                            nodes_to_gndx, atom_types, mol_idx, vector_sphere):
         step_count = 0
         while True:
             start = self.box_grid[np.random.randint(len(self.box_grid), size=3)]
@@ -113,13 +99,14 @@ class BuildSystem():
                                    mol_idx=mol_idx,
                                    topology=topology,
                                    maxiter=50,
-                                   maxdim=self.maxdim)
+                                   maxdim=self.maxdim,
+                                   vector_sphere=vector_sphere)
 
             positions, processor.run_molecule(molecule)
             if processor.success:
-                return True, positions
+                return True, processor.positions
             elif step_count == self.maxiter:
-                return False, positions
+                return False, processor.positions
             else:
                 step_count += 1
 
@@ -138,11 +125,10 @@ class BuildSystem():
         --------
         system
         """
-        self.box_size = 1.2 * _compute_box_size(topology, self.density)
-        print(self.box_size)
-        #self.box_size = 20
+        self.box_size = round(_compute_box_size(topology, self.density),5)
         self.box_grid = np.arange(0, self.box_size, self.box_size/self.n_grid_points)
         self.maxdim = np.array([self.box_size, self.box_size, self.box_size])
+        topology.box = (self.box_size, self.box_size, self.box_size)
 
         positions, atom_types, nodes_to_gndx, inter_matrix = _prepare_topology(
             topology)
@@ -150,7 +136,8 @@ class BuildSystem():
         mol_idx = 0
         pbar = tqdm(total=len(topology.molecules))
         mol_tot = len(topology.molecules)
-
+        
+        vector_sphere = norm_sphere(5000)
         while mol_idx < mol_tot:
             molecule = topology.molecules[mol_idx]
             success, new_positions = self._handle_random_walk(molecule,
@@ -159,20 +146,15 @@ class BuildSystem():
                                                               inter_matrix,
                                                               nodes_to_gndx,
                                                               atom_types,
-                                                              mol_idx)
-
+                                                              mol_idx,
+                                                              vector_sphere)
             if success:
                 positions = new_positions
                 mol_idx += 1
                 pbar.update(1)
-            else:
-                scaleing_factor = 1.1 #mol_tot/mol_idx
-                print("rescaling system by ", scaleing_factor)
-                positions = _rescale_system(topology, scaleing_factor, nodes_to_gndx, positions)
-                self.maxdim = self.maxdim * scaleing_factor
-                print("done")
-        pbar.close()
 
+        pbar.close()
+        print(positions[positions != np.inf])
     def run_system(self, topology):
         """
         Compose a system according to a the system

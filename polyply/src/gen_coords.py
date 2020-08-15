@@ -55,4 +55,4 @@ def gen_coords(args):
     system = topology.convert_to_vermouth_system()
     # Write output
     vermouth.gmx.gro.write_gro(system, args.outpath, precision=7,
-                               title='polyply structure', box=(10, 10, 10))
+                               title='polyply structure', box=topology.box)

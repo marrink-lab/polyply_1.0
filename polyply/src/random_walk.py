@@ -15,6 +15,7 @@
 import random
 import networkx as nx
 import numpy as np
+import scipy
 from numpy.linalg import norm
 from .processor import Processor
 from .linalg_functions import norm_sphere
@@ -66,15 +67,18 @@ def _is_overlap(point, positions, atom_types, vdw_radii, gndx):
     bool
     """
     red_pos = positions[positions[:, 0] != np.inf]
-    if red_pos.shape == (3,):
-       diff = norm(red_pos - point)
-    else:
-       diff = np.apply_along_axis(norm, axis=1, arr=red_pos - point)
-    current_atom = atom_types[gndx]
-
+    traj_tree = scipy.spatial.ckdtree.cKDTree(red_pos)
+    ref_tree = scipy.spatial.ckdtree.cKDTree(point.reshape(1,3))
+    dist_mat = ref_tree.sparse_distance_matrix(traj_tree, 1.1)
     red_types = atom_types[positions[:, 0] != np.inf ]
-    ref = np.array([ vdw_radii[frozenset([current_atom, other_atom])] for other_atom in red_types])
-    return np.any(diff < ref)
+
+    current_atom = atom_types[gndx]
+    for pair, dist in dist_mat.items():
+        #print(dist)
+        ref = vdw_radii[frozenset([current_atom, red_types[pair[1]]])]
+        if dist < ref*0.8:
+           return True
+    return False
 
 def not_exceeds_max_dimensions(point, maxdim):
     return np.all(point < maxdim) and np.all(point > np.array([0., 0., 0.]))
@@ -96,18 +100,20 @@ class RandomWalk(Processor):
                  start=np.array([0, 0, 0]),
                  topology=None,
                  maxiter=50,
-                 maxdim=None):
+                 maxdim=None,
+                 vector_sphere=norm_sphere(5000)):
 
         self.start = start
         self.topology = topology
         self.maxiter = maxiter
         self.success = False
         self.maxdim = maxdim
-        self.positions = positions
+        self.positions = positions.copy()
         self.nodes_to_gndx = nodes_to_idx
         self.atom_types = np.asarray(atom_types, dtype=str)
         self.vdw_radii = vdw_radii
         self.mol_idx = mol_idx
+        self.vector_sphere = vector_sphere
 
     def update_positions(self, vector_bundle, meta_molecule, current_node, prev_node):
         """
@@ -128,7 +134,6 @@ class RandomWalk(Processor):
         """
         if "position" in meta_molecule.nodes[current_node]:
             return True
-
         gndx_prev = self.nodes_to_gndx[(self.mol_idx, prev_node)]
         gndx_current = self.nodes_to_gndx[(self.mol_idx, current_node)]
 
@@ -137,7 +142,7 @@ class RandomWalk(Processor):
         res_prev =  self.atom_types[gndx_prev]
         vdw_radius = self.vdw_radii[frozenset([res_prev, res_current])]
 
-        step_length = 1.1*vdw_radius
+        step_length = vdw_radius
         step_count = 0
 
         while True:
@@ -145,9 +150,9 @@ class RandomWalk(Processor):
             overlap = _is_overlap(new_point, self.positions, self.atom_types, self.vdw_radii, gndx_current)
             in_box = not_exceeds_max_dimensions(new_point, self.maxdim)
             if not overlap and in_box:
+                #print(step_count)
                 meta_molecule.nodes[current_node]["position"] = new_point
                 self.positions[gndx_current, :] = new_point
-                #print(self.positions)
                 return True
             elif step_count == self.maxiter:
                 return False
@@ -166,11 +171,13 @@ class RandomWalk(Processor):
         meta_molecule:  :class:`polyply.src.meta_molecule.MetaMolecule`
         """
         first_node = list(meta_molecule.nodes)[0]
+
         if "position" not in meta_molecule.nodes[first_node]:
             meta_molecule.nodes[first_node]["position"] = self.start
             self.positions[self.nodes_to_gndx[(self.mol_idx, first_node)] ,:] = self.start
 
-        vector_bundle = norm_sphere(5000)
+
+        vector_bundle = self.vector_sphere.copy()
         for prev_node, current_node in nx.dfs_edges(meta_molecule, source=0):
             status = self.update_positions(vector_bundle,
                                            meta_molecule,
