@@ -30,6 +30,21 @@ from .linalg_functions import center_of_geometry
 COORD_PARSERS = {"pdb": read_pdb,
                  "gro": read_gro}
 
+# small wrapper that is neccessiataed
+# by the fact that gro and pdb readers
+# return a molecule and a list respectively
+def _coord_parser(path, extension):
+    reader = COORD_PARSERS[extension]
+    molecules = reader(path, exclude=())
+    if extension == "pdb":
+        molecule = molecules[0]
+        for new_mol in molecules[1:]:
+            molecule.merge_molecule(new_mol)
+    else:
+       molecule = molecules
+
+    return molecule
+
 def replace_defined_interaction(interaction, defines):
     """
     Given an `interaction` check if parameters
@@ -238,8 +253,7 @@ class Topology(System):
         """
         path = Path(path)
         extension = path.suffix.casefold()[1:]
-        reader = COORD_PARSERS[extension]
-        molecules = reader(path, exclude=())
+        molecules = _coord_parser(path, extension)
         total = 0
         for meta_mol in self.molecules:
             for node in meta_mol.molecule.nodes:
@@ -252,6 +266,7 @@ class Topology(System):
                    meta_mol.molecule.nodes[node]["position"] = position
                    meta_mol.molecule.nodes[node]["build"] = False
                    total += 1
+                   last_atom = total
 
             for node in meta_mol:
                 atoms_in_res = find_atoms(meta_mol.molecule, "resid", node+1)
