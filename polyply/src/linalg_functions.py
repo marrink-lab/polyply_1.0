@@ -14,7 +14,7 @@
 import numpy as np
 from numpy import sqrt, pi, cos, sin, dot, cross, arccos, degrees
 from numpy.linalg import norm
-
+from scipy.spatial.transform import Rotation
 def vector_angle_degrees(v1, v2):
     """
     Compute the angle between two vectors
@@ -147,3 +147,7 @@ def radius_of_gyration(points):
             count = count + 1
     return np.sqrt(1/(2*N**2.0) * sum(diff))
 
+def rotate_xyz(object_xyz, theta_x, theta_y, theta_z):
+    rotation = Rotation.from_euler('xyz', [theta_x, theta_y, theta_z], degrees=True)
+    rotated_object = np.matmul(rotation.as_matrix(), object_xyz.T)
+    return rotated_object.T

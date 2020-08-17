@@ -46,9 +46,17 @@ def gen_coords(args):
                 molecule.molecule.nodes[node]["build"] = True
 
     # Build polymer structure
+    print("Generating Templates")
     GenerateTemplates().run_system(topology)
     #RandomWalk().run_system(topology)
+    print("Build System")
     BuildSystem(args.density).run_system(topology)
+
+    #system = topology.convert_meta_to_vermouth_system()
+    #vermouth.gmx.gro.write_gro(system, "super_cg.gro", precision=7,
+    #                           title='polyply structure', box=topology.box)
+    print("Bacmappng")
+    #topology.add_positions_from_file_meta("restart.gro")
     Backmap().run_system(topology)
     #EnergyMinimize().run_system(topology)
 

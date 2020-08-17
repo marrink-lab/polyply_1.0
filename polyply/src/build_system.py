@@ -29,12 +29,12 @@ from .linalg_functions import norm_sphere
 def _compute_box_size(topology, density):
     total_mass = 0
     for molecule in topology.molecules:
-        for node in molecule.nodes:
-            if 'mass' in molecule.nodes[node]:
-                total_mass += molecule.nodes[node]['mass']
+        for node in molecule.molecule.nodes:
+            if 'mass' in molecule.molecule.nodes[node]:
+                total_mass += molecule.molecule.nodes[node]['mass']
             else:
-                total_mass += topology.atom_types['mass']
-    print(total_mass)
+                atype = molecule.molecule.nodes[node]["atype"]
+                total_mass += topology.atom_types[atype]['mass']
     # amu -> kg and cm3 -> nm3
     #conversion = 1.6605410*10**-27 * 10**27
     box = (total_mass*1.6605410/density)**(1/3.)
@@ -54,22 +54,27 @@ def _prepare_topology(topology):
 
     idx = 0
     mol_count = 0
+    volumes = {}
+
     for molecule in topology.molecules:
+        volumes.update(molecule.volumes)
         for node in molecule.nodes:
-            if "position" in molecule.nodes:
-                positions[idx, :] = molecule.nodes["position"]
+            if "position" in molecule.nodes[node]:
+                positions[idx, :] = molecule.nodes[node]["position"]
 
             resname = molecule.nodes[node]["resname"]
             atom_types.append(resname)
             nodes_to_gndx[(mol_count, node)] = idx
             idx += 1
         mol_count += 1
+
     inter_matrix = {}
+
     for res_A, res_B in itertools.combinations(set(atom_types), r=2):
-        inter_matrix[frozenset([res_A, res_B])] = lorentz_berthelot_rule(topology.volumes[res_A],
-                                                                       topology.volumes[res_B], 1, 1)
-    for resname, vdw_radii in topology.molecules[0].volumes.items():
-        inter_matrix[frozenset([resname, resname])] = vdw_radii
+        inter_matrix[frozenset([res_A, res_B])] = lorentz_berthelot_rule(volumes[res_A],
+                                                                         volumes[res_B], 1, 1)[0]
+    for atom_type in atom_types:
+        inter_matrix[frozenset([atom_type, atom_type])] = volumes[atom_type]
 
     return positions, atom_types, nodes_to_gndx, inter_matrix
 
@@ -136,7 +141,6 @@ class BuildSystem():
         mol_idx = 0
         pbar = tqdm(total=len(topology.molecules))
         mol_tot = len(topology.molecules)
-        
         vector_sphere = norm_sphere(5000)
         while mol_idx < mol_tot:
             molecule = topology.molecules[mol_idx]
@@ -154,7 +158,7 @@ class BuildSystem():
                 pbar.update(1)
 
         pbar.close()
-        print(positions[positions != np.inf])
+
     def run_system(self, topology):
         """
         Compose a system according to a the system

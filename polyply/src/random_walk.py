@@ -74,9 +74,8 @@ def _is_overlap(point, positions, atom_types, vdw_radii, gndx):
 
     current_atom = atom_types[gndx]
     for pair, dist in dist_mat.items():
-        #print(dist)
         ref = vdw_radii[frozenset([current_atom, red_types[pair[1]]])]
-        if dist < ref*0.8:
+        if dist < ref*1.2:
            return True
     return False
 
@@ -171,11 +170,15 @@ class RandomWalk(Processor):
         meta_molecule:  :class:`polyply.src.meta_molecule.MetaMolecule`
         """
         first_node = list(meta_molecule.nodes)[0]
-
         if "position" not in meta_molecule.nodes[first_node]:
-            meta_molecule.nodes[first_node]["position"] = self.start
-            self.positions[self.nodes_to_gndx[(self.mol_idx, first_node)] ,:] = self.start
-
+            gndx_current = self.nodes_to_gndx[(self.mol_idx, first_node)]
+            if not _is_overlap(self.start, self.positions, self.atom_types, self.vdw_radii, gndx_current):
+                meta_molecule.nodes[first_node]["position"] = self.start
+                self.positions[gndx_current ,:] = self.start
+                self.success = True
+            else:
+                self.success = False
+                return
 
         vector_bundle = self.vector_sphere.copy()
         for prev_node, current_node in nx.dfs_edges(meta_molecule, source=0):
