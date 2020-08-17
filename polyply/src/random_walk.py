@@ -47,7 +47,7 @@ def _take_step(vectors, step_length, coord):
     return new_coord, index
 
 
-def _is_overlap(meta_molecule, point, tol, fudge=1):
+def _is_overlap(meta_molecule, point, tol, current_node, fudge=1):
     """
     Given a `meta_molecule` and a `point`, check if any of
     the positions of in meta_molecule are closer to the
@@ -65,6 +65,7 @@ def _is_overlap(meta_molecule, point, tol, fudge=1):
     -------
     bool
     """
+    neighbours = nx.neighbors(meta_molecule, current_node)
     for node in meta_molecule:
         try:
             coord = meta_molecule.nodes[node]["position"]
@@ -72,7 +73,10 @@ def _is_overlap(meta_molecule, point, tol, fudge=1):
             continue
 
         if np.linalg.norm(coord - point) < tol * fudge:
-            return True
+           if node in neighbours:
+              continue
+           else:
+              return True
 
     return False
 
@@ -105,10 +109,10 @@ def update_positions(vector_bundle, meta_molecule, current_node, prev_node):
 
     # we give 10 percent more than the vdw radius so we don't generate a
     # self ovelap
-    step_length = 1.1*vdw_radius
+    step_length = vdw_radius * 0.83
     while True:
         new_point, index = _take_step(vector_bundle, step_length, last_point)
-        if not _is_overlap(meta_molecule, new_point, tol=vdw_radius):
+        if not _is_overlap(meta_molecule, new_point, vdw_radius, current_node):
             meta_molecule.nodes[current_node]["position"] = new_point
             break
         else:
