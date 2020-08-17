@@ -114,7 +114,7 @@ def main():
                                    "or a random copolymer of PS-PEG <A:10:1:PS-0.5,PEG-0.5>. "
                                    "But we can also generate branched polymer with 3 generations "
                                    "using <A:3:3:NR3-1.>."), default=[])
-    macro_group.add_argument('-from_file', dest='macros', nargs='+', type=str,
+    macro_group.add_argument('-from_file', dest='from_file', nargs='+', type=str,
                              help="Use a molecule defined in an input file as fragment. The format "
                                   "is <tag:molecule name>.")
     seq_group = parser_gen_seq.add_argument_group('Definition of sequence')
@@ -135,7 +135,7 @@ def main():
                            help="change the resname of terminii of a specific block "
                                 "in the sequence. The format is <SeqID:new_resname>.")
 
-    parser_gen_coords.set_defaults(func=gen_seq)
+    parser_gen_seq.set_defaults(func=gen_seq)
 
     #============================================================================
     # Deal with queries of the polyply library
