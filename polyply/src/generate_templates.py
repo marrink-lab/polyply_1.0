@@ -254,9 +254,13 @@ class GenerateTemplates(Processor):
     in the templates attribute. The processor also stores the volume
     of each block in the volume attribute.
     """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.templates = {}
+        self.resnames = []
+        self.volumes = {}
 
-    @staticmethod
-    def _gen_templates(meta_molecule):
+    def _gen_templates(self, meta_molecule):
         """
         Generate blocks for each unique residue by extracting the
         block information, placing initial coordinates, and geometry
@@ -279,24 +283,27 @@ class GenerateTemplates(Processor):
         volumes = {}
 
         for resname in resnames:
-            block = extract_block(meta_molecule.molecule, resname,
-                                  meta_molecule.defines)
-            opt_counter = 0
-            while True:
-                coords = _expand_inital_coords(block)
-                success, coords = optimize_geometry(block, coords)
-                if success:
-                    break
-                elif opt_counter > 10:
-                    print("Warning: Failed to optimize structure for block {}.".format(resname))
-                    print("Proceeding with unoptimized coordinates.")
-                    break
-                else:
-                    opt_counter += 1
+            if not resname in self.resnames:
+                self.resnames.append(resname)
 
-            volumes[resname] = compute_volume(meta_molecule, block, coords)
-            coords = map_from_CoG(coords)
-            templates[resname] = coords
+                block = extract_block(meta_molecule.molecule, resname,
+                                      meta_molecule.defines)
+                opt_counter = 0
+                while True:
+                    coords = _expand_inital_coords(block)
+                    success, coords = optimize_geometry(block, coords)
+                    if success:
+                        break
+                    elif opt_counter > 10:
+                        print("Warning: Failed to optimize structure for block {}.".format(resname))
+                        print("Proceeding with unoptimized coordinates.")
+                        break
+                    else:
+                        opt_counter += 1
+
+                self.volumes[resname] = compute_volume(meta_molecule, block, coords)
+                coords = map_from_CoG(coords)
+                self.templates[resname] = coords
 
         return templates, volumes
 
@@ -306,6 +313,6 @@ class GenerateTemplates(Processor):
         and volume attribute.
         """
         templates, volumes = self._gen_templates(meta_molecule)
-        meta_molecule.templates = templates
-        meta_molecule.volumes = volumes
+        meta_molecule.templates = self.templates
+        meta_molecule.volumes = self.volumes
         return meta_molecule
