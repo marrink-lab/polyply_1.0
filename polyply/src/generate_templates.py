@@ -108,24 +108,7 @@ def _expand_inital_coords(block):
     dict
       dictonary of node index and position
     """
-    coords = {}
-    #TODO this should actually be the index
-    atom = list(block.nodes)[0]
-    coords[atom] = np.array([0, 0, 0])
-
-    vectors = norm_sphere(values=1000)
-    for prev_node, current_node in nx.dfs_edges(block, source=atom):
-        prev_coord = coords[prev_node]
-        is_vs, interaction, inter_type = find_interaction_involving(block,
-                                                                    current_node,
-                                                                    prev_node)
-        if is_vs:
-            coords[current_node] = construct_vs(inter_type, interaction, coords)
-        else:
-            coords[current_node], _ = _take_step(vectors,
-                                                 float(interaction.parameters[1]),
-                                                 prev_coord)
-    return coords
+    return nx.spring_layout(block, dim=3) 
 
 def compute_volume(molecule, block, coords):
     """
