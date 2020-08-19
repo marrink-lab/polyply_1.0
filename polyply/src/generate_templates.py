@@ -92,23 +92,25 @@ def find_interaction_involving(block, current_node, prev_node):
                'linking atom {} and atom {}.')
         raise IOError(msg.format(block.nodes[0]["resname"], prev_node, current_node))
 
-def _expand_inital_coords(block):
+def _expand_inital_coords(block, bond=None, pos=None, fixed=None,
+                          iterations=50, weight="weight", max_box=1.0):
     """
-    Given a `block` generate initial random coordinates
-    for all atoms in the block. Note that the initial
-    coordinates though random, have a defined distance
-    correspodning to a bond , constaint or virtual-site.
+    Given a `graph` generate initial random coordinates
+    in three dimensions and relax them using a Fruchterman
+    Reingold generic simulation to relax the coordinates
+    topologically.
 
     Parameters
     -----------
-    block:   :class:`vermouth.molecule.Block`
+    block:   nx.Graph
 
     Returns
     ---------
     dict
       dictonary of node index and position
     """
-    return nx.spring_layout(block, dim=3) 
+    return nx.spring_layout(block, dim=3, k=k, pos=pos, fixed=fixed,
+                            iterations=iterations, weight=weight, scale=scale)
 
 def compute_volume(molecule, block, coords):
     """
