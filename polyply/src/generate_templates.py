@@ -109,7 +109,7 @@ def _expand_inital_coords(block, bond=None, pos=None, fixed=None,
     dict
       dictonary of node index and position
     """
-    return nx.spring_layout(block, dim=3, k=k, pos=pos, fixed=fixed,
+    return nx.spring_layout(block, dim=3, k=bond, pos=pos, fixed=fixed,
                             iterations=iterations, weight=weight, scale=scale)
 
 def compute_volume(molecule, block, coords):
