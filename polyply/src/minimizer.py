@@ -42,7 +42,7 @@ def compute_bond(params, coords):
     float
     """
     dist = np.linalg.norm(coords[0] - coords[1])
-    return 1000 *(dist - float(params[1]))**2.0
+    return 10000 *(dist - float(params[1]))**2.0
 
 def compute_angle(params, coords):
     """
@@ -78,6 +78,8 @@ def compute_dih(params, coords):
     float
     """
     dih_angle = dih(coords[0], coords[1], coords[2], coords[3])
+    #print(dih_angle)
+    #print("ref", float(params[1]))
     return (dih_angle - float(params[1]))**2.0
 
 def renew_vs(positions, block, atom_to_idx):
@@ -137,6 +139,7 @@ def optimize_geometry(block, coords):
     n_atoms = len(coords)
     atom_to_idx = OrderedDict(zip(list(coords.keys()), range(0, n_atoms)))
     positions = np.array(list(coords.values()))
+    #print(block.interactions)
     def target_function(positions):
         energy = 0
         positions = positions.reshape((-1, 3))
