@@ -25,6 +25,7 @@ from .topology import Topology
 
 def gen_coords(args):
     # Read in the topology
+    print("loading topology")
     topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
     topology.preprocess()
 
@@ -36,13 +37,22 @@ def gen_coords(args):
                    'connected by bonds, constraints or virual-sites')
             raise IOError(msg.format(molecule.name))
 
+    # renumber the resiudes so that all molecules
+    # start with residue index 1
+    for meta_molecule in topology.molecules:
+        molecule = meta_molecule.molecule
+        resids = nx.get_node_attributes(molecule, "resid")
+        offset = min(resids.values()) - 1
+        new_resids = {node: resid - offset for node, resid in resids.items()}
+        nx.set_node_attributes(molecule, new_resids, "resid")
+
     # read in coordinates if there are any
     if args.coordpath:
         topology.add_positions_from_file(args.coordpath)
     else:
         for molecule in topology.molecules:
-            for node in molecule.molecule.nodes:
-                molecule.molecule.nodes[node]["build"] = True
+            for node in molecule.nodes:
+                molecule.nodes[node]["build"] = True
 
     # Build polymer structure
     GenerateTemplates().run_system(topology)
