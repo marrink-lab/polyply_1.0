@@ -237,7 +237,7 @@ def extract_block(molecule, resname, defines):
                 block.interactions[inter_type].append(interaction)
 
     for inter_type in ["bonds", "constraints", "virtual_sitesn",
-                       "virtual-sites2", "virtual-sites3", "virtual-sites4"]:
+                       "virtual_sites2", "virtual_sites3", "virtual_sites4"]:
         block.make_edges_from_interaction_type(inter_type)
 
     if not nx.is_connected(block):
