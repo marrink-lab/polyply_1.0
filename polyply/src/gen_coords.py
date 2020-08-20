@@ -22,6 +22,7 @@ from .generate_templates import GenerateTemplates
 from .random_walk import RandomWalk
 from .backmap import Backmap
 from .topology import Topology
+from .build_system import BuildSystem
 
 def gen_coords(args):
     # Read in the topology
@@ -55,12 +56,21 @@ def gen_coords(args):
                 molecule.nodes[node]["build"] = True
 
     # Build polymer structure
+    print("Generating Templates")
     GenerateTemplates().run_system(topology)
-    RandomWalk().run_system(topology)
+    #RandomWalk().run_system(topology)
+    print("Build System")
+    BuildSystem(args.density).run_system(topology)
+
+    #system = topology.convert_meta_to_vermouth_system()
+    #vermouth.gmx.gro.write_gro(system, "super_cg.gro", precision=7,
+    #                           title='polyply structure', box=topology.box)
+    print("Bacmappng")
+    #topology.add_positions_from_file_meta("restart.gro")
     Backmap().run_system(topology)
-    #energy_minimize().run_system(topology)
+    #EnergyMinimize().run_system(topology)
 
     system = topology.convert_to_vermouth_system()
     # Write output
     vermouth.gmx.gro.write_gro(system, args.outpath, precision=7,
-                               title='polyply structure', box=(10, 10, 10))
+                               title='polyply structure', box=topology.box)

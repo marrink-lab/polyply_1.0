@@ -34,7 +34,11 @@ def find_edges(molecule, attr, value):
     Parameters
     ----------
     molecule: :class:vermouth.molecule.Molecule
+<<<<<<< HEAD
     attrs: tuple[str, str]
+=======
+    attrs: tuple(str, str)
+>>>>>>> system_builder_current
          tuple of the attributes used in matching
     values: tuple
          corresponding values value
@@ -110,27 +114,24 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
     def target_function(angles):
         rotated = rotate_xyz(opt_coords, angles[0], angles[1], angles[2])
         diff = rotated - ref_coords
-        score = np.sum(np.sqrt(np.sum(diff*diff, axis=0)))
+        score = np.sum(np.sqrt(np.matmul(diff, diff.T)))
         return score
 
     angles = np.array([10.0, -10.0, 5.0])
-    opt_results = scipy.optimize.minimize(target_function, angles, method='L-BFGS-B',
-                                              options={'ftol':0.000001, 'maxiter': 400})
+    opt_results = scipy.optimize.minimize(target_function, angles, method='Powell',
+                                              options={'ftol':0.001, 'maxiter': 400})
     # 5. rotate template
-    template_arr = np.zeros((3,len(template)))
+    template_arr = np.zeros((len(template),3))
     key_to_ndx = {}
     for ndx, key in enumerate(template.keys()):
-        template_arr[:, ndx] = template[key]
-        key_to_ndx[key] = ndx
+        template_arr[ndx,:] = template[key]
+        key_to_ndx.update({key:ndx})
 
     angles = opt_results['x']
     template_rotated_arr = rotate_xyz(template_arr, angles[0], angles[1], angles[2])
-    rotated = rotate_xyz(opt_coords, angles[0], angles[1], angles[2])
-    diff = rotated - ref_coords
-
     template_rotated = {}
     for key, ndx in key_to_ndx.items():
-        template_rotated[key] = template_rotated_arr[:,ndx]
+        template_rotated[key] = template_rotated_arr[ndx]
 
     return template_rotated
 

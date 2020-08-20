@@ -265,6 +265,7 @@ class Topology(System):
                 else:
                    meta_mol.molecule.nodes[node]["position"] = position
                    total += 1
+                   last_atom = total
 
             for node in meta_mol:
                 atoms_in_res = find_atoms(meta_mol.molecule, "resid", node+1)
@@ -277,6 +278,21 @@ class Topology(System):
                 else:
                     meta_mol.nodes[node]["build"] = True
 
+    def add_positions_from_file_meta(self, path):
+        """
+        Add positions to topology from coordinate file.
+        """
+        path = Path(path)
+        extension = path.suffix.casefold()[1:]
+        reader = COORD_PARSERS[extension]
+        molecules = reader(path, exclude=())
+        total = 0
+        for meta_mol in self.molecules:
+            for node in meta_mol.nodes:
+                position = molecules.nodes[total]["position"]
+                meta_mol.nodes[node]["position"] = position
+                total +=1
+
     def convert_to_vermouth_system(self):
         system = System()
         system.molecules = []
@@ -284,6 +300,20 @@ class Topology(System):
 
         for meta_mol in self.molecules:
             system.molecules.append(meta_mol.molecule)
+
+        return system
+
+    def convert_meta_to_vermouth_system(self):
+        system = System()
+        system.molecules = []
+        system.force_field = self.force_field
+
+        for meta_mol in self.molecules:
+            for node in meta_mol.nodes:
+                meta_mol.nodes[node]["atomname"] = "DUM"
+
+        for meta_mol in self.molecules:
+            system.molecules.append(meta_mol)
 
         return system
 

@@ -216,13 +216,16 @@ class TOPDirector(SectionLineParser):
             meta_molecule = MetaMolecule.from_block(self.force_field,
                                                     block,
                                                     mol_name)
-            meta_molecule.atom_types = self.topology.atom_types
-            meta_molecule.defaults = self.topology.defaults
-            meta_molecule.nonbond_params = self.topology.nonbond_params
-            meta_molecule.defines = self.topology.defines
-            meta_molecule.name = mol_name
+
             for idx in range(0, int(n_mol)):
-                 self.topology.add_molecule(meta_molecule)
+                 new = meta_molecule.copy()
+                 new.atom_types = self.topology.atom_types
+                 new.defaults = self.topology.defaults
+                 new.nonbond_params = self.topology.nonbond_params
+                 new.defines = self.topology.defines
+                 new.mol_name = mol_name
+                 new.molecule = meta_molecule.molecule.copy()
+                 self.topology.add_molecule(new)
 
         super().finalize()
 
@@ -287,8 +290,10 @@ class TOPDirector(SectionLineParser):
         """
         atom_name = line.split()[0]
         nb1, nb2 = line.split()[-2:]
+        mass = line.split()[1]
         self.topology.atom_types[atom_name] = {"nb1": float(nb1),
-                                               "nb2": float(nb2)}
+                                               "nb2": float(nb2),
+                                               "mass": float(mass)}
 
     @SectionLineParser.section_parser('nonbond_params')
     def _nonbond_params(self, line, lineno=0):
