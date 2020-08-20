@@ -102,7 +102,7 @@ def _expand_inital_coords(block, bond=None, pos=None, fixed=None,
 
     Parameters
     -----------
-    block:   nx.Graph
+    block:   networkx.Graph
 
     Returns
     ---------
