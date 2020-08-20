@@ -256,27 +256,26 @@ class Topology(System):
         molecules = _coord_parser(path, extension)
         total = 0
         for meta_mol in self.molecules:
+            no_coords = []
             for node in meta_mol.molecule.nodes:
                 try:
                    position = molecules.nodes[total]["position"]
                 except KeyError:
-                   meta_mol.molecule.nodes[node]["build"] = True
-                   last_atom = total
+                   no_coords.append(node)
                 else:
                    meta_mol.molecule.nodes[node]["position"] = position
-                   meta_mol.molecule.nodes[node]["build"] = False
                    total += 1
-                   last_atom = total
 
             for node in meta_mol:
                 atoms_in_res = find_atoms(meta_mol.molecule, "resid", node+1)
-                if last_atom not in atoms_in_res:
+                if not any(atom in no_coords for atom in atoms_in_res):
                     positions = np.array([meta_mol.molecule.nodes[atom]["position"] for
                                           atom in atoms_in_res])
                     center = center_of_geometry(positions)
                     meta_mol.nodes[node]["position"] = center
+                    meta_mol.nodes[node]["build"] = False
                 else:
-                    break
+                    meta_mol.nodes[node]["build"] = True
 
     def convert_to_vermouth_system(self):
         system = System()
