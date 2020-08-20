@@ -34,7 +34,7 @@ def find_edges(molecule, attr, value):
     Parameters
     ----------
     molecule: :class:vermouth.molecule.Molecule
-    attrs: tuple(str, str)
+    attrs: tuple[str, str]
          tuple of the attributes used in matching
     values: tuple
          corresponding values value
