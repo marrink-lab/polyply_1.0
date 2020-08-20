@@ -165,5 +165,5 @@ def rotate_xyz(object_xyz, theta_x, theta_y, theta_z):
         angles in degrees
     """
     rotation = Rotation.from_euler('xyz', [theta_x, theta_y, theta_z], degrees=True)
-    rotated_object = np.matmul(rotation.as_matrix(), object_xyz)
+    rotated_object = rotation.apply(object_xyz)
     return rotated_object
