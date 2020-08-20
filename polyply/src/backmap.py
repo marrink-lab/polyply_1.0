@@ -121,7 +121,7 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
     key_to_ndx = {}
     for ndx, key in enumerate(template.keys()):
         template_arr[:, ndx] = template[key]
-        key_to_ndx.update({key:ndx})
+        key_to_ndx[key] = ndx
 
     angles = opt_results['x']
     template_rotated_arr = rotate_xyz(template_arr, angles[0], angles[1], angles[2])
