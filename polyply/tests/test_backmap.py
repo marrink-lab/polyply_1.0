@@ -33,8 +33,8 @@ class TestBackmap():
     def test_backmapping():
         meta_molecule = MetaMolecule()
         meta_molecule.add_edges_from([(0, 1)])
-        nx.set_node_attributes(meta_molecule, {0: {"resname": "test", "position": np.array([0, 0, 0])},
-                                               1: {"resname": "test", "position": np.array([0, 0, 1.0])}})
+        nx.set_node_attributes(meta_molecule, {0: {"resname": "test", "position": np.array([0, 0, 0]), "build":True},
+                                               1: {"resname": "test", "position": np.array([0, 0, 1.0]), "build":False}})
         # test if disordered template works
         meta_molecule.templates = {"test": {"B": np.array([0, 0, 0]),
                                             "A": np.array([0, 0, 0.5]),
@@ -43,12 +43,12 @@ class TestBackmap():
         meta_molecule.molecule.add_edges_from(
             [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6)])
         nx.set_node_attributes(meta_molecule.molecule, {
-            1: {"resname": "test", "resid": 1, "build": True, "atomname": "A"},
-            2: {"resname": "test", "resid": 1, "build": True, "atomname": "B"},
-            3: {"resname": "test", "resid": 1, "build": True, "atomname": "C"},
-            4: {"resname": "test", "resid": 2, "build": True, "atomname": "A"},
-            5: {"resname": "test", "resid": 2, "build": True, "atomname": "B"},
-            6: {"resname": "test", "resid": 2, "build": False, "atomname": "C",
+            1: {"resname": "test", "resid": 1, "atomname": "A"},
+            2: {"resname": "test", "resid": 1, "atomname": "B"},
+            3: {"resname": "test", "resid": 1, "atomname": "C"},
+            4: {"resname": "test", "resid": 1, "atomname": "A"},
+            5: {"resname": "test", "resid": 1, "atomname": "B"},
+            6: {"resname": "test", "resid": 2, "atomname": "C",
                                                "position": np.array([4., 4., 4.])}})
 
         Backmap().run_molecule(meta_molecule)
