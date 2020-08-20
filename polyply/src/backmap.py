@@ -17,6 +17,7 @@ import networkx as nx
 from .processor import Processor
 from .generate_templates import find_atoms
 from .linalg_functions import rotate_xyz
+from tqdm import tqdm
 """
 Processor implementing a template based back
 mapping to lower resolution coordinates for
@@ -152,20 +153,20 @@ class Backmap(Processor):
         meta_molecule: :class:`polyply.src.MetaMolecule`
         """
         built_nodes = []
-        for node in meta_molecule.nodes:
-            resname = meta_molecule.nodes[node]["resname"]
-            cg_coord = meta_molecule.nodes[node]["position"]
-            template =  orient_template(meta_molecule, node, meta_molecule.templates[resname], built_nodes)
-            resid = node + 1
-            low_res_atoms = find_atoms(meta_molecule.molecule, "resid", resid)
+        for node in tqdm(meta_molecule.nodes):
+            if  meta_molecule.nodes[node]["build"]:
+                resname = meta_molecule.nodes[node]["resname"]
+                cg_coord = meta_molecule.nodes[node]["position"]
+                resid = node + 1
+                low_res_atoms = find_atoms(meta_molecule.molecule, "resid", resid)
+                template =  orient_template(meta_molecule, node, meta_molecule.templates[resname], built_nodes)
 
-            for atom_low  in low_res_atoms:
-                atomname = meta_molecule.molecule.nodes[atom_low]["atomname"]
-                vector = template[atomname]
-                new_coords = cg_coord + vector
-                if meta_molecule.molecule.nodes[atom_low]["build"]:
+                for atom_low  in low_res_atoms:
+                    atomname = meta_molecule.molecule.nodes[atom_low]["atomname"]
+                    vector = template[atomname]
+                    new_coords = cg_coord + vector
                     meta_molecule.molecule.nodes[atom_low]["position"] = new_coords
-            built_nodes.append(node)
+                built_nodes.append(node)
 
     def run_molecule(self, meta_molecule):
         """
