@@ -19,6 +19,7 @@ import scipy
 from numpy.linalg import norm
 from .processor import Processor
 from .linalg_functions import norm_sphere
+from tqdm import tqdm
 """
 Processor implementing a random-walk to generate
 coordinates for a meta-molecule.
@@ -75,7 +76,7 @@ def _is_overlap(point, positions, atom_types, vdw_radii, gndx):
     current_atom = atom_types[gndx]
     for pair, dist in dist_mat.items():
         ref = vdw_radii[frozenset([current_atom, red_types[pair[1]]])]
-        if dist < ref*1.2:
+        if dist < ref*0.6:
            return True
     return False
 
@@ -136,12 +137,12 @@ class RandomWalk(Processor):
         gndx_prev = self.nodes_to_gndx[(self.mol_idx, prev_node)]
         gndx_current = self.nodes_to_gndx[(self.mol_idx, current_node)]
 
-        last_point = meta_molecule.nodes[prev_node]["position"]
+        last_point = self.positions[gndx_prev]
         res_current = self.atom_types[gndx_current]
         res_prev =  self.atom_types[gndx_prev]
         vdw_radius = self.vdw_radii[frozenset([res_prev, res_current])]
 
-        step_length = vdw_radius
+        step_length = vdw_radius * 1.1
         step_count = 0
 
         while True:
@@ -149,8 +150,6 @@ class RandomWalk(Processor):
             overlap = _is_overlap(new_point, self.positions, self.atom_types, self.vdw_radii, gndx_current)
             in_box = not_exceeds_max_dimensions(new_point, self.maxdim)
             if not overlap and in_box:
-                #print(step_count)
-                meta_molecule.nodes[current_node]["position"] = new_point
                 self.positions[gndx_current, :] = new_point
                 return True
             elif step_count == self.maxiter:
@@ -170,25 +169,31 @@ class RandomWalk(Processor):
         meta_molecule:  :class:`polyply.src.meta_molecule.MetaMolecule`
         """
         first_node = list(meta_molecule.nodes)[0]
+
         if "position" not in meta_molecule.nodes[first_node]:
             gndx_current = self.nodes_to_gndx[(self.mol_idx, first_node)]
             if not _is_overlap(self.start, self.positions, self.atom_types, self.vdw_radii, gndx_current):
-                meta_molecule.nodes[first_node]["position"] = self.start
                 self.positions[gndx_current ,:] = self.start
                 self.success = True
             else:
                 self.success = False
                 return
-
         vector_bundle = self.vector_sphere.copy()
+        counter=0
         for prev_node, current_node in nx.dfs_edges(meta_molecule, source=0):
             status = self.update_positions(vector_bundle,
                                            meta_molecule,
                                            current_node,
                                            prev_node)
             self.success = status
+            counter += 1
             if not self.success:
+               print(counter)
                return
+
+        for node in meta_molecule.nodes:
+            gndx = self.nodes_to_gndx[(self.mol_idx, node)]
+            meta_molecule.nodes[node]["position"] = self.positions[gndx]
 
     def run_molecule(self, meta_molecule):
         """

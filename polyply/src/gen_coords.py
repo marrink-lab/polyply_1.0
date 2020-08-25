@@ -24,6 +24,12 @@ from .backmap import Backmap
 from .topology import Topology
 from .build_system import BuildSystem
 
+def split_residues(molecules, split):
+    for mol in molecules:
+        max_resid = len(mol.nodes)
+        for split_string in split:
+            max_resid = mol.split_residue(split_string, max_resid)
+
 def gen_coords(args):
     # Read in the topology
     print("loading topology")
@@ -38,15 +44,10 @@ def gen_coords(args):
                    'connected by bonds, constraints or virual-sites')
             raise IOError(msg.format(molecule.name))
 
-    # renumber the resiudes so that all molecules
-    # start with residue index 1
-    for meta_molecule in topology.molecules:
-        molecule = meta_molecule.molecule
-        resids = nx.get_node_attributes(molecule, "resid")
-        offset = min(resids.values()) - 1
-        new_resids = {node: resid - offset for node, resid in resids.items()}
-        nx.set_node_attributes(molecule, new_resids, "resid")
-
+    print("splitting residues")
+    if args.split:
+       split_residues(topology.molecules, args.split)
+    print("reading coordinates")
     # read in coordinates if there are any
     if args.coordpath:
         topology.add_positions_from_file(args.coordpath)
@@ -69,8 +70,9 @@ def gen_coords(args):
     #topology.add_positions_from_file_meta("restart.gro")
     Backmap().run_system(topology)
     #EnergyMinimize().run_system(topology)
-
+    print("go here")
     system = topology.convert_to_vermouth_system()
     # Write output
+
     vermouth.gmx.gro.write_gro(system, args.outpath, precision=7,
                                title='polyply structure', box=topology.box)

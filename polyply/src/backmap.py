@@ -34,11 +34,7 @@ def find_edges(molecule, attr, value):
     Parameters
     ----------
     molecule: :class:vermouth.molecule.Molecule
-<<<<<<< HEAD
     attrs: tuple[str, str]
-=======
-    attrs: tuple(str, str)
->>>>>>> system_builder_current
          tuple of the attributes used in matching
     values: tuple
          corresponding values value
@@ -71,13 +67,15 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
 
     # 1. find neighbours at meta_mol level
     neighbours = nx.all_neighbors(meta_molecule, current_node)
+    current_resid = meta_molecule.nodes[current_node]["resid"]
 
     # 2. find connecting atoms at low-res level
     edges = []
-    for resid in neighbours:
+    for node in neighbours:
+        resid = meta_molecule.nodes[node]["resid"]
         edge = find_edges(meta_molecule.molecule,
                             ("resid", "resid"),
-                            (resid+1, current_node+1))
+                            (resid, current_resid))
         edges += edge
 
     # 3. build coordinate system
@@ -85,10 +83,10 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
     opt_coords = np.zeros((3, len(edges)))
     for ndx, edge in enumerate(edges):
         atom_a, atom_b = edge
-        resid_a = meta_molecule.molecule.nodes[atom_a]["resid"] - 1
-        resid_b = meta_molecule.molecule.nodes[atom_b]["resid"] - 1
+        resid_a = meta_molecule.molecule.nodes[atom_a]["resid"]
+        resid_b = meta_molecule.molecule.nodes[atom_b]["resid"]
         if resid_a in built_nodes or resid_b in built_nodes:
-            if resid_a == current_node:
+            if resid_a == current_resid:
                  atom_name = meta_molecule.molecule.nodes[atom_a]["atomname"]
                  aa_node = atom_b
             else:
@@ -99,12 +97,12 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
             ref_coords[:, ndx] = meta_molecule.molecule.nodes[aa_node]["position"] - meta_molecule.nodes[current_node]["position"]
 
         else:
-            if resid_a == current_node:
+            if resid_a == current_resid:
                  atom_name = meta_molecule.molecule.nodes[atom_a]["atomname"]
-                 cg_node = resid_b
+                 cg_node = find_atoms(meta_molecule, "resid", resid_b)[0]
             else:
                  atom_name = meta_molecule.molecule.nodes[atom_b]["atomname"]
-                 cg_node = resid_a
+                 cg_node = find_atoms(meta_molecule, "resid" ,resid_b)[0]
 
             opt_coords[:, ndx] = template[atom_name]
             ref_coords[:, ndx] = meta_molecule.nodes[cg_node]["position"] - meta_molecule.nodes[current_node]["position"]
@@ -114,24 +112,27 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
     def target_function(angles):
         rotated = rotate_xyz(opt_coords, angles[0], angles[1], angles[2])
         diff = rotated - ref_coords
-        score = np.sum(np.sqrt(np.matmul(diff, diff.T)))
+        score = np.sum(np.sqrt(np.sum(diff*diff, axis=0)))
         return score
 
     angles = np.array([10.0, -10.0, 5.0])
-    opt_results = scipy.optimize.minimize(target_function, angles, method='Powell',
-                                              options={'ftol':0.001, 'maxiter': 400})
+    opt_results = scipy.optimize.minimize(target_function, angles, method='L-BFGS-B',
+                                              options={'ftol':0.000001, 'maxiter': 400})
     # 5. rotate template
-    template_arr = np.zeros((len(template),3))
+    template_arr = np.zeros((3,len(template)))
     key_to_ndx = {}
     for ndx, key in enumerate(template.keys()):
-        template_arr[ndx,:] = template[key]
-        key_to_ndx.update({key:ndx})
+        template_arr[:, ndx] = template[key]
+        key_to_ndx[key] = ndx
 
     angles = opt_results['x']
     template_rotated_arr = rotate_xyz(template_arr, angles[0], angles[1], angles[2])
+    rotated = rotate_xyz(opt_coords, angles[0], angles[1], angles[2])
+    diff = rotated - ref_coords
+
     template_rotated = {}
     for key, ndx in key_to_ndx.items():
-        template_rotated[key] = template_rotated_arr[ndx]
+        template_rotated[key] = template_rotated_arr[:,ndx]
 
     return template_rotated
 
@@ -157,8 +158,8 @@ class Backmap(Processor):
         for node in tqdm(meta_molecule.nodes):
             if  meta_molecule.nodes[node]["build"]:
                 resname = meta_molecule.nodes[node]["resname"]
+                resid =  meta_molecule.nodes[node]["resid"]
                 cg_coord = meta_molecule.nodes[node]["position"]
-                resid = node + 1
                 low_res_atoms = find_atoms(meta_molecule.molecule, "resid", resid)
                 template =  orient_template(meta_molecule, node, meta_molecule.templates[resname], built_nodes)
 
@@ -167,7 +168,7 @@ class Backmap(Processor):
                     vector = template[atomname]
                     new_coords = cg_coord + vector
                     meta_molecule.molecule.nodes[atom_low]["position"] = new_coords
-                built_nodes.append(node)
+                built_nodes.append(resid)
 
     def run_molecule(self, meta_molecule):
         """

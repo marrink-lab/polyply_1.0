@@ -19,12 +19,23 @@ Processor for building systems with more than one molecule
 # class because it cannot run on a single molecule but needs
 # the system information
 import itertools
+import networkx as nx
 import numpy as np
 from tqdm import tqdm
 from .random_walk import RandomWalk
 from .linalg_functions import u_vect
 from .topology import lorentz_berthelot_rule
 from .linalg_functions import norm_sphere
+
+def write_top(molecule, count):
+    with open("super_cg"+str(count)+".xyz", "w") as _file:
+         _file.write(str(len(molecule.nodes)) + '\n')
+         _file.write("\n")
+         for node in molecule.nodes:
+             coord = molecule.nodes[node]["position"]
+             atom =  molecule.nodes[node]["resname"]
+             coord = coord * 10
+             _file.write("{} {} {} {}\n".format(atom, coord[0], coord[1], coord[2]))
 
 def _compute_box_size(topology, density):
     total_mass = 0
@@ -37,6 +48,7 @@ def _compute_box_size(topology, density):
                 total_mass += topology.atom_types[atype]['mass']
     # amu -> kg and cm3 -> nm3
     #conversion = 1.6605410*10**-27 * 10**27
+    print(total_mass)
     box = (total_mass*1.6605410/density)**(1/3.)
     return box
 
@@ -95,6 +107,7 @@ class BuildSystem():
                             nodes_to_gndx, atom_types, mol_idx, vector_sphere):
         step_count = 0
         while True:
+            #start = np.array([12., 12., 12.]) 
             start = self.box_grid[np.random.randint(len(self.box_grid), size=3)]
             processor = RandomWalk(positions,
                                    nodes_to_gndx,
@@ -103,7 +116,7 @@ class BuildSystem():
                                    start=start,
                                    mol_idx=mol_idx,
                                    topology=topology,
-                                   maxiter=50,
+                                   maxiter=1000,
                                    maxdim=self.maxdim,
                                    vector_sphere=vector_sphere)
 
@@ -144,6 +157,9 @@ class BuildSystem():
         vector_sphere = norm_sphere(5000)
         while mol_idx < mol_tot:
             molecule = topology.molecules[mol_idx]
+            if not all(list(nx.get_node_attributes(molecule, "build").values())):
+               mol_idx += 1
+               continue
             success, new_positions = self._handle_random_walk(molecule,
                                                               topology,
                                                               positions,

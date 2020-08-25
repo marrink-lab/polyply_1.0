@@ -111,6 +111,32 @@ def _expand_inital_coords(block, bond=None, pos=None, fixed=None,
     """
     return nx.spring_layout(block, dim=3, k=bond, pos=pos, fixed=fixed,
                             iterations=iterations, weight=weight, scale=max_box)
+#   coords = {}
+#   #TODO this should actually be the index
+#   atom = list(block.nodes)[0]
+#   coords[atom] = np.array([0, 0, 0])
+
+#   vectors = norm_sphere(values=1000)
+#   for prev_node, current_node in nx.dfs_edges(block, source=atom):
+#       prev_coord = coords[prev_node]
+#       is_vs, interaction, inter_type = find_interaction_involving(block,
+#                                                                   current_node,
+#                                                                   prev_node)
+#       if is_vs:
+#           coords[current_node] = construct_vs(inter_type, interaction, coords)
+#       else:
+#           coords[current_node], _ = _take_step(vectors,
+#                                                float(interaction.parameters[1]),
+#                                                prev_coord)
+#   return coords
+
+def write_template(resname, coords):
+    with open("debug_templates.xyz", "w") as _file:
+         _file.write(str(len(coords)) + '\n')
+         _file.write(resname + "\n")
+         for atom, coord in coords.items():
+             coord = coord * 10
+             _file.write("{} {} {} {}\n".format(atom, coord[0], coord[1], coord[2]))
 
 def compute_volume(molecule, block, coords):
     """
@@ -306,6 +332,7 @@ class GenerateTemplates(Processor):
                 self.volumes[resname] = compute_volume(meta_molecule, block, coords)
                 coords = map_from_CoG(coords)
                 self.templates[resname] = coords
+                write_template(resname, coords)
 
         return templates, volumes
 
@@ -317,4 +344,6 @@ class GenerateTemplates(Processor):
         templates, volumes = self._gen_templates(meta_molecule)
         meta_molecule.templates = self.templates
         meta_molecule.volumes = self.volumes
+        for name, vol in self.volumes.items():
+            print(name, vol)
         return meta_molecule

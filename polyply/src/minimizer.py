@@ -42,7 +42,7 @@ def compute_bond(params, coords):
     float
     """
     dist = np.linalg.norm(coords[0] - coords[1])
-    return 10000 *(dist - float(params[1]))**2.0
+    return 1000 *(dist - float(params[1]))**2.0
 
 def compute_angle(params, coords):
     """
@@ -60,7 +60,7 @@ def compute_angle(params, coords):
     float
     """
     angle_value = angle(coords[0], coords[1], coords[2])
-    return (angle_value - float(params[1]))**2.0
+    return 10*(angle_value - float(params[1]))**2.0
 
 def compute_dih(params, coords):
     """
@@ -156,7 +156,7 @@ def optimize_geometry(block, coords):
         return energy
 
     opt_results = scipy.optimize.minimize(target_function, positions, method='L-BFGS-B',
-                                          options={'ftol':0.001, 'maxiter': 100})
+                                          options={'ftol':0.00001, 'maxiter': 100})
 
     positions = opt_results['x'].reshape((-1, 3))
     for node_key, idx in atom_to_idx.items():
