@@ -142,10 +142,12 @@ class Chirality(Processor):
         self.priorities = priorities
 
     @staticmethod
-    def _assign_chirality(molecule):
+    def _assign_chirality(self, molecule):
         """
         """
-        centers = tag_chiral_centers(molecule.molecule, center_atom="C")
+        centers = tag_chiral_centers(molecule.molecule,
+                                     center_atom="C",
+                                     priorities=self.priorities)
 
         for center in centers:
             priority = molecule[center]["priority"]
