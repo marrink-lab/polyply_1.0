@@ -244,7 +244,7 @@ def signed_angle(v1, v2, n):
     return theta
 
 
-def which_tacticity(center, atoms):
+def which_chirality(atoms):
     """
     determine the chirality of center with four
     substituents A,B,C,D.
@@ -258,7 +258,8 @@ def which_tacticity(center, atoms):
     -----------------------------------
     singed angle
     """
-    a, b, c, origin_proj, normal = projection(center, atoms)
+    center = atoms[0]
+    a, b, c, origin_proj, normal = projection(center, atoms[1:])
     aO = a - origin_proj
     bc = b - c
     ang = signed_angle(aO, bc, normal)
