@@ -169,7 +169,7 @@ def apply_explicit_link(molecule, link):
                 raise IOError("Atoms of link interaction {} are not "
                               "part of the molecule.".format(interaction))
 
-def neighborhood(graph, source, max_length, min_length=1, not_cross=[]):
+def neighborhood(graph, source, max_length, min_length=1, not_cross=[], return_paths=False):
     """
     Returns all neighbours of `source` that are less or equal
     to `cutoff` nodes away and more or equal to `start` away
@@ -195,7 +195,7 @@ def neighborhood(graph, source, max_length, min_length=1, not_cross=[]):
     """
     paths = nx.single_source_shortest_path(G=graph, source=source, cutoff=max_length)
     neighbours = []
-
+    out_paths = {}
     def _crosses(path):
         for node in path:
             if node in not_cross:
@@ -205,8 +205,12 @@ def neighborhood(graph, source, max_length, min_length=1, not_cross=[]):
     for node, path in paths.items():
         if min_length <= len(path) and not _crosses(path):
            neighbours.append(node)
+           out_paths[node] = path
 
-    return neighbours
+    if return_paths:
+       return neighbours, out_paths
+    else:
+       return neighbours
 
 def _check_relative_order(resids, orders):
     """
