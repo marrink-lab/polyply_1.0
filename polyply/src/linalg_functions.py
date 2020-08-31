@@ -184,7 +184,7 @@ def plane_dist(normal, plane_point, point):
     return dist
 
 
-def projection(center, atoms):
+def projection(center, A, B, C, D):
     """
     project points B-D,center on a plane normal to the vector center-A
     and centered at point 'center', this works for 3D
@@ -205,7 +205,6 @@ def projection(center, atoms):
     ---------------------------------
     projected points list of numpy ndarrays
     """
-    A, B, C, D = atoms
     normal = u_vect(center - A)
     proj_points = []
 
@@ -242,29 +241,6 @@ def signed_angle(v1, v2, n):
     else:
         theta = 2 * np.pi - np.arccos(cos_theta)
     return theta
-
-
-def which_chirality(atoms):
-    """
-    determine the chirality of center with four
-    substituents A,B,C,D.
-
-    Paramteres:
-    -----------------------------------
-    A,B,C,D: numpy ndarrays of 3 coords
-    Note that the molecular weight must be A<B<C<D
-
-    Returns:
-    -----------------------------------
-    singed angle
-    """
-    center = atoms[0]
-    a, b, c, origin_proj, normal = projection(center, atoms[1:])
-    aO = a - origin_proj
-    bc = b - c
-    ang = signed_angle(aO, bc, normal)
-
-    return np.sin(ang)
 
 def mirror_coordinates(plane_point, normal, coords):
     """

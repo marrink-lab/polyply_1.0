@@ -16,19 +16,51 @@
 High level API for the polyply tool to analyze tacticity
 """
 import collections
+import numpy as np
 import networkx as nx
-from vermouth.graph_utils import make_residue_graph
 from .processor import Processor
 from .apply_links import neighborhood
-from .linalg_functions import which_chirality
+from .linalg_functions import signed_angle, projection
+from .errors import MaxIterationError
+
+def which_chirality(center, subsituents):
+    """
+    Determine the chirality of center with four
+    substituents. Note the `atoms` need to be a list
+    of tuples with the first entry the priority.
+
+    Paramteres:
+    -----------
+    center: np.ndarray
+    subsituents: list(tuple(int, np.ndarray))
+
+    Returns:
+    -----------
+    float
+       sin of singed angle
+    """
+    subsituents.sort()
+    a, b, c, origin_proj, normal = projection(center,
+                                              subsituents[0][1], subsituents[1][1],
+                                              subsituents[2][1], subsituents[3][1])
+    a_zero = a - origin_proj
+    bc = b - c
+    ang = signed_angle(a_zero, bc, normal)
+
+    if np.sin(ang) > 0:
+        return "R"
+    else:
+        return "S"
 
 
 def _unique_masses(masses):
-    mass_list = [ mass[0] for mass in masses]
-    unique = [item for item, count in collections.Counter(mass_list).items() if count < 2]
+    mass_list = [mass[0] for mass in masses]
+    unique = [item for item, count in collections.Counter(
+        mass_list).items() if count < 2]
     return unique
 
-def _determine_priority(molecule, neighbours, center):
+
+def _determine_priority(molecule, neighbours, center, max_depth=10):
     """
     Given a chiral `center` in a `molecule` and the `neighbours`
     of that center, determine the priority according to CIP
@@ -41,6 +73,8 @@ def _determine_priority(molecule, neighbours, center):
         needs to be exactly four neighbours
     center:
        node key of the center
+    max_depth:
+       maximum number of edges for neighbour search
 
     Returns
     -------
@@ -49,12 +83,16 @@ def _determine_priority(molecule, neighbours, center):
     masses = [(molecule.nodes[node]['mass'], node) for node in neighbours]
     priority = {}
     degree = 1
-    priorities=[4,3,2,1]
-    max_count=10
+    priorities = [4, 3, 2, 1]
     while True:
 
-        if degree == 10:
-           raise Error
+        if degree == max_depth:
+            msg = ("When determining priority a tie is "
+                   "remains unresolved after looking at "
+                   "the {} degree neighbours. Increase "
+                   "depth of search if you are sure the "
+                   "molecule is chiral.")
+            raise MaxIterationError(msg.format(degree))
 
         masses.sort()
         unique = _unique_masses(masses)
@@ -68,32 +106,39 @@ def _determine_priority(molecule, neighbours, center):
             idx += 1
 
         if all([key in priority for key in priorities]):
-           status = True
-           break
+            status = True
+            break
         else:
-           for entry in remove:
-               masses.remove(entry[0])
-               priorities.remove(entry[1])
+            for entry in remove:
+                masses.remove(entry[0])
+                priorities.remove(entry[1])
 
         idx = 0
         for mass, node in masses:
             mass = 0
-            neighbours = neighborhood(molecule, node,
-                                      degree, min_length=degree,
-                                      not_cross=[center])
+            neighbours, paths = neighborhood(molecule, node,
+                                             degree, min_length=degree+1,
+                                             not_cross=[center], return_paths=True)
             for neigh in neighbours:
-                mass += molecule.nodes[neigh]["mass"]
+                if degree == 1:
+                    edge = (node, neigh)
+                else:
+                    edge = (neigh, paths[neigh][-2])
+
+                bond_order = molecule.edges[edge]["bond_order"]
+                mass += molecule.nodes[neigh]["mass"] * bond_order
+
             masses[idx] = (mass, node)
             idx += 1
         degree += 1
         if masses and all([mass[0] == 0 for mass in masses]):
-           status = False
-           break
+            status = False
+            break
 
     return status, priority
 
 
-def tag_chiral_centers(molecule, center_atom="C", priorities=None):
+def tag_chiral_centers(molecule, center_atom="C", priorities={}):
     """
     Given a `molecule` identify all chiral centers
     and determine the priority of the subsituents
@@ -112,25 +157,29 @@ def tag_chiral_centers(molecule, center_atom="C", priorities=None):
     """
     idx = 0
     nx.set_node_attributes(molecule, False, "chiral")
-    centers=[]
+    centers = []
     for node, degree in molecule.degree:
         if degree == 4 and molecule.nodes[node]["atomname"].startswith(center_atom):
             neighbours = molecule.neighbors(node)
 
             if node in priorities:
-               is_chiral = True
-               priority = priorities[nodr]
+                is_chiral = True
+                priority = priorities[node]
             else:
-               is_chiral, priority = _determine_priority(molecule, neighbours, node)
-               if not is_chiral:
-                  continue
+                print("---")
+                is_chiral, priority = _determine_priority(
+                    molecule, neighbours, node)
+                if not is_chiral:
+                    continue
 
-            nx.set_node_attributes(molecule, {node:idx}, "chiral_id")
-            nx.set_node_attributes(molecule, {node:priority}, "priority")
-            nx.set_node_attributes(molecule, {node:True}, "chiral")
+            molecule.nodes[node]["chiral_id"] = idx
+            molecule.nodes[node]["priority"] = priority
+            molecule.nodes[node]["chiral"] = True
             idx += 1
             centers.append(node)
+
     return centers
+
 
 class Chirality(Processor):
     """
@@ -138,24 +187,23 @@ class Chirality(Processor):
     molecule assign the chirality.
     """
 
-    def __init__(priorities):
+    def __init__(self, priorities={}):
         self.priorities = priorities
 
-    @staticmethod
     def _assign_chirality(self, molecule):
         """
         """
-        centers = tag_chiral_centers(molecule.molecule,
+        centers = tag_chiral_centers(molecule,
                                      center_atom="C",
                                      priorities=self.priorities)
-
         for center in centers:
-            priority = molecule[center]["priority"]
-            positions = [(priority_idx,
-                          molecule.nodes[node]["position"]) for node, priority_idx in priority]
-            positions.sort()
-            chirality = which_chirality(positions)
-            molecule[center]["chirality"] = chirality
+            priority = molecule.nodes[center]["priority"]
+            positions = []
+            for node, priority_idx in priority.items():
+                positions.append((priority_idx, molecule.nodes[node]["position"]))
+
+            chirality = which_chirality(molecule.nodes[center]["position"], positions)
+            molecule.nodes[center]["chirality"] = chirality
 
     def run_molecule(self, meta_molecule):
         """
