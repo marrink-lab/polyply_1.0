@@ -15,10 +15,8 @@
 """
 High level API for the polyply tool to analyze tacticity
 """
-
-import networkx as nx
-import vermouth.forcefield
-from .apply_links import neighborhood
+from .topology import Topology
+from collections import Counter
 
 def analyze_tacticity(chiral_graph):
     adj_matrix = nx.get_adjecy_matrix(chiral_graph)
@@ -29,10 +27,17 @@ def analyze_tacticity(chiral_graph):
     change = np.sum(adj_chiraliy[adj_chiraliy == -1.])
     return remain/(remain+change)
 
-def analyze_tacticity(args):
+def print_statistics(topology):
+    for idx, meta_molecule in enumerate(topology.molecues):
+        centers = nx.get_node_attributes(meta_molecule.molecule, "chirality")
+        total_count = Counter(centers)
+        print(idx, total_count["R"], total_count["S"])
+
+def stereo_chem(args):
     """
     Analyze the tacticty of an input structure.
     """
+    # load topology
     topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
     topology.preprocess()
 
@@ -44,16 +49,19 @@ def analyze_tacticity(args):
                    'connected by bonds, constraints or virual-sites')
             raise IOError(msg.format(molecule.name))
 
-    # read in coordinates if there are any
-    if args.coordpath:
-        topology.add_positions_from_file(args.coordpath)
-    else:
-        for molecule in topology.molecules:
-            for node in molecule.molecule.nodes:
-                molecule.molecule.nodes[node]["build"] = True
+    # add positions from file
+    topology.add_positions_from_file(args.coordpath)
 
-    results = {}
-    for molecule in molecules:
-       results[molecule.moltype] = _determine_tacticity(molecule, templates)
+    # use CIP rules for absolute configuration:
+    if args.cip:
+       Chirality().run_system(topology)
+    # use relative orientation of centers
+    elif args.centers:
+       chiral_defs = {}
+       for center_sub in args.centers:
+           center, _string = center_sub.split(":")
+           chiral_defs[center] = { atom:idx for idx,atom in enumerate(_string.split(','))}
 
-    pprint()
+       Chirality(priorities=chiral_defs, bond_order=False).run_system(topology)
+
+    print_statistics(topology)

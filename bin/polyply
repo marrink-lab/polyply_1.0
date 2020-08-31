@@ -22,7 +22,7 @@ import os
 import argparse
 from pathlib import Path
 import polyply
-from polyply import (gen_itp, gen_coords, gen_seq, DATA_PATH)
+from polyply import (gen_itp, gen_coords, gen_seq, stereo_chem, DATA_PATH)
 from polyply.src.load_library import load_library
 
 VERSION = 'polyply version {}'.format(polyply.__version__)
@@ -49,6 +49,7 @@ def main():
     parser_gen_itp = subparsers.add_parser('gen_itp')
     parser_gen_coords = subparsers.add_parser('gen_coords')
     parser_gen_seq = subparsers.add_parser('gen_seq')
+    parser_stereo_chem = subparsers.add_parser('stereo_chem')
 
     #=============================================================================
     # Input Arguments for the itp generation tool
@@ -137,6 +138,34 @@ def main():
                            default=[])
 
     parser_gen_seq.set_defaults(func=gen_seq)
+
+    #============================================================================
+    #           Input Arguments for the stereochemistry tools
+    #============================================================================
+
+    file_group = parser_stereo_chem.add_argument_group('Input and output files')
+    file_group.add_argument('-p', dest='toppath', required=False, type=Path,
+                            help='topology file (.top)')
+    file_group.add_argument('-c', dest='coordpath', type=Path,
+                            help='Input file (.gro)', default=None)
+
+    tact_group = parser_stereo_chem.add_argument_group('Tacticity Settings')
+    tact_group.add_argument('-centers', dest='centers', required=False, type=str,
+                            nargs='+',
+                            help=('one or more chiral center for which to determine '
+                                  'the relative orientation. Format is: <center:substiuents> '
+                                  'where subsituents is a comma seperated list of atomnames. '
+                                  'For example for alanine use: <CA:CB,N,C,H>. '))
+
+    cip_group = parser_stereo_chem.add_argument_group('Cahn-Ingold-Perlog Settings')
+    cip_group.add_argument('-cip', dest='cip',
+                            help='use CIP rules to determine the absolute configuration of all stereocenters',
+                            action='store_true')
+    cip_group.add_argument('-center_names', dest='center_names', type=str,
+                            help='atomname for central atom of stereocenters', default="C", nargs="+")
+
+    parser_stereo_chem.set_defaults(func=stereo_chem)
+
 
     #============================================================================
     # Deal with queries of the polyply library
