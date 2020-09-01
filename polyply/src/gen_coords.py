@@ -38,15 +38,6 @@ def gen_coords(args):
                    'connected by bonds, constraints or virual-sites')
             raise IOError(msg.format(molecule.name))
 
-    # renumber the resiudes so that all molecules
-    # start with residue index 1
-    for meta_molecule in topology.molecules:
-        molecule = meta_molecule.molecule
-        resids = nx.get_node_attributes(molecule, "resid")
-        offset = min(resids.values()) - 1
-        new_resids = {node: resid - offset for node, resid in resids.items()}
-        nx.set_node_attributes(molecule, new_resids, "resid")
-
     # read in coordinates if there are any
     if args.coordpath:
         topology.add_positions_from_file(args.coordpath)
