@@ -18,6 +18,7 @@ High level API for the polyply coordinate generator
 
 import networkx as nx
 import vermouth.forcefield
+from vermouth.file_writer import open, DeferredFileWriter
 from .generate_templates import GenerateTemplates
 from .random_walk import RandomWalk
 from .backmap import Backmap
@@ -25,6 +26,7 @@ from .topology import Topology
 
 def gen_coords(args):
     # Read in the topology
+    print("loading topology")
     topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
     topology.preprocess()
 
@@ -36,13 +38,22 @@ def gen_coords(args):
                    'connected by bonds, constraints or virual-sites')
             raise IOError(msg.format(molecule.name))
 
+    # renumber the resiudes so that all molecules
+    # start with residue index 1
+    for meta_molecule in topology.molecules:
+        molecule = meta_molecule.molecule
+        resids = nx.get_node_attributes(molecule, "resid")
+        offset = min(resids.values()) - 1
+        new_resids = {node: resid - offset for node, resid in resids.items()}
+        nx.set_node_attributes(molecule, new_resids, "resid")
+
     # read in coordinates if there are any
     if args.coordpath:
         topology.add_positions_from_file(args.coordpath)
     else:
         for molecule in topology.molecules:
-            for node in molecule.molecule.nodes:
-                molecule.molecule.nodes[node]["build"] = True
+            for node in molecule.nodes:
+                molecule.nodes[node]["build"] = True
 
     # Build polymer structure
     GenerateTemplates().run_system(topology)
@@ -54,3 +65,4 @@ def gen_coords(args):
     # Write output
     vermouth.gmx.gro.write_gro(system, args.outpath, precision=7,
                                title='polyply structure', box=(10, 10, 10))
+    DeferredFileWriter().write()
