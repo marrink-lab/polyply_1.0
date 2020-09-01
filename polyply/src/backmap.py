@@ -17,7 +17,6 @@ import networkx as nx
 from .processor import Processor
 from .generate_templates import find_atoms
 from .linalg_functions import rotate_xyz
-from tqdm import tqdm
 """
 Processor implementing a template based back
 mapping to lower resolution coordinates for
@@ -153,7 +152,7 @@ class Backmap(Processor):
         meta_molecule: :class:`polyply.src.MetaMolecule`
         """
         built_nodes = []
-        for node in tqdm(meta_molecule.nodes):
+        for node in meta_molecule.nodes:
             if  meta_molecule.nodes[node]["build"]:
                 resname = meta_molecule.nodes[node]["resname"]
                 cg_coord = meta_molecule.nodes[node]["position"]
