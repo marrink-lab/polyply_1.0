@@ -95,8 +95,8 @@ def _expand_inital_coords(block, bond=None, pos=None, fixed=None,
     """
     Given a `graph` generate initial random coordinates
     in three dimensions and relax them using a Fruchterman
-    Reingold generic simulation to relax the coordinates
-    topologically.
+    Reingold generic simulation aka spring_layout to relax
+    the coordinates topologically.
 
     Parameters
     -----------
