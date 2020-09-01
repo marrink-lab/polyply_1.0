@@ -73,10 +73,10 @@ def _is_overlap(meta_molecule, point, tol, current_node, fudge=1):
             continue
 
         if np.linalg.norm(coord - point) < tol * fudge:
-           if node in neighbours:
-              continue
-           else:
-              return True
+            if node in neighbours:
+                continue
+            else:
+                return True
 
     return False
 
@@ -138,7 +138,7 @@ class RandomWalk(Processor):
         """
         first_node = list(meta_molecule.nodes)[0]
         if not "position" in meta_molecule.nodes[first_node]:
-           meta_molecule.nodes[first_node]["position"] = np.array([0, 0, 0])
+            meta_molecule.nodes[first_node]["position"] = np.array([0, 0, 0])
         vector_bundle = norm_sphere(5000)
         for prev_node, current_node in nx.dfs_edges(meta_molecule, source=0):
             update_positions(vector_bundle, meta_molecule,
