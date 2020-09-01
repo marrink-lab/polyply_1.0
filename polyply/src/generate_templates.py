@@ -18,10 +18,8 @@ import vermouth
 from .minimizer import optimize_geometry
 from .processor import Processor
 from .linalg_functions import (u_vect, center_of_geometry,
-                               norm_sphere, radius_of_gyration)
-from .random_walk import _take_step
+                               radius_of_gyration)
 from .topology import replace_defined_interaction
-from .virtual_site_builder import construct_vs
 """
 Processor generating coordinates for all residues of a meta_molecule
 matching those in the meta_molecule.molecule attribute.
