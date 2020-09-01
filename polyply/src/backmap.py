@@ -82,13 +82,15 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
     """
     # 1. find neighbours at meta_mol level
     neighbours = nx.all_neighbors(meta_molecule, current_node)
+    current_resid = meta_molecule.nodes[current_node]["resid"]
 
     # 2. find connecting atoms at low-res level
     edges = []
-    for resid in neighbours:
+    for node in neighbours:
+        resid = meta_molecule.nodes[node]["resid"]
         edge = find_edges(meta_molecule.molecule,
                           ("resid", "resid"),
-                          (resid+1, current_node+1))
+                          (resid, current_resid))
         edges += edge
 
     # 3. build coordinate system
@@ -104,7 +106,7 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
         # node as reference position
         if resid_a in built_nodes or resid_b in built_nodes:
             # resid_a is to be created and b is built
-            if resid_a == current_node + 1:
+            if resid_a == current_resid:
                 atom_name = meta_molecule.molecule.nodes[atom_a]["atomname"]
                 aa_node = atom_b
             # resid_b is to be created and a is built
@@ -122,12 +124,12 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
         # in this case none of the two residues was already created
         # so we use the cg node as reference position otherwise same as above
         else:
-            if resid_a == current_node + 1:
+            if resid_a == current_resid:
                 atom_name = meta_molecule.molecule.nodes[atom_a]["atomname"]
-                cg_node = resid_b - 1
+                cg_node = find_atoms(meta_molecule, "resid", resid_b)[0]
             else:
                 atom_name = meta_molecule.molecule.nodes[atom_b]["atomname"]
-                cg_node = resid_a - 1
+                cg_node = find_atoms(meta_molecule, "resid", resid_a)[0]
 
             opt_coords[:, ndx] = template[atom_name]
             ref_coords[:, ndx] = meta_molecule.nodes[cg_node]["position"] -\
@@ -187,7 +189,7 @@ class Backmap(Processor):
             if  meta_molecule.nodes[node]["build"]:
                 resname = meta_molecule.nodes[node]["resname"]
                 cg_coord = meta_molecule.nodes[node]["position"]
-                resid = node + 1
+                resid = meta_molecule.nodes[node]["resid"]
                 low_res_atoms = find_atoms(meta_molecule.molecule, "resid", resid)
                 template = orient_template(meta_molecule, node,
                                            meta_molecule.templates[resname],

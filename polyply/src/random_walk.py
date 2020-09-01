@@ -137,9 +137,12 @@ class RandomWalk(Processor):
         meta_molecule:  :class:`polyply.src.meta_molecule.MetaMolecule`
         """
         first_node = list(meta_molecule.nodes)[0]
+
         if not "position" in meta_molecule.nodes[first_node]:
             meta_molecule.nodes[first_node]["position"] = np.array([0, 0, 0])
+
         vector_bundle = norm_sphere(5000)
+
         for prev_node, current_node in nx.dfs_edges(meta_molecule, source=0):
             update_positions(vector_bundle, meta_molecule,
                              current_node, prev_node)

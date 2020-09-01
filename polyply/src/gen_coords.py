@@ -26,7 +26,6 @@ from .topology import Topology
 
 def gen_coords(args):
     # Read in the topology
-    print("loading topology")
     topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
     topology.preprocess()
 
@@ -37,15 +36,6 @@ def gen_coords(args):
                    'Make sure all atoms/particles in a molecule are '
                    'connected by bonds, constraints or virual-sites')
             raise IOError(msg.format(molecule.name))
-
-    # renumber the resiudes so that all molecules
-    # start with residue index 1
-    for meta_molecule in topology.molecules:
-        molecule = meta_molecule.molecule
-        resids = nx.get_node_attributes(molecule, "resid")
-        offset = min(resids.values()) - 1
-        new_resids = {node: resid - offset for node, resid in resids.items()}
-        nx.set_node_attributes(molecule, new_resids, "resid")
 
     # read in coordinates if there are any
     if args.coordpath:
@@ -59,10 +49,9 @@ def gen_coords(args):
     GenerateTemplates(max_opt=10).run_system(topology)
     RandomWalk().run_system(topology)
     Backmap().run_system(topology)
-    #energy_minimize().run_system(topology)
 
-    system = topology.convert_to_vermouth_system()
     # Write output
+    system = topology.convert_to_vermouth_system()
     vermouth.gmx.gro.write_gro(system, args.outpath, precision=7,
                                title='polyply structure', box=(10, 10, 10))
     DeferredFileWriter().write()

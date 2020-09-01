@@ -267,7 +267,9 @@ class Topology(System):
                    total += 1
 
             for node in meta_mol:
-                atoms_in_res = find_atoms(meta_mol.molecule, "resid", node+1)
+                resid = meta_mol.nodes[node]["resid"]
+                atoms_in_res = find_atoms(meta_mol.molecule, "resid", resid)
+
                 if not any(atom in no_coords for atom in atoms_in_res):
                     positions = np.array([meta_mol.molecule.nodes[atom]["position"] for
                                           atom in atoms_in_res])
