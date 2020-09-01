@@ -18,6 +18,7 @@ High level API for the polyply coordinate generator
 
 import networkx as nx
 import vermouth.forcefield
+from vermouth.file_writer import open, DeferredFileWriter
 from .generate_templates import GenerateTemplates
 from .random_walk import RandomWalk
 from .backmap import Backmap
@@ -64,3 +65,4 @@ def gen_coords(args):
     # Write output
     vermouth.gmx.gro.write_gro(system, args.outpath, precision=7,
                                title='polyply structure', box=(10, 10, 10))
+    DeferredFileWriter().write()
