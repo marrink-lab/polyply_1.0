@@ -22,6 +22,7 @@ from .generate_templates import GenerateTemplates
 from .random_walk import RandomWalk
 from .backmap import Backmap
 from .topology import Topology
+from .gmx_energy_minize import GMXMinimize
 
 def gen_coords(args):
     # Read in the topology
@@ -48,7 +49,8 @@ def gen_coords(args):
     GenerateTemplates().run_system(topology)
     RandomWalk().run_system(topology)
     Backmap().run_system(topology)
-    #energy_minimize().run_system(topology)
+
+    GMXMinimize(args.toppath, args.mdppath).run_topology(topology)
 
     system = topology.convert_to_vermouth_system()
     # Write output

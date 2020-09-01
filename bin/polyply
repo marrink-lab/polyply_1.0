@@ -82,8 +82,8 @@ def main():
     file_group = parser_gen_coords.add_argument_group('Input and output files')
     file_group.add_argument('-p', dest='toppath', required=False, type=Path,
                             help='topology file (.top)')
-    file_group.add_argument('-f', dest='ffpath', required=False, type=Path,
-                            help='force-field files (.ff|.itp)', nargs='*')
+    file_group.add_argument('-f', dest='mdppath', required=False, type=Path,
+                            help='run file (.mdp)')
     file_group.add_argument('-o', dest='outpath', type=Path,
                             help='Output GRO (.gro)')
     file_group.add_argument('-c', dest='coordpath', type=Path,
