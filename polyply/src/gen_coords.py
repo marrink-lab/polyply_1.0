@@ -56,7 +56,7 @@ def gen_coords(args):
                 molecule.nodes[node]["build"] = True
 
     # Build polymer structure
-    GenerateTemplates().run_system(topology)
+    GenerateTemplates(max_opt=10).run_system(topology)
     RandomWalk().run_system(topology)
     Backmap().run_system(topology)
     #energy_minimize().run_system(topology)

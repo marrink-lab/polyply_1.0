@@ -255,10 +255,11 @@ class GenerateTemplates(Processor):
     of each block in the volume attribute.
     """
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__()
         self.templates = {}
         self.resnames = []
         self.volumes = {}
+        self.max_opt = kwargs["max_opt"]
 
     def _gen_templates(self, meta_molecule):
         """
@@ -294,7 +295,7 @@ class GenerateTemplates(Processor):
                     success, coords = optimize_geometry(block, coords)
                     if success:
                         break
-                    elif opt_counter > 10:
+                    elif opt_counter > self.max_opt:
                         print("Warning: Failed to optimize structure for block {}.".format(resname))
                         print("Proceeding with unoptimized coordinates.")
                         break
