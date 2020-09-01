@@ -18,6 +18,7 @@ High level API for the polyply itp generator
 from pathlib import Path
 import vermouth
 import vermouth.forcefield
+from vermouth.file_writer import open, DeferredFileWriter
 import polyply
 import polyply.src.polyply_parser
 from polyply import (DATA_PATH, MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
@@ -76,3 +77,5 @@ def gen_itp(args):
     with open(args.outpath, 'w') as outpath:
         vermouth.gmx.itp.write_molecule_itp(meta_molecule.molecule, outpath,
                                             moltype=args.name, header=["polyply-itp"])
+
+    DeferredFileWriter().write()
