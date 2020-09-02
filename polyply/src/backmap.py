@@ -96,40 +96,37 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
     # 3. build coordinate system
     ref_coords = np.zeros((3, len(edges)))
     opt_coords = np.zeros((3, len(edges)))
-    for ndx, edge in enumerate(edges):
-        atom_a, atom_b = edge
-        # get the resid of the residues participating in edge
-        resid_a = meta_molecule.molecule.nodes[atom_a]["resid"]
-        resid_b = meta_molecule.molecule.nodes[atom_b]["resid"]
 
-        # one of the two residues has been built, we use the lower resolution
-        # node as reference position
-        if resid_a in built_nodes or resid_b in built_nodes:
-            # resid_a is to be created and b is built
-            if resid_a == current_resid:
-                atom_name = meta_molecule.molecule.nodes[atom_a]["atomname"]
-                aa_node = atom_b
-            # resid_b is to be created and a is built
+    for ndx, edge in enumerate(edges):
+        resids = []
+        for atom in edge:
+            resid = meta_molecule.molecule.nodes[atom]["resid"]
+            is_current = resid == current_resid
+            resids.append(resid)
+            if resid == current_resid:
+               current_atom = atom
             else:
-                atom_name = meta_molecule.molecule.nodes[atom_b]["atomname"]
-                aa_node = atom_a
+               ref_atom = atom
+               ref_resid = resid
+
+        # the reference residue has already been build so we take the lower
+        # resolution coordinates as reference
+        if ref_resid in built_nodes:
+            atom_name = meta_molecule.molecule.nodes[current_atom]["atomname"]
 
             # record the coordinates of the atom that is rotated
             opt_coords[:, ndx] = template[atom_name]
+
             # given the reference atom that already exits translate it to origin
             # of the rotation, this will be the refrence point for rotation
-            ref_coords[:, ndx] = meta_molecule.molecule.nodes[aa_node]["position"] -\
+            ref_coords[:, ndx] = meta_molecule.molecule.nodes[ref_atom]["position"] -\
                                  meta_molecule.nodes[current_node]["position"]
 
-        # in this case none of the two residues was already created
-        # so we use the cg node as reference position otherwise same as above
+        # the reference residue has not been build the CG center is taken as
+        # reference
         else:
-            if resid_a == current_resid:
-                atom_name = meta_molecule.molecule.nodes[atom_a]["atomname"]
-                cg_node = find_atoms(meta_molecule, "resid", resid_b)[0]
-            else:
-                atom_name = meta_molecule.molecule.nodes[atom_b]["atomname"]
-                cg_node = find_atoms(meta_molecule, "resid", resid_a)[0]
+            atom_name = meta_molecule.molecule.nodes[current_atom]["atomname"]
+            cg_node = find_atoms(meta_molecule, "resid", ref_resid)[0]
 
             opt_coords[:, ndx] = template[atom_name]
             ref_coords[:, ndx] = meta_molecule.nodes[cg_node]["position"] -\
@@ -200,7 +197,7 @@ class Backmap(Processor):
                     vector = template[atomname]
                     new_coords = cg_coord + vector
                     meta_molecule.molecule.nodes[atom_low]["position"] = new_coords
-                built_nodes.append(node)
+                built_nodes.append(resid)
 
     def run_molecule(self, meta_molecule):
         """
