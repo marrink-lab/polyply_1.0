@@ -77,5 +77,4 @@ def gen_itp(args):
     with open(args.outpath, 'w') as outpath:
         vermouth.gmx.itp.write_molecule_itp(meta_molecule.molecule, outpath,
                                             moltype=args.name, header=["polyply-itp"])
-
     DeferredFileWriter().write()

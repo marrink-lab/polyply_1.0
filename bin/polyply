@@ -99,11 +99,10 @@ def main():
                                 help="name of the final molecule")
 
     file_group = parser_gen_seq.add_argument_group('Input and output files')
-    file_group.add_argument('-f', dest='ffpath', required=False, type=Path,
+    file_group.add_argument('-f', dest='inpath', required=False, type=Path,
                             help='force-field files (.ff|.itp)', nargs='*')
     file_group.add_argument('-o', dest='outpath', type=Path,
-                            help='output file (.json)')
-
+                            help='output file (.json)', required=True)
 
     macro_group = parser_gen_seq.add_argument_group('Definitions of macros')
     macro_group.add_argument('-from_string', dest='macros', nargs='+', type=str,
@@ -117,6 +116,7 @@ def main():
     macro_group.add_argument('-from_file', dest='from_file', nargs='+', type=str,
                              help="Use a molecule defined in an input file as fragment. The format "
                                   "is <tag:molecule name>.")
+
     seq_group = parser_gen_seq.add_argument_group('Definition of sequence')
     seq_group.add_argument('-seq', dest='seq', nargs='+', type=str,
                            help="Define the sequence order in which to combine macros."
@@ -130,10 +130,11 @@ def main():
                                 "For example if we want to connect the first and third "
                                 "block in a sequence, using a connection between the second "
                                 "and third residue in these blocks respectively the input "
-                                "would be <1,3-2,3>.")
+                                "would be <1,3-2,3>.", default=[])
     seq_group.add_argument('-modf_ter', dest='modifications', nargs='+', type=str,
                            help="change the resname of terminii of a specific block "
-                                "in the sequence. The format is <SeqID:new_resname>.")
+                                "in the sequence. The format is <SeqID:new_resname>.",
+                           default=[])
 
     parser_gen_seq.set_defaults(func=gen_seq)
 
