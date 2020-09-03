@@ -67,7 +67,7 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
 
     Parameters:
     -----------
-    meta_molecule: `:class:polyply.src.meta_molecule:`
+    meta_molecule: :class:`polyply.src.meta_molecule`
     current_node:
         node key of the node in meta_molecule to which template referes to
     template: dict[np.ndarray]
