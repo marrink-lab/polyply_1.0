@@ -77,7 +77,7 @@ class NonBondMatrix():
                  interaction_matrix,
                  cut_off):
 
-        self.positions = positions.copy()
+        self.positions = positions
         self.nodes_to_gndx = nodes_to_idx
         self.atypes = np.asarray(atom_types, dtype=str)
         self.interaction_matrix = interaction_matrix
@@ -86,13 +86,35 @@ class NonBondMatrix():
         self.defined_idxs = np.where([self.positions[:, 0] != np.inf])[0]
         self.position_tree = scipy.spatial.ckdtree.cKDTree(positions[self.defined_idxs])
 
-    def update_positions(self, point, gndx):
+    def copy(self):
+        """
+        Return new instance and deep copy of the objects position attribute.
+        """
+        new_obj = NonBondMatrix(self.positions.copy(),
+                                self.nodes_to_gndx,
+                                self.atypes,
+                                self.interaction_matrix,
+                                cut_off=self.cut_off)
+        return new_obj
+
+    def update_positions(self, point, node_key, mol_idx):
         """
         Add `point` with global index `gndx` to the nonbonded definitions.
         """
+        gndx = self.nodes_to_gndx[(mol_idx, node_key)]
         self.positions[gndx] = point
         self.defined_idxs = np.where([self.positions[:, 0] != np.inf])[0]
         self.position_tree = scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs])
+
+    def update_positions_in_molecules(self, molecules):
+        """
+        Add the positions stored in the object back
+        to the molecules.
+        """
+        for mol_idx, molecule in enumerate(molecules):
+            for node in molecule.nodes:
+                gndx = self.nodes_to_gndx[(mol_idx, node)]
+                molecule.nodes[node]["position"] = self.positions[gndx]
 
     def compute_force_point(self, point, mol_idx, node, potential="LJ"):
         """
