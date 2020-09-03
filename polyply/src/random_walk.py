@@ -15,15 +15,14 @@
 import random
 import networkx as nx
 import numpy as np
-import scipy
 from numpy.linalg import norm
 from .processor import Processor
 from .linalg_functions import norm_sphere
+
 """
 Processor implementing a random-walk to generate
 coordinates for a meta-molecule.
 """
-
 
 def _take_step(vectors, step_length, coord):
     """
@@ -47,39 +46,6 @@ def _take_step(vectors, step_length, coord):
     new_coord = coord + vectors[index] * step_length
     return new_coord, index
 
-
-def _is_overlap(point, positions, atom_types, vdw_radii, gndx):
-    """
-    Given a `meta_molecule` and a `point`, check if any of
-    the positions of in meta_molecule are closer to the
-    point than the tolerance `tol` multiplied by a `fudge`
-    factor.
-
-    Parameters
-    ----------
-    meta_molecules:  list[:class:`polyply.src.meta_molecule.MetaMolecule`]
-    point: np.ndarray(3)
-    tol: float
-    fudge: float
-
-    Returns
-    -------
-    bool
-    """
-    red_pos = positions[positions[:, 0] != np.inf]
-    traj_tree = scipy.spatial.ckdtree.cKDTree(red_pos)
-    ref_tree = scipy.spatial.ckdtree.cKDTree(point.reshape(1,3))
-    dist_mat = ref_tree.sparse_distance_matrix(traj_tree, 1.1)
-    red_types = atom_types[positions[:, 0] != np.inf ]
-
-    current_atom = atom_types[gndx]
-    for pair, dist in dist_mat.items():
-        #print(dist)
-        ref = vdw_radii[frozenset([current_atom, red_types[pair[1]]])]
-        if dist < ref*0.8:
-           return True
-    return False
-
 def not_exceeds_max_dimensions(point, maxdim):
     return np.all(point < maxdim) and np.all(point > np.array([0., 0., 0.]))
 
@@ -92,30 +58,28 @@ class RandomWalk(Processor):
     """
 
     def __init__(self,
-                 positions,
-                 nodes_to_idx,
-                 atom_types,
-                 vdw_radii,
                  mol_idx,
+                 nonbond_matrix,
                  start=np.array([0, 0, 0]),
-                 topology=None,
                  maxiter=50,
                  maxdim=None,
+                 max_force=10**3.0,
                  vector_sphere=norm_sphere(5000)):
 
-        self.start = start
-        self.topology = topology
-        self.maxiter = maxiter
-        self.success = False
-        self.maxdim = maxdim
-        self.positions = positions.copy()
-        self.nodes_to_gndx = nodes_to_idx
-        self.atom_types = np.asarray(atom_types, dtype=str)
-        self.vdw_radii = vdw_radii
         self.mol_idx = mol_idx
+        self.nonbond_matrix = nonbond_matrix
+        self.start = start
+        self.maxiter = maxiter
+        self.maxdim = maxdim
         self.vector_sphere = vector_sphere
+        self.success = False
+        self.max_force = max_force
 
-    def update_positions(self, vector_bundle, meta_molecule, current_node, prev_node):
+    def _is_overlap(self, point, node):
+        force_vect = self.nonbond_matrix.compute_force_point(point, self.mol_idx, node, potential="LJ")
+        return norm(force_vect) > self.max_force
+
+    def update_positions(self, vector_bundle, current_node, prev_node):
         """
         Take an array of unit vectors `vector_bundle` and generate the coordinates
         for `current_node` by adding a random vector to the position of the previous
@@ -132,34 +96,26 @@ class RandomWalk(Processor):
         maxiter: int
            maximum number of iterations
         """
-        if "position" in meta_molecule.nodes[current_node]:
-            return True
-        gndx_prev = self.nodes_to_gndx[(self.mol_idx, prev_node)]
-        gndx_current = self.nodes_to_gndx[(self.mol_idx, current_node)]
 
-        last_point = meta_molecule.nodes[prev_node]["position"]
-        res_current = self.atom_types[gndx_current]
-        res_prev =  self.atom_types[gndx_prev]
-        vdw_radius = self.vdw_radii[frozenset([res_prev, res_current])]
-
-        step_length = vdw_radius
+        last_point = self.nonbond_matrix.get_point(self.mol_idx, prev_node)
+        step_length = self.nonbond_matrix.get_interaction(self.mol_idx,
+                                                          self.mol_idx,
+                                                          prev_node,
+                                                          current_node)
         step_count = 0
-
         while True:
             new_point, index = _take_step(vector_bundle, step_length, last_point)
-            overlap = _is_overlap(new_point, self.positions, self.atom_types, self.vdw_radii, gndx_current)
+            overlap = self._is_overlap(new_point, current_node)
+
             in_box = not_exceeds_max_dimensions(new_point, self.maxdim)
             if not overlap and in_box:
-                #print(step_count)
-                meta_molecule.nodes[current_node]["position"] = new_point
-                self.positions[gndx_current, :] = new_point
+                self.nonbond_matrix.update_positions(current_node, self.mol_idx, new_point)
                 return True
             elif step_count == self.maxiter:
                 return False
             else:
                 step_count += 1
                 vector_bundle = np.delete(vector_bundle, index, axis=0)
-
 
     def _random_walk(self, meta_molecule):
         """
@@ -173,19 +129,22 @@ class RandomWalk(Processor):
         first_node = list(meta_molecule.nodes)[0]
 
         if "position" not in meta_molecule.nodes[first_node]:
-            meta_molecule.nodes[first_node]["position"] = self.start
-            self.positions[self.nodes_to_gndx[(self.mol_idx, first_node)] ,:] = self.start
-
+            if not self._is_overlap(self.start, first_node):
+                self.nonbond_matrix.update_positions(self.start, self.mol_idx, first_node)
 
         vector_bundle = self.vector_sphere.copy()
-        for prev_node, current_node in nx.dfs_edges(meta_molecule, source=0):
+        for prev_node, current_node in nx.dfs_edges(meta_molecule, source=first_node):
+
+            if "position" in meta_molecule.nodes[current_node]:
+                continue
+
             status = self.update_positions(vector_bundle,
                                            meta_molecule,
                                            current_node,
                                            prev_node)
             self.success = status
             if not self.success:
-               return
+                return
 
     def run_molecule(self, meta_molecule):
         """
