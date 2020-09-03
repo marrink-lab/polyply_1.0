@@ -1,0 +1,169 @@
+# Copyright 2020 University of Groningen
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+import itertools
+import numpy as np
+import scipy.spatial
+from .topology import lorentz_berthelot_rule
+
+def lennard_jones_force(dist, vect, params):
+    """
+    Compute the Lennard-Jones force between two particles
+    given their interaction parameters, the distance, and
+    distance vector.
+
+    Parameters:
+    -----------
+    dist: float
+        the distance between particles
+    vect: np.ndarray(3)
+        the distance vector
+    params: tuple
+        tuple of sigma and epsilon parameters
+
+    Returns:
+    --------
+    numpy.ndarray(3)
+        the force vector
+    """
+    sig, eps = params
+    force = 24 * eps / dist * \
+        ((2 * (sig/eps)**12.0) - (sig/eps)**6) * vect/dist
+    return force
+
+
+POTENTIAL_FUNC = {"LJ": lennard_jones_force}
+
+
+def _n_particles(topology):
+    """
+    Count the number of meta_molecule nodes
+    in the topology.
+    """
+    n_atoms = 0
+    for molecule in topology.molecules:
+        n_atoms += len(molecule.nodes)
+    return n_atoms
+
+
+class NonBondMatrix():
+    """
+    Object for handeling nonbonded interactions
+    of the topology. It stores the positions using
+    infinity for undefined positions. It also creats
+    a mapping of node and molecule index to the global
+    index in the position matrix as well as a cdk tree
+    of defined positions and a mapping between global
+    indices and defined positions. Furthermore, it stores
+    the interaction matrix between atomtypes and the atom
+    types, where each atomtype corresponds to one of the
+    global indices.
+    """
+
+    def __init__(self,
+                 positions,
+                 nodes_to_idx,
+                 atom_types,
+                 interaction_matrix,
+                 cut_off):
+
+        self.positions = positions.copy()
+        self.nodes_to_gndx = nodes_to_idx
+        self.atypes = np.asarray(atom_types, dtype=str)
+        self.interaction_matrix = interaction_matrix
+        self.cut_off = cut_off
+
+        self.defined_idxs = np.where([self.positions[:, 0] != np.inf])[0]
+        self.position_tree = scipy.spatial.ckdtree.cKDTree(positions[self.defined_idxs])
+
+    def update_positions(self, point, gndx):
+        """
+        Add `point` with global index `gndx` to the nonbonded definitions.
+        """
+        self.positions[gndx] = point
+        self.defined_idxs = np.where([self.positions[:, 0] != np.inf])[0]
+        self.position_tree = scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs])
+
+    def compute_force_point(self, point, mol_idx, node, potential="LJ"):
+        """
+        Compute the force on `node` of molecule `mol_idx` with coordinates
+        `point` given the potential definition in `potential`.
+
+        Parameters
+        ----------
+        point: np.ndarray(3)
+        mol_idx: int
+        node: abc.hashable
+            node key
+        potential: abc.hashable
+            definition of potential to use
+
+        Returns
+        -------
+        np.ndarray(3)
+            the force vector
+        """
+        ref_tree = scipy.spatial.ckdtree.cKDTree(point.reshape(1, 3))
+        dist_mat = ref_tree.sparse_distance_matrix(
+            self.position_tree, self.cut_off)
+
+        gndx = self.nodes_to_gndx[(mol_idx, node)]
+        current_atype = self.atypes[gndx]
+
+        force = 0
+        for pair, dist in dist_mat.items():
+            other_atype = self.atypes[self.defined_idxs[pair[1]]]
+            params = self.interaction_matrix[frozenset(
+                [current_atype, other_atype])]
+            vect = point - self.positions[self.defined_idxs[pair[1]]]
+            force += POTENTIAL_FUNC[potential](dist, vect, params)
+
+        return force
+
+    @classmethod
+    def from_topology(cls, topology):
+        n_atoms = _n_particles(topology)
+
+        # array of all positions
+        positions = np.ones((n_atoms, 3)) * np.inf
+        # convert molecule index and node to index
+        # in position matrix
+        nodes_to_gndx = {}
+
+        atom_types = []
+        idx = 0
+        mol_count = 0
+        for molecule in topology.molecules:
+            for node in molecule.nodes:
+                if "position" in molecule.nodes:
+                    positions[idx, :] = molecule.nodes["position"]
+
+                resname = molecule.nodes[node]["resname"]
+                atom_types.append(resname)
+                nodes_to_gndx[(mol_count, node)] = idx
+                idx += 1
+
+            mol_coant += 1
+
+        inter_matrix = {}
+        for res_a, res_b in itertools.combinations(set(atom_types), r=2):
+            sigma = lorentz_berthelot_rule(topology.volumes[res_a],
+                                           topology.volumes[res_b], 1, 1)
+            inter_matrix[frozenset([res_a, res_b])] = (sigma, 1)
+
+        for resname, vdw_radii in topology.molecules[0].volumes.items():
+            inter_matrix[frozenset([resname, resname])] = (vdw_radii, 1)
+
+        nonbond_matrix = cls(positions, nodes_to_gndx,
+                             atom_types, inter_matrix, cut_off=1.1)
+        return nonbond_matrix
