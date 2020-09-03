@@ -70,7 +70,7 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
     meta_molecule: :class:`polyply.src.meta_molecule`
     current_node:
         node key of the node in meta_molecule to which template referes to
-    template: dict[np.ndarray]
+    template: dict[collections.abc.Hashable, np.ndarray]
         dict of positions referreing to the lower resolution atoms of node
     built_nodes: list
         list of meta_molecule node keys of residues that are already built
