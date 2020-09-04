@@ -25,12 +25,14 @@ from .nonbond_matrix import NonBondMatrix
 
 def _compute_box_size(topology, density):
     total_mass = 0
-    for molecule in topology.molecules:
+    for meta_molecule in topology.molecules:
+        molecule = meta_molecule.molecule
         for node in molecule.nodes:
             if 'mass' in molecule.nodes[node]:
                 total_mass += molecule.nodes[node]['mass']
             else:
-                total_mass += topology.atom_types['mass']
+                atype = molecule.nodes[node]["atype"]
+                total_mass += topology.atom_types[atype]['mass']
     print(total_mass)
     # amu -> kg and cm3 -> nm3
     #conversion = 1.6605410*10**-27 * 10**27
@@ -45,8 +47,8 @@ class BuildSystem():
 
     def __init__(self, topology,
                  density,
-                 n_grid_points=250,
-                 maxiter=20,
+                 n_grid_points=500,
+                 maxiter=800,
                  box_size=None):
 
         self.topology = topology
@@ -103,7 +105,6 @@ class BuildSystem():
         mol_idx = 0
         pbar = tqdm(total=len(self.topology.molecules))
         mol_tot = len(self.topology.molecules)
-
         vector_sphere = norm_sphere(5000)
         while mol_idx < mol_tot:
             molecule = molecules[mol_idx]

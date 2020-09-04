@@ -61,9 +61,9 @@ class RandomWalk(Processor):
                  mol_idx,
                  nonbond_matrix,
                  start=np.array([0, 0, 0]),
-                 maxiter=50,
+                 maxiter=80,
                  maxdim=None,
-                 max_force=10**3.0,
+                 max_force=10**8.0,
                  vector_sphere=norm_sphere(5000)):
 
         self.mol_idx = mol_idx
@@ -75,8 +75,13 @@ class RandomWalk(Processor):
         self.success = False
         self.max_force = max_force
 
-    def _is_overlap(self, point, node):
-        force_vect = self.nonbond_matrix.compute_force_point(point, self.mol_idx, node, potential="LJ")
+    def _is_overlap(self, point, node, nrexcl=1):
+        neighbours = nx.neighbors(self.molecule, node)
+        force_vect = self.nonbond_matrix.compute_force_point(point,
+                                                             self.mol_idx,
+                                                             node,
+                                                             neighbours,
+                                                             potential="LJ")
         return norm(force_vect) > self.max_force
 
     def update_positions(self, vector_bundle, current_node, prev_node):
@@ -98,10 +103,10 @@ class RandomWalk(Processor):
         """
 
         last_point = self.nonbond_matrix.get_point(self.mol_idx, prev_node)
-        step_length = self.nonbond_matrix.get_interaction(self.mol_idx,
-                                                          self.mol_idx,
-                                                          prev_node,
-                                                          current_node)
+        step_length = 0.7 * self.nonbond_matrix.get_interaction(self.mol_idx,
+                                                                self.mol_idx,
+                                                                prev_node,
+                                                                current_node)[0]
         step_count = 0
         while True:
             new_point, index = _take_step(vector_bundle, step_length, last_point)
@@ -109,7 +114,7 @@ class RandomWalk(Processor):
 
             in_box = not_exceeds_max_dimensions(new_point, self.maxdim)
             if not overlap and in_box:
-                self.nonbond_matrix.update_positions(current_node, self.mol_idx, new_point)
+                self.nonbond_matrix.update_positions(new_point, self.mol_idx, current_node)
                 return True
             elif step_count == self.maxiter:
                 return False
@@ -127,19 +132,20 @@ class RandomWalk(Processor):
         meta_molecule:  :class:`polyply.src.meta_molecule.MetaMolecule`
         """
         first_node = list(meta_molecule.nodes)[0]
-
         if "position" not in meta_molecule.nodes[first_node]:
             if not self._is_overlap(self.start, first_node):
                 self.nonbond_matrix.update_positions(self.start, self.mol_idx, first_node)
+                self.success = True
+            else:
+                self.success = False
+                return
 
         vector_bundle = self.vector_sphere.copy()
         for prev_node, current_node in nx.dfs_edges(meta_molecule, source=first_node):
-
             if "position" in meta_molecule.nodes[current_node]:
                 continue
 
             status = self.update_positions(vector_bundle,
-                                           meta_molecule,
                                            current_node,
                                            prev_node)
             self.success = status
@@ -150,5 +156,6 @@ class RandomWalk(Processor):
         """
         Perform the random walk for a single molecule.
         """
+        self.molecule = meta_molecule
         self._random_walk(meta_molecule)
         return meta_molecule
