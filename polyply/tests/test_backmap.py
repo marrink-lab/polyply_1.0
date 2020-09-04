@@ -14,15 +14,10 @@
 """
 Test backmapping
 """
-
-import textwrap
-import pytest
 import numpy as np
 from numpy.linalg import norm
-import math
 import networkx as nx
 import vermouth
-import polyply
 from polyply import MetaMolecule
 from polyply.src.backmap import Backmap
 
@@ -53,9 +48,10 @@ def test_backmapping():
         5: {"resname": "test", "resid": 2, "atomname": "B"},
         6: {"resname": "test", "resid": 2, "atomname": "C"},
         7: {"resname": "test", "resid": 3, "atomname": "C",
-                                           "position": np.array([4., 4., 4.])}})
+            "position": np.array([4., 4., 4.])}
+        })
 
     Backmap().run_molecule(meta_molecule)
     for node in meta_molecule.molecule.nodes:
         assert "position" in meta_molecule.molecule.nodes[node]
-    assert norm(meta_molecule.molecule.nodes[7]["position"]-np.array([4., 4., 4.])) == 0
+    assert norm(meta_molecule.molecule.nodes[7]["position"] - np.array([4., 4., 4.])) == 0

@@ -57,12 +57,12 @@ def find_edges(molecule, attr, value):
 
 def orient_template(meta_molecule, current_node, template, built_nodes):
     """
-    Given a `template` and a `node` of a `meta_molecule` at lower resultion
-    find the bondeded interactions connecting the higher resolution template
+    Given a `template` and a `node` of a `meta_molecule` at lower resolution
+    find the bonded interactions connecting the higher resolution template
     to its neighbours and orient a template such that the atoms point torwards
     the neighbours. In case some nodes of meta_molecule have already been built
     at the lower resolution they can be provided as `built_nodes`. In case the
-    lower resolution is build the atoms will be oriented torward the lower
+    lower resolution is already built the atoms will be oriented torward the lower
     resolution atom participating in the bonded interaction.
 
     Parameters:
@@ -71,7 +71,7 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
     current_node:
         node key of the node in meta_molecule to which template referes to
     template: dict[collections.abc.Hashable, np.ndarray]
-        dict of positions referreing to the lower resolution atoms of node
+        dict of positions referring to the lower resolution atoms of node
     built_nodes: list
         list of meta_molecule node keys of residues that are already built
 
@@ -98,16 +98,14 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
     opt_coords = np.zeros((3, len(edges)))
 
     for ndx, edge in enumerate(edges):
-        resids = []
         for atom in edge:
             resid = meta_molecule.molecule.nodes[atom]["resid"]
             is_current = resid == current_resid
-            resids.append(resid)
             if resid == current_resid:
-               current_atom = atom
+                current_atom = atom
             else:
-               ref_atom = atom
-               ref_resid = resid
+                ref_atom = atom
+                ref_resid = resid
 
         # the reference residue has already been build so we take the lower
         # resolution coordinates as reference
@@ -117,8 +115,8 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
             # record the coordinates of the atom that is rotated
             opt_coords[:, ndx] = template[atom_name]
 
-            # given the reference atom that already exits translate it to origin
-            # of the rotation, this will be the refrence point for rotation
+            # given the reference atom that already exits translate it to the origin
+            # of the rotation, this will be the reference point for rotation
             ref_coords[:, ndx] = meta_molecule.molecule.nodes[ref_atom]["position"] -\
                                  meta_molecule.nodes[current_node]["position"]
 
@@ -128,7 +126,11 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
             atom_name = meta_molecule.molecule.nodes[current_atom]["atomname"]
             cg_node = find_atoms(meta_molecule, "resid", ref_resid)[0]
 
+            # record the coordinates of the atom that is rotated
             opt_coords[:, ndx] = template[atom_name]
+
+            # as the reference atom is not built take the cg node as reference point
+            # for rotation; translate it to origin
             ref_coords[:, ndx] = meta_molecule.nodes[cg_node]["position"] -\
                                  meta_molecule.nodes[current_node]["position"]
 
