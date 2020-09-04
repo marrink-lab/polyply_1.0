@@ -37,8 +37,7 @@ def lennard_jones_force(dist, vect, params):
         the force vector
     """
     sig, eps = params
-    force = 24 * eps / dist * \
-        ((2 * (sig/eps)**12.0) - (sig/eps)**6) * vect/dist
+    force = 24 * eps / dist * ((2 * (sig/dist)**12.0) - (sig/dist)**6) * vect/dist
     return force
 
 
@@ -83,7 +82,7 @@ class NonBondMatrix():
         self.interaction_matrix = interaction_matrix
         self.cut_off = cut_off
 
-        self.defined_idxs = np.where([self.positions[:, 0] != np.inf])[0]
+        self.defined_idxs = np.where(self.positions[:, 0].reshape(-1) != np.inf)[0]
         self.position_tree = scipy.spatial.ckdtree.cKDTree(positions[self.defined_idxs])
 
     def copy(self):
@@ -97,13 +96,13 @@ class NonBondMatrix():
                                 cut_off=self.cut_off)
         return new_obj
 
-    def update_positions(self, point, node_key, mol_idx):
+    def update_positions(self, point, mol_idx, node_key):
         """
         Add `point` with global index `gndx` to the nonbonded definitions.
         """
         gndx = self.nodes_to_gndx[(mol_idx, node_key)]
         self.positions[gndx] = point
-        self.defined_idxs = np.where([self.positions[:, 0] != np.inf])[0]
+        self.defined_idxs = np.where(self.positions[:, 0] != np.inf)[0]
         self.position_tree = scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs])
 
     def update_positions_in_molecules(self, molecules):
@@ -116,7 +115,18 @@ class NonBondMatrix():
                 gndx = self.nodes_to_gndx[(mol_idx, node)]
                 molecule.nodes[node]["position"] = self.positions[gndx]
 
-    def compute_force_point(self, point, mol_idx, node, potential="LJ"):
+    def get_point(self, mol_idx, node):
+        gndx = self.nodes_to_gndx[(mol_idx, node)]
+        return self.positions[gndx]
+
+    def get_interaction(self, mol_idx_a, mol_idx_b, node_a, node_b):
+        gndx_a = self.nodes_to_gndx[(mol_idx_a, node_a)]
+        gndx_b = self.nodes_to_gndx[(mol_idx_b, node_b)]
+        atype_a = self.atypes[gndx_a]
+        atype_b = self.atypes[gndx_b]
+        return self.interaction_matrix[frozenset([atype_a, atype_b])]
+
+    def compute_force_point(self, point, mol_idx, node, exclude=[], potential="LJ"):
         """
         Compute the force on `node` of molecule `mol_idx` with coordinates
         `point` given the potential definition in `potential`.
@@ -127,6 +137,8 @@ class NonBondMatrix():
         mol_idx: int
         node: abc.hashable
             node key
+        exclude: list[collections.abc.hashable]
+            list of nodes to exclude from computation
         potential: abc.hashable
             definition of potential to use
 
@@ -135,20 +147,22 @@ class NonBondMatrix():
         np.ndarray(3)
             the force vector
         """
+        exclusions = [ self.nodes_to_gndx[(mol_idx, node)] for node in exclude ]
+
         ref_tree = scipy.spatial.ckdtree.cKDTree(point.reshape(1, 3))
-        dist_mat = ref_tree.sparse_distance_matrix(
-            self.position_tree, self.cut_off)
+        dist_mat = ref_tree.sparse_distance_matrix(self.position_tree, self.cut_off)
 
         gndx = self.nodes_to_gndx[(mol_idx, node)]
         current_atype = self.atypes[gndx]
 
         force = 0
         for pair, dist in dist_mat.items():
-            other_atype = self.atypes[self.defined_idxs[pair[1]]]
-            params = self.interaction_matrix[frozenset(
-                [current_atype, other_atype])]
-            vect = point - self.positions[self.defined_idxs[pair[1]]]
-            force += POTENTIAL_FUNC[potential](dist, vect, params)
+            gndx_pair = self.defined_idxs[pair[1]]
+            if gndx_pair not in exclusions:
+               other_atype = self.atypes[gndx_pair]
+               params = self.interaction_matrix[frozenset([current_atype, other_atype])]
+               vect = point - self.positions[gndx_pair]
+               force += POTENTIAL_FUNC[potential](dist, vect, params)
 
         return force
 
@@ -175,7 +189,7 @@ class NonBondMatrix():
                 nodes_to_gndx[(mol_count, node)] = idx
                 idx += 1
 
-            mol_coant += 1
+            mol_count += 1
 
         inter_matrix = {}
         for res_a, res_b in itertools.combinations(set(atom_types), r=2):
@@ -187,5 +201,5 @@ class NonBondMatrix():
             inter_matrix[frozenset([resname, resname])] = (vdw_radii, 1)
 
         nonbond_matrix = cls(positions, nodes_to_gndx,
-                             atom_types, inter_matrix, cut_off=1.1)
+                             atom_types, inter_matrix, cut_off=2.1)
         return nonbond_matrix

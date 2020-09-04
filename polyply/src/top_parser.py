@@ -290,8 +290,10 @@ class TOPDirector(SectionLineParser):
         """
         atom_name = line.split()[0]
         nb1, nb2 = line.split()[-2:]
+        mass = line.split()[1]
         self.topology.atom_types[atom_name] = {"nb1": float(nb1),
-                                               "nb2": float(nb2)}
+                                               "nb2": float(nb2),
+                                               "mass": float(mass)}
 
     @SectionLineParser.section_parser('nonbond_params')
     def _nonbond_params(self, line, lineno=0):

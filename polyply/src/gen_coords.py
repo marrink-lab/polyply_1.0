@@ -48,8 +48,7 @@ def gen_coords(args):
 
     # Build polymer structure
     GenerateTemplates().run_system(topology)
-    #RandomWalk().run_system(topology)
-    BuildSystem(args.density).run_system(topology)
+    BuildSystem(topology, args.density).run_system(topology.molecules)
     Backmap().run_system(topology)
 
     # Write output
