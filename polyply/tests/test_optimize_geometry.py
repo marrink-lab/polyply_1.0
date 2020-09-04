@@ -86,15 +86,10 @@ def test_optimize_geometry(lines):
 
     assert status
 
-    for bond in block.interactions["bonds"]:
+    for bond in itertools.chain(block.interactions["bonds"], block.interactions["constraints"]):
         ref = float(bond.parameters[1])
         dist = np.linalg.norm(coords[bond.atoms[0]] - coords[bond.atoms[1]])
         assert math.isclose(dist, ref, abs_tol=0.1)
-
-    for bond in block.interactions["constraints"]:
-        ref = float(bond.parameters[1])
-        dist = np.linalg.norm(coords[bond.atoms[0]] - coords[bond.atoms[1]])
-        assert math.isclose(dist, ref, abs_tol=0.05)
 
     for inter in block.interactions["angles"]:
         ref = float(inter.parameters[1])
