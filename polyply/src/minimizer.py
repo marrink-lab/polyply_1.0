@@ -156,6 +156,7 @@ def optimize_geometry(block, coords):
                                           options={'ftol':0.001, 'maxiter': 100})
 
     positions = opt_results['x'].reshape((-1, 3))
+    positions = renew_vs(positions, block, atom_to_idx)
     for node_key, idx in atom_to_idx.items():
         coords[node_key] = positions[idx]
 
