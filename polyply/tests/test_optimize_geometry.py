@@ -15,7 +15,7 @@
 Test geometry optimizer
 """
 import textwrap
-import math
+import itertools
 import pytest
 import numpy as np
 import vermouth
@@ -56,18 +56,10 @@ from polyply.src.virtual_site_builder import construct_vs
      2   SC5    1    P3HT     C2    2        0       45
      3   SC5    1    P3HT     C3    3        0       45
      4    VS    1    P3HT     V4    4        0        0
-     5   SC3    1    P3HT     C5    5        0       45
-     6   SC3    1    P3HT     C6    6        0       45
-     [ bonds ]
-     5    6    1    0.360         5000
      [ constraints ]
      1    2    1   0.240
      1    3    1   0.240
      2    3    1   0.240
-     3    5    1   0.285
-     [ angles ]
-     1    3    5    2       180      250
-     3    5    6    1       155       25
      [ virtual_sitesn ]
      4    2    1   2   3
      """))
@@ -86,22 +78,17 @@ def test_optimize_geometry(lines):
 
     assert status
 
-    for bond in block.interactions["bonds"]:
+    for bond in itertools.chain(block.interactions["bonds"], block.interactions["constraints"]):
         ref = float(bond.parameters[1])
         dist = np.linalg.norm(coords[bond.atoms[0]] - coords[bond.atoms[1]])
-        assert math.isclose(dist, ref, abs_tol=0.1)
-
-    for bond in block.interactions["constraints"]:
-        ref = float(bond.parameters[1])
-        dist = np.linalg.norm(coords[bond.atoms[0]] - coords[bond.atoms[1]])
-        assert math.isclose(dist, ref, abs_tol=0.05)
+        assert np.isclose(dist, ref, atol=0.05)
 
     for inter in block.interactions["angles"]:
         ref = float(inter.parameters[1])
         ang = angle(coords[inter.atoms[0]], coords[inter.atoms[1]], coords[inter.atoms[2]])
-        assert math.isclose(ang, ref, abs_tol=20)
+        assert np.isclose(ang, ref, atol=2)
 
-    for virtual_side in block.interactions["virutal_sitesn"]:
-        ref_coord = construct_vs("virutal_sitesn", virtual_side, coords)
-        vs_coords = coords[virtual_side.atoms[0]]
-        assert all(np.isclose(ref_coord, vs_coords))
+    for virtual_site in block.interactions["virtual_sitesn"]:
+        ref_coord = construct_vs("virtual_sitesn", virtual_site, coords)
+        vs_coords = coords[virtual_site.atoms[0]]
+        assert np.allclose(ref_coord, vs_coords)
