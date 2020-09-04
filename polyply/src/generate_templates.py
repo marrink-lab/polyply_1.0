@@ -254,8 +254,8 @@ class GenerateTemplates(Processor):
     in the templates attribute. The processor also stores the volume
     of each block in the volume attribute.
     """
-    def __init__(self, max_opt):
-        super().__init__()
+    def __init__(self, max_opt, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.templates = {}
         self.resnames = []
         self.volumes = {}
