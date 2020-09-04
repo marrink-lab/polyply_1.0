@@ -100,7 +100,6 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
     for ndx, edge in enumerate(edges):
         for atom in edge:
             resid = meta_molecule.molecule.nodes[atom]["resid"]
-            is_current = resid == current_resid
             if resid == current_resid:
                 current_atom = atom
             else:
