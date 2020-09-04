@@ -47,20 +47,25 @@ class TestRandomWalk:
         (np.array([0, 0, 0.6]),
          0.5,
          1.0,
+         False),
+        (np.array([0, 0, 0.1]),
+         0.5,
+         1.0,
          True),
         (np.array([0, 0, 0.75]),
          0.5,
          0.4,
-         False)
-    ))
+         False),
+))
     def test__is_overlap(new_point, tol, fudge, reference):
         ff = vermouth.forcefield.ForceField(name='test_ff')
         meta_mol = MetaMolecule(name="test", force_field=ff)
         meta_mol.add_monomer(0, "PEO", [])
         meta_mol.add_monomer(1, "PEO", [(1, 0)])
+        meta_mol.add_monomer(2, "PEO", [(1, 2)])
         meta_mol.nodes[0]["position"] = np.array([0, 0, 0])
         meta_mol.nodes[1]["position"] = np.array([0, 0, 0.5])
-        result = _is_overlap(meta_mol, new_point, tol, fudge)
+        result = _is_overlap(meta_mol, new_point, tol, current_node=2, fudge=fudge)
         assert result == reference
 
     @staticmethod

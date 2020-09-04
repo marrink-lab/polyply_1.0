@@ -19,7 +19,6 @@ import vermouth.molecule
 from vermouth.processors.do_links import match_order
 from .processor import Processor
 
-
 class MatchError(Exception):
     """Raised we find no match between links and molecule"""
 

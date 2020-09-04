@@ -49,7 +49,6 @@ def _take_step(vectors, step_length, coord):
 def not_exceeds_max_dimensions(point, maxdim):
     return np.all(point < maxdim) and np.all(point > np.array([0., 0., 0.]))
 
-
 class RandomWalk(Processor):
     """
     Add coordinates at the meta_molecule level
