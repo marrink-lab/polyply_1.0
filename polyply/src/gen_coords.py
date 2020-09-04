@@ -43,11 +43,13 @@ def gen_coords(args):
         topology.add_positions_from_file(args.coordpath)
     else:
         for molecule in topology.molecules:
-            for node in molecule.molecule.nodes:
-                molecule.molecule.nodes[node]["build"] = True
+            for node in molecule.nodes:
+                molecule.nodes[node]["build"] = True
 
     # Build polymer structure
-    GenerateTemplates().run_system(topology)
+
+
+    GenerateTemplates(max_opt=10).run_system(topology)
     BuildSystem(topology, args.density).run_system(topology.molecules)
     Backmap().run_system(topology)
 
