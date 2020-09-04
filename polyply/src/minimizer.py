@@ -42,7 +42,7 @@ def compute_bond(params, coords):
     float
     """
     dist = np.linalg.norm(coords[0] - coords[1])
-    return 1000 *(dist - float(params[1]))**2.0
+    return 10000 *(dist - float(params[1]))**2.0
 
 def compute_angle(params, coords):
     """
@@ -137,6 +137,7 @@ def optimize_geometry(block, coords):
     n_atoms = len(coords)
     atom_to_idx = OrderedDict(zip(list(coords.keys()), range(0, n_atoms)))
     positions = np.array(list(coords.values()))
+
     def target_function(positions):
         energy = 0
         positions = positions.reshape((-1, 3))

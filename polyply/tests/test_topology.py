@@ -36,26 +36,28 @@ class TestTopology:
         top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/system.top", "test")
         top.add_positions_from_file(TEST_DATA + "/topology_test/test.gro")
         for node in top.molecules[0].molecule.nodes:
-            if node != 20:
+            if node < 14:
                 assert "position" in top.molecules[0].molecule.nodes[node].keys()
-                assert top.molecules[0].molecule.nodes[node]["build"] == False
-            else:
-                assert top.molecules[0].molecule.nodes[node]["build"] == True
 
         for node in top.molecules[0].nodes:
             if node != 2:
                 assert "position" in top.molecules[0].nodes[node].keys()
+                assert top.molecules[0].nodes[node]["build"] == False
+            else:
+                assert top.molecules[0].nodes[node]["build"] == True
 
     @staticmethod
     def test_add_positions_from_pdb():
         top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/pdb.top", "test")
         top.add_positions_from_file(TEST_DATA + "/topology_test/test.pdb")
-        for node in top.molecules[0].molecule.nodes:
-                assert "position" in top.molecules[0].molecule.nodes[node].keys()
-                assert top.molecules[0].molecule.nodes[node]["build"] == False
+        for meta_mol in top.molecules:
+            for node in meta_mol.molecule.nodes:
+                assert "position" in meta_mol.molecule.nodes[node].keys()
 
-        for node in top.molecules[0].nodes:
-                assert "position" in top.molecules[0].nodes[node].keys()
+        for meta_mol in top.molecules:
+            for node in meta_mol.nodes:
+                    assert "position" in meta_mol.nodes[node].keys()
+                    assert meta_mol.nodes[node]["build"] == False
 
     @staticmethod
     def test_convert_to_vermouth_system():

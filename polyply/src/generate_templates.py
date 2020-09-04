@@ -18,10 +18,8 @@ import vermouth
 from .minimizer import optimize_geometry
 from .processor import Processor
 from .linalg_functions import (u_vect, center_of_geometry,
-                               norm_sphere, radius_of_gyration)
-from .random_walk import _take_step
+                               radius_of_gyration)
 from .topology import replace_defined_interaction
-from .virtual_site_builder import construct_vs
 """
 Processor generating coordinates for all residues of a meta_molecule
 matching those in the meta_molecule.molecule attribute.
@@ -92,40 +90,25 @@ def find_interaction_involving(block, current_node, prev_node):
                'linking atom {} and atom {}.')
         raise IOError(msg.format(block.nodes[0]["resname"], prev_node, current_node))
 
-def _expand_inital_coords(block):
+def _expand_inital_coords(block, bond=None, pos=None, fixed=None,
+                          iterations=50, weight="weight", max_box=1.0):
     """
-    Given a `block` generate initial random coordinates
-    for all atoms in the block. Note that the initial
-    coordinates though random, have a defined distance
-    correspodning to a bond , constaint or virtual-site.
+    Given a `graph` generate initial random coordinates
+    in three dimensions and relax them using a Fruchterman
+    Reingold generic simulation aka spring_layout to relax
+    the coordinates topologically.
 
     Parameters
     -----------
-    block:   :class:`vermouth.molecule.Block`
+    block:   networkx.Graph
 
     Returns
     ---------
     dict
       dictonary of node index and position
     """
-    coords = {}
-    #TODO this should actually be the index
-    atom = list(block.nodes)[0]
-    coords[atom] = np.array([0, 0, 0])
-
-    vectors = norm_sphere(values=1000)
-    for prev_node, current_node in nx.dfs_edges(block, source=atom):
-        prev_coord = coords[prev_node]
-        is_vs, interaction, inter_type = find_interaction_involving(block,
-                                                                    current_node,
-                                                                    prev_node)
-        if is_vs:
-            coords[current_node] = construct_vs(inter_type, interaction, coords)
-        else:
-            coords[current_node], _ = _take_step(vectors,
-                                                 float(interaction.parameters[1]),
-                                                 prev_coord)
-    return coords
+    return nx.spring_layout(block, dim=3, k=bond, pos=pos, fixed=fixed,
+                            iterations=iterations, weight=weight, scale=max_box)
 
 def compute_volume(molecule, block, coords):
     """
@@ -252,7 +235,7 @@ def extract_block(molecule, resname, defines):
                 block.interactions[inter_type].append(interaction)
 
     for inter_type in ["bonds", "constraints", "virtual_sitesn",
-                       "virtual-sites2", "virtual-sites3", "virtual-sites4"]:
+                       "virtual_sites2", "virtual_sites3", "virtual_sites4"]:
         block.make_edges_from_interaction_type(inter_type)
 
     if not nx.is_connected(block):
@@ -271,9 +254,14 @@ class GenerateTemplates(Processor):
     in the templates attribute. The processor also stores the volume
     of each block in the volume attribute.
     """
+    def __init__(self, max_opt, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.templates = {}
+        self.resnames = []
+        self.volumes = {}
+        self.max_opt = max_opt
 
-    @staticmethod
-    def _gen_templates(meta_molecule):
+    def _gen_templates(self, meta_molecule):
         """
         Generate blocks for each unique residue by extracting the
         block information, placing initial coordinates, and geometry
@@ -296,24 +284,27 @@ class GenerateTemplates(Processor):
         volumes = {}
 
         for resname in resnames:
-            block = extract_block(meta_molecule.molecule, resname,
-                                  meta_molecule.defines)
-            opt_counter = 0
-            while True:
-                coords = _expand_inital_coords(block)
-                success, coords = optimize_geometry(block, coords)
-                if success:
-                    break
-                elif opt_counter > 10:
-                    print("Warning: Failed to optimize structure for block {}.".format(resname))
-                    print("Proceeding with unoptimized coordinates.")
-                    break
-                else:
-                    opt_counter += 1
+            if not resname in self.resnames:
+                self.resnames.append(resname)
 
-            volumes[resname] = compute_volume(meta_molecule, block, coords)
-            coords = map_from_CoG(coords)
-            templates[resname] = coords
+                block = extract_block(meta_molecule.molecule, resname,
+                                      meta_molecule.defines)
+                opt_counter = 0
+                while True:
+                    coords = _expand_inital_coords(block)
+                    success, coords = optimize_geometry(block, coords)
+                    if success:
+                        break
+                    elif opt_counter > self.max_opt:
+                        print("Warning: Failed to optimize structure for block {}.".format(resname))
+                        print("Proceeding with unoptimized coordinates.")
+                        break
+                    else:
+                        opt_counter += 1
+
+                self.volumes[resname] = compute_volume(meta_molecule, block, coords)
+                coords = map_from_CoG(coords)
+                self.templates[resname] = coords
 
         return templates, volumes
 
@@ -323,6 +314,6 @@ class GenerateTemplates(Processor):
         and volume attribute.
         """
         templates, volumes = self._gen_templates(meta_molecule)
-        meta_molecule.templates = templates
-        meta_molecule.volumes = volumes
+        meta_molecule.templates = self.templates
+        meta_molecule.volumes = self.volumes
         return meta_molecule

@@ -14,46 +14,44 @@
 """
 Test backmapping
 """
-
-import textwrap
-import pytest
 import numpy as np
 from numpy.linalg import norm
-import math
 import networkx as nx
 import vermouth
-import polyply
 from polyply import MetaMolecule
 from polyply.src.backmap import Backmap
 
+def test_backmapping():
+    meta_molecule = MetaMolecule()
+    meta_molecule.add_edges_from([(0, 1), (1, 2)])
+    nx.set_node_attributes(meta_molecule, {0: {"resname": "test",
+                                               "position": np.array([0, 0, 0]),
+                                               "resid": 1, "build": True},
+                                           1: {"resname": "test",
+                                               "position": np.array([0, 0, 1.0]),
+                                               "resid": 2, "build": True},
+                                           2: {"resname": "test",
+                                               "position": np.array([0, 0, 2.0]),
+                                               "resid": 3, "build": False}})
+    # test if disordered template works
+    meta_molecule.templates = {"test": {"B": np.array([0, 0, 0]),
+                                        "A": np.array([0, 0, 0.5]),
+                                        "C": np.array([0, 0.5, 0])}}
+    meta_molecule.molecule = vermouth.molecule.Molecule()
+    meta_molecule.molecule.add_edges_from(
+        [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7)])
+    nx.set_node_attributes(meta_molecule.molecule, {
+        1: {"resname": "test", "resid": 1, "atomname": "A"},
+        2: {"resname": "test", "resid": 1, "atomname": "B"},
+        3: {"resname": "test", "resid": 1, "atomname": "C"},
+        4: {"resname": "test", "resid": 2, "atomname": "A"},
+        5: {"resname": "test", "resid": 2, "atomname": "B"},
+        6: {"resname": "test", "resid": 2, "atomname": "C"},
+        7: {"resname": "test", "resid": 3, "atomname": "C",
+            "position": np.array([4., 4., 4.])}
+        })
 
-class TestBackmap():
-
-    @staticmethod
-    def test_backmapping():
-        meta_molecule = MetaMolecule()
-        meta_molecule.add_edges_from([(0, 1)])
-        nx.set_node_attributes(meta_molecule, {0: {"resname": "test", "position": np.array([0, 0, 0])},
-                                               1: {"resname": "test", "position": np.array([0, 0, 1.0])}})
-        # test if disordered template works
-        meta_molecule.templates = {"test": {"B": np.array([0, 0, 0]),
-                                            "A": np.array([0, 0, 0.5]),
-                                            "C": np.array([0, 0.5, 0])}}
-        meta_molecule.molecule = vermouth.molecule.Molecule()
-        meta_molecule.molecule.add_edges_from(
-            [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6)])
-        nx.set_node_attributes(meta_molecule.molecule, {
-            1: {"resname": "test", "resid": 1, "build": True, "atomname": "A"},
-            2: {"resname": "test", "resid": 1, "build": True, "atomname": "B"},
-            3: {"resname": "test", "resid": 1, "build": True, "atomname": "C"},
-            4: {"resname": "test", "resid": 2, "build": True, "atomname": "A"},
-            5: {"resname": "test", "resid": 2, "build": True, "atomname": "B"},
-            6: {"resname": "test", "resid": 2, "build": False, "atomname": "C",
-                                               "position": np.array([4., 4., 4.])}})
-
-        Backmap().run_molecule(meta_molecule)
-        for node in meta_molecule.molecule.nodes:
-            assert "position" in meta_molecule.molecule.nodes[node]
-
-        assert norm(
-            meta_molecule.molecule.nodes[6]["position"]-np.array([4., 4., 4.])) == 0
+    Backmap().run_molecule(meta_molecule)
+    for node in meta_molecule.molecule.nodes:
+        assert "position" in meta_molecule.molecule.nodes[node]
+    assert norm(meta_molecule.molecule.nodes[7]["position"] - np.array([4., 4., 4.])) == 0
