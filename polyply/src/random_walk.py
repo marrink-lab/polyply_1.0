@@ -62,7 +62,7 @@ class RandomWalk(Processor):
                  start=np.array([0, 0, 0]),
                  maxiter=80,
                  maxdim=None,
-                 max_force=10**8.0,
+                 max_force=10**3.0,
                  vector_sphere=norm_sphere(5000)):
 
         self.mol_idx = mol_idx
@@ -102,7 +102,7 @@ class RandomWalk(Processor):
         """
 
         last_point = self.nonbond_matrix.get_point(self.mol_idx, prev_node)
-        step_length = 0.7 * self.nonbond_matrix.get_interaction(self.mol_idx,
+        step_length = 0.85 * self.nonbond_matrix.get_interaction(self.mol_idx,
                                                                 self.mol_idx,
                                                                 prev_node,
                                                                 current_node)[0]

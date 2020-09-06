@@ -254,12 +254,13 @@ class GenerateTemplates(Processor):
     in the templates attribute. The processor also stores the volume
     of each block in the volume attribute.
     """
-    def __init__(self, max_opt, *args, **kwargs):
+    def __init__(self, topology, max_opt, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.templates = {}
         self.resnames = []
         self.volumes = {}
         self.max_opt = max_opt
+        self.topology = topology
 
     def _gen_templates(self, meta_molecule):
         """
@@ -315,5 +316,5 @@ class GenerateTemplates(Processor):
         """
         templates, volumes = self._gen_templates(meta_molecule)
         meta_molecule.templates = self.templates
-        meta_molecule.volumes = self.volumes
+        self.topology.volumes = self.volumes
         return meta_molecule

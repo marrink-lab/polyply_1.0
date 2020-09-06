@@ -193,12 +193,13 @@ class NonBondMatrix():
 
         inter_matrix = {}
         for res_a, res_b in itertools.combinations(set(atom_types), r=2):
-            sigma = lorentz_berthelot_rule(topology.volumes[res_a],
-                                           topology.volumes[res_b], 1, 1)
-            inter_matrix[frozenset([res_a, res_b])] = (sigma, 1)
+            params = lorentz_berthelot_rule(topology.volumes[res_a],
+                                            topology.volumes[res_b], 1, 1)
+            inter_matrix[frozenset([res_a, res_b])] = params
 
-        for resname, vdw_radii in topology.molecules[0].volumes.items():
-            inter_matrix[frozenset([resname, resname])] = (vdw_radii, 1)
+        for resname in set(atom_types):
+            vdw_radius = topology.volumes[resname]
+            inter_matrix[frozenset([resname, resname])] = (vdw_radius, 1)
 
         nonbond_matrix = cls(positions, nodes_to_gndx,
                              atom_types, inter_matrix, cut_off=2.1)
