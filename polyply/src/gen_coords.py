@@ -49,7 +49,7 @@ def gen_coords(args):
     # Build polymer structure
 
 
-    GenerateTemplates(max_opt=10).run_system(topology)
+    GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
     BuildSystem(topology, args.density).run_system(topology.molecules)
     Backmap().run_system(topology)
 
