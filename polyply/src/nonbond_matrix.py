@@ -181,8 +181,8 @@ class NonBondMatrix():
         mol_count = 0
         for molecule in topology.molecules:
             for node in molecule.nodes:
-                if "position" in molecule.nodes:
-                    positions[idx, :] = molecule.nodes["position"]
+                if "position" in molecule.nodes[node]:
+                    positions[idx, :] = molecule.nodes[node]["position"]
 
                 resname = molecule.nodes[node]["resname"]
                 atom_types.append(resname)

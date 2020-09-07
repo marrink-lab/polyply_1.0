@@ -49,6 +49,28 @@ def _take_step(vectors, step_length, coord):
 def not_exceeds_max_dimensions(point, maxdim):
     return np.all(point < maxdim) and np.all(point > np.array([0., 0., 0.]))
 
+def is_pushed(point, old_point, push):
+    allowed = {"x": [0, 1],
+               "y": [1, 1],
+               "z": [2, 1],
+               "nx": [0, -1],
+               "ny": [1, -1],
+               "nz": [2, -1]}
+    if any([vect not in allowed for vect in push]):
+       raise IOError
+
+    if len(push) >= 6:
+       raise IOError
+
+    for direction in push:
+        pos, sign = allowed[direction]
+        if direction in ["x", "y", "z"] and point[pos] < old_point[pos]:
+           return False
+        elif  direction in ["nx", "ny", "nz"] and point[pos] > old_point[pos]:
+           return False
+    else:
+        return True
+
 class RandomWalk(Processor):
     """
     Add coordinates at the meta_molecule level
@@ -63,7 +85,8 @@ class RandomWalk(Processor):
                  maxiter=80,
                  maxdim=None,
                  max_force=10**3.0,
-                 vector_sphere=norm_sphere(5000)):
+                 vector_sphere=norm_sphere(5000),
+                 push=[]):
 
         self.mol_idx = mol_idx
         self.nonbond_matrix = nonbond_matrix
@@ -73,6 +96,7 @@ class RandomWalk(Processor):
         self.vector_sphere = vector_sphere
         self.success = False
         self.max_force = max_force
+        self.push = push
 
     def _is_overlap(self, point, node, nrexcl=1):
         neighbours = nx.neighbors(self.molecule, node)
@@ -112,7 +136,8 @@ class RandomWalk(Processor):
             overlap = self._is_overlap(new_point, current_node)
 
             in_box = not_exceeds_max_dimensions(new_point, self.maxdim)
-            if not overlap and in_box:
+            pushed = is_pushed(new_point, last_point, self.push)
+            if not overlap and in_box and pushed:
                 self.nonbond_matrix.update_positions(new_point, self.mol_idx, current_node)
                 return True
             elif step_count == self.maxiter:
