@@ -81,9 +81,8 @@ class TestTopParsing:
         OM      O         1    1.9670816e-03  8.5679450e-07
         """,
          "types",
-         defaultdict(list, {"bondtypes": [vermouth.molecule.Interaction(
-             atoms=["OM", "O"], parameters=["1", "1.9670816e-03", "8.5679450e-07"],
-             meta=None)]})
+         {("OM", "O"): (["1", "1.9670816e-03", "8.5679450e-07"],
+                         None)}
          ),
         ("""
         [ system ]
@@ -99,8 +98,6 @@ class TestTopParsing:
         force_field = vermouth.forcefield.ForceField(name='test_ff')
         top = Topology(force_field, name="test")
         polyply.src.top_parser.read_topology(new_lines, top)
-        print(getattr(top, attr))
-        print(value)
         assert getattr(top, attr) == value
 
     @staticmethod

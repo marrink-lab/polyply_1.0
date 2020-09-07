@@ -33,6 +33,8 @@ COORD_PARSERS = {"pdb": read_pdb,
 # small wrapper that is neccessiataed
 # by the fact that gro and pdb readers
 # return a molecule and a list respectively
+
+
 def _coord_parser(path, extension):
     reader = COORD_PARSERS[extension]
     molecules = reader(path, exclude=())
@@ -41,9 +43,10 @@ def _coord_parser(path, extension):
         for new_mol in molecules[1:]:
             molecule.merge_molecule(new_mol)
     else:
-       molecule = molecules
+        molecule = molecules
 
     return molecule
+
 
 def replace_defined_interaction(interaction, defines):
     """
@@ -67,13 +70,14 @@ def replace_defined_interaction(interaction, defines):
         if parameter in defines:
             values = defines[parameter]
             for new_param in values:
-                 new_parameters.append(new_param)
+                new_parameters.append(new_param)
         else:
             new_parameters.append(parameter)
 
     interaction.parameters[:] = new_parameters[:]
 
     return interaction
+
 
 def lorentz_berthelot_rule(sig_A, sig_B, eps_A, eps_B):
     """
@@ -98,6 +102,7 @@ def lorentz_berthelot_rule(sig_A, sig_B, eps_A, eps_B):
     sig = (sig_A + sig_B)/2.0
     eps = (eps_A * eps_B)**0.5
     return sig, eps
+
 
 def geometric_rule(C6_A, C6_B, C12_A, C12_B):
     """
@@ -134,6 +139,7 @@ def find_atoms(molecule, attr, value):
 
     return nodes
 
+
 class Topology(System):
     """
     Ties together vermouth molecule definitions, and
@@ -166,7 +172,7 @@ class Topology(System):
         self.defines = {}
         self.description = []
         self.atom_types = {}
-        self.types = defaultdict(list)
+        self.types = {}
         self.nonbond_params = {}
 
     def preprocess(self):
@@ -176,10 +182,12 @@ class Topology(System):
         is done by grompp.
         """
         self.gen_pairs()
+        # we need to replace defines before doing bonded interactions
         self.replace_defines()
+        self.gen_bonded_interactions()
         # only convert if we not already have sig-eps form
         if self.defaults['comb-rule'] == 1:
-           self.convert_nonbond_to_sig_eps()
+            self.convert_nonbond_to_sig_eps()
 
     def replace_defines(self):
         """
@@ -216,14 +224,34 @@ class Topology(System):
                     nb2_B = self.atom_types[atom_type_B]["nb2"]
                     nb1, nb2 = comb_rule(nb1_A, nb1_B, nb2_A, nb2_B)
                     self.nonbond_params.update({frozenset([atom_type_A, atom_type_B]):
-                                               {"nb1": nb1, "nb2": nb2}})
+                                                {"nb1": nb1, "nb2": nb2}})
 
         for atom_type in self.atom_types:
             if frozenset([atom_type, atom_type]) not in self.nonbond_params:
                 nb1 = self.atom_types[atom_type]["nb1"]
                 nb2 = self.atom_types[atom_type]["nb2"]
                 self.nonbond_params.update({frozenset([atom_type, atom_type]):
-                                           {"nb1": nb1, "nb2": nb2}})
+                                            {"nb1": nb1, "nb2": nb2}})
+
+    def gen_bonded_interactions(self):
+        """
+        Check for each interaction if there is
+        no parameter for an interaction if that
+        parameter is defined in the bonded directive
+        of the topology.
+        """
+        for block in self.force_field.blocks.values():
+            for interactions in block.interactions.values():
+                for interaction in interactions:
+                    if len(interaction.parameters) == 1:
+                        atoms = tuple(block.nodes[node]["atype"] for node in interaction.atoms)
+                        try:
+                            new_params, meta = self.types[atoms]
+                        except KeyError:
+                            new_params, meta = self.types[atoms[::-1]]
+                        interaction.parameters[:] = new_params[:]
+                        if meta:
+                            interaction.meta.update(meta)
 
     def convert_nonbond_to_sig_eps(self):
         """
@@ -236,7 +264,7 @@ class Topology(System):
             nb2 = self.nonbond_params[atom_pair]["nb2"]
 
             if nb2 != 0:
-                sig = (nb2/nb1)**(1.0/6.0 )
+                sig = (nb2/nb1)**(1.0/6.0)
             else:
                 sig = 0
 
@@ -259,12 +287,12 @@ class Topology(System):
             no_coords = []
             for node in meta_mol.molecule.nodes:
                 try:
-                   position = molecules.nodes[total]["position"]
+                    position = molecules.nodes[total]["position"]
                 except KeyError:
-                   no_coords.append(node)
+                    no_coords.append(node)
                 else:
-                   meta_mol.molecule.nodes[node]["position"] = position
-                   total += 1
+                    meta_mol.molecule.nodes[node]["position"] = position
+                    total += 1
 
             for node in meta_mol:
                 resid = meta_mol.nodes[node]["resid"]

@@ -238,3 +238,81 @@ class TestTopology:
         assert math.isclose(top.nonbond_params[frozenset(["EO", "EO"])]["nb1"], 0.43)
         assert math.isclose(top.nonbond_params[frozenset(["EO", "EO"])]["nb2"], 3.4*0.75)
 
+    @staticmethod
+    @pytest.mark.parametrize('lines, inter_type, outcome', (
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ bondtypes ]
+        C       C       1       0.1335  502080.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 C   1 test C1 1   0.0 14.0
+        2 C   1 test C2 2   0.0 12.0
+        [ bonds ]
+        1 2  1
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        "bonds",
+        ["1", "0.1335", "502080.0"]
+        ),
+        # test three element define
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ angletypes ]
+        CE1   CE1	CT2	5	123.50	401.664	0.0	0.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 CE1   1 test C1 1   0.0 14.0
+        2 CE1   1 test C2 2   0.0 12.0
+        3 CT2   1 test C3 3   0.0 12.0
+        [ angles ]
+        1 2  3 1
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        "angles",
+        ["5", "123.50",  "401.664", "0.0", "0.0"]
+        ),
+        # test reverse match
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ angletypes ]
+        CE1    CE2	CT2	5	123.50	401.664	0.0	0.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 CT2   1 test C1 1   0.0 14.0
+        2 CE2   1 test C2 2   0.0 12.0
+        3 CE1   1 test C3 3   0.0 12.0
+        [ angles ]
+        1  2  3 1
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        "angles",
+        ["5", "123.50",  "401.664", "0.0", "0.0"]
+        )
+	))
+    def test_replace_types(lines, inter_type, outcome):
+        new_lines = textwrap.dedent(lines)
+        new_lines = new_lines.splitlines()
+        force_field = vermouth.forcefield.ForceField(name='test_ff')
+        top =  Topology(force_field, name="test")
+        polyply.src.top_parser.read_topology(new_lines, top)
+        top.gen_bonded_interactions()
+        assert top.molecules[0].molecule.interactions[inter_type][0].parameters == outcome
