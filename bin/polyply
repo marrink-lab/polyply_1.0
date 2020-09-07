@@ -90,6 +90,8 @@ def main():
                             help='Input file (.gro)', default=None)
     file_group.add_argument('-dens', dest='density', type=float,
                             help='density of system', default=None)
+    file_group.add_argument('-push', dest='push', type=str,
+                            help='one of x,y,z nx, ny, nz', default=[], nargs='+')
     parser_gen_coords.set_defaults(func=gen_coords)
 
     #============================================================================
