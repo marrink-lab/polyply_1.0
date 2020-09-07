@@ -49,12 +49,14 @@ class BuildSystem():
                  density,
                  n_grid_points=500,
                  maxiter=800,
-                 box_size=None):
+                 box_size=None,
+                 push=[]):
 
         self.topology = topology
         self.density = density
         self.n_grid_points = n_grid_points
         self.maxiter = maxiter
+        self.push = push
 
         if box_size:
             self.box_size = box_size
@@ -77,7 +79,8 @@ class BuildSystem():
                                    maxiter=50,
                                    maxdim=self.maxdim,
                                    max_force=10**3.0,
-                                   vector_sphere=vector_sphere)
+                                   vector_sphere=vector_sphere,
+                                   push=self.push)
 
             processor.run_molecule(molecule)
             if processor.success:
@@ -111,6 +114,7 @@ class BuildSystem():
             if all([ "position" in molecule.nodes[node] for node in molecule.nodes]):
                 mol_idx += 1
                 pbar.update(1)
+                continue
 
             success, new_nonbond_matrix = self._handle_random_walk(molecule,
                                                                    mol_idx,
