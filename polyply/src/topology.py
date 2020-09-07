@@ -172,7 +172,7 @@ class Topology(System):
         self.defines = {}
         self.description = []
         self.atom_types = {}
-        self.types = {}
+        self.types = defaultdict(dict)
         self.nonbond_params = {}
 
     def preprocess(self):
@@ -241,14 +241,32 @@ class Topology(System):
         of the topology.
         """
         for block in self.force_field.blocks.values():
-            for interactions in block.interactions.values():
+            for inter_type, interactions in block.interactions.items():
+                if inter_type in ["pairs", "exclusions"]:
+                    continue
                 for interaction in interactions:
                     if len(interaction.parameters) == 1:
                         atoms = tuple(block.nodes[node]["atype"] for node in interaction.atoms)
-                        try:
-                            new_params, meta = self.types[atoms]
-                        except KeyError:
-                            new_params, meta = self.types[atoms[::-1]]
+
+                        if atoms in self.types[inter_type]:
+                            new_params, meta = self.types[inter_type][atoms]
+                        elif atoms[::-1] in self.types[inter_type]:
+                            new_params, meta = self.types[inter_type][atoms[::-1]]
+                        elif inter_type in "dihedrals" and\
+                             ("X", atoms[1], atoms[2], "X") in self.types[inter_type]:
+                            new_params, meta = self.types[inter_type][("X", atoms[1], atoms[2], "X")]
+                        elif inter_type == "dihedrals" and\
+                             ("X", atoms[2], atoms[1], "X") in self.types[inter_type]:
+                            new_params, meta = self.types[inter_type][("X", atoms[2], atoms[1], "X")]
+                        elif inter_type in "dihedrals" and\
+                             (atoms[0], "X", "X", atoms[3]) in self.types[inter_type]:
+                            new_params, meta = self.types[inter_type][(atoms[0], "X", "X", atoms[3])]
+                        elif inter_type == "dihedrals" and\
+                             (atoms[3], "X", "X", atoms[0]) in self.types[inter_type]:
+                            new_params, meta = self.types[inter_type][(atoms[3], "X", "X", atoms[0])]
+                        else:
+                            raise IOError
+
                         interaction.parameters[:] = new_params[:]
                         if meta:
                             interaction.meta.update(meta)

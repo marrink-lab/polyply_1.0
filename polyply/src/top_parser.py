@@ -309,12 +309,11 @@ class TOPDirector(SectionLineParser):
         Parse and store bonded types
         """
         section_name = self.section[-1]
+        inter_type = section_name[:-5] + "s"
         atoms, params = self._split_atoms_and_parameters(line.split(),
                                                          self.atom_idxs[section_name])
-#        new_interaction = Interaction(atoms=atoms,
-#                                      parameters=params,
-#                                      meta=self.current_meta)
-        self.topology.types[tuple(atoms)] = (params, self.current_meta)
+
+        self.topology.types[inter_type][tuple(atoms)] = (params, self.current_meta)
 
     @SectionLineParser.section_parser('cmaptypes')
     def _skip(self, line, lineno=0):
