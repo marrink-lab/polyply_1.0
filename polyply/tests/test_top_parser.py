@@ -132,8 +132,7 @@ class TestTopParsing:
              atoms=[1, 2], parameters=[], meta={"ifdef": "FLEXIBLE"}),
           vermouth.molecule.Interaction(
              atoms=[2, 3], parameters=[], meta={})])
-         )
-         )
+         ))
     def test_ifdefs(def_statements, bonds):
         """
         test the handling if ifdefs and ifndefs at
@@ -157,6 +156,31 @@ class TestTopParsing:
         polyply.src.top_parser.read_topology(new_lines, top)
         print(top.force_field.blocks["GLY"].interactions['bonds'])
         assert top.force_field.blocks["GLY"].interactions['bonds'] == bonds
+
+    @staticmethod
+    @pytest.mark.parametrize('def_statements',
+          ("""
+          #ifdef random
+          #include "random.itp"
+          #endif
+          """,
+          """
+          #define random
+          #ifndef random
+          #include "random.itp"
+          #endif
+          """))
+    def test_ifdefs_files(def_statements):
+        """
+        test files in ifdef/ifndef statements are only
+        read if a define has been read before
+        """
+        new_lines = textwrap.dedent(def_statements)
+        new_lines = new_lines.splitlines()
+        force_field = vermouth.forcefield.ForceField(name='test_ff')
+        top = Topology(force_field, name="test")
+        polyply.src.top_parser.read_topology(new_lines, top)
+        assert True
 
     @staticmethod
     @pytest.mark.parametrize('def_statements, result',

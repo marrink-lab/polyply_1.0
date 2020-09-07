@@ -366,6 +366,20 @@ class TOPDirector(SectionLineParser):
         parse include statemnts
         """
         path = line.split()[1].strip('\"')
+        print(self.current_meta)
+        if self.current_meta:
+           # the current file is between ifdef
+           # however tag is not in defines we have
+           # read so the file is not read
+           if self.current_meta["condition"] == "ifdef"\
+              and self.current_meta["tag"] not in self.topology.defines:
+                 return
+           # the current file is between ifndef
+           # so if tag is defined we ignore this file
+           elif self.current_meta["condition"] == "ifndef"\
+              and self.current_meta["tag"] in self.topology.defines:
+                 return
+
         if self.cwdir:
            filename = os.path.join(self.cwdir, path)
            cwdir = os.path.dirname(filename)
