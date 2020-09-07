@@ -366,7 +366,6 @@ class TOPDirector(SectionLineParser):
         parse include statemnts
         """
         path = line.split()[1].strip('\"')
-        print(self.current_meta)
         if self.current_meta:
            # the current file is between ifdef
            # however tag is not in defines we have
