@@ -314,6 +314,7 @@ class TestTopology:
         1.0   1.0   yes  1.0     1.0
         [ dihedraltypes ]
         X  CE2  CE1  X    5   123.50	401.664	0.0	0.0
+        X  CT2  CE1  X    5   123.50	401.664	0.0	0.0
         [ moleculetype ]
         test 3
         [ atoms ]
@@ -321,14 +322,18 @@ class TestTopology:
         2 CE2   1 test C2 2   0.0 12.0
         3 CE1   1 test C3 3   0.0 12.0
         4 CT2   1 test C4 4   0.0 12.0
+        5 CT2   1 test C5 5   0.0 14.0
         [ dihedrals ]
         1  2  3  4 1
+        2  3  4  5 1
         [ system ]
         some title
         [ molecules ]
         test 1
         """,
         {"dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                                meta={}),
+                       Interaction(atoms=(1, 2, 3, 4), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
                                 meta={})]}
         ),
         # test generic improper
@@ -338,6 +343,7 @@ class TestTopology:
         1.0   1.0   yes  1.0     1.0
         [ dihedraltypes ]
         CT2   X     X     CT2    5   123.50	401.664	0.0	0.0
+        CT2   X     X     CE2    5   123.50	401.664	0.0	0.0
         [ moleculetype ]
         test 3
         [ atoms ]
@@ -345,17 +351,21 @@ class TestTopology:
         2 CE2   1 test C2 2   0.0 12.0
         3 CE1   1 test C3 3   0.0 12.0
         4 CT2   1 test C4 4   0.0 12.0
+        5 CT2   1 test C5 5   0.0 14.0
         [ dihedrals ]
         1  2  3  4 2
+        2  3  4  5 2
         [ system ]
         some title
         [ molecules ]
         test 1
         """,
         {"dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                                meta={}),
+                       Interaction(atoms=(1, 2, 3, 4), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
                                 meta={})]}
         ),
-        # multiple matchs
+        # multiple matchs and pairs and a meta parameters
         (
         """
         [ defaults ]
@@ -364,7 +374,9 @@ class TestTopology:
         CE1    CE2	CT2	5	123.50	401.664	0.0	0.0
         [ bondtypes ]
         CT2       CE2       1       0.1335  502080.0
+        #ifdef old
         CE2       CE1       1       0.1335  502080.0
+        #endif
         [ moleculetype ]
         test 3
         [ atoms ]
@@ -374,17 +386,22 @@ class TestTopology:
         [ bonds ]
         1 2 1
         2 3 1
+        [ pairs ]
+        1  2  1
         [ angles ]
+        #ifdef angle
         1  2  3 1
+        #endif
         [ system ]
         some title
         [ molecules ]
         test 1
         """,
         {"bonds": [Interaction(atoms=(0, 1), parameters=["1", "0.1335", "502080.0"], meta={}),
-                   Interaction(atoms=(1, 2), parameters=["1", "0.1335", "502080.0"], meta={})],
+                   Interaction(atoms=(1, 2), parameters=["1", "0.1335", "502080.0"], meta={'tag': 'old', 'condition': 'ifdef'})],
+         "pairs": [Interaction(atoms=(0, 1), parameters=["1"], meta={})],
          "angles": [Interaction(atoms=(0, 1, 2), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
-                                meta={})]}
+                                meta={"ifdef":"angle"})]}
         )
 	))
     def test_replace_types(lines, outcome):
