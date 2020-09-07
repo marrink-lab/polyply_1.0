@@ -47,9 +47,12 @@ class BuildSystem():
 
     def __init__(self, topology,
                  density,
+                 max_force=10**3,
                  n_grid_points=500,
                  maxiter=800,
+                 maxiter_random=50,
                  box_size=None,
+                 step_fudge=1,
                  push=[]):
 
         self.topology = topology
@@ -57,6 +60,9 @@ class BuildSystem():
         self.n_grid_points = n_grid_points
         self.maxiter = maxiter
         self.push = push
+        self.step_fudge = step_fudge
+        self.maxiter_random = maxiter_random
+        self.max_force = max_force
 
         if box_size:
             self.box_size = box_size
@@ -75,10 +81,11 @@ class BuildSystem():
             start = self.box_grid[np.random.randint(len(self.box_grid), size=3)]
             processor = RandomWalk(mol_idx,
                                    self.nonbond_matrix.copy(),
+                                   step_fudge=self.step_fudge,
                                    start=start,
                                    maxiter=50,
                                    maxdim=self.maxdim,
-                                   max_force=10**3.0,
+                                   max_force=self.max_force,
                                    vector_sphere=vector_sphere,
                                    push=self.push)
 

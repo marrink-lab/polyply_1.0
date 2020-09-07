@@ -82,6 +82,7 @@ class RandomWalk(Processor):
                  mol_idx,
                  nonbond_matrix,
                  start=np.array([0, 0, 0]),
+                 step_fudge=0.8,
                  maxiter=80,
                  maxdim=None,
                  max_force=10**3.0,
@@ -97,6 +98,7 @@ class RandomWalk(Processor):
         self.success = False
         self.max_force = max_force
         self.push = push
+        self.step_fudge = step_fudge
 
     def _is_overlap(self, point, node, nrexcl=1):
         neighbours = nx.neighbors(self.molecule, node)
@@ -126,7 +128,7 @@ class RandomWalk(Processor):
         """
 
         last_point = self.nonbond_matrix.get_point(self.mol_idx, prev_node)
-        step_length = 0.85 * self.nonbond_matrix.get_interaction(self.mol_idx,
+        step_length = self.step_fudge * self.nonbond_matrix.get_interaction(self.mol_idx,
                                                                 self.mol_idx,
                                                                 prev_node,
                                                                 current_node)[0]
