@@ -311,10 +311,10 @@ class TOPDirector(SectionLineParser):
         section_name = self.section[-1]
         atoms, params = self._split_atoms_and_parameters(line.split(),
                                                          self.atom_idxs[section_name])
-        new_interaction = Interaction(atoms=atoms,
-                                      parameters=params,
-                                      meta=self.current_meta)
-        self.topology.types[section_name].append(new_interaction)
+#        new_interaction = Interaction(atoms=atoms,
+#                                      parameters=params,
+#                                      meta=self.current_meta)
+        self.topology.types[tuple(atoms)] = (params, self.current_meta)
 
     @SectionLineParser.section_parser('cmaptypes')
     def _skip(self, line, lineno=0):
