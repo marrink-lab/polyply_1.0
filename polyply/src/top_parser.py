@@ -315,6 +315,8 @@ class TOPDirector(SectionLineParser):
 
         self.topology.types[inter_type][tuple(atoms)] = (params, self.current_meta)
 
+
+    @SectionLineParser.section_parser('implicit_genborn_params')
     @SectionLineParser.section_parser('cmaptypes')
     def _skip(self, line, lineno=0):
         pass
