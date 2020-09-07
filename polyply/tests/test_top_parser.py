@@ -293,3 +293,21 @@ class TestTopParsing:
         top = Topology(force_field, name="test")
         with pytest.raises(IOError):
             polyply.src.top_parser.read_topology(new_lines, top)
+
+    @staticmethod
+    @pytest.mark.parametrize('lines', (
+        """
+        [cmaptypes]
+        something something
+        """,
+        """
+        [implicit_genborn_params]
+        something something
+        """
+         ))
+    def test_skip_directives(lines):
+        new_lines = textwrap.dedent(lines)
+        new_lines = new_lines.splitlines()
+        force_field = vermouth.forcefield.ForceField(name='test_ff')
+        top = Topology(force_field, name="test")
+        assert True
