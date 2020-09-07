@@ -413,3 +413,32 @@ class TestTopology:
         top.gen_bonded_interactions()
         for inter_type in outcome:
             assert top.molecules[0].molecule.interactions[inter_type] == outcome[inter_type]
+
+    @staticmethod
+    def test_replace_types_fail():
+        lines = """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ dihedraltypes ]
+        C   Q    Q     Q    5   123.50	401.664	0.0	0.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 CT2   1 test C1 1   0.0 14.0
+        2 CE2   1 test C2 2   0.0 12.0
+        3 CE1   1 test C3 3   0.0 12.0
+        4 CT2   1 test C4 4   0.0 12.0
+        [ dihedrals ]
+        1  2  3  4 2
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """
+        new_lines = textwrap.dedent(lines)
+        new_lines = new_lines.splitlines()
+        force_field = vermouth.forcefield.ForceField(name='test_ff')
+        top =  Topology(force_field, name="test")
+        polyply.src.top_parser.read_topology(new_lines, top)
+        with pytest.raises(OSError):
+             top.gen_bonded_interactions()

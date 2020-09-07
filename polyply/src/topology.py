@@ -267,9 +267,8 @@ class Topology(System):
                         else:
                             msg=("In section {} interaction of atoms {} has no corresponding bonded"
                                  "type.")
-                            atoms = " "
-                            [atoms.join(str(atom)) for atom in atoms]
-                            raise IOError(msg.format(inter_type, atoms))
+                            atoms = " ".join(list(map(lambda x: str(x), interaction.atoms)))
+                            raise OSError(msg.format(inter_type, atoms))
 
                         interaction.parameters[:] = new_params[:]
                         if meta:
