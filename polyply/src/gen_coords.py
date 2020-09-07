@@ -50,7 +50,15 @@ def gen_coords(args):
 
 
     GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
-    BuildSystem(topology, args.density, push=args.push).run_system(topology.molecules)
+    BuildSystem(topology,
+                density=args.density,
+                max_force=args.max_force,
+                n_grid_points=args.grid_points,
+                maxiter=args.maxiter,
+                maxiter_random=args.maxiter_random,
+                box_size=args.box,
+                step_fudge=args.step_fudge,
+                push=args.push).run_system(topology.molecules)
     Backmap().run_system(topology)
 
     # Write output

@@ -82,15 +82,29 @@ def main():
     file_group = parser_gen_coords.add_argument_group('Input and output files')
     file_group.add_argument('-p', dest='toppath', required=False, type=Path,
                             help='topology file (.top)')
-    file_group.add_argument('-f', dest='ffpath', required=False, type=Path,
-                            help='force-field files (.ff|.itp)', nargs='*')
     file_group.add_argument('-o', dest='outpath', type=Path,
-                            help='Output GRO (.gro)')
+                            help='output GRO (.gro)')
     file_group.add_argument('-c', dest='coordpath', type=Path,
-                            help='Input file (.gro)', default=None)
-    file_group.add_argument('-dens', dest='density', type=float,
+                            help='input file (.gro)', default=None)
+
+    system_group = parser_gen_coords.add_argument_group('Variables for system generation')
+    system_group.add_argument('-dens', dest='density', type=float,
                             help='density of system', default=None)
-    file_group.add_argument('-push', dest='push', type=str,
+    system_group.add_argument('-box', dest='box', type=float,
+                            help='cubic box', default=None)
+    system_group.add_argument('-grid', dest='grid_points', type=int,
+                            help='number of grid points', default=500)
+    system_group.add_argument('-mi', dest='maxiter', type=int,
+                            help='max number of trys to grow a molecule', default=800)
+
+    random_walk_group = parser_gen_coords.add_argument_group('Variables for random walk')
+    random_walk_group.add_argument('-mir', dest='maxiter_random', type=int,
+                            help='max number of trys to place a residue', default=100)
+    random_walk_group.add_argument('-sf', dest='step_fudge', type=float,
+                            help='scale step length in random walk by fudge factor', default=0.8)
+    random_walk_group.add_argument('-mf', dest='max_force', type=float,
+                            help='max force to allow in residue placing', default=10**3.0)
+    random_walk_group.add_argument('-push', dest='push', type=str,
                             help='one of x,y,z nx, ny, nz', default=[], nargs='+')
     parser_gen_coords.set_defaults(func=gen_coords)
 
