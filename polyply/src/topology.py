@@ -242,7 +242,7 @@ class Topology(System):
         """
         for block in self.force_field.blocks.values():
             for inter_type, interactions in block.interactions.items():
-                if inter_type in ["pairs", "exclusions"]:
+                if inter_type in ["pairs", "exclusions", "virtual_sitesn"]:
                     continue
                 for interaction in interactions:
                     if len(interaction.parameters) == 1:
@@ -265,7 +265,11 @@ class Topology(System):
                              (atoms[3], "X", "X", atoms[0]) in self.types[inter_type]:
                             new_params, meta = self.types[inter_type][(atoms[3], "X", "X", atoms[0])]
                         else:
-                            raise IOError
+                            msg=("In section {} interaction of atoms {} has no corresponding bonded"
+                                 "type.")
+                            atoms = " "
+                            [atoms.join(str(atom)) for atom in atoms]
+                            raise IOError(msg.format(inter_type, atoms))
 
                         interaction.parameters[:] = new_params[:]
                         if meta:
