@@ -108,6 +108,10 @@ class BuildSystem():
         vector_sphere = norm_sphere(5000)
         while mol_idx < mol_tot:
             molecule = molecules[mol_idx]
+            if all([ "position" in molecule.nodes[node] for node in molecule.nodes]):
+                mol_idx += 1
+                pbar.update(1)
+
             success, new_nonbond_matrix = self._handle_random_walk(molecule,
                                                                    mol_idx,
                                                                    vector_sphere)
