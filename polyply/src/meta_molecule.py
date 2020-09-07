@@ -24,7 +24,8 @@ def _make_edges(force_field):
     for block in force_field.blocks.values():
         inter_types = list(block.interactions.keys())
         for inter_type in inter_types:
-            block.make_edges_from_interaction_type(type_=inter_type)
+            if inter_type not in ["pairs", "exclusions"]:
+               block.make_edges_from_interaction_type(type_=inter_type)
 
     for link in force_field.links:
         inter_types = list(link.interactions.keys())
