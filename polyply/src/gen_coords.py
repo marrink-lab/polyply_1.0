@@ -15,12 +15,11 @@
 """
 High level API for the polyply coordinate generator
 """
-
+import numpy as np
 import networkx as nx
 import vermouth.forcefield
-from vermouth.file_writer import open, DeferredFileWriter
+from vermouth.file_writer import DeferredFileWriter
 from .generate_templates import GenerateTemplates
-from .random_walk import RandomWalk
 from .backmap import Backmap
 from .topology import Topology
 from .build_system import BuildSystem
@@ -46,17 +45,21 @@ def gen_coords(args):
             for node in molecule.nodes:
                 molecule.nodes[node]["build"] = True
 
+    # deal with box-input
+    if all(args.box):
+        box = np.array(args.box)
+    else:
+        box = None
+
     # Build polymer structure
-
-
     GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
     BuildSystem(topology,
                 density=args.density,
                 max_force=args.max_force,
-                n_grid_points=args.grid_points,
+                grid_spacing=args.grid_spacing,
                 maxiter=args.maxiter,
                 maxiter_random=args.maxiter_random,
-                box_size=args.box,
+                box=box,
                 step_fudge=args.step_fudge,
                 push=args.push).run_system(topology.molecules)
     Backmap().run_system(topology)
