@@ -48,43 +48,47 @@ class BuildSystem():
     def __init__(self, topology,
                  density,
                  max_force=10**3,
-                 n_grid_points=500,
+                 grid_spacing=0.2,
                  maxiter=800,
                  maxiter_random=50,
-                 box_size=None,
+                 box=None,
                  step_fudge=1,
                  push=[]):
 
         self.topology = topology
         self.density = density
-        self.n_grid_points = n_grid_points
+        self.grid_spacing = grid_spacing
         self.maxiter = maxiter
         self.push = push
         self.step_fudge = step_fudge
         self.maxiter_random = maxiter_random
         self.max_force = max_force
 
-        if box_size:
-            self.box_size = box_size
+        # Taking care of setting the box size and the gird
+        if all(box):
+            self.box = box
         else:
-            self.box_size = round(_compute_box_size(topology, self.density), 5)
+            box_dim = round(_compute_box_size(topology, self.density), 5)
+            self.box = np.array([box_dim, box_dim, box_dim])
 
-        self.box_grid = np.arange(0, self.box_size, self.box_size/self.n_grid_points)
-        self.maxdim = np.array([self.box_size, self.box_size, self.box_size])
-        topology.box = (self.box_size, self.box_size, self.box_size)
+        self.box_grid = np.mgrid[0:self.box[0]:self.grid_spacing,
+                                 0:self.box[1]:self.grid_spacing,
+                                 0:self.box[2]:self.grid_spacing].reshape(3,-1).T
+
+        topology.box = (self.box[0], self.box[1], self.box[2])
 
         self.nonbond_matrix = NonBondMatrix.from_topology(topology)
 
     def _handle_random_walk(self, molecule, mol_idx, vector_sphere):
         step_count = 0
         while True:
-            start = self.box_grid[np.random.randint(len(self.box_grid), size=3)]
+            start = self.box_grid[np.random.randint(len(self.box_grid))]
             processor = RandomWalk(mol_idx,
                                    self.nonbond_matrix.copy(),
                                    step_fudge=self.step_fudge,
                                    start=start,
                                    maxiter=50,
-                                   maxdim=self.maxdim,
+                                   maxdim=self.box,
                                    max_force=self.max_force,
                                    vector_sphere=vector_sphere,
                                    push=self.push)
