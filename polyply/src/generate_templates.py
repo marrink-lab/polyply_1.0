@@ -139,13 +139,19 @@ def compute_volume(molecule, block, coords):
         atom_key = block.nodes[node]["atype"]
         rad = float(molecule.nonbond_params[frozenset([atom_key, atom_key])]["nb1"])
         diff = coord - res_center_of_geometry
-        geom_vects[idx, :] = diff + u_vect(diff) * rad
+        # if the atom/bead is exactly in the geometrical center it doesn't
+        # contribute to the Rg value
+        if not all(diff == np.array([0.0, 0.0, 0.0])):
+           geom_vects[idx, :] = diff + u_vect(diff) * rad
+        else:
+           continue
         idx += 1
 
     if geom_vects.shape[0] > 1:
         radgyr = radius_of_gyration(geom_vects)
     else:
         radgyr = rad
+
     return radgyr
 
 def map_from_CoG(coords):
@@ -294,6 +300,7 @@ class GenerateTemplates(Processor):
                 while True:
                     coords = _expand_inital_coords(block)
                     success, coords = optimize_geometry(block, coords)
+
                     if success:
                         break
                     elif opt_counter > self.max_opt:
