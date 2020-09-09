@@ -14,6 +14,7 @@
 
 import vermouth
 import polyply.src
+from tqdm import tqdm
 
 class Processor:
     """
@@ -29,7 +30,7 @@ class Processor:
             The system to process. Is modified in-place.
         """
         mols = []
-        for molecule in system.molecules:
+        for molecule in tqdm(system.molecules):
             mols.append(self.run_molecule(molecule))
         system.molecules = mols
 

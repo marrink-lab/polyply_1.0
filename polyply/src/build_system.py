@@ -51,7 +51,7 @@ class BuildSystem():
                  grid_spacing=0.2,
                  maxiter=800,
                  maxiter_random=50,
-                 box=None,
+                 box=[],
                  step_fudge=1,
                  push=[]):
 
@@ -65,7 +65,8 @@ class BuildSystem():
         self.max_force = max_force
 
         # Taking care of setting the box size and the gird
-        if all(box):
+
+        if len(box) != 0:
             self.box = box
         else:
             box_dim = round(_compute_box_size(topology, self.density), 5)

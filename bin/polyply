@@ -91,7 +91,7 @@ def main():
     system_group.add_argument('-dens', dest='density', type=float,
                             help='density of system', default=None)
     system_group.add_argument('-box', dest='box', type=float,
-                            help='rectangluar box x y z', default=None, nargs=3)
+                            help='rectangluar box x y z', default=[], nargs=3)
     system_group.add_argument('-grid', dest='grid_spacing', type=int,
                             help='grid spacing in nm', default=0.2)
     system_group.add_argument('-mi', dest='maxiter', type=int,
