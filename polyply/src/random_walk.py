@@ -60,14 +60,14 @@ def is_pushed(point, old_point, push):
        raise IOError
 
     if len(push) >= 6:
-       raise IOError
+        raise IOError
 
     for direction in push:
         pos, sign = allowed[direction]
         if direction in ["x", "y", "z"] and point[pos] < old_point[pos]:
-           return False
+            return False
         elif  direction in ["nx", "ny", "nz"] and point[pos] > old_point[pos]:
-           return False
+            return False
     else:
         return True
 
@@ -99,6 +99,13 @@ class RandomWalk(Processor):
         self.max_force = max_force
         self.push = push
         self.step_fudge = step_fudge
+
+    def _rewind(self, current_step, placed_nodes, nsteps):
+        for node in placed_nodes[-nsteps:]:
+             dummy_point = np.array([np.inf, np.inf, np.inf])
+             self.nonbond_matrix.update_positions(dummy_point,
+                                                  self.mol_idx,
+                                                  node)
 
     def _is_overlap(self, point, node, nrexcl=1):
         neighbours = nx.neighbors(self.molecule, node)
@@ -167,16 +174,38 @@ class RandomWalk(Processor):
                 return
 
         vector_bundle = self.vector_sphere.copy()
-        for prev_node, current_node in nx.dfs_edges(meta_molecule, source=first_node):
+        count = 0
+        placed_nodes = []
+        path = list(nx.dfs_edges(meta_molecule, source=first_node))
+        step_count = 0
+        while step_count < len(path):
+            prev_node, current_node = path[step_count]
+            #print(prev_node, current_node)
             if "position" in meta_molecule.nodes[current_node]:
+                step_count += 1
                 continue
 
             status = self.update_positions(vector_bundle,
                                            current_node,
                                            prev_node)
             self.success = status
-            if not self.success:
+            placed_nodes.append(current_node)
+
+            if not self.success and count < self.maxiter:
+                if step_count < 5:
+                   return
+                else:
+                   nrewind = 5
+                print(step_count)
+                self._rewind(step_count, placed_nodes, nrewind)
+                step_count = step_count - nrewind
+            elif not self.success:
                 return
+            else:
+                count = 0
+                step_count += 1
+
+            count += 1
 
     def run_molecule(self, meta_molecule):
         """
