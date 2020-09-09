@@ -46,11 +46,10 @@ def gen_coords(args):
                 molecule.nodes[node]["build"] = True
 
     # deal with box-input
-    if all(args.box):
+    if len(args.box) != 0:
         box = np.array(args.box)
     else:
-        box = None
-
+        box = []
     # Build polymer structure
     GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
     BuildSystem(topology,
