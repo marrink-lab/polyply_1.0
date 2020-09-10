@@ -96,6 +96,8 @@ def main():
                             help='grid spacing in nm', default=0.2)
     system_group.add_argument('-mi', dest='maxiter', type=int,
                             help='max number of trys to grow a molecule', default=800)
+    system_group.add_argument('-res', dest='build_res', type=str,
+                            help='list of residues to built', default=[], nargs='+')
 
     random_walk_group = parser_gen_coords.add_argument_group('Variables for random walk')
     random_walk_group.add_argument('-mir', dest='maxiter_random', type=int,

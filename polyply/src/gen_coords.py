@@ -39,7 +39,7 @@ def gen_coords(args):
 
     # read in coordinates if there are any
     if args.coordpath:
-        topology.add_positions_from_file(args.coordpath)
+        topology.add_positions_from_file(args.coordpath, args.build_res)
     else:
         for molecule in topology.molecules:
             for node in molecule.nodes:
@@ -50,6 +50,7 @@ def gen_coords(args):
         box = np.array(args.box)
     else:
         box = []
+
     # Build polymer structure
     GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
     BuildSystem(topology,
