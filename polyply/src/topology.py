@@ -247,7 +247,7 @@ class Topology(System):
 
             self.nonbond_params.update({atom_pair: {"nb1": sig, "nb2": eps}})
 
-    def add_positions_from_file(self, path):
+    def add_positions_from_file(self, path, build_res=[]):
         """
         Add positions to topology from coordinate file.
         """
@@ -258,6 +258,10 @@ class Topology(System):
         for meta_mol in self.molecules:
             no_coords = []
             for node in meta_mol.molecule.nodes:
+                resname = meta_mol.molecule.nodes[node]["resname"]
+                if resname in build_res:
+                   no_coords.append(node)
+                   continue
                 try:
                    position = molecules.nodes[total]["position"]
                 except KeyError:
