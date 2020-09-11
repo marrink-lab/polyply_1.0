@@ -98,6 +98,8 @@ def main():
                             help='max number of trys to grow a molecule', default=800)
     system_group.add_argument('-res', dest='build_res', type=str,
                             help='list of residues to built', default=[], nargs='+')
+    system_group.add_argument('-ign', dest='mol_ign', type=str,
+                            help='molecules to ignore when building structure', default=[], nargs='+')
 
     random_walk_group = parser_gen_coords.add_argument_group('Variables for random walk')
     random_walk_group.add_argument('-mir', dest='maxiter_random', type=int,

@@ -44,13 +44,13 @@ def lennard_jones_force(dist, vect, params):
 POTENTIAL_FUNC = {"LJ": lennard_jones_force}
 
 
-def _n_particles(topology):
+def _n_particles(molecules):
     """
     Count the number of meta_molecule nodes
     in the topology.
     """
     n_atoms = 0
-    for molecule in topology.molecules:
+    for molecule in molecules:
         n_atoms += len(molecule.nodes)
     return n_atoms
 
@@ -147,7 +147,7 @@ class NonBondMatrix():
         np.ndarray(3)
             the force vector
         """
-        exclusions = [ self.nodes_to_gndx[(mol_idx, node)] for node in exclude ]
+        exclusions = [self.nodes_to_gndx[(mol_idx, node)] for node in exclude]
 
         ref_tree = scipy.spatial.ckdtree.cKDTree(point.reshape(1, 3))
         dist_mat = ref_tree.sparse_distance_matrix(self.position_tree, self.cut_off)
@@ -159,16 +159,17 @@ class NonBondMatrix():
         for pair, dist in dist_mat.items():
             gndx_pair = self.defined_idxs[pair[1]]
             if gndx_pair not in exclusions:
-               other_atype = self.atypes[gndx_pair]
-               params = self.interaction_matrix[frozenset([current_atype, other_atype])]
-               vect = point - self.positions[gndx_pair]
-               force += POTENTIAL_FUNC[potential](dist, vect, params)
+                other_atype = self.atypes[gndx_pair]
+                params = self.interaction_matrix[frozenset([current_atype, other_atype])]
+                vect = point - self.positions[gndx_pair]
+                force += POTENTIAL_FUNC[potential](dist, vect, params)
 
         return force
 
     @classmethod
-    def from_topology(cls, topology):
-        n_atoms = _n_particles(topology)
+    def from_topology(cls, molecules, topology):
+
+        n_atoms = _n_particles(molecules)
 
         # array of all positions
         positions = np.ones((n_atoms, 3)) * np.inf
@@ -179,7 +180,7 @@ class NonBondMatrix():
         atom_types = []
         idx = 0
         mol_count = 0
-        for molecule in topology.molecules:
+        for molecule in molecules:
             for node in molecule.nodes:
                 if "position" in molecule.nodes[node]:
                     positions[idx, :] = molecule.nodes[node]["position"]
