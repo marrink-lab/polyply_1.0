@@ -39,6 +39,13 @@ def _compute_box_size(topology, density):
     box = (total_mass*1.6605410/density)**(1/3.)
     return box
 
+def _filter_by_molname(molecules, ignore):
+    ellegible_molecules = []
+    for molecule in molecules:
+        if molecule.mol_name not in ignore:
+            ellegible_molecules.append(molecule)
+    return ellegible_molecules
+
 class BuildSystem():
     """
     Compose a system of molecules according
@@ -53,7 +60,8 @@ class BuildSystem():
                  maxiter_random=50,
                  box=[],
                  step_fudge=1,
-                 push=[]):
+                 push=[],
+                 ignore=[]):
 
         self.topology = topology
         self.density = density
@@ -63,6 +71,7 @@ class BuildSystem():
         self.step_fudge = step_fudge
         self.maxiter_random = maxiter_random
         self.max_force = max_force
+        self.ignore = ignore
 
         # Taking care of setting the box size and the gird
 
@@ -74,11 +83,12 @@ class BuildSystem():
 
         self.box_grid = np.mgrid[0:self.box[0]:self.grid_spacing,
                                  0:self.box[1]:self.grid_spacing,
-                                 0:self.box[2]:self.grid_spacing].reshape(3,-1).T
+                                 0:self.box[2]:self.grid_spacing].reshape(3, -1).T
 
         topology.box = (self.box[0], self.box[1], self.box[2])
 
-        self.nonbond_matrix = NonBondMatrix.from_topology(topology)
+        molecules = _filter_by_molname(self.topology.molecules, self.ignore)
+        self.nonbond_matrix = NonBondMatrix.from_topology(molecules, topology)
 
     def _handle_random_walk(self, molecule, mol_idx, vector_sphere):
         step_count = 0
@@ -118,12 +128,12 @@ class BuildSystem():
         system
         """
         mol_idx = 0
-        pbar = tqdm(total=len(self.topology.molecules))
-        mol_tot = len(self.topology.molecules)
+        pbar = tqdm(total=len(molecules))
+        mol_tot = len(molecules)
         vector_sphere = norm_sphere(5000)
         while mol_idx < mol_tot:
             molecule = molecules[mol_idx]
-            if all([ "position" in molecule.nodes[node] for node in molecule.nodes]):
+            if all(["position" in molecule.nodes[node] for node in molecule.nodes]):
                 mol_idx += 1
                 pbar.update(1)
                 continue
@@ -144,5 +154,6 @@ class BuildSystem():
         Compose a system according to a the system
         specifications and a density value.
         """
+        molecules = _filter_by_molname(self.topology.molecules, self.ignore)
         self._compose_system(molecules)
         return molecules

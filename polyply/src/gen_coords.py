@@ -45,6 +45,11 @@ def gen_coords(args):
             for node in molecule.nodes:
                 molecule.nodes[node]["build"] = True
 
+    for molecule in topology.molecules:
+        for node in molecule.nodes:
+            print(molecule.nodes[node]["resname"], molecule.nodes[node]["build"])
+            if not molecule.nodes[node]["build"]:
+               print(molecule.nodes[node]["position"])
     # deal with box-input
     if len(args.box) != 0:
         box = np.array(args.box)
@@ -61,7 +66,8 @@ def gen_coords(args):
                 maxiter_random=args.maxiter_random,
                 box=box,
                 step_fudge=args.step_fudge,
-                push=args.push).run_system(topology.molecules)
+                push=args.push,
+                ignore=args.ignore).run_system(topology.molecules)
     Backmap().run_system(topology)
 
     # Write output
