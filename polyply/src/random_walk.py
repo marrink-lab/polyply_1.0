@@ -71,6 +71,18 @@ def is_pushed(point, old_point, push):
     else:
         return True
 
+def _find_starting_node(meta_molecule):
+    """
+    Find the first node that has coordinates if there is
+    otherwise return first node in list of nodes.
+    """
+    for node, build in nx.get_node_attributes(meta_molecule, "build").items():
+        if not build:
+           return node
+    else:
+        return meta_molecule.nodes()[0]
+
+
 class RandomWalk(Processor):
     """
     Add coordinates at the meta_molecule level
@@ -164,7 +176,7 @@ class RandomWalk(Processor):
         ----------
         meta_molecule:  :class:`polyply.src.meta_molecule.MetaMolecule`
         """
-        first_node = list(meta_molecule.nodes)[0]
+        first_node = _find_starting_node(meta_molecule)
         if "position" not in meta_molecule.nodes[first_node]:
             if not self._is_overlap(self.start, first_node):
                 self.nonbond_matrix.update_positions(self.start, self.mol_idx, first_node)
@@ -180,7 +192,6 @@ class RandomWalk(Processor):
         step_count = 0
         while step_count < len(path):
             prev_node, current_node = path[step_count]
-            #print(prev_node, current_node)
             if "position" in meta_molecule.nodes[current_node]:
                 step_count += 1
                 continue
@@ -196,7 +207,6 @@ class RandomWalk(Processor):
                    return
                 else:
                    nrewind = 5
-                print(step_count)
                 self._rewind(step_count, placed_nodes, nrewind)
                 step_count = step_count - nrewind
             elif not self.success:
