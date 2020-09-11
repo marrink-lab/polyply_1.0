@@ -80,7 +80,7 @@ def _find_starting_node(meta_molecule):
         if not build:
            return node
     else:
-        return meta_molecule.nodes()[0]
+        return list(meta_molecule.nodes())[0]
 
 
 class RandomWalk(Processor):
