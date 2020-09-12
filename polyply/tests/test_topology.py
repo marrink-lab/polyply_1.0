@@ -314,7 +314,8 @@ class TestTopology:
         1.0   1.0   yes  1.0     1.0
         [ dihedraltypes ]
         X  CE2  CE1  X    5   123.50	401.664	0.0	0.0
-        X  CT2  CE1  X    5   123.50	401.664	0.0	0.0
+        X  CT2  CE1  X    5   120	400	0.0	0.0
+        X  QQQ  QQQ  X    5   150	400	0.0	0.0
         [ moleculetype ]
         test 3
         [ atoms ]
@@ -333,7 +334,88 @@ class TestTopology:
         """,
         {"dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
                                 meta={}),
-                       Interaction(atoms=(1, 2, 3, 4), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                       Interaction(atoms=(1, 2, 3, 4), parameters=["5", "120", "400", "0.0", "0.0"],
+                                meta={})]}
+        ),
+        # test generic match plus defined match on same pattern
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ dihedraltypes ]
+        X  CE2  CE1  X    5   123.50	401.664	0.0	0.0
+        X  CT2  CE1  X    5   123.50	401.664	0.0	0.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 CT2   1 test C1 1   0.0 14.0
+        2 CE2   1 test C2 2   0.0 12.0
+        3 CE1   1 test C3 3   0.0 12.0
+        4 CT2   1 test C4 4   0.0 12.0
+        5 CT2   1 test C5 5   0.0 14.0
+        [ dihedrals ]
+        1  2  3  4 1
+        2  3  4  5 1   150  60  0.0 0.0
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        {"dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                                meta={}),
+                       Interaction(atoms=(1, 2, 3, 4), parameters=["1", "150", "60", "0.0", "0.0"],
+                                meta={})]}
+        ),
+        # test priority of defined over generic match
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ dihedraltypes ]
+        CT2  CE2  CE1  CT2    5   123.50	401.664	0.0	0.0
+        X    CE2  CE1  X      5   20            20      0.0     0.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 CT2   1 test C1 1   0.0 14.0
+        2 CE2   1 test C2 2   0.0 12.0
+        3 CE1   1 test C3 3   0.0 12.0
+        4 CT2   1 test C4 4   0.0 12.0
+        5 CT2   1 test C5 5   0.0 14.0
+        [ dihedrals ]
+        1  2  3  4 1
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        {"dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                                meta={})]}
+        ),
+        # test reverse order for priority of defined over generic match
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ dihedraltypes ]
+        X    CE2  CE1  X      5   20            20      0.0     0.0
+        CT2  CE2  CE1  CT2    5   123.50	401.664	0.0	0.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 CT2   1 test C1 1   0.0 14.0
+        2 CE2   1 test C2 2   0.0 12.0
+        3 CE1   1 test C3 3   0.0 12.0
+        4 CT2   1 test C4 4   0.0 12.0
+        5 CT2   1 test C5 5   0.0 14.0
+        [ dihedrals ]
+        1  2  3  4 1
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        {"dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
                                 meta={})]}
         ),
         # test generic improper
