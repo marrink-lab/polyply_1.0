@@ -81,8 +81,7 @@ class TestTopParsing:
         OM      O         1    1.9670816e-03  8.5679450e-07
         """,
         "types",
-        {"bonds": {("OM", "O"): (["1", "1.9670816e-03", "8.5679450e-07"],
-                         None)}}
+        {"bonds": {("OM", "O"): (["1", "1.9670816e-03", "8.5679450e-07"], None)}}
          ),
         ("""
         [ system ]
@@ -306,6 +305,11 @@ class TestTopParsing:
         """
          ))
     def test_skip_directives(lines):
+        """
+        Test that directives which currently cannot be read and
+        or interpreted are simply skipped and don't cause an
+        error when reading the topology file.
+        """
         new_lines = textwrap.dedent(lines)
         new_lines = new_lines.splitlines()
         force_field = vermouth.forcefield.ForceField(name='test_ff')
