@@ -296,6 +296,9 @@ class TestTopParsing:
     @staticmethod
     @pytest.mark.parametrize('lines', (
         """
+        ********
+        """,
+        """
         [cmaptypes]
         something something
         """,
