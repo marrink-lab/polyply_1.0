@@ -81,6 +81,8 @@ class TOPDirector(SectionLineParser):
         """
         if self.is_pragma(line):
             return self.parse_top_pragma
+        elif self.is_star_comment(line):
+            return self._skip
         else:
             return super().dispatch(line)
 
@@ -98,6 +100,27 @@ class TOPDirector(SectionLineParser):
             ``True`` if `line` is a def statement.
         """
         return line.startswith('#')
+
+    @staticmethod
+    def is_star_comment(line):
+        """
+        Star comments are special comments
+        usually found at the beginning of GMX
+        library topology files. They are different
+        from the regular comment as they are specific
+        to top library files.
+
+        Parameters
+        ----------
+        line: str
+            A line of text.
+
+        Returns
+        -------
+        bool
+            ``True`` if `line` is a star comment.
+        """
+        return line.startswith('*')
 
     def parse_top_pragma(self, line, lineno=0):
         """
