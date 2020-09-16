@@ -87,6 +87,20 @@ def main():
     file_group.add_argument('-c', dest='coordpath', type=Path,
                             help='input file (.gro)', default=None)
 
+    topology_group = parser_gen_coords.add_argument_group('Change or modify topology')
+    topology_group.add_argument('-res', dest='build_res', type=str,
+                            help='list of residues to built', default=[], nargs='+')
+    topology_group.add_argument('-ign', dest='ignore', type=str,
+                            help='molecules to ignore when building structure', default=[], nargs='+')
+    topology_group.add_argument('-split', dest='split', nargs='+', type=str,
+                            help='split residues', default=[])
+    topology_group.add_argument('-lig', dest='ligands', nargs='+', type=lambda s: s.split(':'),
+                            default=[],
+                            help=('Specify ligands of molecules which should be placed close '
+                                  'to a specific molecule. The format is as follows: '
+                                  '<mol_name>-<mol_idx>-<resname>:<lig_name>-<lig_idx>-<resname>. '
+                                  'Elements of the specification can be omitted as required.'))
+
     system_group = parser_gen_coords.add_argument_group('Variables for system generation')
     system_group.add_argument('-dens', dest='density', type=float,
                             help='density of system', default=None)
@@ -96,12 +110,6 @@ def main():
                             help='grid spacing in nm', default=0.2)
     system_group.add_argument('-mi', dest='maxiter', type=int,
                             help='max number of trys to grow a molecule', default=800)
-    system_group.add_argument('-res', dest='build_res', type=str,
-                            help='list of residues to built', default=[], nargs='+')
-    system_group.add_argument('-ign', dest='ignore', type=str,
-                            help='molecules to ignore when building structure', default=[], nargs='+')
-    system_group.add_argument('-split', dest='split', nargs='+', type=str,
-                            help='split residues', default=[])
 
     random_walk_group = parser_gen_coords.add_argument_group('Variables for random walk')
     random_walk_group.add_argument('-mir', dest='maxiter_random', type=int,
