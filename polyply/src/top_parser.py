@@ -211,6 +211,7 @@ class TOPDirector(SectionLineParser):
         for lines in self.itp_lines:
             read_itp(lines, self.force_field)
 
+        total_count = 0
         for mol_name, n_mol in self.molecules:
             block = self.force_field.blocks[mol_name]
             meta_molecule = MetaMolecule.from_block(self.force_field,
@@ -226,6 +227,8 @@ class TOPDirector(SectionLineParser):
                  new.mol_name = mol_name
                  new.molecule = meta_molecule.molecule.copy()
                  self.topology.add_molecule(new)
+                 self.topology.mol_idx_by_name[mol_name].append(total_count)
+                 total_count += 1
 
         super().finalize()
 

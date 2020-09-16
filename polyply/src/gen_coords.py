@@ -15,6 +15,7 @@
 """
 High level API for the polyply coordinate generator
 """
+from collections import defaultdict
 import numpy as np
 import networkx as nx
 import vermouth.forcefield
@@ -23,6 +24,7 @@ from .generate_templates import GenerateTemplates
 from .backmap import Backmap
 from .topology import Topology
 from .build_system import BuildSystem
+from .annotate_ligands import AnnotateLigands
 
 def split_residues(molecules, split):
     for mol in molecules:
@@ -67,6 +69,9 @@ def gen_coords(args):
 
     # Build polymer structure
     GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
+
+    AnnotateLigands(topology, args.ligands).run_system(topology)
+
     BuildSystem(topology,
                 density=args.density,
                 max_force=args.max_force,
@@ -77,6 +82,9 @@ def gen_coords(args):
                 step_fudge=args.step_fudge,
                 push=args.push,
                 ignore=args.ignore).run_system(topology.molecules)
+
+    AnnotateLigands(topology, args.ligands).split_ligands()
+
     Backmap().run_system(topology)
 
     # Write output

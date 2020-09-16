@@ -168,6 +168,7 @@ class Topology(System):
         self.atom_types = {}
         self.types = defaultdict(list)
         self.nonbond_params = {}
+        self.mol_idx_by_name = defaultdict(list)
 
     def preprocess(self):
         """
