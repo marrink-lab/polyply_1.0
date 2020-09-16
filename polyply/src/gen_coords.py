@@ -24,6 +24,12 @@ from .backmap import Backmap
 from .topology import Topology
 from .build_system import BuildSystem
 
+def split_residues(molecules, split):
+    for mol in molecules:
+        max_resid = len(mol.nodes)
+        for split_string in split:
+            max_resid = mol.split_residue(split_string, max_resid)
+
 def gen_coords(args):
     # Read in the topology
     topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
@@ -37,6 +43,9 @@ def gen_coords(args):
                    'connected by bonds, constraints or virual-sites')
             raise IOError(msg.format(molecule.name))
 
+    if args.split:
+       split_residues(topology.molecules, args.split)
+
     # read in coordinates if there are any
     if args.coordpath:
         topology.add_positions_from_file(args.coordpath, args.build_res)
@@ -47,9 +56,9 @@ def gen_coords(args):
 
     for molecule in topology.molecules:
         for node in molecule.nodes:
-            print(molecule.nodes[node]["resname"], molecule.nodes[node]["build"])
             if not molecule.nodes[node]["build"]:
-               print(molecule.nodes[node]["position"])
+                molecule.nodes[node]["build"] = False
+
     # deal with box-input
     if len(args.box) != 0:
         box = np.array(args.box)

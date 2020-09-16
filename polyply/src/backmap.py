@@ -184,6 +184,7 @@ class Backmap(Processor):
         """
         built_nodes = []
         for node in meta_molecule.nodes:
+            print(node)
             if  meta_molecule.nodes[node]["build"]:
                 resname = meta_molecule.nodes[node]["resname"]
                 cg_coord = meta_molecule.nodes[node]["position"]

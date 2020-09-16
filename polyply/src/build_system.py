@@ -105,6 +105,7 @@ class BuildSystem():
                                    push=self.push)
 
             processor.run_molecule(molecule)
+            #print(processor.success)
             if processor.success:
                 return True, processor.nonbond_matrix
             elif step_count == self.maxiter:
@@ -143,6 +144,7 @@ class BuildSystem():
                                                                    vector_sphere)
             if success:
                 self.nonbond_matrix = new_nonbond_matrix
+                #print("yeah")
                 mol_idx += 1
                 pbar.update(1)
 
