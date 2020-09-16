@@ -484,6 +484,30 @@ class TestTopology:
          "pairs": [Interaction(atoms=(0, 1), parameters=["1"], meta={})],
          "angles": [Interaction(atoms=(0, 1, 2), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
                                 meta={"ifdef":"angle"})]}
+        ),
+        # test bondtype usage
+        (
+        """
+        #define _FF_OPLS
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ atomtypes ]
+        opls_001   C   6      12.01100     0.500       A    3.75000e-01  4.39320e-01 ; SIG
+        [ bondtypes ]
+        C       C       1       0.1335  502080.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 opls_001   1 test C1 1   0.0 14.0
+        2 opls_001   1 test C2 2   0.0 12.0
+        [ bonds ]
+        1 2  1
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        {"bonds": [Interaction(atoms=(0, 1), parameters=["1", "0.1335", "502080.0"], meta={})]}
         )
 	))
     def test_replace_types(lines, outcome):

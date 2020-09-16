@@ -246,7 +246,12 @@ class Topology(System):
                     continue
                 for interaction in interactions:
                     if len(interaction.parameters) == 1:
-                        atoms = tuple(block.nodes[node]["atype"] for node in interaction.atoms)
+
+                        if "_FF_OPLS" in self.defines or "_FF_OPLS_AA" in self.defines:
+                           atoms = tuple(self.atom_types[block.nodes[node]["atype"]]["bond_type"]
+                                         for node in interaction.atoms)
+                        else:
+                           atoms = tuple(block.nodes[node]["atype"] for node in interaction.atoms)
 
                         if atoms in self.types[inter_type]:
                             new_params, meta = self.types[inter_type][atoms]
