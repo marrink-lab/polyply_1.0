@@ -155,7 +155,7 @@ class RandomWalk(Processor):
         while True:
             new_point, index = _take_step(vector_bundle, step_length, last_point)
             overlap = self._is_overlap(new_point, current_node)
-
+            #print(overlap)
             in_box = not_exceeds_max_dimensions(new_point, self.maxdim)
             pushed = is_pushed(new_point, last_point, self.push)
             if not overlap and in_box and pushed:
@@ -191,6 +191,7 @@ class RandomWalk(Processor):
         path = list(nx.dfs_edges(meta_molecule, source=first_node))
         step_count = 0
         while step_count < len(path):
+            print(step_count)
             prev_node, current_node = path[step_count]
             if "position" in meta_molecule.nodes[current_node]:
                 step_count += 1

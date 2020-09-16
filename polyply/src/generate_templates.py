@@ -324,4 +324,5 @@ class GenerateTemplates(Processor):
         templates, volumes = self._gen_templates(meta_molecule)
         meta_molecule.templates = self.templates
         self.topology.volumes = self.volumes
+        print(self.volumes)
         return meta_molecule

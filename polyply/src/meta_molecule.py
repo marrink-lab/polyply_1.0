@@ -20,6 +20,30 @@ from .polyply_parser import read_polyply
 
 Monomer = namedtuple('Monomer', 'resname, n_blocks')
 
+
+def find_atoms(molecule, attr, value):
+    """
+    Find all nodes of a `vermouth.molecule.Molecule` that have the
+    attribute `attr` with the corresponding value of `value`.
+    Parameters
+    ----------
+    molecule: :class:vermouth.molecule.Molecule
+    attr: str
+         attribute that a node needs to have
+    value:
+         corresponding value
+    Returns
+    ----------
+    list
+       list of nodes found
+    """
+    nodes = []
+    for node in molecule.nodes:
+        if attr in molecule.nodes[node] and molecule.nodes[node][attr] == value:
+            nodes.append(node)
+
+    return nodes
+
 def _make_edges(force_field):
     for block in force_field.blocks.values():
         inter_types = list(block.interactions.keys())
@@ -62,6 +86,40 @@ class MetaMolecule(nx.Graph):
 
     def get_edge_resname(self, edge):
         return [self.nodes[edge[0]]["resname"], self.nodes[edge[1]]["resname"]]
+
+    def split_residue(self, split_string, max_resid):
+        """
+        split_string RESNAME:NEW_RESNAME-ATOMS
+        """
+        resname = split_string.split(":")[0]
+        new_residues = split_string.split(":")[1:]
+
+        self.old_resids = nx.get_node_attributes(self.molecule, "resid")
+        self.old_resnames = nx.get_node_attributes(self.molecule, "resname")
+
+        for node in self.nodes:
+            old_resid = self.nodes[node]["resid"]
+            if self.nodes[node]["resname"] == resname:
+                old_atoms = find_atoms(self.molecule, "resid", old_resid)
+                atom_names = {self.molecule.nodes[atom]["atomname"]:atom for atom in old_atoms}
+                for new_res in new_residues:
+                    new_name, atoms = new_res.split("-")
+                    names = atoms.split(",")
+                    for atom in names:
+                        try:
+                            node_key = atom_names[atom]
+                        except KeyError:
+                            msg = ("Residue {} {} has no atom {}.")
+                            raise IOError(msg.format(resname, old_resid, atom))
+                        self.molecule.nodes[node_key]["resname"] = new_name
+                        self.molecule.nodes[node_key]["resid"] = max_resid + 1
+                    max_resid += 1
+
+        new_meta_graph = make_residue_graph(self.molecule, attrs=('resid', 'resname'))
+        self.clear()
+        self.add_nodes_from(new_meta_graph.nodes(data=True))
+        self.add_edges_from(new_meta_graph.edges)
+        return max_resid
 
     @staticmethod
     def _block_graph_to_res_graph(block):
