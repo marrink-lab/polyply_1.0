@@ -55,17 +55,27 @@ class TestTopParsing:
         O       8 0.000 0.000  A   1.7106496e-03  9.9002500e-07
         """,
          "atom_types",
-         {"O": {"nb1": 1.7106496e-03,
+         {"O": {"mass": 0.000,
+                "atom_num": 8,
+                "charge": 0.000,
+                "ptype": "A",
+                "bond_type": None,
+                "nb1": 1.7106496e-03,
                 "nb2": 9.9002500e-07}}
          ),
-        # check GROMOS/OPLS type atom defs.
+        # check OPLS type atom defs.
         ("""
         [ atomtypes ]
-        O     8      0.000      0.000     A  0.0022619536  7.4149321e-07
+        opls_001   C   6      12.01100     0.500       A    3.75000e-01  4.39320e-01 ; SIG
         """,
          "atom_types",
-         {"O": {"nb1": 0.0022619536,
-                "nb2": 7.4149321e-07}}
+        {"opls_001":  {"mass": 12.01100,
+                       "atom_num": 6,
+                       "charge": 0.500,
+                       "ptype": "A",
+                       "bond_type": "C",
+                       "nb1": 3.75000e-01,
+                       "nb2": 4.39320e-01}}
          ),
         ("""
         [ nonbond_params ]

@@ -308,10 +308,33 @@ class TOPDirector(SectionLineParser):
         """
         Parse and store atomtypes section
         """
-        atom_name = line.split()[0]
-        nb1, nb2 = line.split()[-2:]
-        self.topology.atom_types[atom_name] = {"nb1": float(nb1),
-                                               "nb2": float(nb2)}
+        atom_type_line = {"atom_num": None,
+                          "bond_type": None,
+                          "mass": None,
+                          "charge": None,
+                          "ptype": None,
+                          "nb1": None,
+                          "nb2": None}
+
+        tokens = line.split()
+        atom_name = tokens.pop(0)
+        for var in ["nb2", "nb1", "ptype", "charge", "mass"]:
+             if var != "ptype":
+                atom_type_line[var] = float(tokens.pop(-1))
+             else:
+                atom_type_line[var] = tokens.pop(-1)
+
+        if len(tokens) >= 1:
+            atom_type_line["atom_num"] = float(tokens.pop(-1))
+
+        if len(tokens) == 1:
+            atom_type_line["bond_type"] = tokens.pop(0)
+
+        if len(tokens) > 0:
+            msg = ("Can't parse line {}. Found more parameters than expected.")
+            raise OSError(msg.format(line))
+
+        self.topology.atom_types[atom_name] = atom_type_line
 
     @SectionLineParser.section_parser('nonbond_params')
     def _nonbond_params(self, line, lineno=0):
