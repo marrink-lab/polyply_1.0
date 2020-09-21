@@ -304,6 +304,19 @@ class TestTopParsing:
             polyply.src.top_parser.read_topology(new_lines, top)
 
     @staticmethod
+    def test_atom_type_fail():
+        lines = """
+        [ atomtypes ]
+        opls_001   C   6      12.01100     0.500       A    3.75000e-01  4.39320e-01 random; SIG
+        """
+        new_lines = textwrap.dedent(lines)
+        new_lines = new_lines.splitlines()
+        force_field = vermouth.forcefield.ForceField(name='test_ff')
+        top = Topology(force_field, name="test")
+        with pytest.raises(IOError):
+            polyply.src.top_parser.read_topology(new_lines, top)
+
+    @staticmethod
     @pytest.mark.parametrize('lines', (
         """
         ********
