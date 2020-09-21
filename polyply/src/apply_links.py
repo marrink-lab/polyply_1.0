@@ -16,12 +16,40 @@ from itertools import combinations
 import networkx as nx
 from networkx.algorithms import isomorphism
 import vermouth.molecule
+from vermouth.molecule import Interaction
 from vermouth.processors.do_links import match_order
 from .processor import Processor
 
 class MatchError(Exception):
     """Raised we find no match between links and molecule"""
 
+def expand_excl(molecule):
+    """
+    Given a `molecule` add exclusions for nodes that
+    have the exclude attribute.
+
+    Parameters:
+    -----------
+    molecule: `:class:vermouth.molecule`
+
+    Returns:
+    --------
+    `:class:vermouth.molecule`
+    """
+    exclude = nx.get_node_attributes(molecule, "exclude")
+    nrexcl = molecule.nrexcl
+    had_excl=[]
+    for node, excl in exclude.items():
+        if excl > nrexcl:
+           excluded_nodes = neighborhood(molecule, node, max_length=excl, min_length=nrexcl)
+           for ndx in excluded_nodes:
+               excl = Interaction(atoms=[node, ndx],
+                                  parameters=[],
+                                  meta={})
+               if frozenset([node, ndx]) not in had_excl and node != ndx:
+                   had_excl.append(frozenset([node, ndx]))
+                   molecule.interactions["exclusions"].append(excl)
+    return molecule
 
 def find_atoms(molecule, **attrs):
     """
@@ -450,4 +478,5 @@ class ApplyLinks(Processor):
             if link.molecule_meta.get('by_atom_id'):
                 apply_explicit_link(molecule, link)
 
+        expand_excl(molecule)
         return meta_molecule
