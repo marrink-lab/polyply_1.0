@@ -155,9 +155,9 @@ class RandomWalk(Processor):
         while True:
             new_point, index = _take_step(vector_bundle, step_length, last_point)
             overlap = self._is_overlap(new_point, current_node)
-            #print(overlap)
             in_box = not_exceeds_max_dimensions(new_point, self.maxdim)
             pushed = is_pushed(new_point, last_point, self.push)
+ 
             if not overlap and in_box and pushed:
                 self.nonbond_matrix.update_positions(new_point, self.mol_idx, current_node)
                 return True
@@ -188,11 +188,12 @@ class RandomWalk(Processor):
         vector_bundle = self.vector_sphere.copy()
         count = 0
         placed_nodes = []
-        path = list(nx.dfs_edges(meta_molecule, source=first_node))
+        path = list(nx.bfs_edges(meta_molecule, source=first_node))
         step_count = 0
         while step_count < len(path):
             print(step_count)
             prev_node, current_node = path[step_count]
+            #print(meta_molecule.nodes[current_node]["resname"])
             if "position" in meta_molecule.nodes[current_node]:
                 step_count += 1
                 continue

@@ -33,7 +33,7 @@ def _compute_box_size(topology, density):
             else:
                 atype = molecule.nodes[node]["atype"]
                 total_mass += topology.atom_types[atype]['mass']
-    print(total_mass)
+    #print(total_mass)
     # amu -> kg and cm3 -> nm3
     #conversion = 1.6605410*10**-27 * 10**27
     box = (total_mass*1.6605410/density)**(1/3.)
