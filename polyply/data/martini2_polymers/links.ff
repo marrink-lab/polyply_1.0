@@ -19,6 +19,11 @@ resname "PEO|OHTer"
   +COC   ++OH         1       0.280  7000  {"group": "OHTer-PEG"}
 
 [ link ]
+resname "PEO|PE"
+[ bonds ]
+COC  +CH2            1       0.45  7000  {"group": "PE-PEO"}
+
+[ link ]
 resname "PEO|OHTer"
 [ angles ]
 COC   +COC   ++OH   2     140     25  {"group": "OHTer-PEG"}
