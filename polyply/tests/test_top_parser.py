@@ -320,12 +320,18 @@ class TestTopParsing:
     @pytest.mark.parametrize('lines', (
         """
         ********
+        [ defaults ]
+        1   1   no   1.0     1.0
         """,
         """
-        [cmaptypes]
+        [ defaults ]
+        1   1   no   1.0     1.0
+        [ cmaptypes ]
         something something
         """,
         """
+        [ defaults ]
+        1   1   no   1.0     1.0
         [implicit_genborn_params]
         something something
         """
@@ -340,4 +346,9 @@ class TestTopParsing:
         new_lines = new_lines.splitlines()
         force_field = vermouth.forcefield.ForceField(name='test_ff')
         top = Topology(force_field, name="test")
-        assert True
+        polyply.src.top_parser.read_topology(new_lines, top)
+        assert top.defaults == {"nbfunc":1.0,
+                                "comb-rule":1.0,
+                                "gen-pairs":'no',
+                                "fudgeLJ":1.0,
+                                "fudgeQQ":1.0}
