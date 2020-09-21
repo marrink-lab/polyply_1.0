@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+from itertools import zip_longest
 from vermouth.parser_utils import SectionLineParser
 from vermouth.molecule import Interaction
 from vermouth.gmx.itp_read import read_itp
@@ -308,29 +309,18 @@ class TOPDirector(SectionLineParser):
         """
         Parse and store atomtypes section
         """
-        atom_type_line = {"atom_num": None,
-                          "bond_type": None,
-                          "mass": None,
-                          "charge": None,
-                          "ptype": None,
-                          "nb1": None,
-                          "nb2": None}
-
         tokens = line.split()
         atom_name = tokens.pop(0)
-        for var in ["nb2", "nb1", "ptype", "charge", "mass"]:
-             if var != "ptype":
-                atom_type_line[var] = float(tokens.pop(-1))
-             else:
-                atom_type_line[var] = tokens.pop(-1)
+        tokens.reverse()
+        atom_type_line = dict(zip_longest(["nb2", "nb1", "ptype",
+                                           "charge", "mass",
+                                           "atom_num", "bond_type"], tokens, fillvalue=None))
+        floats = ["nb1", "nb2", "charge", "mass", "atom_num"]
+        for term, value in atom_type_line.items():
+             if term in floats:
+                 atom_type_line[term] = float(value)
 
-        if len(tokens) >= 1:
-            atom_type_line["atom_num"] = float(tokens.pop(-1))
-
-        if len(tokens) == 1:
-            atom_type_line["bond_type"] = tokens.pop(0)
-
-        if len(tokens) > 0:
+        if None in atom_type_line:
             msg = ("Can't parse line {}. Found more parameters than expected.")
             raise OSError(msg.format(line))
 
