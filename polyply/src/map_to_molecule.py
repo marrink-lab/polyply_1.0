@@ -15,6 +15,27 @@
 import networkx as nx
 from polyply.src.processor import Processor
 
+def tag_exclusions(blocks, force_field):
+    """
+    Given the names of some `blocks` check if the
+    corresponding molecules in `force_field` have
+    the same number of default exclusions. If not
+    find the minimum number of exclusions and tag all
+    nodes with the original exclusion number. Then
+    change the exclusion number.
+
+    Note the tag is picked up by apply links where
+    the excluions are generated.
+    """
+    excls = [force_field.blocks[mol].nrexcl for mol in blocks]
+
+    if len(set(excls)) > 1:
+        min_excl = min(excls)
+        for excl, mol in zip(excls, blocks):
+            block = force_field.blocks[mol]
+            nx.set_node_attributes(block, excl, "exclude")
+            block.nrexcl = min_excl
+
 class MapToMolecule(Processor):
     """
     This processor takes a :class:`MetaMolecule` and generates a
@@ -47,9 +68,9 @@ class MapToMolecule(Processor):
         resids = nx.get_node_attributes(block, "resid")
         for node, resid in resids.items():
             if resid != meta_mol_node:
-               node_to_resid[node] = resid + meta_mol_node - 1
+                node_to_resid[node] = resid + meta_mol_node - 1
             else:
-               node_to_resid[node] = resid
+                node_to_resid[node] = resid
 
         #print(node_to_resid)
         meta_molecule.add_nodes_from(set(node_to_resid.values()))
@@ -72,7 +93,7 @@ class MapToMolecule(Processor):
             v1 = node_to_resid[edge[0]]
             v2 = node_to_resid[edge[1]]
             if v1 != v2:
-               meta_molecule.add_edge(v1, v2)
+                meta_molecule.add_edge(v1, v2)
 
     def add_blocks(self, meta_molecule):
         """
@@ -81,6 +102,9 @@ class MapToMolecule(Processor):
         molecule graph to include the block at residue level.
         """
         force_field = meta_molecule.force_field
+        resnames = set(nx.get_node_attributes(meta_molecule, "resname").values())
+        tag_exclusions(resnames, force_field)
+
         block = force_field.blocks[meta_molecule.nodes[0]["resname"]]
         new_mol = block.to_molecule()
 
@@ -95,7 +119,7 @@ class MapToMolecule(Processor):
             resname = meta_molecule.nodes[node]["resname"]
 
             if node + 1 in nx.get_node_attributes(new_mol, "resid").values():
-               continue
+                continue
             block = force_field.blocks[resname]
             new_mol.merge_molecule(block)
             if len(set(nx.get_node_attributes(block, "resid").values())) > 1:
