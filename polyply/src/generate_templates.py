@@ -299,7 +299,9 @@ class GenerateTemplates(Processor):
                 opt_counter = 0
                 while True:
                     coords = _expand_inital_coords(block)
-                    success, coords = optimize_geometry(block, coords)
+                    #success, coords = optimize_geometry(block, coords, ["bonds", "constraints"])
+                    #success, coords = optimize_geometry(block, coords, ["angles", "bonds", "constraints"])
+                    success, coords = optimize_geometry(block, coords, ["bonds", "angles", "dihedrals", "constraints"])
 
                     if success:
                         break
