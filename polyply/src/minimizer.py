@@ -114,7 +114,7 @@ INTER_METHODS = {"bonds": compute_bond,
                  "angles": compute_angle,
                  "dihedrals": compute_dih}
 
-def optimize_geometry(block, coords):
+def optimize_geometry(block, coords, inter_types=[]):
     """
     Take the definitions of a `block` and associated
     `coords` and optimize the geometry based on the
@@ -142,7 +142,7 @@ def optimize_geometry(block, coords):
         energy = 0
         positions = positions.reshape((-1, 3))
         positions = renew_vs(positions, block, atom_to_idx)
-        for inter_type in INTER_METHODS:
+        for inter_type in inter_types:
             interactions = block.interactions.get(inter_type, [])
             for interaction in interactions:
                 atoms = interaction.atoms

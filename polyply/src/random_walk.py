@@ -191,7 +191,7 @@ class RandomWalk(Processor):
         path = list(nx.bfs_edges(meta_molecule, source=first_node))
         step_count = 0
         while step_count < len(path):
-            print(step_count)
+            #print(step_count)
             prev_node, current_node = path[step_count]
             #print(meta_molecule.nodes[current_node]["resname"])
             if "position" in meta_molecule.nodes[current_node]:
