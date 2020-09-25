@@ -22,6 +22,7 @@ import pytest
 import networkx as nx
 import vermouth.forcefield
 import vermouth.ffinput
+from vermouth.molecule import Interaction
 import polyply.src.meta_molecule
 import polyply.src.map_to_molecule
 import polyply.src.polyply_parser
@@ -380,3 +381,25 @@ class TestApplyLinks:
         with pytest.raises(error_type):
             polyply.src.apply_links.apply_explicit_link(
                 new_mol, force_field.links[0])
+    @staticmethod
+    def test_expand_exclusions():
+        mol = vermouth.Molecule()
+        mol.nrexcl = 1
+        mol.add_edges_from([(0, 1), (1, 2), (2, 3), (2, 4)])
+        nx.set_node_attributes(mol, {0:1, 1:2, 2:2, 3:2, 4:2}, "exclude")
+        mol = polyply.src.apply_links.expand_excl(mol)
+        ref_excl = [frozenset([0, 1]),
+                    frozenset([1, 2]),
+                    frozenset([2, 0]),
+                    frozenset([2, 3]),
+                    frozenset([2, 4]),
+                    frozenset([3, 4]),
+                    frozenset([3, 1]),
+                    frozenset([4, 1])]
+        print(mol.interactions["exclusions"])
+        assert len(ref_excl) == len(mol.interactions["exclusions"])
+        for excl in mol.interactions["exclusions"]:
+            assert frozenset(excl.atoms) in ref_excl
+
+
+
