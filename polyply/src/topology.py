@@ -33,6 +33,8 @@ COORD_PARSERS = {"pdb": read_pdb,
 # small wrapper that is neccessiataed
 # by the fact that gro and pdb readers
 # return a molecule and a list respectively
+
+
 def _coord_parser(path, extension):
     reader = COORD_PARSERS[extension]
     molecules = reader(path, exclude=())
@@ -41,9 +43,10 @@ def _coord_parser(path, extension):
         for new_mol in molecules[1:]:
             molecule.merge_molecule(new_mol)
     else:
-       molecule = molecules
+        molecule = molecules
 
     return molecule
+
 
 def replace_defined_interaction(interaction, defines):
     """
@@ -67,13 +70,14 @@ def replace_defined_interaction(interaction, defines):
         if parameter in defines:
             values = defines[parameter]
             for new_param in values:
-                 new_parameters.append(new_param)
+                new_parameters.append(new_param)
         else:
             new_parameters.append(parameter)
 
     interaction.parameters[:] = new_parameters[:]
 
     return interaction
+
 
 def lorentz_berthelot_rule(sig_A, sig_B, eps_A, eps_B):
     """
@@ -98,6 +102,7 @@ def lorentz_berthelot_rule(sig_A, sig_B, eps_A, eps_B):
     sig = (sig_A + sig_B)/2.0
     eps = (eps_A * eps_B)**0.5
     return sig, eps
+
 
 def geometric_rule(C6_A, C6_B, C12_A, C12_B):
     """
@@ -134,6 +139,7 @@ def find_atoms(molecule, attr, value):
 
     return nodes
 
+
 class Topology(System):
     """
     Ties together vermouth molecule definitions, and
@@ -166,7 +172,7 @@ class Topology(System):
         self.defines = {}
         self.description = []
         self.atom_types = {}
-        self.types = defaultdict(list)
+        self.types = defaultdict(dict)
         self.nonbond_params = {}
 
     def preprocess(self):
@@ -176,10 +182,12 @@ class Topology(System):
         is done by grompp.
         """
         self.gen_pairs()
+        # we need to replace defines before doing bonded interactions
         self.replace_defines()
+        self.gen_bonded_interactions()
         # only convert if we not already have sig-eps form
         if self.defaults['comb-rule'] == 1:
-           self.convert_nonbond_to_sig_eps()
+            self.convert_nonbond_to_sig_eps()
 
     def replace_defines(self):
         """
@@ -216,14 +224,65 @@ class Topology(System):
                     nb2_B = self.atom_types[atom_type_B]["nb2"]
                     nb1, nb2 = comb_rule(nb1_A, nb1_B, nb2_A, nb2_B)
                     self.nonbond_params.update({frozenset([atom_type_A, atom_type_B]):
-                                               {"nb1": nb1, "nb2": nb2}})
+                                                {"nb1": nb1, "nb2": nb2}})
 
         for atom_type in self.atom_types:
             if frozenset([atom_type, atom_type]) not in self.nonbond_params:
                 nb1 = self.atom_types[atom_type]["nb1"]
                 nb2 = self.atom_types[atom_type]["nb2"]
                 self.nonbond_params.update({frozenset([atom_type, atom_type]):
-                                           {"nb1": nb1, "nb2": nb2}})
+                                            {"nb1": nb1, "nb2": nb2}})
+
+    def gen_bonded_interactions(self):
+        """
+        Check for each interaction if there is
+        no parameter for an interaction if that
+        parameter is defined in the bonded directive
+        of the topology.
+        """
+        for block in self.force_field.blocks.values():
+            for inter_type, interactions in block.interactions.items():
+                if inter_type in ["pairs", "exclusions", "virtual_sitesn"]:
+                    continue
+                for interaction in interactions:
+                    if len(interaction.parameters) == 1:
+
+                        # Some force-fields - in GMX library only OPLS - use bond-type
+                        # definitions. Each atomtype matches one bond-type, which
+                        # in turn matches an expression in the bondedtypes section
+                        if "_FF_OPLS" in self.defines or "_FF_OPLS_AA" in self.defines:
+                            atoms = tuple(self.atom_types[block.nodes[node]["atype"]]["bond_type"]
+                                         for node in interaction.atoms)
+                        # Other force-fields like charmm and amber use the atomtype directly for
+                        # matching the bondded types
+                        else:
+                            atoms = tuple(block.nodes[node]["atype"] for node in interaction.atoms)
+
+                        if atoms in self.types[inter_type]:
+                            new_params, meta = self.types[inter_type][atoms]
+                        elif atoms[::-1] in self.types[inter_type]:
+                            new_params, meta = self.types[inter_type][atoms[::-1]]
+                        elif inter_type in "dihedrals" and\
+                             ("X", atoms[1], atoms[2], "X") in self.types[inter_type]:
+                            new_params, meta = self.types[inter_type][("X", atoms[1], atoms[2], "X")]
+                        elif inter_type == "dihedrals" and\
+                             ("X", atoms[2], atoms[1], "X") in self.types[inter_type]:
+                            new_params, meta = self.types[inter_type][("X", atoms[2], atoms[1], "X")]
+                        elif inter_type in "dihedrals" and\
+                             (atoms[0], "X", "X", atoms[3]) in self.types[inter_type]:
+                            new_params, meta = self.types[inter_type][(atoms[0], "X", "X", atoms[3])]
+                        elif inter_type == "dihedrals" and\
+                             (atoms[3], "X", "X", atoms[0]) in self.types[inter_type]:
+                            new_params, meta = self.types[inter_type][(atoms[3], "X", "X", atoms[0])]
+                        else:
+                            msg=("In section {} interaction of atoms {} has no corresponding bonded"
+                                 "type.")
+                            atoms = " ".join(list(map(lambda x: str(x), interaction.atoms)))
+                            raise OSError(msg.format(inter_type, atoms))
+
+                        interaction.parameters[:] = new_params[:]
+                        if meta:
+                            interaction.meta.update(meta)
 
     def convert_nonbond_to_sig_eps(self):
         """
@@ -236,7 +295,7 @@ class Topology(System):
             nb2 = self.nonbond_params[atom_pair]["nb2"]
 
             if nb2 != 0:
-                sig = (nb2/nb1)**(1.0/6.0 )
+                sig = (nb2/nb1)**(1.0/6.0)
             else:
                 sig = 0
 
@@ -259,12 +318,12 @@ class Topology(System):
             no_coords = []
             for node in meta_mol.molecule.nodes:
                 try:
-                   position = molecules.nodes[total]["position"]
+                    position = molecules.nodes[total]["position"]
                 except KeyError:
-                   no_coords.append(node)
+                    no_coords.append(node)
                 else:
-                   meta_mol.molecule.nodes[node]["position"] = position
-                   total += 1
+                    meta_mol.molecule.nodes[node]["position"] = position
+                    total += 1
 
             for node in meta_mol:
                 resid = meta_mol.nodes[node]["resid"]

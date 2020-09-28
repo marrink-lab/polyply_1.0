@@ -20,6 +20,7 @@ import pytest
 import math
 import vermouth.forcefield
 import vermouth.molecule
+from vermouth.molecule import Interaction
 import polyply.src.meta_molecule
 from polyply import TEST_DATA
 from polyply.src.topology import Topology
@@ -238,3 +239,312 @@ class TestTopology:
         assert math.isclose(top.nonbond_params[frozenset(["EO", "EO"])]["nb1"], 0.43)
         assert math.isclose(top.nonbond_params[frozenset(["EO", "EO"])]["nb2"], 3.4*0.75)
 
+    @staticmethod
+    @pytest.mark.parametrize('lines, outcome', (
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ bondtypes ]
+        C       C       1       0.1335  502080.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 C   1 test C1 1   0.0 14.0
+        2 C   1 test C2 2   0.0 12.0
+        [ bonds ]
+        1 2  1
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        {"bonds": [Interaction(atoms=(0, 1), parameters=["1", "0.1335", "502080.0"], meta={})]}
+        ),
+        # test three element define
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ angletypes ]
+        CE1   CE1	CT2	5	123.50	401.664	0.0	0.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 CE1   1 test C1 1   0.0 14.0
+        2 CE1   1 test C2 2   0.0 12.0
+        3 CT2   1 test C3 3   0.0 12.0
+        [ angles ]
+        1 2  3 1
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        {"angles": [Interaction(atoms=(0, 1, 2), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                                meta={})]}
+        ),
+        # test reverse match
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ angletypes ]
+        CE1    CE2	CT2	5	123.50	401.664	0.0	0.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 CT2   1 test C1 1   0.0 14.0
+        2 CE2   1 test C2 2   0.0 12.0
+        3 CE1   1 test C3 3   0.0 12.0
+        [ angles ]
+        1  2  3 1
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        {"angles": [Interaction(atoms=(0, 1, 2), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                                meta={})]}
+        ),
+        # test generic match
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ dihedraltypes ]
+        X  CE2  CE1  X    5   123.50	401.664	0.0	0.0
+        X  CT2  CE1  X    5   120	400	0.0	0.0
+        X  QQQ  QQQ  X    5   150	400	0.0	0.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 CT2   1 test C1 1   0.0 14.0
+        2 CE2   1 test C2 2   0.0 12.0
+        3 CE1   1 test C3 3   0.0 12.0
+        4 CT2   1 test C4 4   0.0 12.0
+        5 CT2   1 test C5 5   0.0 14.0
+        [ dihedrals ]
+        1  2  3  4 1
+        2  3  4  5 1
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        {"dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                                   meta={}),
+                       Interaction(atoms=(1, 2, 3, 4), parameters=["5", "120", "400", "0.0", "0.0"],
+                                   meta={})]}
+        ),
+        # test generic match plus defined match on same pattern
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ dihedraltypes ]
+        X  CE2  CE1  X    5   123.50	401.664	0.0	0.0
+        X  CT2  CE1  X    5   123.50	401.664	0.0	0.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 CT2   1 test C1 1   0.0 14.0
+        2 CE2   1 test C2 2   0.0 12.0
+        3 CE1   1 test C3 3   0.0 12.0
+        4 CT2   1 test C4 4   0.0 12.0
+        5 CT2   1 test C5 5   0.0 14.0
+        [ dihedrals ]
+        1  2  3  4 1
+        2  3  4  5 1   150  60  0.0 0.0
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        {"dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                                   meta={}),
+                       Interaction(atoms=(1, 2, 3, 4), parameters=["1", "150", "60", "0.0", "0.0"],
+                                   meta={})]}
+        ),
+        # test priority of defined over generic match
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ dihedraltypes ]
+        CT2  CE2  CE1  CT2    5   123.50	401.664	0.0	0.0
+        X    CE2  CE1  X      5   20            20      0.0     0.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 CT2   1 test C1 1   0.0 14.0
+        2 CE2   1 test C2 2   0.0 12.0
+        3 CE1   1 test C3 3   0.0 12.0
+        4 CT2   1 test C4 4   0.0 12.0
+        5 CT2   1 test C5 5   0.0 14.0
+        [ dihedrals ]
+        1  2  3  4 1
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        {"dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                                   meta={})]}
+        ),
+        # test reverse order for priority of defined over generic match
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ dihedraltypes ]
+        X    CE2  CE1  X      5   20            20      0.0     0.0
+        CT2  CE2  CE1  CT2    5   123.50	401.664	0.0	0.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 CT2   1 test C1 1   0.0 14.0
+        2 CE2   1 test C2 2   0.0 12.0
+        3 CE1   1 test C3 3   0.0 12.0
+        4 CT2   1 test C4 4   0.0 12.0
+        5 CT2   1 test C5 5   0.0 14.0
+        [ dihedrals ]
+        1  2  3  4 1
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        {"dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                                   meta={})]}
+        ),
+        # test generic improper
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ dihedraltypes ]
+        CT2   X     X     CT2    5   123.50	401.664	0.0	0.0
+        CT2   X     X     CE2    5   123.50	401.664	0.0	0.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 CT2   1 test C1 1   0.0 14.0
+        2 CE2   1 test C2 2   0.0 12.0
+        3 CE1   1 test C3 3   0.0 12.0
+        4 CT2   1 test C4 4   0.0 12.0
+        5 CT2   1 test C5 5   0.0 14.0
+        [ dihedrals ]
+        1  2  3  4 2
+        2  3  4  5 2
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        {"dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                                meta={}),
+                       Interaction(atoms=(1, 2, 3, 4), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                                meta={})]}
+        ),
+        # multiple matchs and pairs and a meta parameters
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ angletypes ]
+        CE1    CE2	CT2	5	123.50	401.664	0.0	0.0
+        [ bondtypes ]
+        CT2       CE2       1       0.1335  502080.0
+        #ifdef old
+        CE2       CE1       1       0.1335  502080.0
+        #endif
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 CT2   1 test C1 1   0.0 14.0
+        2 CE2   1 test C2 2   0.0 12.0
+        3 CE1   1 test C3 3   0.0 12.0
+        [ bonds ]
+        1 2 1
+        2 3 1
+        [ pairs ]
+        1  2  1
+        [ angles ]
+        #ifdef angle
+        1  2  3 1
+        #endif
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        {"bonds": [Interaction(atoms=(0, 1), parameters=["1", "0.1335", "502080.0"], meta={}),
+                   Interaction(atoms=(1, 2), parameters=["1", "0.1335", "502080.0"], meta={'tag': 'old', 'condition': 'ifdef'})],
+         "pairs": [Interaction(atoms=(0, 1), parameters=["1"], meta={})],
+         "angles": [Interaction(atoms=(0, 1, 2), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                                meta={"ifdef":"angle"})]}
+        ),
+        # test bondtype usage
+        (
+        """
+        #define _FF_OPLS
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ atomtypes ]
+        opls_001   C   6      12.01100     0.500       A    3.75000e-01  4.39320e-01 ; SIG
+        [ bondtypes ]
+        C       C       1       0.1335  502080.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 opls_001   1 test C1 1   0.0 14.0
+        2 opls_001   1 test C2 2   0.0 12.0
+        [ bonds ]
+        1 2  1
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        {"bonds": [Interaction(atoms=(0, 1), parameters=["1", "0.1335", "502080.0"], meta={})]}
+        )
+	))
+    def test_replace_types(lines, outcome):
+        new_lines = textwrap.dedent(lines)
+        new_lines = new_lines.splitlines()
+        force_field = vermouth.forcefield.ForceField(name='test_ff')
+        top =  Topology(force_field, name="test")
+        polyply.src.top_parser.read_topology(new_lines, top)
+        top.gen_bonded_interactions()
+        for inter_type in outcome:
+            assert top.molecules[0].molecule.interactions[inter_type] == outcome[inter_type]
+
+    @staticmethod
+    def test_replace_types_fail():
+        lines = """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ dihedraltypes ]
+        C   Q    Q     Q    5   123.50	401.664	0.0	0.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 CT2   1 test C1 1   0.0 14.0
+        2 CE2   1 test C2 2   0.0 12.0
+        3 CE1   1 test C3 3   0.0 12.0
+        4 CT2   1 test C4 4   0.0 12.0
+        [ dihedrals ]
+        1  2  3  4 2
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """
+        new_lines = textwrap.dedent(lines)
+        new_lines = new_lines.splitlines()
+        force_field = vermouth.forcefield.ForceField(name='test_ff')
+        top =  Topology(force_field, name="test")
+        polyply.src.top_parser.read_topology(new_lines, top)
+        with pytest.raises(OSError):
+             top.gen_bonded_interactions()
