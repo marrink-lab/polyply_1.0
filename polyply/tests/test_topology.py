@@ -333,9 +333,9 @@ class TestTopology:
         test 1
         """,
         {"dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
-                                meta={}),
+                                   meta={}),
                        Interaction(atoms=(1, 2, 3, 4), parameters=["5", "120", "400", "0.0", "0.0"],
-                                meta={})]}
+                                   meta={})]}
         ),
         # test generic match plus defined match on same pattern
         (
@@ -362,9 +362,9 @@ class TestTopology:
         test 1
         """,
         {"dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
-                                meta={}),
+                                   meta={}),
                        Interaction(atoms=(1, 2, 3, 4), parameters=["1", "150", "60", "0.0", "0.0"],
-                                meta={})]}
+                                   meta={})]}
         ),
         # test priority of defined over generic match
         (
@@ -390,7 +390,7 @@ class TestTopology:
         test 1
         """,
         {"dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
-                                meta={})]}
+                                   meta={})]}
         ),
         # test reverse order for priority of defined over generic match
         (
@@ -416,7 +416,7 @@ class TestTopology:
         test 1
         """,
         {"dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
-                                meta={})]}
+                                   meta={})]}
         ),
         # test generic improper
         (
