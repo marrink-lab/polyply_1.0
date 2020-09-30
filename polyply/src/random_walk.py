@@ -49,6 +49,15 @@ def _take_step(vectors, step_length, coord):
 def not_exceeds_max_dimensions(point, maxdim):
     return np.all(point < maxdim) and np.all(point > np.array([0., 0., 0.]))
 
+def pbc_complete(point, maxdim):
+    for idx, max_coord in enumerate(maxdim):
+       if point[idx] > max_coord:
+          point[idx] =  point[idx] - max_coord
+       elif point[idx] < max_coord:
+          point[idx] =  point[idx] + max_coord
+
+    return point
+
 def is_pushed(point, old_point, push):
     allowed = {"x": [0, 1],
                "y": [1, 1],
@@ -99,7 +108,8 @@ class RandomWalk(Processor):
                  maxdim=None,
                  max_force=10**3.0,
                  vector_sphere=norm_sphere(5000),
-                 push=[]):
+                 push=[],
+                 start_node=None):
 
         self.mol_idx = mol_idx
         self.nonbond_matrix = nonbond_matrix
@@ -111,13 +121,15 @@ class RandomWalk(Processor):
         self.max_force = max_force
         self.push = push
         self.step_fudge = step_fudge
+        self.start_node = start_node
 
     def _rewind(self, current_step, placed_nodes, nsteps):
-        for node in placed_nodes[-nsteps:]:
+        for _, node in placed_nodes[-nsteps:]:
              dummy_point = np.array([np.inf, np.inf, np.inf])
              self.nonbond_matrix.update_positions(dummy_point,
                                                   self.mol_idx,
                                                   node)
+        return placed_nodes[-nsteps][0]
 
     def _is_overlap(self, point, node, nrexcl=1):
         neighbours = nx.neighbors(self.molecule, node)
@@ -145,7 +157,6 @@ class RandomWalk(Processor):
         maxiter: int
            maximum number of iterations
         """
-
         last_point = self.nonbond_matrix.get_point(self.mol_idx, prev_node)
         step_length = self.step_fudge * self.nonbond_matrix.get_interaction(self.mol_idx,
                                                                 self.mol_idx,
@@ -154,10 +165,10 @@ class RandomWalk(Processor):
         step_count = 0
         while True:
             new_point, index = _take_step(vector_bundle, step_length, last_point)
+            #new_point = pbc_complete(new_point, self.maxdim)
             overlap = self._is_overlap(new_point, current_node)
             in_box = not_exceeds_max_dimensions(new_point, self.maxdim)
             pushed = is_pushed(new_point, last_point, self.push)
- 
             if not overlap and in_box and pushed:
                 self.nonbond_matrix.update_positions(new_point, self.mol_idx, current_node)
                 return True
@@ -176,7 +187,10 @@ class RandomWalk(Processor):
         ----------
         meta_molecule:  :class:`polyply.src.meta_molecule.MetaMolecule`
         """
-        first_node = _find_starting_node(meta_molecule)
+        if not self.start_node:
+            first_node = _find_starting_node(meta_molecule)
+        else:
+            first_node = self.start_node
         if "position" not in meta_molecule.nodes[first_node]:
             if not self._is_overlap(self.start, first_node):
                 self.nonbond_matrix.update_positions(self.start, self.mol_idx, first_node)
@@ -191,9 +205,8 @@ class RandomWalk(Processor):
         path = list(nx.bfs_edges(meta_molecule, source=first_node))
         step_count = 0
         while step_count < len(path):
-            #print(step_count)
             prev_node, current_node = path[step_count]
-            #print(meta_molecule.nodes[current_node]["resname"])
+            #rint(meta_molecule.nodes[current_node]["resname"])
             if "position" in meta_molecule.nodes[current_node]:
                 step_count += 1
                 continue
@@ -202,15 +215,14 @@ class RandomWalk(Processor):
                                            current_node,
                                            prev_node)
             self.success = status
-            placed_nodes.append(current_node)
+            placed_nodes.append((step_count, current_node))
 
             if not self.success and count < self.maxiter:
-                if step_count < 5:
+                nrewind = 5
+                if len(placed_nodes) < nrewind+1:
                    return
-                else:
-                   nrewind = 5
-                self._rewind(step_count, placed_nodes, nrewind)
-                step_count = step_count - nrewind
+                step_count = self._rewind(step_count, placed_nodes, nrewind)
+                placed_nodes = placed_nodes[:-nrewind]
             elif not self.success:
                 return
             else:

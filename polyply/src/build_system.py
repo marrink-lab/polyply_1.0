@@ -54,6 +54,7 @@ class BuildSystem():
 
     def __init__(self, topology,
                  density,
+                 start_dict,
                  max_force=10**3,
                  grid_spacing=0.2,
                  maxiter=800,
@@ -61,7 +62,8 @@ class BuildSystem():
                  box=[],
                  step_fudge=1,
                  push=[],
-                 ignore=[]):
+                 ignore=[],
+                 grid=None):
 
         self.topology = topology
         self.density = density
@@ -72,28 +74,37 @@ class BuildSystem():
         self.maxiter_random = maxiter_random
         self.max_force = max_force
         self.ignore = ignore
+        self.box_grid = grid
+        self.start_dict = start_dict
 
-        # Taking care of setting the box size and the gird
-
+        # set the box if a box is given
         if len(box) != 0:
             self.box = box
         else:
             box_dim = round(_compute_box_size(topology, self.density), 5)
             self.box = np.array([box_dim, box_dim, box_dim])
 
-        self.box_grid = np.mgrid[0:self.box[0]:self.grid_spacing,
-                                 0:self.box[1]:self.grid_spacing,
-                                 0:self.box[2]:self.grid_spacing].reshape(3, -1).T
+        # intialize the grid if there is none given
+        if isinstance(self.box_grid, type(None)):
+            self.box_grid = np.mgrid[0:self.box[0]:self.grid_spacing,
+                                     0:self.box[1]:self.grid_spacing,
+                                     0:self.box[2]:self.grid_spacing].reshape(3, -1).T
 
         topology.box = (self.box[0], self.box[1], self.box[2])
 
+        # filter all molecules that should be ignored during the building process
         molecules = _filter_by_molname(self.topology.molecules, self.ignore)
+
+        # generate the nonbonded matrix wrapping all information about molecular
+        # interactions
         self.nonbond_matrix = NonBondMatrix.from_topology(molecules, topology)
 
     def _handle_random_walk(self, molecule, mol_idx, vector_sphere):
         step_count = 0
         while True:
-            start = self.box_grid[np.random.randint(len(self.box_grid))]
+            _int = np.random.randint(len(self.box_grid))
+            #print(_int)
+            start = self.box_grid[_int]
             processor = RandomWalk(mol_idx,
                                    self.nonbond_matrix.copy(),
                                    step_fudge=self.step_fudge,
@@ -102,7 +113,8 @@ class BuildSystem():
                                    maxdim=self.box,
                                    max_force=self.max_force,
                                    vector_sphere=vector_sphere,
-                                   push=self.push)
+                                   push=self.push,
+                                   start_node=self.start_dict[mol_idx])
 
             processor.run_molecule(molecule)
             #print(processor.success)

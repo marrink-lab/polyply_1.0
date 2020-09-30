@@ -24,7 +24,7 @@ from .generate_templates import GenerateTemplates
 from .backmap import Backmap
 from .topology import Topology
 from .build_system import BuildSystem
-from .annotate_ligands import AnnotateLigands
+from .annotate_ligands import AnnotateLigands, parse_residue_spec, _find_nodes
 
 def split_residues(molecules, split):
     for mol in molecules:
@@ -67,12 +67,33 @@ def gen_coords(args):
     else:
         box = []
 
+    # handle grid input
+    if args.grid:
+        grid = np.loadtxt(args.grid)
+    else:
+        grid = None
+
+    # handle starting point input
+    start_dict = defaultdict(None)
+    for start in args.start:
+        res_spec = parse_residue_spec(start)
+        if 'mol_idx' in res_spec:
+            mol_idx = res_spec['mol_idx']
+            node = _find_nodes(topology.molecules[mol_idx], res_spec)[0]
+            start_dict[mol_idx] = node
+        else:
+            for idx, molecule in enumerate(topology.molecules):
+                if molecule.mol_name == res_spec['molname']:
+                    node = _find_nodes(molecule, res_spec)[0]
+                    start_dict[idx] = node
+
     # Build polymer structure
     GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
 
     AnnotateLigands(topology, args.ligands).run_system(topology)
 
     BuildSystem(topology,
+                start_dict=start_dict,
                 density=args.density,
                 max_force=args.max_force,
                 grid_spacing=args.grid_spacing,
@@ -81,7 +102,8 @@ def gen_coords(args):
                 box=box,
                 step_fudge=args.step_fudge,
                 push=args.push,
-                ignore=args.ignore).run_system(topology.molecules)
+                ignore=args.ignore,
+                grid=grid).run_system(topology.molecules)
 
     AnnotateLigands(topology, args.ligands).split_ligands()
 
