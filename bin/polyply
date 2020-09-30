@@ -86,6 +86,8 @@ def main():
                             help='output GRO (.gro)')
     file_group.add_argument('-c', dest='coordpath', type=Path,
                             help='input file (.gro)', default=None)
+    file_group.add_argument('-r', dest='restraints', nargs='+', type=Path,
+                            default=[], help=('file specifinycing geomterical restraints'))
 
     topology_group = parser_gen_coords.add_argument_group('Change or modify topology')
     topology_group.add_argument('-res', dest='build_res', type=str,
@@ -98,7 +100,7 @@ def main():
                             default=[],
                             help=('Specify ligands of molecules which should be placed close '
                                   'to a specific molecule. The format is as follows: '
-                                  '<mol_name>-<mol_idx>-<resname>:<lig_name>-<lig_idx>-<resname>. '
+                                  '<mol_name>#<mol_idx>-<resname>#<resid>:<mol_name>#<mol_idx>-<resname>#<resid>. '
                                   'Elements of the specification can be omitted as required.'))
 
     system_group = parser_gen_coords.add_argument_group('Variables for system generation')
@@ -106,10 +108,16 @@ def main():
                             help='density of system', default=None)
     system_group.add_argument('-box', dest='box', type=float,
                             help='rectangluar box x y z', default=[], nargs=3)
-    system_group.add_argument('-grid', dest='grid_spacing', type=int,
+    system_group.add_argument('-gs', dest='grid_spacing', type=int,
                             help='grid spacing in nm', default=0.2)
+    system_group.add_argument('-grid', dest='grid', type=str,
+                            help='file with grid-points')
     system_group.add_argument('-mi', dest='maxiter', type=int,
                             help='max number of trys to grow a molecule', default=800)
+    system_group.add_argument('-start', dest='start', nargs='+', type=str,
+                            default=[],
+                            help=('<mol_name>#<mol_idx>-<resname>#<resid>. '
+                                  'Specify which residue to build first.'))
 
     random_walk_group = parser_gen_coords.add_argument_group('Variables for random walk')
     random_walk_group.add_argument('-mir', dest='maxiter_random', type=int,
