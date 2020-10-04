@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from collections import defaultdict
 import numpy as np
 from vermouth.parser_utils import SectionLineParser
 
@@ -31,7 +31,7 @@ class BuildDirector(SectionLineParser):
         Parses the lines in the '[molecule]'
         directive and stores it.
         """
-        self.current_molname = line.split()
+        self.current_molname = line.split()[0]
 
     @SectionLineParser.section_parser('molecule', 'cylinder')
     def _cylinder(self, line, lineno=0):
@@ -86,7 +86,7 @@ class BuildDirector(SectionLineParser):
         """
         for molecule in self.molecules:
             if molecule.mol_name in self.build_options:
-                for _type, option in self.build_options[molecule.mol_name].items():
+                for _type, option in self.build_options[molecule.mol_name]:
                     self._tag_nodes(molecule, _type, option)
 
         super().finalize
@@ -101,19 +101,19 @@ class BuildDirector(SectionLineParser):
                 if "restraints" in molecule.nodes[node]:
                     molecule.nodes[node]["restraints"].append((_type, option["parameters"]))
                 else:
-                    molecule.nodes[node]["restraints"] = (_type, option["parameters"])
+                    molecule.nodes[node]["restraints"] = [(_type, option["parameters"])]
 
     @staticmethod
     def _base_parser_geometry(tokens):
         geometry_def = {}
         geometry_def["resname"] = tokens[0]
         geometry_def["start"] = float(tokens[1])
-        geometry_def["stop"] = float(tokens[1])
+        geometry_def["stop"] = float(tokens[2])
 
         point = np.array([float(tokens[4]), float(tokens[5]), float(tokens[6])])
         parameters = [tokens[3], point]
 
-        for param in tokens[3:]:
+        for param in tokens[7:]:
             parameters.append(float(param))
 
         geometry_def["parameters"] = parameters

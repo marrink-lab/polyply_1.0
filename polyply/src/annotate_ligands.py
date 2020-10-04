@@ -52,7 +52,7 @@ def parse_residue_spec(resspec):
     if molname:
         out['molname'] = molname
     if resid:
-        out['resid'] = resid[0]
+        out['resid'] = float(resid[0])
 
     return out
 

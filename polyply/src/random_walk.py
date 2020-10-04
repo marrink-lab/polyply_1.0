@@ -24,7 +24,17 @@ Processor implementing a random-walk to generate
 coordinates for a meta-molecule.
 """
 
-def _take_step(vectors, step_length, coord):
+def pbc_complete(point, maxdim):
+#    print(point, maxdim)
+    for idx, max_coord in enumerate(maxdim):
+       if point[idx] > max_coord:
+          point[idx] =  point[idx] - max_coord
+       elif point[idx] < 0.0:
+          point[idx] =  point[idx] + max_coord
+#    print(point)
+    return point
+
+def _take_step(vectors, step_length, coord, box):
     """
     Given a list of unit `vectors` choose one randomly,
     multiply it by the `step_length` and add to `coord`.
@@ -44,19 +54,11 @@ def _take_step(vectors, step_length, coord):
     """
     index = random.randint(0, len(vectors) - 1)
     new_coord = coord + vectors[index] * step_length
+    new_coord = pbc_complete(new_coord, box)
     return new_coord, index
 
 def not_exceeds_max_dimensions(point, maxdim):
     return np.all(point < maxdim) and np.all(point > np.array([0., 0., 0.]))
-
-def pbc_complete(point, maxdim):
-    for idx, max_coord in enumerate(maxdim):
-       if point[idx] > max_coord:
-          point[idx] =  point[idx] - max_coord
-       elif point[idx] < max_coord:
-          point[idx] =  point[idx] + max_coord
-
-    return point
 
 def is_pushed(point, old_point, push):
     allowed = {"x": [0, 1],
@@ -79,6 +81,39 @@ def is_pushed(point, old_point, push):
             return False
     else:
         return True
+
+def in_cylinder(point, parameters):
+    pass
+
+def in_rectangle(point, parameters):
+    in_out = parameters[0]
+    diff = parameters[1] - point
+    check = [ np.abs(dim) <  max_dim for dim, max_dim in zip(diff, parameters[2:])]
+    #print(point, in_out, diff, parameters[2:], check)
+    if 'in' == in_out and not all(check) == True:
+        return False
+    elif 'out' == in_out and all(check) == True:
+        return False
+    else:
+        return True
+
+def in_sphere(point, parameters):
+    pass
+
+RESTRAINT_METHODS = {"cylinder": in_cylinder,
+                    "rectangle": in_rectangle,
+                    "sphere":  in_sphere}
+
+def full_fill_geometrical_constraints(point, node_dict):
+    #print(node_dict)
+    if not "restraints" in node_dict:
+        return True
+
+    for restr_type, restraint in node_dict['restraints']:
+       if not RESTRAINT_METHODS[restr_type](point, restraint):
+           return False
+
+    return True
 
 def _find_starting_node(meta_molecule):
     """
@@ -164,12 +199,13 @@ class RandomWalk(Processor):
                                                                 current_node)[0]
         step_count = 0
         while True:
-            new_point, index = _take_step(vector_bundle, step_length, last_point)
-            #new_point = pbc_complete(new_point, self.maxdim)
+
+            new_point, index = _take_step(vector_bundle, step_length, last_point, self.maxdim)
             overlap = self._is_overlap(new_point, current_node)
-            in_box = not_exceeds_max_dimensions(new_point, self.maxdim)
-            pushed = is_pushed(new_point, last_point, self.push)
-            if not overlap and in_box and pushed:
+            in_box = True #not_exceeds_max_dimensions(new_point, self.maxdim)
+            constrained = full_fill_geometrical_constraints(new_point, self.molecule.nodes[current_node])
+            #print(constrained)
+            if not overlap and in_box and constrained:
                 self.nonbond_matrix.update_positions(new_point, self.mol_idx, current_node)
                 return True
             elif step_count == self.maxiter:
@@ -206,7 +242,7 @@ class RandomWalk(Processor):
         step_count = 0
         while step_count < len(path):
             prev_node, current_node = path[step_count]
-            #rint(meta_molecule.nodes[current_node]["resname"])
+            #print(step_count)
             if "position" in meta_molecule.nodes[current_node]:
                 step_count += 1
                 continue
