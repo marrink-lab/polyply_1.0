@@ -25,6 +25,7 @@ from .backmap import Backmap
 from .topology import Topology
 from .build_system import BuildSystem
 from .annotate_ligands import AnnotateLigands, parse_residue_spec, _find_nodes
+from .build_file_parser import read_build_file
 
 def split_residues(molecules, split):
     for mol in molecules:
@@ -60,6 +61,12 @@ def gen_coords(args):
         for node in molecule.nodes:
             if not molecule.nodes[node]["build"]:
                 molecule.nodes[node]["build"] = False
+
+    # load in built file
+    if args.build:
+        with open(args.build) as build_file:
+            lines = build_file.readlines()
+            read_build_file(lines, topology.molecules)
 
     # deal with box-input
     if len(args.box) != 0:
