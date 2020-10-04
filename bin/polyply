@@ -86,8 +86,8 @@ def main():
                             help='output GRO (.gro)')
     file_group.add_argument('-c', dest='coordpath', type=Path,
                             help='input file (.gro)', default=None)
-    file_group.add_argument('-r', dest='restraints', nargs='+', type=Path,
-                            default=[], help=('file specifinycing geomterical restraints'))
+    file_group.add_argument('-b', dest='build', type=Path,
+                            default=None, help=('file specifinycing build options'))
 
     topology_group = parser_gen_coords.add_argument_group('Change or modify topology')
     topology_group.add_argument('-res', dest='build_res', type=str,
