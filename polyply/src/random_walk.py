@@ -265,7 +265,7 @@ class RandomWalk(Processor):
             placed_nodes.append((step_count, current_node))
 
             if not self.success and count < self.maxiter:
-                nrewind = 5
+                nrewind = 30
                 if len(placed_nodes) < nrewind+1:
                    return
                 step_count = self._rewind(step_count, placed_nodes, nrewind)

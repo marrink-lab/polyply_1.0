@@ -74,16 +74,19 @@ class NonBondMatrix():
                  nodes_to_idx,
                  atom_types,
                  interaction_matrix,
-                 cut_off):
+                 cut_off,
+                 boxsize):
 
         self.positions = positions
         self.nodes_to_gndx = nodes_to_idx
         self.atypes = np.asarray(atom_types, dtype=str)
         self.interaction_matrix = interaction_matrix
         self.cut_off = cut_off
+        self.boxsize = boxsize
 
         self.defined_idxs = np.where(self.positions[:, 0].reshape(-1) != np.inf)[0]
-        self.position_tree = scipy.spatial.ckdtree.cKDTree(positions[self.defined_idxs])
+        self.position_tree = scipy.spatial.ckdtree.cKDTree(positions[self.defined_idxs],
+                                                           boxsize=boxsize)
 
     def copy(self):
         """
@@ -93,7 +96,8 @@ class NonBondMatrix():
                                 self.nodes_to_gndx,
                                 self.atypes,
                                 self.interaction_matrix,
-                                cut_off=self.cut_off)
+                                cut_off=self.cut_off,
+                                boxsize=self.boxsize)
         return new_obj
 
     def update_positions(self, point, mol_idx, node_key):
@@ -103,7 +107,8 @@ class NonBondMatrix():
         gndx = self.nodes_to_gndx[(mol_idx, node_key)]
         self.positions[gndx] = point
         self.defined_idxs = np.where(self.positions[:, 0] != np.inf)[0]
-        self.position_tree = scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs])
+        self.position_tree = scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs],
+                                                           boxsize=self.boxsize)
 
     def update_positions_in_molecules(self, molecules):
         """
@@ -149,7 +154,8 @@ class NonBondMatrix():
         """
         exclusions = [self.nodes_to_gndx[(mol_idx, node)] for node in exclude]
 
-        ref_tree = scipy.spatial.ckdtree.cKDTree(point.reshape(1, 3))
+        ref_tree = scipy.spatial.ckdtree.cKDTree(point.reshape(1, 3),
+                                                 boxsize=self.boxsize)
         dist_mat = ref_tree.sparse_distance_matrix(self.position_tree, self.cut_off)
 
         gndx = self.nodes_to_gndx[(mol_idx, node)]
@@ -167,7 +173,7 @@ class NonBondMatrix():
         return force
 
     @classmethod
-    def from_topology(cls, molecules, topology):
+    def from_topology(cls, molecules, topology, box):
 
         n_atoms = _n_particles(molecules)
 
@@ -203,5 +209,5 @@ class NonBondMatrix():
             inter_matrix[frozenset([resname, resname])] = (vdw_radius, 1)
 
         nonbond_matrix = cls(positions, nodes_to_gndx,
-                             atom_types, inter_matrix, cut_off=2.1)
+                             atom_types, inter_matrix, cut_off=2.1, boxsize=box)
         return nonbond_matrix

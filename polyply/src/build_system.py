@@ -97,7 +97,7 @@ class BuildSystem():
 
         # generate the nonbonded matrix wrapping all information about molecular
         # interactions
-        self.nonbond_matrix = NonBondMatrix.from_topology(molecules, topology)
+        self.nonbond_matrix = NonBondMatrix.from_topology(molecules, topology, self.box)
 
     def _handle_random_walk(self, molecule, mol_idx, vector_sphere):
         step_count = 0
