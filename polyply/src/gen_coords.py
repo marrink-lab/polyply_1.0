@@ -81,7 +81,7 @@ def gen_coords(args):
         grid = None
 
     # handle starting point input
-    start_dict = defaultdict(None)
+    start_dict = {mol_idx:None for mol_idx, _ in enumerate(topology.molecules)}
     for start in args.start:
         res_spec = parse_residue_spec(start)
         if 'mol_idx' in res_spec:
