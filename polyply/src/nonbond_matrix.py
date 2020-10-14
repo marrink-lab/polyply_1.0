@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import itertools
+import multiprocessing
 import numpy as np
 import scipy.spatial
 from numba import jit
 from .topology import lorentz_berthelot_rule
 
 @jit(nopython=True, cache=True, fastmath=True)
-def lennard_jones_force(dist, vect, params):
+def lennard_jones_force(dist, point, ref, params):
     """
     Compute the Lennard-Jones force between two particles
     given their interaction parameters, the distance, and
@@ -39,6 +40,8 @@ def lennard_jones_force(dist, vect, params):
         the force vector
     """
     sig, eps = params
+    # doing this here with numba is faster than separate
+    vect = point - ref
     force = 24 * eps / dist * ((2 * (sig/dist)**12.0) - (sig/dist)**6) * vect/dist
     return force
 
@@ -55,7 +58,6 @@ def _n_particles(molecules):
     for molecule in molecules:
         n_atoms += len(molecule.nodes)
     return n_atoms
-
 
 class NonBondMatrix():
     """
@@ -86,9 +88,9 @@ class NonBondMatrix():
         self.cut_off = cut_off
         self.boxsize = boxsize
 
-        self.defined_idxs = np.where(self.positions[:, 0].reshape(-1) != np.inf)[0]
-        self.position_tree = scipy.spatial.ckdtree.cKDTree(positions[self.defined_idxs],
-                                                           boxsize=boxsize)
+        self.defined_idxs = [list(np.where(self.positions[:, 0].reshape(-1) != np.inf)[0])]
+        self.position_trees = [scipy.spatial.ckdtree.cKDTree(positions[self.defined_idxs[-1]],
+                                                             boxsize=boxsize)]
 
     def copy(self):
         """
@@ -102,15 +104,40 @@ class NonBondMatrix():
                                 boxsize=self.boxsize)
         return new_obj
 
-    def update_positions(self, point, mol_idx, node_key):
+    def add_positions(self, point, mol_idx, node_key, start=True):
         """
         Add `point` with global index `gndx` to the nonbonded definitions.
         """
         gndx = self.nodes_to_gndx[(mol_idx, node_key)]
         self.positions[gndx] = point
-        self.defined_idxs = np.where(self.positions[:, 0] != np.inf)[0]
-        self.position_tree = scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs],
-                                                           boxsize=self.boxsize, balanced_tree=False, compact_nodes=False)
+
+        if start and self.position_trees[-1].n > 5000:
+           self.defined_idxs.append([gndx])
+           self.position_trees.append(scipy.spatial.ckdtree.cKDTree(point.reshape(1,3),
+                                                                    boxsize=self.boxsize,
+                                                                    balanced_tree=False,
+                                                                    compact_nodes=False))
+        else:
+           self.defined_idxs[-1].append(gndx)
+           new_tree = scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs[-1]],
+                                                    boxsize=self.boxsize,
+                                                    balanced_tree=False,
+                                                    compact_nodes=False)
+           self.position_trees[-1] = new_tree
+
+    def remove_positions(self, mol_idx, node_key):
+        """
+        remove `point` with global index `gndx` to the nonbonded definitions.
+        """
+        gndx = self.nodes_to_gndx[(mol_idx, node_key)]
+        self.positions[gndx] = np.array([np.inf, np.inf, np.inf])
+        self.defined_idxs[-1].remove(gndx)
+        new_tree = scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs[-1]],
+                                                 boxsize=self.boxsize,
+                                                 balanced_tree=False,
+                                                 compact_nodes=False)
+        self.position_trees[-1] = new_tree
+
     def update_positions_in_molecules(self, molecules):
         """
         Add the positions stored in the object back
@@ -132,7 +159,9 @@ class NonBondMatrix():
         atype_b = self.atypes[gndx_b]
         return self.interaction_matrix[frozenset([atype_a, atype_b])]
 
-    def compute_force_point(self, point, mol_idx, node, exclude=[], potential="LJ"):
+
+
+    def compute_force_point(self, point, mol_idx, node, n_proc=4, exclude=[], potential="LJ"):
         """
         Compute the force on `node` of molecule `mol_idx` with coordinates
         `point` given the potential definition in `potential`.
@@ -157,22 +186,24 @@ class NonBondMatrix():
 
         ref_tree = scipy.spatial.ckdtree.cKDTree(point.reshape(1, 3),
                                                  boxsize=self.boxsize)
-        dist_mat = ref_tree.sparse_distance_matrix(self.position_tree, self.cut_off)
-
-        if any(np.array(list(dist_mat.values())) < 0.1):
-           return np.inf
-
-        gndx = self.nodes_to_gndx[(mol_idx, node)]
-        current_atype = self.atypes[gndx]
-
         force = 0
-        for pair, dist in dist_mat.items():
-            gndx_pair = self.defined_idxs[pair[1]]
-            if gndx_pair not in exclusions:
-                other_atype = self.atypes[gndx_pair]
-                params = self.interaction_matrix[frozenset([current_atype, other_atype])]
-                vect = point - self.positions[gndx_pair]
-                force += POTENTIAL_FUNC[potential](dist, vect, params)
+        for pos_tree, defined_idxs in zip(self.position_trees, self.defined_idxs):
+
+            dist_mat = ref_tree.sparse_distance_matrix(pos_tree, self.cut_off)
+
+            if any(np.array(list(dist_mat.values())) < 0.1):
+               return np.inf
+
+            gndx = self.nodes_to_gndx[(mol_idx, node)]
+            current_atype = self.atypes[gndx]
+
+            for pair, dist in dist_mat.items():
+                gndx_pair = defined_idxs[pair[1]]
+
+                if gndx_pair not in exclusions:
+                    other_atype = self.atypes[gndx_pair]
+                    params = self.interaction_matrix[frozenset([current_atype, other_atype])]
+                    force += POTENTIAL_FUNC[potential](dist, point, self.positions[gndx_pair], params)
 
         return force
 

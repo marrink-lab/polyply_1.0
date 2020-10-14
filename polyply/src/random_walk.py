@@ -172,10 +172,9 @@ class RandomWalk(Processor):
         self.start_node = start_node
 
     def _rewind(self, current_step, placed_nodes, nsteps):
-        for _, node in placed_nodes[-nsteps:]:
+        for _, node in placed_nodes[-nsteps:-1]:
              dummy_point = np.array([np.inf, np.inf, np.inf])
-             self.nonbond_matrix.update_positions(dummy_point,
-                                                  self.mol_idx,
+             self.nonbond_matrix.remove_positions(self.mol_idx,
                                                   node)
         return placed_nodes[-nsteps][0]
 
@@ -218,7 +217,7 @@ class RandomWalk(Processor):
             in_box = True #not_exceeds_max_dimensions(new_point, self.maxdim)
             constrained = full_fill_geometrical_constraints(new_point, self.molecule.nodes[current_node])
             if not overlap and in_box and constrained:
-                self.nonbond_matrix.update_positions(new_point, self.mol_idx, current_node)
+                self.nonbond_matrix.add_positions(new_point, self.mol_idx, current_node, start=False)
                 return True
             elif step_count == self.maxiter:
                 return False
@@ -241,7 +240,7 @@ class RandomWalk(Processor):
             first_node = self.start_node
         if "position" not in meta_molecule.nodes[first_node]:
             if not self._is_overlap(self.start, first_node):
-                self.nonbond_matrix.update_positions(self.start, self.mol_idx, first_node)
+                self.nonbond_matrix.add_positions(self.start, self.mol_idx, first_node, start=True)
                 self.success = True
             else:
                 self.success = False
