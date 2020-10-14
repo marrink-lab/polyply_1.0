@@ -187,7 +187,7 @@ class RandomWalk(Processor):
                                                              neighbours,
                                                              potential="LJ")
         return norm(force_vect) > self.max_force
-
+    #@profile
     def update_positions(self, vector_bundle, current_node, prev_node):
         """
         Take an array of unit vectors `vector_bundle` and generate the coordinates
@@ -265,7 +265,7 @@ class RandomWalk(Processor):
             placed_nodes.append((step_count, current_node))
 
             if not self.success and count < self.maxiter:
-                nrewind = 30
+                nrewind = 5
                 if len(placed_nodes) < nrewind+1:
                    return
                 step_count = self._rewind(step_count, placed_nodes, nrewind)

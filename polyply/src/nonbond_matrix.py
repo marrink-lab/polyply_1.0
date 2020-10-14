@@ -14,8 +14,10 @@
 import itertools
 import numpy as np
 import scipy.spatial
+from numba import jit
 from .topology import lorentz_berthelot_rule
 
+@jit(nopython=True, cache=True, fastmath=True)
 def lennard_jones_force(dist, vect, params):
     """
     Compute the Lennard-Jones force between two particles
@@ -108,8 +110,7 @@ class NonBondMatrix():
         self.positions[gndx] = point
         self.defined_idxs = np.where(self.positions[:, 0] != np.inf)[0]
         self.position_tree = scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs],
-                                                           boxsize=self.boxsize)
-
+                                                           boxsize=self.boxsize, balanced_tree=False, compact_nodes=False)
     def update_positions_in_molecules(self, molecules):
         """
         Add the positions stored in the object back
@@ -157,6 +158,9 @@ class NonBondMatrix():
         ref_tree = scipy.spatial.ckdtree.cKDTree(point.reshape(1, 3),
                                                  boxsize=self.boxsize)
         dist_mat = ref_tree.sparse_distance_matrix(self.position_tree, self.cut_off)
+
+        if any(np.array(list(dist_mat.values())) < 0.1):
+           return np.inf
 
         gndx = self.nodes_to_gndx[(mol_idx, node)]
         current_atype = self.atypes[gndx]
