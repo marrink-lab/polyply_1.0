@@ -79,6 +79,9 @@ def main():
     parser_gen_coords.add_argument('-name', required=True, type=str, dest="name",
                                    help="name of the final molecule")
 
+    parser_gen_coords.add_argument('-np', required=False, type=int, dest="nproc",
+                                help="number of available processors", default=1)
+
     file_group = parser_gen_coords.add_argument_group('Input and output files')
     file_group.add_argument('-p', dest='toppath', required=False, type=Path,
                             help='topology file (.top)')

@@ -174,6 +174,10 @@ class Backmap():
     for the lower resolution molecule associated with the MetaMolecule.
     """
 
+    def __init__(self, nproc, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.nproc = nproc
+
     @staticmethod
     def _place_init_coords(meta_molecule):
         """
@@ -221,5 +225,5 @@ class Backmap():
         system: vermouth.system.System
             The system to process. Is modified in-place.
         """
-        pool = multiprocessing.Pool(12)
+        pool = multiprocessing.Pool(self.nproc)
         system.molecules = pool.map(self.run_molecule, tqdm(system.molecules))
