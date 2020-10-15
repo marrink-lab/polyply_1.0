@@ -159,9 +159,7 @@ class NonBondMatrix():
         atype_b = self.atypes[gndx_b]
         return self.interaction_matrix[frozenset([atype_a, atype_b])]
 
-
-
-    def compute_force_point(self, point, mol_idx, node, n_proc=4, exclude=[], potential="LJ"):
+    def compute_force_point(self, point, mol_idx, node, exclude=[], potential="LJ"):
         """
         Compute the force on `node` of molecule `mol_idx` with coordinates
         `point` given the potential definition in `potential`.
@@ -204,7 +202,7 @@ class NonBondMatrix():
                     other_atype = self.atypes[gndx_pair]
                     params = self.interaction_matrix[frozenset([current_atype, other_atype])]
                     force += POTENTIAL_FUNC[potential](dist, point, self.positions[gndx_pair], params)
-
+        #print(force)
         return force
 
     @classmethod
