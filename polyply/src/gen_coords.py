@@ -15,6 +15,7 @@
 """
 High level API for the polyply coordinate generator
 """
+import sys
 from collections import defaultdict
 import numpy as np
 import networkx as nx
@@ -114,10 +115,11 @@ def gen_coords(args):
 
     AnnotateLigands(topology, args.ligands).split_ligands()
 
-    Backmap().run_system(topology)
+    Backmap(args.nproc).run_system(topology)
 
     # Write output
+    command = ' '.join(sys.argv)
     system = topology.convert_to_vermouth_system()
     vermouth.gmx.gro.write_gro(system, args.outpath, precision=7,
-                               title='polyply structure', box=topology.box)
+                               title=command, box=topology.box)
     DeferredFileWriter().write()
