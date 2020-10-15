@@ -15,6 +15,9 @@ import numpy as np
 from numpy import sqrt, pi, cos, sin, dot, cross, arccos, degrees
 from numpy.linalg import norm
 from scipy.spatial.transform import Rotation
+from numba import jit
+
+@jit(nopython=True, cache=True, fastmath=True)
 def vector_angle_degrees(v1, v2):
     """
     Compute the angle between two vectors
@@ -30,8 +33,10 @@ def vector_angle_degrees(v1, v2):
     float
       angle in degrees
     """
-    return degrees(arccos(dot(u_vect(v1), u_vect(v2))))
+    angle = degrees(arccos(dot(u_vect(v1), u_vect(v2))))
+    return angle
 
+@jit(nopython=True, cache=True, fastmath=True)
 def u_vect(vect):
     """
     Compute unit vector of vector.
@@ -44,8 +49,10 @@ def u_vect(vect):
     -----------
     np.array
     """
-    return vect/norm(vect)
+    u_vect = vect/norm(vect)
+    return u_vect
 
+@jit(nopython=True, cache=True, fastmath=True)
 def angle(A, B, C):
     """
     Compute angle between three points,
@@ -62,8 +69,10 @@ def angle(A, B, C):
     """
     v1 = B - A
     v2 = B - C
-    return vector_angle_degrees(v1, v2)
+    angle = vector_angle_degrees(v1, v2)
+    return angle
 
+@jit(nopython=True, cache=True, fastmath=True)
 def dih(A, B, C, D):
     """
     Compute dihedral angle between four points,
@@ -83,8 +92,8 @@ def dih(A, B, C, D):
     r3 = C - D
     n1 = u_vect(cross(r1, r2))
     n2 = u_vect(cross(r2, r3))
-    return vector_angle_degrees(n1, n2)
-
+    dih = vector_angle_degrees(n1, n2)
+    return dih
 
 def center_of_geometry(points):
     """
@@ -98,7 +107,8 @@ def center_of_geometry(points):
     ---------
     float
     """
-    return np.average(points, axis=0)
+    COG = np.average(points, axis=0)
+    return COG
 
 def norm_sphere(values=50):
     """
@@ -125,6 +135,7 @@ def norm_sphere(values=50):
     v_sphere = np.random.normal(0.0, 1, (values, 3))
     return np.array([u_vect(vect) for vect in v_sphere])
 
+@jit(nopython=True, cache=True, fastmath=True)
 def radius_of_gyration(points):
     """
     Compute radius of gyration of points.
@@ -145,7 +156,21 @@ def radius_of_gyration(points):
         for j in points:
             diff[count]=np.dot((i - j),(i-j))
             count = count + 1
-    return np.sqrt(1/(2*N**2.0) * sum(diff))
+    RG = np.sqrt(1/(2*N**2.0) * np.sum(diff))
+    return RG
+
+@jit(nopython=True, cache=True, fastmath=True)
+def multiply_matrix(A, B):
+    m, n = A.shape
+    p = B.shape[1]
+
+    C = np.zeros((m,p))
+
+    for i in range(0,m):
+        for j in range(0,p):
+            for k in range(0,n):
+                C[i,j] += A[i,k]*B[k,j]
+    return C
 
 def rotate_xyz(object_xyz, theta_x, theta_y, theta_z):
     """
@@ -165,5 +190,6 @@ def rotate_xyz(object_xyz, theta_x, theta_y, theta_z):
         angles in degrees
     """
     rotation = Rotation.from_euler('xyz', [theta_x, theta_y, theta_z], degrees=True)
-    rotated_object = np.matmul(rotation.as_matrix(), object_xyz)
+    rotated_object = multiply_matrix(rotation.as_matrix(), object_xyz)
+    #rotated_object = np.matmul(rotation.as_matrix(), object_xyz)
     return rotated_object

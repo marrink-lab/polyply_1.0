@@ -107,8 +107,8 @@ def _expand_inital_coords(block, bond=None, pos=None, fixed=None,
     dict
       dictonary of node index and position
     """
-    return nx.spring_layout(block, dim=3, k=bond, pos=pos, fixed=fixed,
-                            iterations=iterations, weight=weight, scale=max_box)
+    # replace by kamada kwau
+    return nx.kamada_kawai_layout(block, dim=3)
 
 def compute_volume(molecule, block, coords):
     """
@@ -146,7 +146,7 @@ def compute_volume(molecule, block, coords):
         else:
            continue
         idx += 1
-
+    #print(geom_vects)
     if geom_vects.shape[0] > 1:
         radgyr = radius_of_gyration(geom_vects)
     else:
@@ -299,8 +299,8 @@ class GenerateTemplates(Processor):
                 opt_counter = 0
                 while True:
                     coords = _expand_inital_coords(block)
-                    #success, coords = optimize_geometry(block, coords, ["bonds", "constraints"])
-                    #success, coords = optimize_geometry(block, coords, ["angles", "bonds", "constraints"])
+                    success, coords = optimize_geometry(block, coords, ["bonds", "constraints"])
+                    success, coords = optimize_geometry(block, coords, ["angles", "bonds", "constraints"])
                     success, coords = optimize_geometry(block, coords, ["bonds", "angles", "dihedrals", "constraints"])
 
                     if success:
@@ -326,5 +326,4 @@ class GenerateTemplates(Processor):
         templates, volumes = self._gen_templates(meta_molecule)
         meta_molecule.templates = self.templates
         self.topology.volumes = self.volumes
-        #print(self.volumes)
         return meta_molecule
