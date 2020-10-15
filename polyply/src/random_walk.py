@@ -239,7 +239,8 @@ class RandomWalk(Processor):
         else:
             first_node = self.start_node
         if "position" not in meta_molecule.nodes[first_node]:
-            if not self._is_overlap(self.start, first_node):
+            constrained = full_fill_geometrical_constraints(self.start, self.molecule.nodes[first_node])
+            if not self._is_overlap(self.start, first_node) and constrained:
                 self.nonbond_matrix.add_positions(self.start, self.mol_idx, first_node, start=True)
                 self.success = True
             else:
