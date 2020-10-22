@@ -17,8 +17,11 @@ High level API for the polyply coordinate generator
 """
 import sys
 from collections import defaultdict
+from functools import partial
+import multiprocessing
 import numpy as np
 import networkx as nx
+from tqdm import tqdm
 import vermouth.forcefield
 from vermouth.file_writer import DeferredFileWriter
 from .generate_templates import GenerateTemplates
@@ -28,11 +31,10 @@ from .build_system import BuildSystem
 from .annotate_ligands import AnnotateLigands, parse_residue_spec, _find_nodes
 from .build_file_parser import read_build_file
 
-def split_residues(molecules, split):
-    for mol in molecules:
-        max_resid = len(mol.nodes)
-        for split_string in split:
-            max_resid = mol.split_residue(split_string, max_resid)
+def split_residues(molecule, split):
+    max_resid = len(molecule.nodes)
+    for split_string in split:
+        max_resid = molecule.split_residue(split_string, max_resid)
 
 def gen_coords(args):
     # Read in the topology
@@ -48,7 +50,9 @@ def gen_coords(args):
             raise IOError(msg.format(molecule.name))
 
     if args.split:
-       split_residues(topology.molecules, args.split)
+       wrapper = partial(split_residues, split=args.split)
+       pool = multiprocessing.Pool(args.nproc)
+       pool.map(wrapper, tqdm(topology.molecules))
 
     # read in coordinates if there are any
     if args.coordpath:
