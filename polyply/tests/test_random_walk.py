@@ -14,84 +14,185 @@
 """
 Test that force field files are properly read.
 """
-
-import textwrap
-import pytest
 import math
+import pytest
 import numpy as np
 from numpy.linalg import norm
-import networkx as nx
-import vermouth
 import polyply
-from polyply import MetaMolecule
-from ..src.random_walk import (
-    RandomWalk, _take_step, _is_overlap, update_positions)
+from polyply import TEST_DATA
+from polyply.src.topology import Topology
+from polyply.src.nonbond_matrix import NonBondMatrix
+from polyply.src.random_walk import (full_fill_geometrical_constraints,
+                                     pbc_complete,
+                                     not_exceeds_max_dimensions,
+                                     _take_step,
+                                     RandomWalk)
+# from ..src.random_walk import (
+#    RandomWalk, _take_step, _is_overlap, update_positions)
+
+# test the geometrical functions
 
 
-class TestRandomWalk:
-
-    @staticmethod
-    def test__take_step():
-        coord = np.array([0, 0, 0])
-        step_length = 0.5
-        vectors = polyply.src.linalg_functions.norm_sphere(50)
-        new_coord, idx = _take_step(vectors, step_length, coord)
-        assert math.isclose(norm(new_coord - coord), step_length)
-
-    @staticmethod
-    @pytest.mark.parametrize('new_point, tol, fudge, reference', (
-        (np.array([0, 0, 1.0]),
-         0.4,
-         1.0,
-         False),
-        (np.array([0, 0, 0.6]),
-         0.5,
-         1.0,
-         False),
-        (np.array([0, 0, 0.1]),
-         0.5,
-         1.0,
-         True),
-        (np.array([0, 0, 0.75]),
-         0.5,
-         0.4,
-         False),
+@pytest.mark.parametrize('restraint_dict, point, result', (
+    # test single geometrical constraint
+    ({"restraints": [("sphere", ["in", np.array([0.0, 0.0, 0.0]), 1.0])]},
+     np.array([0, 0, 0.5]),
+     True
+     ),
+    ({"restraints": [("sphere", ["out", np.array([0.0, 0.0, 0.0]), 1.0])]},
+     np.array([0, 0, 1.5]),
+     True
+     ),
+    ({"restraints": [("sphere", ["in", np.array([0.0, 0.0, 0.0]), 1.0])]},
+     np.array([0, 0, 1.5]),
+     False
+     ),
+    ({"restraints": [("sphere", ["out", np.array([0.0, 0.0, 0.0]), 1.0])]},
+     np.array([0.0, 0.0, 0.5]),
+     False
+     ),
+    ({"restraints": [("cylinder", ["in", np.array([0.0, 0.0, 0.0]), 1.0, 2.0])]},
+     np.array([0, 0.5, 0.5]),
+     True
+     ),
+    ({"restraints": [("cylinder", ["out", np.array([0.0, 0.0, 0.0]), 1.0, 2.0])]},
+     np.array([0, 1.5, 1.5]),
+     True
+     ),
+    ({"restraints": [("cylinder", ["in", np.array([0.0, 0.0, 0.0]), 1.0, 2.0])]},
+     np.array([0, 1.5, 1.5]),
+     False
+     ),
+    ({"restraints": [("rectangle", ["out", np.array([0.0, 0.0, 0.0]), 2.0, 2.0, 4.0])]},
+     np.array([0, 0.5, 0.5]),
+     False
+     ),
+    ({"restraints": [("rectangle", ["in", np.array([0.0, 0.0, 0.0]), 2.0, 2.0, 4.0])]},
+     np.array([0, 1.0, 0.5]),
+     True
+     ),
+    ({"restraints": [("rectangle", ["out", np.array([0.0, 0.0, 0.0]), 2.0, 2.0, 4.0])]},
+     np.array([0, 1.5, 4.5]),
+     True
+     ),
+    ({"restraints": [("rectangle", ["in", np.array([0.0, 0.0, 0.0]), 2.0, 2.0, 4.0])]},
+     np.array([0, 1.5, 4.5]),
+     False
+     ),
+    ({"restraints": [("rectangle", ["out", np.array([0.0, 0.0, 0.0]), 2.0, 2.0, 4.0])]},
+     np.array([0, 1.5, 3.9]),
+     False
+     ),
+    # test default empty dict
+    ({},
+     np.array([0, 1.5, 3.9]),
+     True
+     ),
 ))
-    def test__is_overlap(new_point, tol, fudge, reference):
-        ff = vermouth.forcefield.ForceField(name='test_ff')
-        meta_mol = MetaMolecule(name="test", force_field=ff)
-        meta_mol.add_monomer(0, "PEO", [])
-        meta_mol.add_monomer(1, "PEO", [(1, 0)])
-        meta_mol.add_monomer(2, "PEO", [(1, 2)])
-        meta_mol.nodes[0]["position"] = np.array([0, 0, 0])
-        meta_mol.nodes[1]["position"] = np.array([0, 0, 0.5])
-        result = _is_overlap(meta_mol, new_point, tol, current_node=2, fudge=fudge)
-        assert result == reference
+def test_geometric_restrictions(restraint_dict, point, result):
+    assert full_fill_geometrical_constraints(point, restraint_dict) == result
 
-    @staticmethod
-    def test_update_positions():
-        ff = vermouth.forcefield.ForceField(name='test_ff')
-        meta_mol = MetaMolecule(name="test", force_field=ff)
-        meta_mol.add_monomer(0, "PEO", [])
-        meta_mol.add_monomer(1, "PEO", [(1, 0)])
-        meta_mol.add_monomer(2, "PEO", [(1, 2)])
-        meta_mol.nodes[0]["position"] = np.array([0, 0, 0])
-        meta_mol.nodes[1]["position"] = np.array([0, 0, 0.5])
-        meta_mol.volumes = {}
-        meta_mol.volumes["PEO"] = 0.5
-        vectors = polyply.src.linalg_functions.norm_sphere(50)
-        update_positions(vectors, meta_mol, 2, 1)
-        assert "position" in meta_mol.nodes[2]
 
-    @staticmethod
-    def test_run_molecule():
-        ff = vermouth.forcefield.ForceField(name='test_ff')
-        meta_mol = MetaMolecule(name="test", force_field=ff)
-        meta_mol.add_monomer(0, "PEO", [])
-        meta_mol.add_monomer(1, "PEO", [(1, 0)])
-        meta_mol.add_monomer(2, "PEO", [(1, 2)])
-        meta_mol.volumes = {}
-        meta_mol.volumes["PEO"] = 0.5
-        RandomWalk().run_molecule(meta_mol)
-        for node in meta_mol.nodes:
-            assert "position" in meta_mol.nodes[node]
+@pytest.mark.parametrize('box_vect, point, result', (
+    (np.array([5., 5., 10.]),
+     np.array([0, 0, 0.5]),
+     np.array([0, 0, 0.5])
+     ),
+    (np.array([5., 5., 10.]),
+     np.array([5., 6., 0.5]),
+     np.array([5., 1.0, 0.5])
+     )))
+def test_pbc_complete(box_vect, point, result):
+    assert all(pbc_complete(point, box_vect) == result)
+
+
+@pytest.mark.parametrize('box_vect, point, result', (
+    (np.array([5., 5., 10.]),
+     np.array([1., 1., 0.5]),
+     True
+     ),
+    (np.array([5., 5., 10.]),
+     np.array([5., 6., 0.5]),
+     False
+     )))
+def test_not_exceeds_max_dimensions(box_vect, point, result):
+    assert not_exceeds_max_dimensions(point, box_vect) == result
+
+
+def test__take_step():
+    coord = np.array([1.0, 1.0, 1.0])
+    step_length = 0.5
+    vectors = polyply.src.linalg_functions.norm_sphere(50)
+    new_coord, _ = _take_step(
+        vectors, step_length, coord, np.array([5.0, 5.0, 5.0]))
+    assert math.isclose(norm(new_coord - coord), step_length)
+
+
+@pytest.fixture
+def nonbond_matrix():
+    toppath = TEST_DATA + "/struc_build/system.top"
+    topology = Topology.from_gmx_topfile(name="test", path=toppath)
+    topology.preprocess()
+    setattr(topology, "volumes", {"PEO":0.43})
+    return NonBondMatrix.from_topology(topology.molecules,
+                                       topology,
+                                       box=np.array([10., 10., 10.]))
+@pytest.fixture
+def molecule():
+    toppath = TEST_DATA + "/struc_build/system.top"
+    topology = Topology.from_gmx_topfile(name="test", path=toppath)
+    return topology.molecules[0]
+
+def add_positions(nb_matrix, ncoords):
+    pos = np.array([[1.0, 1.0, 0.37],
+                    [1.0, 1.0, 0.74],
+                    [1.0, 1.0, 1.11],
+                    [1.0, 1.0, 1.48],
+                    [1.0, 1.0, 1.85],
+                    [1.0, 1.0, 2.22],
+                    [1.0, 1.0, 2.59],
+                    [1.0, 1.0, 2.96],
+                    [1.0, 1.0, 3.33],
+                    [1.0, 1.0, 3.70],
+                    [1.0, 1.0, 4.07]])
+
+    nb_matrix.add_positions(pos[0], mol_idx=0, node_key=0, start=True)
+    for idx, point in enumerate(pos[1:ncoords]):
+        nb_matrix.add_positions(point, mol_idx=0, node_key=idx+1, start=False)
+    return nb_matrix
+
+
+def test_rewind(nonbond_matrix):
+    nb_matrix = add_positions(nonbond_matrix, 6)
+    proccessor = RandomWalk(mol_idx=0, nonbond_matrix=nb_matrix)
+    # node 4 is already placed and hence is skipped over
+    placed_nodes = [(0, 0), (1, 1), (2, 2), (3, 3), (4, 5), (5, 6)]
+    last_idx = proccessor._rewind(current_step=5,
+                                  placed_nodes=placed_nodes,
+                                  nsteps=3)
+    assert last_idx == 3
+    for idx in [6, 5, 3]:
+        assert all(nb_matrix.positions[idx] == np.array([np.inf, np.inf, np.inf]))
+
+@pytest.mark.parametrize('new_point, result', (
+    (np.array([1., 1., 2.96]),
+     False
+     ),
+    (np.array([1., 1., 2.3]),
+     True
+     )))
+def test_is_overlap(nonbond_matrix, molecule, new_point, result):
+    nb_matrix = add_positions(nonbond_matrix, 6)
+    proccessor = RandomWalk(mol_idx=0, nonbond_matrix=nb_matrix)
+    setattr(proccessor, "molecule", molecule)
+    # node 4 is already placed and hence is skipped over
+    assert proccessor._is_overlap(new_point, 7, nrexcl=1) == result
+
+def test_update_positions(nonbond_matrix, molecule):
+    nb_matrix = add_positions(nonbond_matrix, 7)
+    proccessor = RandomWalk(mol_idx=0, nonbond_matrix=nb_matrix)
+    setattr(proccessor, "molecule", molecule)
+    setattr(proccessor, "maxdim", np.array([10., 10., 10.]))
+    vector_bundle = polyply.src.linalg_functions.norm_sphere(50)
+    proccessor.update_positions(vector_bundle=vector_bundle, current_node=7, prev_node=6)
+    assert all(nb_matrix.positions[7] != np.array([np.inf, np.inf, np.inf]))
