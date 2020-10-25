@@ -56,7 +56,6 @@ def find_edges(molecule, attr, value):
 
     return edges
 
-
 #@profile
 def orient_template(meta_molecule, current_node, template, built_nodes):
     """
@@ -205,7 +204,7 @@ class Backmap():
                 for atom_low  in low_res_atoms:
                     atomname = meta_molecule.molecule.nodes[atom_low]["atomname"]
                     vector = template[atomname]
-                    new_coords = cg_coord + vector
+                    new_coords = cg_coord + vector * 0.3
                     meta_molecule.molecule.nodes[atom_low]["position"] = new_coords
                 built_nodes.append(resid)
 
