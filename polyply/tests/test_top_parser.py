@@ -50,18 +50,33 @@ class TestTopParsing:
           "comb-rule": 1.0,
           "gen-pairs": "no"}
          ),
+        # martini like atomtypes
         ("""
         [ atomtypes ]
-        O       8 0.000 0.000  A   1.7106496e-03  9.9002500e-07
+        P6 72.0 0.000 A 0.0 0.0
         """,
          "atom_types",
-         {"O": {"mass": 0.000,
-                "atom_num": 8,
+         {"P6": {"mass": 72.0,
+                "atom_num": None,
                 "charge": 0.000,
                 "ptype": "A",
                 "bond_type": None,
-                "nb1": 1.7106496e-03,
-                "nb2": 9.9002500e-07}}
+                "nb1": 0.0,
+                "nb2": 0.0}}
+         ),
+        # amber/charrm like atomtypes
+        ("""
+        [ atomtypes ]
+        H0           1       1.008   0.0000  A   2.47135e-01  6.56888e-02
+        """,
+        "atom_types",
+        {"H0": {"mass": 1.008,
+                "atom_num": 1.0,
+                "charge": 0.000,
+                "ptype": "A",
+                "bond_type": None,
+                "nb1": 2.47135e-01,
+                "nb2": 6.56888e-02}}
          ),
         # check OPLS type atom defs.
         ("""
