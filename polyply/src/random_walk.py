@@ -25,6 +25,21 @@ coordinates for a meta-molecule.
 """
 
 def pbc_complete(point, maxdim):
+    """
+    Wrap point around pbc conditions to keep
+    points from being larger than the compontents of
+    the maxdim vector. Note that all coodinates in
+    polyply are definiet positive.
+
+    Parameters:
+    -----------
+    point: np.ndarray
+    maxdim: np.ndarray
+
+    Returns:
+    --------
+    np.ndarray
+    """
     for idx, max_coord in enumerate(maxdim):
        if point[idx] > max_coord:
           point[idx] =  point[idx] - max_coord
@@ -56,6 +71,20 @@ def _take_step(vectors, step_length, coord, box):
     return new_coord, index
 
 def not_exceeds_max_dimensions(point, maxdim):
+    """
+    Check if point is within the compontents of
+    the maxdim vector. Note that all coodinates in
+    polyply are definiet positive.
+
+    Parameters:
+    -----------
+    point: np.ndarray
+    maxdim: np.ndarray
+
+    Returns:
+    --------
+    bool
+    """
     return np.all(point < maxdim) and np.all(point > np.array([0., 0., 0.]))
 
 def is_pushed(point, old_point, push):
@@ -81,6 +110,20 @@ def is_pushed(point, old_point, push):
         return True
 
 def in_cylinder(point, parameters):
+    """
+    Assert if a point is within a cylinder or outside a
+    cylinder as defined in paramters:
+
+    Parameters:
+    -----------
+    point: np.ndarray
+        reference point
+    parameters: abc.iteratable
+
+    Returns:
+    --------
+    bool
+    """
     in_out = parameters[0]
     diff = parameters[1] - point
     r = norm(diff[:2])
@@ -93,6 +136,20 @@ def in_cylinder(point, parameters):
         return False
 
 def in_rectangle(point, parameters):
+    """
+    Assert if a point is within a rectangle or outside a
+    rectangle as defined in paramters:
+
+    Parameters:
+    -----------
+    point: np.ndarray
+        reference point
+    parameters: abc.iteratable
+
+    Returns:
+    --------
+    bool
+    """
     in_out = parameters[0]
     diff = parameters[1] - point
     check = [ np.abs(dim) <  max_dim for dim, max_dim in zip(diff, parameters[2:])]
@@ -104,21 +161,51 @@ def in_rectangle(point, parameters):
         return True
 
 def in_sphere(point, parameters):
+    """
+    Assert if a point is within a sphere or outside a
+    sphere as defined in paramters:
+
+    Parameters:
+    -----------
+    point: np.ndarray
+        reference point
+    parameters: abc.iteratable
+
+    Returns:
+    --------
+    bool
+    """
     in_out = parameters[0]
     r = norm(parameters[1] - point)
-    if 'in' == in_out and r > parameters[0]:
+    if 'in' == in_out and r > parameters[2]:
         return False
-    elif 'out' == in_out and r < parameters[0]:
+    elif 'out' == in_out and r < parameters[2]:
         return False
     else:
         return True
 
-
+# methods of geometrical restraints known to polyply
 RESTRAINT_METHODS = {"cylinder": in_cylinder,
                     "rectangle": in_rectangle,
                     "sphere":  in_sphere}
 
 def full_fill_geometrical_constraints(point, node_dict):
+    """
+    Assert if a point fullfills a geometrical constraint
+    as defined by the "restraint" key in a dictionary.
+    If there is no key "restraint" the function returns true.
+
+    Parameters:
+    -----------
+    point: np.ndarray
+        reference point
+
+    node_dict: :class:ditc
+
+    Returns:
+    --------
+    bool
+    """
     if not "restraints" in node_dict:
         return True
 
@@ -186,6 +273,7 @@ class RandomWalk(Processor):
                                                              neighbours,
                                                              potential="LJ")
         return norm(force_vect) > self.max_force
+
     #@profile
     def update_positions(self, vector_bundle, current_node, prev_node):
         """
