@@ -26,46 +26,46 @@ class TestLinAlg:
 
     @staticmethod
     def test_u_vect():
-        v1 = np.array([0, 0, 0])
-        v2 = np.array([0, 0, 2])
+        v1 = np.array([0.0, 0.0, 0.0])
+        v2 = np.array([0.0, 0.0, 2])
         u = u_vect(v1-v2)
         assert math.isclose(norm(u), 1.)
 
     @staticmethod
     def test_angle():
-        v1 = np.array([0, 0, 0])
-        v2 = np.array([0, 0, 2])
-        v3 = np.array([0, 2, 2])
-        assert math.isclose(angle(v1, v2, v3), 90)
+        v1 = np.array([0.0, 0.0, 0.0])
+        v2 = np.array([0.0, 0.0, 2.0])
+        v3 = np.array([0.0, 2.0, 2.0])
+        assert math.isclose(angle(v1, v2, v3), 90.0)
 
     @staticmethod
     def test_dih():
-        v1 = np.array([0, 0, 0])
-        v2 = np.array([0, 0, 2])
-        v3 = np.array([0, 2, 2])
-        v4 = np.array([0,-2, 0])
-        assert math.isclose(dih(v1,v2,v3,v4), 0)
+        v1 = np.array([0.0, 0.0, 0.0])
+        v2 = np.array([0.0, 0.0, 2.0])
+        v3 = np.array([0.0, 2.0, 2.0])
+        v4 = np.array([0.0,-2.0, 0.0])
+        assert math.isclose(dih(v1,v2,v3,v4), 0.0)
 
     @staticmethod
     def test_geometrical_center():
-       coords = np.array([[0, 0, 1],
-                          [0, 1, 0],
-                          [1, 0, 0],
-                          [-1, 0, 0],
-                          [0, -1, 0],
-                          [0, 0, -1]])
+       coords = np.array([[0.0, 0.0, 1.0],
+                          [0.0, 1.0, 0.0],
+                          [1.0, 0.0, 0.0],
+                          [-1.0, 0.0, 0.0],
+                          [0.0, -1.0, 0.0],
+                          [0.0, 0.0, -1.0]])
 
        center = center_of_geometry(coords)
-       assert math.isclose(norm(center),0)
+       assert math.isclose(norm(center), 0.0)
 
     @staticmethod
     def test_radius_of_gyration():
-        coords = np.array([[0, 0, 1],
-                           [0, 1, 0],
-                           [1, 0, 0],
-                           [-1, 0, 0],
-                           [0, -1, 0],
-                           [0, 0, -1]])
+        coords = np.array([[0.0, 0.0, 1.0],
+                           [0.0, 1.0, 0.0],
+                           [1.0, 0.0, 0.0],
+                           [-1.0, 0.0, 0.0],
+                           [0.0, -1.0, 0.0],
+                           [0.0, 0.0, -1.0]])
 
         rg = radius_of_gyration(coords)
         assert math.isclose(rg, 1.0)
