@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+from itertools import zip_longest
 from vermouth.parser_utils import SectionLineParser
 from vermouth.molecule import Interaction
 from vermouth.gmx.itp_read import read_itp
@@ -81,6 +82,8 @@ class TOPDirector(SectionLineParser):
         """
         if self.is_pragma(line):
             return self.parse_top_pragma
+        elif self.is_star_comment(line):
+            return self._skip
         else:
             return super().dispatch(line)
 
@@ -98,6 +101,27 @@ class TOPDirector(SectionLineParser):
             ``True`` if `line` is a def statement.
         """
         return line.startswith('#')
+
+    @staticmethod
+    def is_star_comment(line):
+        """
+        Star comments are special comments
+        usually found at the beginning of GMX
+        library topology files. They are different
+        from the regular comment as they are specific
+        to top library files.
+
+        Parameters
+        ----------
+        line: str
+            A line of text.
+
+        Returns
+        -------
+        bool
+            ``True`` if `line` is a star comment.
+        """
+        return line.startswith('*')
 
     def parse_top_pragma(self, line, lineno=0):
         """
@@ -291,13 +315,23 @@ class TOPDirector(SectionLineParser):
         """
         Parse and store atomtypes section
         """
-        atom_name = line.split()[0]
-        nb1, nb2 = line.split()[-2:]
-        mass = line.split()[1]
-        self.topology.atom_types[atom_name] = {"nb1": float(nb1),
-                                               "nb2": float(nb2),
-                                               "mass": float(mass)}
+        tokens = line.split()
+        atom_name = tokens.pop(0)
+        tokens.reverse()
+        atom_type_line = dict(zip_longest(["nb2", "nb1", "ptype",
+                                           "charge", "mass",
+                                           "atom_num", "bond_type"], tokens, fillvalue=None))
+        floats = ["nb1", "nb2", "charge", "mass", "atom_num"]
+        for term, value in atom_type_line.items():
+             if term in floats and value:
+                 atom_type_line[term] = float(value)
 
+        if None in atom_type_line:
+            msg = ("Can't parse line {}. Found more parameters than expected.")
+            raise OSError(msg.format(line))
+
+        self.topology.atom_types[atom_name] = atom_type_line
+        
     @SectionLineParser.section_parser('nonbond_params')
     def _nonbond_params(self, line, lineno=0):
         """
@@ -317,13 +351,14 @@ class TOPDirector(SectionLineParser):
         Parse and store bonded types
         """
         section_name = self.section[-1]
+        inter_type = section_name[:-5] + "s"
         atoms, params = self._split_atoms_and_parameters(line.split(),
                                                          self.atom_idxs[section_name])
-        new_interaction = Interaction(atoms=atoms,
-                                      parameters=params,
-                                      meta=self.current_meta)
-        self.topology.types[section_name].append(new_interaction)
 
+        self.topology.types[inter_type][tuple(atoms)] = (params, self.current_meta)
+
+
+    @SectionLineParser.section_parser('implicit_genborn_params')
     @SectionLineParser.section_parser('cmaptypes')
     def _skip(self, line, lineno=0):
         pass
@@ -375,6 +410,19 @@ class TOPDirector(SectionLineParser):
         parse include statemnts
         """
         path = line.split()[1].strip('\"')
+        if self.current_meta:
+           # the current file is between ifdef
+           # however tag is not in defines we have
+           # read so the file is not read
+           if self.current_meta["condition"] == "ifdef"\
+              and self.current_meta["tag"] not in self.topology.defines:
+                 return
+           # the current file is between ifndef
+           # so if tag is defined we ignore this file
+           elif self.current_meta["condition"] == "ifndef"\
+              and self.current_meta["tag"] in self.topology.defines:
+                 return
+
         if self.cwdir:
            filename = os.path.join(self.cwdir, path)
            cwdir = os.path.dirname(filename)
