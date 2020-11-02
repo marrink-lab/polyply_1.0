@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import copy
 from collections import (namedtuple, OrderedDict)
 import json
 import networkx as nx
@@ -68,6 +69,15 @@ class MetaMolecule(nx.Graph):
         super().__init__(*args, **kwargs)
         self.molecule = None
 
+    def copy(self):
+        """
+        Creates a copy of the molecule.
+        Returns
+        -------
+        Molecule
+        """
+        return copy.deepcopy(self)
+
     def add_monomer(self, current, resname, connections):
         """
         This method adds a single node and an unlimeted number
@@ -75,7 +85,14 @@ class MetaMolecule(nx.Graph):
         that matches may only refer to already existing nodes.
         But connections can be an empty list.
         """
-        self.add_node(current, resname=resname)
+        resids = nx.get_node_attributes(self, "resid")
+
+        if resids:
+           resid = max(resids.values()) + 1
+        else:
+           resid = 1
+
+        self.add_node(current, resname=resname, resid=resid)
         for edge in connections:
             if self.has_node(edge[0]) and self.has_node(edge[1]):
                 self.add_edge(edge[0], edge[1])
