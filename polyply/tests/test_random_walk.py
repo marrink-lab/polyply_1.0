@@ -18,6 +18,7 @@ import math
 import pytest
 import numpy as np
 from numpy.linalg import norm
+import networkx as nx
 import polyply
 from polyply import TEST_DATA
 from polyply.src.topology import Topology
@@ -101,6 +102,10 @@ def test_geometric_restrictions(restraint_dict, point, result):
     (np.array([5., 5., 10.]),
      np.array([5., 6., 0.5]),
      np.array([5., 1.0, 0.5])
+    ),
+    (np.array([5., 5., 10.]),
+     np.array([5., -3., 0.5]),
+     np.array([5., 2.0, 0.5])
      )))
 def test_pbc_complete(box_vect, point, result):
     assert all(pbc_complete(point, box_vect) == result)
@@ -143,22 +148,24 @@ def molecule():
     topology = Topology.from_gmx_topfile(name="test", path=toppath)
     return topology.molecules[0]
 
-def add_positions(nb_matrix, ncoords):
-    pos = np.array([[1.0, 1.0, 0.37],
-                    [1.0, 1.0, 0.74],
-                    [1.0, 1.0, 1.11],
-                    [1.0, 1.0, 1.48],
-                    [1.0, 1.0, 1.85],
-                    [1.0, 1.0, 2.22],
-                    [1.0, 1.0, 2.59],
-                    [1.0, 1.0, 2.96],
-                    [1.0, 1.0, 3.33],
-                    [1.0, 1.0, 3.70],
-                    [1.0, 1.0, 4.07]])
+def add_positions(nb_matrix, ncoords, pos=None):
+    if isinstance(pos, type(None)):
+        pos = np.array([[1.0, 1.0, 0.37],
+                        [1.0, 1.0, 0.74],
+                        [1.0, 1.0, 1.11],
+                        [1.0, 1.0, 1.48],
+                        [1.0, 1.0, 1.85],
+                        [1.0, 1.0, 2.22],
+                        [1.0, 1.0, 2.59],
+                        [1.0, 1.0, 2.96],
+                        [1.0, 1.0, 3.33],
+                        [1.0, 1.0, 3.70],
+                        [1.0, 1.0, 4.07]])
 
     nb_matrix.add_positions(pos[0], mol_idx=0, node_key=0, start=True)
     for idx, point in enumerate(pos[1:ncoords]):
-        nb_matrix.add_positions(point, mol_idx=0, node_key=idx+1, start=False)
+        if all(point != np.array([np.inf, np.inf, np.inf])):
+           nb_matrix.add_positions(point, mol_idx=0, node_key=idx+1, start=False)
     return nb_matrix
 
 
@@ -188,11 +195,102 @@ def test_is_overlap(nonbond_matrix, molecule, new_point, result):
     # node 4 is already placed and hence is skipped over
     assert proccessor._is_overlap(new_point, 7, nrexcl=1) == result
 
-def test_update_positions(nonbond_matrix, molecule):
-    nb_matrix = add_positions(nonbond_matrix, 7)
-    proccessor = RandomWalk(mol_idx=0, nonbond_matrix=nb_matrix)
+@pytest.mark.parametrize('pos, expected', (
+    # simple test; should just work
+    (np.array([[1.0, 1.0, 0.37],
+               [1.0, 1.0, 0.74],
+               [1.0, 1.0, 1.11],
+               [1.0, 1.0, 1.48],
+               [1.0, 1.0, 1.85],
+               [1.0, 1.0, 2.22],
+               [1.0, 1.0, 2.59]]),
+     True),
+    # this will fail because all space is blocked
+    (np.array([[1.0, 1.0, 0.67],
+               [1.0, 1.0, 1.37],
+               [1.0, 1.37, 1.0],
+               [1.37, 1.0, 1.0],
+               [1.0, 0.63, 1.0],
+               [0.63, 1.0, 1.0],
+               [1.0, 1.0, 1.0]]),
+     False
+     )))
+def test_update_positions(nonbond_matrix, molecule, pos, expected):
+    # add positions of the rest of the chain
+    nb_matrix = add_positions(nonbond_matrix, 7, pos=pos)
+    # create instance of processor
+    proccessor = RandomWalk(mol_idx=0,
+                            nonbond_matrix=nb_matrix,
+                            maxdim=np.array([10., 10., 10.]),
+                            max_force=100.0,
+                            maxiter=49)
+    # set molecule attribute which is normally set by the run_molecule class
     setattr(proccessor, "molecule", molecule)
-    setattr(proccessor, "maxdim", np.array([10., 10., 10.]))
     vector_bundle = polyply.src.linalg_functions.norm_sphere(50)
-    proccessor.update_positions(vector_bundle=vector_bundle, current_node=7, prev_node=6)
-    assert all(nb_matrix.positions[7] != np.array([np.inf, np.inf, np.inf]))
+    status = proccessor.update_positions(vector_bundle=vector_bundle, current_node=7, prev_node=6)
+    assert status == expected
+    if status:
+       assert all(nb_matrix.positions[7] != np.array([np.inf, np.inf, np.inf]))
+    else:
+       assert all(nb_matrix.positions[7] == np.array([np.inf, np.inf, np.inf]))
+
+@pytest.mark.parametrize('build_attr, pos, start, npos', (
+    # simple test; create all coordinates
+    ({0: True, 1: True, 2: True, 3: True,
+      4: True, 5: True, 6: True, 7: True, 8: True, 9: True},
+     None,
+     None,
+     0),
+    # start in the middle of the chain
+    ({0: True, 1: True, 2: True, 3: True,
+      4: True, 5: True, 6: True, 7: True, 8: True, 9: True},
+     None,
+     5,
+     0),
+    # here we look for a starting point and build the rest
+    ({0: False, 1: False, 2: True, 3: True,
+      4: True, 5: True, 6: True, 7: True, 8: True, 9: True},
+     np.array([[1.0, 1.0, 0.67],
+               [1.0, 1.0, 1.37]]),
+     None,
+     2,
+     ),
+    # here we need to skip one already defined position
+    ({0: False, 1: True, 2: False, 3: True,
+      4: True, 5: True, 6: True, 7: True, 8: True, 9: True},
+     np.array([[1.0, 1.0, 0.67],
+               [np.inf, np.inf, np.inf],
+               [1.0, 1.0, 1.30]]),
+     None,
+     3),
+    # here we trigger a rewind
+   # ({0: False, 1: False, 2: False, 3: False,
+   #   4: False, 5: False, 6: False, 7: True, 8: True, 9: True},
+   #  np.array([[1.0, 1.0, 0.67],
+   #            [1.0, 1.0, 1.37],
+   #            [1.0, 1.37, 1.0],
+   #            [1.37, 1.0, 1.0],
+   #            [1.0, 0.63, 1.0],
+   #            [0.63, 1.0, 1.0],
+   #            [1.0, 1.0, 1.0],
+   #            ]),
+   #  None,
+   #  7),
+     ))
+def test_run_molecule(nonbond_matrix, molecule, build_attr, npos, pos, start):
+    # add positions of the rest of the chain
+    nb_matrix = add_positions(nonbond_matrix, npos, pos=pos)
+    # create instance of processor
+    vector_bundle = polyply.src.linalg_functions.norm_sphere(500)
+    proccessor = RandomWalk(mol_idx=0,
+                            nonbond_matrix=nb_matrix,
+                            maxdim=np.array([10., 10., 10.]),
+                            max_force=100.0,
+                            maxiter=49,
+                            vector_sphere=vector_bundle,
+                            start_node=start)
+    # set molecule attribute which is normally set by the run_molecule class
+    nx.set_node_attributes(molecule, build_attr, "build")
+    proccessor.run_molecule(molecule)
+    for pos in proccessor.nonbond_matrix.positions:
+        assert all(pos != np.array([np.inf, np.inf, np.inf]))
