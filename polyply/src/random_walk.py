@@ -87,27 +87,27 @@ def not_exceeds_max_dimensions(point, maxdim):
     """
     return np.all(point < maxdim) and np.all(point > np.array([0., 0., 0.]))
 
-def is_pushed(point, old_point, push):
-    allowed = {"x": [0, 1],
-               "y": [1, 1],
-               "z": [2, 1],
-               "nx": [0, -1],
-               "ny": [1, -1],
-               "nz": [2, -1]}
-    if any([vect not in allowed for vect in push]):
-       raise IOError
+#def is_pushed(point, old_point, push):
+#    allowed = {"x": [0, 1],
+#              "y": [1, 1],
+#              "z": [2, 1],
+#              "nx": [0, -1],
+#              "ny": [1, -1],
+#              "nz": [2, -1]}
+#   if any([vect not in allowed for vect in push]):
+#      raise IOError
 
-    if len(push) >= 6:
-        raise IOError
+#   if len(push) >= 6:
+#       raise IOError
 
-    for direction in push:
-        pos, sign = allowed[direction]
-        if direction in ["x", "y", "z"] and point[pos] < old_point[pos]:
-            return False
-        elif  direction in ["nx", "ny", "nz"] and point[pos] > old_point[pos]:
-            return False
-    else:
-        return True
+#   for direction in push:
+#       pos, sign = allowed[direction]
+#       if direction in ["x", "y", "z"] and point[pos] < old_point[pos]:
+#           return False
+#       elif  direction in ["nx", "ny", "nz"] and point[pos] > old_point[pos]:
+#           return False
+#   else:
+#       return True
 
 def in_cylinder(point, parameters):
     """
@@ -298,12 +298,15 @@ class RandomWalk(Processor):
                                                                 prev_node,
                                                                 current_node)[0]
         step_count = 0
+        print(current_node)
+        print(last_point)
         while True:
 
             new_point, index = _take_step(vector_bundle, step_length, last_point, self.maxdim)
             overlap = self._is_overlap(new_point, current_node)
-            in_box = True #not_exceeds_max_dimensions(new_point, self.maxdim)
+            in_box = not_exceeds_max_dimensions(new_point, self.maxdim)
             constrained = full_fill_geometrical_constraints(new_point, self.molecule.nodes[current_node])
+
             if not overlap and in_box and constrained:
                 self.nonbond_matrix.add_positions(new_point, self.mol_idx, current_node, start=False)
                 return True
@@ -342,7 +345,7 @@ class RandomWalk(Processor):
         step_count = 0
         while step_count < len(path):
             prev_node, current_node = path[step_count]
-            if "position" in meta_molecule.nodes[current_node]:
+            if not meta_molecule.nodes[current_node]["build"]:
                 step_count += 1
                 continue
 
@@ -352,6 +355,9 @@ class RandomWalk(Processor):
             self.success = status
             placed_nodes.append((step_count, current_node))
 
+            # in principle this count here is not needed, however,
+            # we need to check the performance in terms of strucutre
+            # generation before doing any adjustments here
             if not self.success and count < self.maxiter:
                 nrewind = 5
                 if len(placed_nodes) < nrewind+1:
