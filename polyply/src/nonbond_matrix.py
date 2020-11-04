@@ -18,8 +18,8 @@ import scipy.spatial
 from numba import jit
 from .topology import lorentz_berthelot_rule
 
-@jit(nopython=True, cache=True, fastmath=True)
-def lennard_jones_force(dist, point, ref, params):
+
+def _lennard_jones_force(dist, point, ref, params):
     """
     Compute the Lennard-Jones force between two particles
     given their interaction parameters, the distance, and
@@ -44,6 +44,7 @@ def lennard_jones_force(dist, point, ref, params):
     vect = point - ref
     force = 24 * eps / dist * ((2 * (sig/dist)**12.0) - (sig/dist)**6) * vect/dist
     return force
+lennard_jones_force = jit(_lennard_jones_force, nopython=True, cache=True, fastmath=True)
 
 
 POTENTIAL_FUNC = {"LJ": lennard_jones_force}
