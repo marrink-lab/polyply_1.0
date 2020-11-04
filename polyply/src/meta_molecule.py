@@ -66,6 +66,7 @@ class MetaMolecule(nx.Graph):
 
     def __init__(self, *args, **kwargs):
         self.force_field = kwargs.pop('force_field', None)
+        self.mol_name = kwargs.pop('mol_name', None)
         super().__init__(*args, **kwargs)
         self.molecule = None
 
@@ -161,7 +162,7 @@ class MetaMolecule(nx.Graph):
         which is the default assumption from
         """
 
-        meta_mol_graph = cls(force_field=force_field, name=mol_name)
+        meta_mol_graph = cls(force_field=force_field, mol_name=mol_name)
         res_count = 0
 
         for monomer in monomers:

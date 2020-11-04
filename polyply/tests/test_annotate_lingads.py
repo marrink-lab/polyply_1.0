@@ -81,11 +81,17 @@ def test_system():
     GLU = Monomer(resname="GLU", n_blocks=1)
     THR = Monomer(resname="THR", n_blocks=1)
     # two meta-molecules
-    meta_mol_A = MetaMolecule.from_monomer_seq_linear(force_field, [ALA, GLU, THR], "AA")
-    meta_mol_B = MetaMolecule.from_monomer_seq_linear(force_field, [GLU, ALA, THR], "BB")
+    meta_mol_A = MetaMolecule.from_monomer_seq_linear(force_field,
+                                                      [ALA, GLU, THR],
+                                                      "AA")
+    meta_mol_B = MetaMolecule.from_monomer_seq_linear(force_field,
+                                                      [GLU, ALA, THR],
+                                                      "BB")
     NA = MetaMolecule()
     NA.add_monomer(current=0, resname="NA", connections=[])
-    molecules = [meta_mol_A, meta_mol_A.copy(), meta_mol_B.copy(), NA, NA.copy(), NA.copy(), NA.copy()]
+    molecules = [meta_mol_A, meta_mol_A.copy(),
+                 meta_mol_B.copy(), NA, NA.copy(),
+                 NA.copy(), NA.copy()]
     top = Topology(force_field=force_field)
     top.molecules = molecules
     top.mol_idx_by_name = {"AA":[0, 1], "BB": [2], "NA":[3, 4, 5, 6]}
