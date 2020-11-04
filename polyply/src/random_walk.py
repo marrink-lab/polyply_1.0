@@ -220,8 +220,8 @@ def _find_starting_node(meta_molecule):
     Find the first node that has coordinates if there is
     otherwise return first node in list of nodes.
     """
-    for node, build in nx.get_node_attributes(meta_molecule, "build").items():
-        if not build:
+    for node in meta_molecule.nodes:
+        if not "build" in meta_molecule.nodes[node]:
            return node
     else:
         return list(meta_molecule.nodes())[0]
