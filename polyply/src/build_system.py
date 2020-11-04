@@ -80,6 +80,7 @@ class BuildSystem():
         # set the box if a box is given
         if len(box) != 0:
             self.box = box
+        # if box is not given but density compute it from density
         else:
             box_dim = round(_compute_box_size(topology, self.density), 5)
             self.box = np.array([box_dim, box_dim, box_dim])
@@ -90,6 +91,7 @@ class BuildSystem():
                                      0:self.box[1]:self.grid_spacing,
                                      0:self.box[2]:self.grid_spacing].reshape(3, -1).T
 
+        # this should be done elsewhere
         topology.box = (self.box[0], self.box[1], self.box[2])
 
         # filter all molecules that should be ignored during the building process
@@ -103,8 +105,8 @@ class BuildSystem():
         step_count = 0
         while True:
             _int = np.random.randint(len(self.box_grid))
-            #print(_int)
             start = self.box_grid[_int]
+
             processor = RandomWalk(mol_idx,
                                    self.nonbond_matrix.copy(),
                                    step_fudge=self.step_fudge,
@@ -117,7 +119,7 @@ class BuildSystem():
                                    start_node=self.start_dict[mol_idx])
 
             processor.run_molecule(molecule)
-            #print(processor.success)
+
             if processor.success:
                 return True, processor.nonbond_matrix
             elif step_count == self.maxiter:
@@ -145,7 +147,9 @@ class BuildSystem():
         mol_tot = len(molecules)
         vector_sphere = norm_sphere(5000)
         while mol_idx < mol_tot:
+
             molecule = molecules[mol_idx]
+
             if all(["position" in molecule.nodes[node] for node in molecule.nodes]):
                 mol_idx += 1
                 pbar.update(1)
@@ -156,7 +160,6 @@ class BuildSystem():
                                                                    vector_sphere)
             if success:
                 self.nonbond_matrix = new_nonbond_matrix
-                #print("yeah")
                 mol_idx += 1
                 pbar.update(1)
 
