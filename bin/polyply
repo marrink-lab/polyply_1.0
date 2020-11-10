@@ -104,7 +104,8 @@ def main():
                             help=('Specify ligands of molecules which should be placed close '
                                   'to a specific molecule. The format is as follows: '
                                   '<mol_name>#<mol_idx>-<resname>#<resid>:<mol_name>#<mol_idx>-<resname>#<resid>. '
-                                  'Elements of the specification can be omitted as required.'))
+                                  'Elements of the specification can be omitted as required. Note mol_name and resname' 
+                                  'cannot contain the characters # and -.'))
 
     system_group = parser_gen_coords.add_argument_group('Variables for system generation')
     system_group.add_argument('-dens', dest='density', type=float,
