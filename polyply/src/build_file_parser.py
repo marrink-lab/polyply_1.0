@@ -24,6 +24,7 @@ class BuildDirector(SectionLineParser):
         self.molecules = molecules
         self.build_options = defaultdict(list)
         self.current_molname = None
+        self.rw_options = dict()
 
     @SectionLineParser.section_parser('molecule')
     def _molecule(self, line, lineno=0):
@@ -33,35 +34,27 @@ class BuildDirector(SectionLineParser):
         """
         self.current_molname = line.split()[0]
 
-    @SectionLineParser.section_parser('molecule', 'cylinder')
-    def _cylinder(self, line, lineno=0):
+    @SectionLineParser.section_parser('molecule', 'cylinder', geom_type="cylinder")
+    @SectionLineParser.section_parser('molecule', 'sphere', geom_type="sphere")
+    @SectionLineParser.section_parser('molecule', 'rectangle', geom_type="rectangle")
+    def _parse_geometry(self, line, lineno, geom_type):
         """
-        Parses the lines in the '[cylinder]'
-        directive and stores it.
-        """
-        tokens = line.split()
-        geometry_def = self._base_parser_geometry(tokens)
-        self.build_options[self.current_molname].append(('cylinder', geometry_def))
+        Parses the lines in the '[<geom_type>]'
+        directive and stores it. The format of the directive
+        is as follows:
 
-    @SectionLineParser.section_parser('molecule', 'sphere')
-    def _sphere(self, line, lineno=0):
-        """
-        Parses the lines in the '[sphere]'
-        directive and stores it.
-        """
-        tokens = line.split()
-        geometry_def = self._base_parser_geometry(tokens)
-        self.build_options[self.current_molname].append(('sphere', geometry_def))
+        <resname><resid_start><resid_stop><x><y><z><parameters>
 
-    @SectionLineParser.section_parser('molecule', 'rectangle')
-    def _rectangle(self, line, lineno=0):
-        """
-        Parses the lines in the '[rectangle]'
-        directive and stores it.
+        parameters depends on the geometry type and contains
+        for:
+
+        spheres - radius
+        cylinder - radius and 1/2 d
+        reactangle - 1/2 a, b, c which are the lengths
         """
         tokens = line.split()
         geometry_def = self._base_parser_geometry(tokens)
-        self.build_options[self.current_molname].append(('rectangle', geometry_def))
+        self.build_options[self.current_molname].append((geom_type, geometry_def))
 
     @SectionLineParser.section_parser('molecule', 'chiral')
     def _chiral(self, line, lineno=0):
