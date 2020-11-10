@@ -42,35 +42,48 @@ def parse_residue_spec(resspec):
 
     if res:
         resname, *resid = res[0].split('#', 1)
- #   print(mol_idx, resname, molname, resid)
+
+    error_msg = ('Your selection {} is invalid. Was not able to assign {}'
+                 'with value {}')
+
     out = {}
     if mol_idx:
-        mol_idx = int(mol_idx[0])
+
+        try:
+           mol_idx = int(mol_idx[0])
+        except ValueError:
+           raise IOError(error_msg.format(resspec, 'mol_idx', mol_idx))
+
         out['mol_idx'] = mol_idx
+
     if resname:
         out['resname'] = resname
     if molname:
         out['molname'] = molname
     if resid:
-        out['resid'] = float(resid[0])
+        try:
+           out['resid'] = float(resid[0])
+        except ValueError:
+           raise IOError(error_msg.format(resspec, 'mol_idx', mol_idx))
 
     return out
 
 
 def _find_nodes(molecule, mol_attr):
-    nodes = []
+    """
+    Find nodes with resname and resid
+    attribute if they are defined in mol_attr.
+    """
     attr = {}
     for key in ["resname", "resid"]:
         if key in mol_attr:
            attr[key] = mol_attr[key]
 
     for node in molecule.nodes:
-        if all([molecule.nodes[node][attr] == value for
-                attr, value in attr.items()]):
+        if all([molecule.nodes[node][key] == value for
+                key, value in attr.items()]):
 
-            nodes.append(node)
-
-    return nodes
+            yield node
 
 class AnnotateLigands(Processor):
     """
@@ -86,10 +99,16 @@ class AnnotateLigands(Processor):
 
     def __init__(self, topology, ligands):
         """
-        Initalize the processor with a `topology`
-        and a list of `ligands definitions` which
+        Initalize the processor with a `:class:topology`
+        and a list of `ligand definitions` which
         are used both in annotating and extracting
-        the positions later.
+        the positions later. Format of ligand definitions
+        needs to be in the format of:
+
+        <mol_name>#<mol_idx>-<resname>#<resid>:<mol_name>#<mol_idx>-<resname>#<resid>
+
+        Elements of this may be omitted. <resid> and <mol_idx> cannot
+        contain - or # characters.
         """
         self.topology = topology
         self.ligand_defs = defaultdict(list)
@@ -101,22 +120,33 @@ class AnnotateLigands(Processor):
            # check which molecules are elligable for annotation
             if "mol_idx" in mol_attr:
                 mol_idxs = [mol_attr["mol_idx"]]
-            else:
+
+                if "molname" in mol_attr:
+                    mol_name = mol_attr["molname"]
+                    allowed_idxs = self.topology.mol_idx_by_name[mol_name]
+                    if any([idx not in allowed_idxs for idx in mol_idxs]):
+                       msg = ("Your molecule name {} does not"
+                              " match your molecule index {}.")
+                       raise IOError(msg.format(mol_name, mol_idxs))
+
+            elif "molname" in mol_attr:
                 mol_name = mol_attr["molname"]
                 mol_idxs = self.topology.mol_idx_by_name[mol_name]
+            # if neither molname nor index are provided all molecules
+            # are ellagible
+            else:
+                mol_idxs = range(0, len(self.topology.molecules))
 
             # check which ligands are elligable for annotation
             if "mol_idx" in lig_attr:
                 lig_idxs = [lig_attr["mol_idx"]]
-            else:
+            elif "molname" in lig_attr:
                 lig_name = lig_attr["molname"]
                 lig_idxs = self.topology.mol_idx_by_name[lig_name]
-
-            # sanity check
-            if len(lig_idxs) < len(mol_idxs):
-                msg = ("You try to annotate {} molecules with {} ligands "
-                       "However, you can at most assign 1 molecule per ligand. ")
-                raise IOError(msg)
+            else:
+                msg = ("Your ligand selection needs to conatin a molecule idx and/or "
+                       "a molecule name. Currently the selection {} contains none.")
+                raise IOError(msg.format(lig_spec))
 
             # make sure that each lig associated with a molecule
             # is a different molecule in the topology
