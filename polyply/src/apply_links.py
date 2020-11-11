@@ -19,6 +19,7 @@ import vermouth.molecule
 from vermouth.molecule import Interaction
 from vermouth.processors.do_links import match_order
 from .processor import Processor
+from tqdm import tqdm
 
 class MatchError(Exception):
     """Raised we find no match between links and molecule"""
@@ -466,7 +467,7 @@ class ApplyLinks(Processor):
         molecule = meta_molecule.molecule
         force_field = meta_molecule.force_field
 
-        for edge in meta_molecule.edges:
+        for edge in tqdm(meta_molecule.edges):
             links, resids = _get_links(meta_molecule, edge)
             for link, idxs in zip(links, resids):
                 try:
