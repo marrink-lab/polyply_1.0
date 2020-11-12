@@ -182,6 +182,18 @@ class TestApplyLinks:
          {0: 'SP2', 1: 'SP2', 2: 'SP2', 3:'SC2'}),
          ("""
          [ link ]
+         [ bonds ]
+	 BB   -BB  1  0.350  1250
+         """,
+         [vermouth.molecule.Interaction(atoms=(1, 2),
+                                        parameters=['1', '0.350', '1250'],
+                                        meta={})],
+         1,
+         [2, 3],
+         'bonds',
+         {0: 'SP2', 1: 'SP2', 2: 'SP2', 3:'SC2'}),
+         ("""
+         [ link ]
          [ atoms ]
          BB  {"replace": {"atype": "P5"}}
          [ bonds ]
@@ -233,6 +245,7 @@ class TestApplyLinks:
         polyply.src.apply_links.apply_link_between_residues(
             new_mol, force_field.links[0], idx)
         assert new_mol.interactions[inttype] == interactions
+        print(new_mol.edges)
         assert len(new_mol.edges) == edges
         assert nx.get_node_attributes(new_mol, "atype") == atypes
 

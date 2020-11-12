@@ -19,6 +19,7 @@ import vermouth.molecule
 from vermouth.molecule import Interaction
 from vermouth.processors.do_links import match_order
 from .processor import Processor
+from tqdm import tqdm
 
 class MatchError(Exception):
     """Raised we find no match between links and molecule"""
@@ -74,6 +75,8 @@ def find_atoms(molecule, **attrs):
 
     for node_idx in molecule:
         node = molecule.nodes[node_idx]
+        #print(node)
+        #print(attrs)
         if vermouth.molecule.attributes_match(node, attrs, ignore_keys=ignore):
             yield node_idx
 
@@ -107,8 +110,8 @@ def _build_link_interaction_from(molecule, interaction, match):
     )
     return new_interaction
 
-
-def apply_link_between_residues(molecule, link, resids):
+@profile
+def apply_link_between_residues(meta_molecule, molecule, link, resids):
     """
     Applies a link between specific residues, if and only if
     the link atoms incl. all attributes match at most one atom
@@ -131,9 +134,11 @@ def apply_link_between_residues(molecule, link, resids):
     nx.set_node_attributes(link, dict(zip(link.nodes, resids)), 'resid')
     link_to_mol = {}
     for node in link.nodes:
+        block = meta_molecule.nodes[link.nodes[node]["resid"]-1]["block"]
         attrs = link.nodes[node]
         attrs.update({'ignore': ['order', 'charge_group', 'replace']})
-        matchs = [atom for atom in find_atoms(molecule, **attrs)]
+        matchs = [atom for atom in find_atoms(block, **attrs)]
+        #print(matchs)
         if len(matchs) == 1:
             link_to_mol[node] = matchs[0]
         elif len(matchs) == 0:
@@ -434,12 +439,13 @@ def _get_links(meta_molecule, edge):
             continue
         elif res_names[0] in link_resnames and res_names[1] in link_resnames:
             orders = list(nx.get_node_attributes(link, "order").values())
-            sub_graphs, resids = gen_link_fragments(meta_molecule, orders, edge[0])
-            for idx, graph in enumerate(sub_graphs):
-                if is_subgraph(meta_molecule, graph):
-                    if len(resids[idx]) == len(orders):
-                        link_resids.append([i+1 for i in resids[idx]])
-                        links.append(link)
+            for idx in edge:
+                sub_graphs, resids = gen_link_fragments(meta_molecule, orders, idx)
+                for idx, graph in enumerate(sub_graphs):
+                   if is_subgraph(meta_molecule, graph):
+                       if len(resids[idx]) == len(orders):
+                           link_resids.append([i+1 for i in resids[idx]])
+                           links.append(link)
 
     return links, link_resids
 
@@ -450,6 +456,7 @@ class ApplyLinks(Processor):
     creates edges for the higher resolution molecule stored with
     the MetaMolecule.
     """
+    @profile
     def run_molecule(self, meta_molecule):
         """  # This docstring comes from the parent class. Either remove it, or update it to what this class does
         Process a single molecule. Must be implemented by subclasses.
@@ -466,11 +473,11 @@ class ApplyLinks(Processor):
         molecule = meta_molecule.molecule
         force_field = meta_molecule.force_field
 
-        for edge in meta_molecule.edges:
+        for edge in tqdm(meta_molecule.edges):
             links, resids = _get_links(meta_molecule, edge)
             for link, idxs in zip(links, resids):
                 try:
-                    apply_link_between_residues(molecule, link, idxs)
+                    apply_link_between_residues(meta_molecule, molecule, link, idxs)
                 except MatchError:
                     continue
 
