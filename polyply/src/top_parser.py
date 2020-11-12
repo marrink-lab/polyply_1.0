@@ -238,18 +238,16 @@ class TOPDirector(SectionLineParser):
         total_count = 0
         for mol_name, n_mol in self.molecules:
             block = self.force_field.blocks[mol_name]
-            meta_molecule = MetaMolecule.from_block(self.force_field,
-                                                    block,
-                                                    mol_name)
-
             for idx in range(0, int(n_mol)):
-                 new = meta_molecule.copy()
+                 new = MetaMolecule.from_block(self.force_field,
+                                               block,
+                                               mol_name)
                  new.atom_types = self.topology.atom_types
                  new.defaults = self.topology.defaults
                  new.nonbond_params = self.topology.nonbond_params
                  new.defines = self.topology.defines
                  new.mol_name = mol_name
-                 new.molecule = meta_molecule.molecule.copy()
+
                  self.topology.add_molecule(new)
                  self.topology.mol_idx_by_name[mol_name].append(total_count)
                  total_count += 1

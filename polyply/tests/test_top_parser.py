@@ -237,10 +237,10 @@ class TestTopParsing:
 
     @staticmethod
     def test_itp_handling():
-        """
-        test if multiple itps are read correctly
-        """
-        lines = """
+       """
+       test if multiple itps are read correctly
+       """
+       lines = """
        [ defaults ]
        1   1   no   1.0     1.0
        [ moleculetype ]
@@ -254,22 +254,27 @@ class TestTopParsing:
        [ molecules ]
        LYS  2
        """
-        new_lines = textwrap.dedent(lines).splitlines()
-        force_field = vermouth.forcefield.ForceField(name='test_ff')
-        top = Topology(force_field, name="test")
-        polyply.src.top_parser.read_topology(new_lines, top)
-        assert top.defaults == {"nbfunc": 1,
-                                "comb-rule": 1,
-                                "gen-pairs": "no",
-                                "fudgeLJ": 1.0,
-                                "fudgeQQ": 1.0}
-        # we just assert that one of the molecules is there
-        # because parsing is done via itp reader and thus covered
-        assert len(top.molecules[0]) == 1
-        # we also should have each molecule as block in the force
-        # field. Again we only check that it is there because
-        # the actual parsing is done elsewhere
-        assert len(force_field.blocks) == 2
+       new_lines = textwrap.dedent(lines).splitlines()
+       force_field = vermouth.forcefield.ForceField(name='test_ff')
+       top = Topology(force_field, name="test")
+       polyply.src.top_parser.read_topology(new_lines, top)
+       assert top.defaults == {"nbfunc": 1,
+                               "comb-rule": 1,
+                               "gen-pairs": "no",
+                               "fudgeLJ": 1.0,
+                               "fudgeQQ": 1.0}
+       # check that there are two LYS in topology
+       assert len(top.molecules) == 2
+       for mol in top.molecules:
+           assert mol.mol_name == "LYS"
+       # check that both are not the same instance of meta_molecule
+       assert top.molecules[0] is not top.molecules[1]
+       # also check that the high-res molecule is not the same
+       assert top.molecules[0].molecule is not top.molecules[1].molecule
+       # we also should have each molecule as block in the force
+       # field. Again we only check that it is there because
+       # the actual parsing is done elsewhere
+       assert len(force_field.blocks) == 2
 
     @staticmethod
     @pytest.mark.parametrize('lines', (
