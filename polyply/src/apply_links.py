@@ -11,15 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from collections import defaultdict
 from itertools import combinations
 import networkx as nx
-from networkx.algorithms import isomorphism
+from tqdm import tqdm
 import vermouth.molecule
 from vermouth.molecule import Interaction
 from vermouth.processors.do_links import match_order
 from .processor import Processor
-from tqdm import tqdm
 
 class MatchError(Exception):
     """Raised we find no match between links and molecule"""
@@ -42,14 +41,14 @@ def expand_excl(molecule):
     had_excl=[]
     for node, excl in exclude.items():
         if excl > nrexcl:
-           excluded_nodes = neighborhood(molecule, node, max_length=excl, min_length=nrexcl)
-           for ndx in excluded_nodes:
-               excl = Interaction(atoms=[node, ndx],
-                                  parameters=[],
-                                  meta={})
-               if frozenset([node, ndx]) not in had_excl and node != ndx:
-                   had_excl.append(frozenset([node, ndx]))
-                   molecule.interactions["exclusions"].append(excl)
+            excluded_nodes = neighborhood(molecule, node, max_length=excl, min_length=nrexcl)
+            for ndx in excluded_nodes:
+                excl = Interaction(atoms=[node, ndx],
+                                   parameters=[],
+                                   meta={})
+                if frozenset([node, ndx]) not in had_excl and node != ndx:
+                    had_excl.append(frozenset([node, ndx]))
+                    molecule.interactions["exclusions"].append(excl)
     return molecule
 
 def find_atoms(molecule, **attrs):
@@ -75,8 +74,6 @@ def find_atoms(molecule, **attrs):
 
     for node_idx in molecule:
         node = molecule.nodes[node_idx]
-        #print(node)
-        #print(attrs)
         if vermouth.molecule.attributes_match(node, attrs, ignore_keys=ignore):
             yield node_idx
 
@@ -110,66 +107,12 @@ def _build_link_interaction_from(molecule, interaction, match):
     )
     return new_interaction
 
-@profile
-def apply_link_between_residues(meta_molecule, molecule, link, resids):
-    """
-    Applies a link between specific residues, if and only if
-    the link atoms incl. all attributes match at most one atom
-    in a respective link. It updates the molecule in place.
-
-    Parameters
-    ----------
-    molecule: :class:`vermouth.molecule.Molecule`
-        A vermouth molecule definition
-    link: :class:`vermouth.molecule.Link`
-        A vermouth link definition
-    resids: dictionary
-        a list of node attributes used for link matching aside from
-        the residue ordering
-    """
-    # we have to go on resid or at least one criterion otherwise
-    # the matching will be super slow, if we need to iterate
-    # over all combinations of a possible links.
-    link = link.copy()
-    nx.set_node_attributes(link, dict(zip(link.nodes, resids)), 'resid')
-    link_to_mol = {}
-    for node in link.nodes:
-        block = meta_molecule.nodes[link.nodes[node]["resid"]-1]["block"]
-        attrs = link.nodes[node]
-        attrs.update({'ignore': ['order', 'charge_group', 'replace']})
-        matchs = [atom for atom in find_atoms(block, **attrs)]
-        #print(matchs)
-        if len(matchs) == 1:
-            link_to_mol[node] = matchs[0]
-        elif len(matchs) == 0:
-            msg = "Found no matchs for atom {} in resiue {}. Cannot apply link."
-            raise MatchError(msg.format(attrs["atomname"], attrs["resid"]))
-        else:
-            msg = "Found {} matches for atom {} in resiue {}. Cannot apply link."
-            raise MatchError(msg.format(len(matchs), attrs["atomname"], attrs["resid"]))
-
-    for node in link.nodes:
-        if "replace" in link.nodes[node]:
-            # if we don't find a key a MatchError is directly detected and the link
-            # not applied
-            for key, item in link.nodes[node]["replace"].items():
-                molecule.nodes[link_to_mol[node]][key] = item
-
-    for inter_type in link.interactions:
-        for interaction in link.interactions[inter_type]:
-            new_interaction = _build_link_interaction_from(molecule, interaction, link_to_mol)
-            molecule.add_or_replace_interaction(inter_type, *new_interaction)
-            atoms = interaction.atoms
-            new_edges = [(link_to_mol[at1], link_to_mol[at2])
-                         for at1, at2 in zip(atoms[:-1], atoms[1:])]
-            molecule.add_edges_from(new_edges)
-
 
 def apply_explicit_link(molecule, link):
     """
     Applies interactions from a link regardless of any
-    checks. This requires atoms in the link to be of
-    int type. Within polyply the explicit flag can  # Atoms are never int. Their keys could be though
+    checks. This requires atom keys in the link to be of
+    int type. Within polyply the explicit flag can
     be set to these links for the program to know
     to apply them using this method.
 
@@ -184,11 +127,11 @@ def apply_explicit_link(molecule, link):
         for interaction in inter_list:
             try:
                 interaction.atoms[:] = [int(atom) - 1 for atom in interaction.atoms]
-            except ValueError:
+            except ValueError as err:
                 msg = """Trying to apply an explicit link but interaction
                       {} but cannot convert the atoms to integers. Note
                       explicit links need to be defined by atom numbers."""
-                raise ValueError(msg.format(interaction))
+                raise ValueError(msg.format(interaction)) from err
             if set(interaction.atoms).issubset(set(molecule.nodes)):
                 molecule.add_or_replace_interaction(inter_type, interaction.atoms,
                                                     interaction.parameters,
@@ -369,11 +312,11 @@ def is_subgraph(graph1, graph2):
     """
     for node in graph2.nodes:
         if not node in graph1.nodes:
-           return False
+            return False
 
     for edge in graph2.edges:
         if not graph1.has_edge(edge[0], edge[1]):
-           return False
+            return False
 
     return True
 
@@ -437,15 +380,17 @@ def _get_links(meta_molecule, edge):
 
         if link.molecule_meta.get('by_atom_id'):
             continue
-        elif res_names[0] in link_resnames and res_names[1] in link_resnames:
+
+        if res_names[0] in link_resnames and res_names[1] in link_resnames:
             orders = list(nx.get_node_attributes(link, "order").values())
             for idx in edge:
                 sub_graphs, resids = gen_link_fragments(meta_molecule, orders, idx)
                 for idx, graph in enumerate(sub_graphs):
-                   if is_subgraph(meta_molecule, graph):
-                       if len(resids[idx]) == len(orders):
-                           link_resids.append([i+1 for i in resids[idx]])
-                           links.append(link)
+                    if is_subgraph(meta_molecule, graph):
+                        if len(resids[idx]) == len(orders):
+                            link_resid = [i+1 for i in resids[idx]]
+                            link_resids.append(link_resid)
+                            links.append(link)
 
     return links, link_resids
 
@@ -456,10 +401,82 @@ class ApplyLinks(Processor):
     creates edges for the higher resolution molecule stored with
     the MetaMolecule.
     """
-    @profile
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.applied_links = defaultdict(dict)
+
+    def apply_link_between_residues(self, meta_molecule, link, resids):
+        """
+        Applies a link between specific residues, if and only if
+        the link atoms (incl. all attributes) match at most one atom
+        in a respective link. It adds the link to the applied_links
+        instance variable, which from which later the links are added to
+        the molecule. Note that replace statements are already update
+        the molecule, as they potentially apply to conscutive links.
+        Edges are also updated in place.
+
+        Parameters
+        ----------
+        meta_molecule: :class:`polyply.src.MetaMolecule`
+        link: :class:`vermouth.molecule.Link`
+            A vermouth link definition
+        resids: dictionary
+            a list of node attributes used for link matching aside from
+            the residue ordering
+        """
+        # handy variable for later referencing
+        molecule = meta_molecule.molecule
+        # we have to go on resid or at least one criterion otherwise
+        # the matching will be super slow, if we need to iterate
+        # over all combinations of a possible links.
+        link = link.copy()
+        nx.set_node_attributes(link, dict(zip(link.nodes, resids)), 'resid')
+        link_to_mol = {}
+        for node in link.nodes:
+            block = meta_molecule.nodes[link.nodes[node]["resid"]-1]["block"]
+            attrs = link.nodes[node]
+            attrs.update({'ignore': ['order', 'charge_group', 'replace']})
+            matchs = [atom for atom in find_atoms(block, **attrs)]
+
+            if len(matchs) == 1:
+                link_to_mol[node] = matchs[0]
+            elif len(matchs) == 0:
+                msg = "Found no matchs for atom {} in resiue {}. Cannot apply link."
+                raise MatchError(msg.format(attrs["atomname"], attrs["resid"]))
+            else:
+                msg = "Found {} matches for atom {} in resiue {}. Cannot apply link."
+                raise MatchError(msg.format(len(matchs), attrs["atomname"], attrs["resid"]))
+
+        for node in link.nodes:
+            if "replace" in link.nodes[node]:
+                # if we don't find a key a MatchError is directly detected and the link
+                # not applied
+                for key, item in link.nodes[node]["replace"].items():
+                    molecule.nodes[link_to_mol[node]][key] = item
+
+        for inter_type in link.interactions:
+            for interaction in link.interactions[inter_type]:
+                new_interaction = _build_link_interaction_from(molecule, interaction, link_to_mol)
+                # it is not guaranteed that interaction.atoms is a tuple
+                # the key is the atoms involved in the interaction and the version type so
+                # that multiple versions are kept and not overwritten
+                interaction_key = tuple(new_interaction.atoms) +\
+                                  tuple([new_interaction.meta.get("version",1)])
+                self.applied_links[inter_type][interaction_key] = new_interaction
+                # now we already add the edges of this link
+                atoms = tuple(interaction.atoms)
+                new_edges = [(link_to_mol[at1], link_to_mol[at2])
+                             for at1, at2 in zip(atoms[:-1], atoms[1:])]
+                molecule.add_edges_from(new_edges)
+
     def run_molecule(self, meta_molecule):
-        """  # This docstring comes from the parent class. Either remove it, or update it to what this class does
-        Process a single molecule. Must be implemented by subclasses.
+        """
+        Given a meta_molecule the function iterates over all edges
+        (i.e. pairs of residues) and finds all links that fit based
+        on residue-name and order attribute. Subsequently it tries
+        to apply these links. If a MatchError is encountered the
+        link is not applied. The meta_molecule is updated in place
+        but also returned.
 
         Parameters
         ----------
@@ -477,9 +494,13 @@ class ApplyLinks(Processor):
             links, resids = _get_links(meta_molecule, edge)
             for link, idxs in zip(links, resids):
                 try:
-                    apply_link_between_residues(meta_molecule, molecule, link, idxs)
+                    self.apply_link_between_residues(meta_molecule, molecule, link, idxs)
                 except MatchError:
                     continue
+
+        for inter_type in self.applied_links:
+            for interaction in self.applied_links[inter_type].values():
+                meta_molecule.molecule.interactions[inter_type].append(interaction)
 
         for link in force_field.links:
             if link.molecule_meta.get('by_atom_id'):

@@ -49,6 +49,32 @@ class TestApplyLinks:
          [0, '>', '>'],
          0,
          [[0, 1, 1], [0, 2, 2]]),
+        # some basic incl. '<'
+        ([(0, 1), (1, 2)],
+         [0, '<', '<'],
+         2,
+         [[2, 1, 1], [2, 0, 0]]),
+        # some basic incl. '<' but going negative
+        ([(0, 1), (1, 2)],
+         [0, '<', '<'],
+         0,
+         []),
+        # same as above but with explicit order int
+        ([(0, 1), (1, 2)],
+         [0, -1, -1],
+         0,
+         [[0, -1, -1]]),
+        # simple branched case
+        ([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)],
+         [1, 0, 2],
+         0,
+         [[1, 0, 2]]),
+        # more complex branched case
+        # note that filtering is done later based on sub-graph
+        ([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)],
+         [1, 0, '>'],
+         0,
+         [[1, 0, 1], [1, 0, 2], [1, 0, 3], [1, 0, 4], [1, 0, 5], [1, 0, 6]]),
         # linear and some ids some '>'
         ([(0, 1), (1, 2)],
          [0, '>', '>>'],
@@ -82,6 +108,11 @@ class TestApplyLinks:
          [0, 0, 1, 1],
          1,
          [[(1, 2)]]),
+        # same nodes but split in order sequence
+        ([(0, 1), (1, 2)],
+         [0, 1, 1, 0],
+         1,
+         [[(1, 2)]]),
         # all ids but one not in grpah
         ([(0, 1), (1, 2)],
          [0, 1, 2, 3],
@@ -94,15 +125,35 @@ class TestApplyLinks:
          [[(0, 1), (1, 2)], [(0, 2)]])
     ))
     def test_gen_link_fragments(edges, orders, node, ref_edges):
+        """
+        Test if the order paths are correctly converted to graphs.
+        All this function really does besides calling order to
+        paths as tested before is to make a graph skipping nodes
+        which are the same.
+        """
         graph = nx.Graph()
         graph.add_edges_from(edges)
-        result_graph, _ = polyply.src.apply_links.gen_link_fragments(
-            graph, orders, node)
+        result_graph, _ = polyply.src.apply_links.gen_link_fragments(graph, orders, node)
         for graph in result_graph:
             assert list(graph.edges) in ref_edges
 
     @staticmethod
-    @pytest.mark.parametrize('lines, ref_ids', (
+    @pytest.mark.parametrize('lines, edge_ref_ids', (
+        ("""
+        [ moleculetype ]
+        ; name nexcl.
+        PEO         1
+        ;
+        [ atoms ]
+        1  SN1a    1   PEO   CO1  1   0.000  45
+        [ link ]
+        resname "PEO"
+        [ bonds ]
+        CO1 +CO1 params
+        """,
+         [[[1, 2], [2, 3]], [[2, 3], [3, 4]],
+          [[3, 4], [4, 5]],
+          [[4, 5]]]),
         ("""[ moleculetype ]
         ; name nexcl.
         PEO         1
@@ -112,8 +163,12 @@ class TestApplyLinks:
         [ link ]
         resname "PEO"
         [ bonds ]
-        CO1 +CO1 params""",
-         [[1, 2], [2, 3], [3, 4], [4, 5]]),
+        -CO1 CO1 params
+        """,
+         [[[1, 2]],
+          [[1, 2], [2, 3]],
+          [[2, 3], [3, 4]],
+          [[3, 4], [4, 5]]]),
         ("""[ moleculetype ]
         ; name nexcl.
         PEO         1
@@ -123,8 +178,14 @@ class TestApplyLinks:
         [ link ]
         resname "PEO"
         [ angles ]
-        CO1 +CO1 ++CO1""",
-         [[1, 2, 3], [2, 3, 4], [3, 4, 5]]),
+        CO1 +CO1 ++CO1
+        """,
+         [[[1, 2, 3],
+           [2, 3, 4]],
+          [[2, 3, 4],
+           [3, 4, 5]],
+          [[3, 4, 5]],
+          []]),
         ("""[ moleculetype ]
         ; name nexcl.
         PEO         1
@@ -133,164 +194,185 @@ class TestApplyLinks:
         1  SN1a    1   PEO   CO1  1   0.000  45
         [ link ]
         resname "PEO"
-        [ dihedrals ]
-        CO1 +CO1 >CO1 >>CO1""",
-         [[1, 2, 2, 3], [1, 2, 3, 4], [2, 3, 3, 4],
-          [2, 3, 4, 5], [3, 4, 4, 5]])
+        [ angles ]
+        --CO1 -CO1 CO1
+        """,
+         [[],
+          [[1, 2, 3]],
+          [[1, 2, 3],
+           [2, 3, 4]],
+          [[2, 3, 4],
+           [3, 4, 5]]]),
+#       ("""[ moleculetype ]
+#       ; name nexcl.
+#       PEO         1
+#       ;
+#       [ atoms ]
+#       1  SN1a    1   PEO   CO1  1   0.000  45
+#       [ link ]
+#       resname "PEO"
+#       [ dihedrals ]
+#       CO1 +CO1 >CO1 >>CO1
+#       """,
+#        [[1, 2, 2, 3], [1, 2, 3, 4], [2, 3, 3, 4],
+#         [2, 3, 4, 5], [3, 4, 4, 5]])
     ))
-    def test_get_links(lines, ref_ids):
+    def test_get_links(lines, edge_ref_ids):
         lines = textwrap.dedent(lines).splitlines()
         force_field = vermouth.forcefield.ForceField(name='test_ff')
         vermouth.ffinput.read_ff(lines, force_field)
-        meta_mol = MetaMolecule.from_monomer_seq_linear(
-            force_field, [Monomer(resname="PEO", n_blocks=5)], "test")
+        meta_mol = MetaMolecule.from_monomer_seq_linear(force_field,
+                                                        [Monomer(resname="PEO", n_blocks=5)],
+                                                        "test")
         polyply.src.map_to_molecule.MapToMolecule().run_molecule(meta_mol)
 
-        resids = []
-        for edge in meta_mol.edges:
+        for edge, ref_ids in zip(meta_mol.edges, edge_ref_ids):
+            print(edge)
+            resids = []
             _, ids = polyply.src.apply_links._get_links(meta_mol, edge)
             resids += ids
-        assert len(resids) == len(ref_ids)
-        for resid in ids:
-            assert resid in ref_ids
+            print(resids)
+            assert len(resids) == len(ref_ids)
+            for resid in ids:
+                assert resid in ref_ids
 
-    @staticmethod
-    @pytest.mark.parametrize('links, interactions, edges, idx, inttype, atypes',
-         (("""
-         [ link ]
-         [ bonds ]
-         BB +BB  1  0.350  1250
-         """,
-         [vermouth.molecule.Interaction(atoms=(0, 1),
-                                        parameters=['1', '0.350', '1250'],
-                                        meta={})],
-         1,
-         [1, 2],
-         'bonds',
-         {0: 'SP2', 1: 'SP2', 2: 'SP2', 3: 'SC2'}),
-         ("""
-         [ link ]
-         [ bonds ]
-         BB   SC1   1  0.350  1250
-         """,
-         [vermouth.molecule.Interaction(atoms=(2, 3),
-                                        parameters=['1', '0.350', '1250'],
-                                        meta={})],
-         1,
-         [3, 3],
-         'bonds',
-         {0: 'SP2', 1: 'SP2', 2: 'SP2', 3:'SC2'}),
-         ("""
-         [ link ]
-         [ bonds ]
-	 BB   -BB  1  0.350  1250
-         """,
-         [vermouth.molecule.Interaction(atoms=(1, 2),
-                                        parameters=['1', '0.350', '1250'],
-                                        meta={})],
-         1,
-         [2, 3],
-         'bonds',
-         {0: 'SP2', 1: 'SP2', 2: 'SP2', 3:'SC2'}),
-         ("""
-         [ link ]
-         [ atoms ]
-         BB  {"replace": {"atype": "P5"}}
-         [ bonds ]
-         BB   SC1   1  0.350  1250
-         """,
-         [vermouth.molecule.Interaction(atoms=(2, 3),
-                                        parameters=['1', '0.350', '1250'],
-                                        meta={})],
-         1,
-         [3, 3],
-         'bonds',
-         {0: 'SP2', 1: 'SP2', 2: 'P5', 3: 'SC2'}),
-         ("""
-         [ link ]
-         [ angles ]
-         BB  +BB  +SC1  1  125  250
-         """,
-        [vermouth.molecule.Interaction(atoms=(1, 2, 3),
-                                       parameters=['1', '125', '250'],
-                                       meta={})],
-        2,
-        [2, 3],
-        'angles',
-        {0: 'SP2', 1: 'SP2', 2: 'SP2', 3: 'SC2'})
-        ))
-    def test_add_interaction_and_edge(links, interactions, edges, idx, inttype, atypes):
-        lines = """
-        [ moleculetype ]
-        GLY  1
-        [ atoms ]
-        ;id  type resnr residu atom cgnr   charge
-         1   SP2   1     GLY    BB     1      0
-        [ moleculetype ]
-        ALA  1
-        [ atoms ]
-        ;id  type resnr residu atom cgnr   charge
-         1   SP2   1     ALA    BB     1      0
-         2   SC2   1     ALA    SC1     1      0
-        """
-        lines = lines + links
-        lines = textwrap.dedent(lines).splitlines()
-        force_field = vermouth.forcefield.ForceField(name='test_ff')
-        vermouth.ffinput.read_ff(lines, force_field)
+#   @staticmethod
+#   @pytest.mark.parametrize('links, interactions, edges, idx, inttype, atypes',
+#        (("""
+#        [ link ]
+#        [ bonds ]
+#        BB +BB  1  0.350  1250
+#        """,
+#        [vermouth.molecule.Interaction(atoms=(0, 1),
+#                                       parameters=['1', '0.350', '1250'],
+#                                       meta={})],
+#        1,
+#        [1, 2],
+#        'bonds',
+#        {0: 'SP2', 1: 'SP2', 2: 'SP2', 3: 'SC2'}),
+#        ("""
+#        [ link ]
+#        [ bonds ]
+#        BB   SC1   1  0.350  1250
+#        """,
+#        [vermouth.molecule.Interaction(atoms=(2, 3),
+#                                       parameters=['1', '0.350', '1250'],
+#                                       meta={})],
+#        1,
+#        [3, 3],
+#        'bonds',
+#        {0: 'SP2', 1: 'SP2', 2: 'SP2', 3:'SC2'}),
+#        ("""
+#        [ link ]
+#        [ bonds ]
+#        BB   -BB  1  0.350  1250
+#        """,
+#        [vermouth.molecule.Interaction(atoms=(1, 2),
+#                                       parameters=['1', '0.350', '1250'],
+#                                       meta={})],
+#        1,
+#        [2, 3],
+#        'bonds',
+#        {0: 'SP2', 1: 'SP2', 2: 'SP2', 3:'SC2'}),
+#        ("""
+#        [ link ]
+#        [ atoms ]
+#        BB  {"replace": {"atype": "P5"}}
+#        [ bonds ]
+#        BB   SC1   1  0.350  1250
+#        """,
+#        [vermouth.molecule.Interaction(atoms=(2, 3),
+#                                       parameters=['1', '0.350', '1250'],
+#                                       meta={})],
+#        1,
+#        [3, 3],
+#        'bonds',
+#        {0: 'SP2', 1: 'SP2', 2: 'P5', 3: 'SC2'}),
+#        ("""
+#        [ link ]
+#        [ angles ]
+#        BB  +BB  +SC1  1  125  250
+#        """,
+#       [vermouth.molecule.Interaction(atoms=(1, 2, 3),
+#                                      parameters=['1', '125', '250'],
+#                                      meta={})],
+#       2,
+#       [2, 3],
+#       'angles',
+#       {0: 'SP2', 1: 'SP2', 2: 'SP2', 3: 'SC2'})
+#       ))
+#   def test_add_interaction_and_edge(links, interactions, edges, idx, inttype, atypes):
+#       lines = """
+#       [ moleculetype ]
+#       GLY  1
+#       [ atoms ]
+#       ;id  type resnr residu atom cgnr   charge
+#        1   SP2   1     GLY    BB     1      0
+#       [ moleculetype ]
+#       ALA  1
+#       [ atoms ]
+#       ;id  type resnr residu atom cgnr   charge
+#        1   SP2   1     ALA    BB     1      0
+#        2   SC2   1     ALA    SC1     1      0
+#       """
+#       lines = lines + links
+#       lines = textwrap.dedent(lines).splitlines()
+#       force_field = vermouth.forcefield.ForceField(name='test_ff')
+#       vermouth.ffinput.read_ff(lines, force_field)
 
-        new_mol = force_field.blocks['GLY'].to_molecule()
-        new_mol.merge_molecule(force_field.blocks['GLY'])
-        new_mol.merge_molecule(force_field.blocks['ALA'])
+#       new_mol = force_field.blocks['GLY'].to_molecule()
+#       new_mol.merge_molecule(force_field.blocks['GLY'])
+#       new_mol.merge_molecule(force_field.blocks['ALA'])
 
-        polyply.src.apply_links.apply_link_between_residues(
-            new_mol, force_field.links[0], idx)
-        assert new_mol.interactions[inttype] == interactions
-        print(new_mol.edges)
-        assert len(new_mol.edges) == edges
-        assert nx.get_node_attributes(new_mol, "atype") == atypes
+#       polyply.src.apply_links.apply_link_between_residues(new_mol,
+#                                                           force_field.links[0],
+#                                                           idx)
+#       assert new_mol.interactions[inttype] == interactions
+#       assert len(new_mol.edges) == edges
+#       assert nx.get_node_attributes(new_mol, "atype") == atypes
 
-    @staticmethod
-    @pytest.mark.parametrize('links, idx',(
-       (  # no match considering the order parameter
-                                     """
-         [ link ]
-         [ bonds ]
-         BB   +BB  1  0.350  1250""",
-         [1, 4],
-       ),
-       (  # no match due to incorrect atom name
-                                     """
-         [ link ]
-         [ bonds ]
-         BB   SC5   1  0.350  1250
-         """,
-        [3, 3])))
-    def test_link_failure(links, idx):
-        lines = """
-        [ moleculetype ]
-        GLY  1
-        [ atoms ]
-        ;id  type resnr residu atom cgnr   charge
-         1   SP2   1     GLY    BB     1      0
-        [ moleculetype ]
-        ALA  1
-        [ atoms ]
-        ;id  type resnr residu atom cgnr   charge
-         1   SP2   1     ALA    BB     1      0
-         2   SC2   1     ALA    SC1    1      0
-        """
-        lines = lines + links
-        lines = textwrap.dedent(lines).splitlines()
-        force_field = vermouth.forcefield.ForceField(name='test_ff')
-        vermouth.ffinput.read_ff(lines, force_field)
+#   @staticmethod
+#   @pytest.mark.parametrize('links, idx',(
+#      (  # no match considering the order parameter
+#                                    """
+#        [ link ]
+#        [ bonds ]
+#        BB   +BB  1  0.350  1250""",
+#        [1, 4],
+#      ),
+#      (  # no match due to incorrect atom name
+#                                    """
+#        [ link ]
+#        [ bonds ]
+#        BB   SC5   1  0.350  1250
+#        """,
+#       [3, 3])))
+#   def test_link_failure(links, idx):
+#       lines = """
+#       [ moleculetype ]
+#       GLY  1
+#       [ atoms ]
+#       ;id  type resnr residu atom cgnr   charge
+#        1   SP2   1     GLY    BB     1      0
+#       [ moleculetype ]
+#       ALA  1
+#       [ atoms ]
+#       ;id  type resnr residu atom cgnr   charge
+#        1   SP2   1     ALA    BB     1      0
+#        2   SC2   1     ALA    SC1    1      0
+#       """
+#       lines = lines + links
+#       lines = textwrap.dedent(lines).splitlines()
+#       force_field = vermouth.forcefield.ForceField(name='test_ff')
+#       vermouth.ffinput.read_ff(lines, force_field)
 
-        new_mol = force_field.blocks['GLY'].to_molecule()
-        new_mol.merge_molecule(force_field.blocks['GLY'])
-        new_mol.merge_molecule(force_field.blocks['ALA'])
+#       new_mol = force_field.blocks['GLY'].to_molecule()
+#       new_mol.merge_molecule(force_field.blocks['GLY'])
+#       new_mol.merge_molecule(force_field.blocks['ALA'])
 
-        with pytest.raises(MatchError):
-            polyply.src.apply_links.apply_link_between_residues(
-                new_mol, force_field.links[0], idx)
+#       with pytest.raises(MatchError):
+#           polyply.src.apply_links.apply_link_between_residues(
+#               new_mol, force_field.links[0], idx)
 
     @staticmethod
     @pytest.mark.parametrize('links, interactions, edges, inttype',(
