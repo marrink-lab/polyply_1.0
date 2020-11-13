@@ -55,7 +55,7 @@ class MapToMolecule(Processor):
         # 1. relable nodes to make space for new nodes to be inserted
         mapping = {}
         offset = len(set(nx.get_node_attributes(block, "resid").values())) - 1
-        print("offset", offset)
+        #print("offset", offset)
         for node in meta_molecule.nodes:
             if node > meta_mol_node:
                 mapping[node] = node + offset
