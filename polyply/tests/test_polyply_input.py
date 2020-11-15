@@ -172,4 +172,5 @@ class TestPolyply:
             key = list(link.interactions.keys())[0]
             values = link.interactions[key]
             print(values)
-            assert len(values) == 1 
+            assert len(values) == 1
+            assert len(link.edges) != 0
