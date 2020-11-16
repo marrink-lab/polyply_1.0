@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 from collections import defaultdict
 from itertools import combinations
 import networkx as nx
@@ -20,6 +21,7 @@ from vermouth.molecule import Interaction, attributes_match
 from vermouth.graph_utils import make_residue_graph
 from vermouth.processors.do_links import match_order
 from .processor import Processor
+from .graph_utils import neighborhood
 
 class MatchError(Exception):
     """Raised we find no match between links and molecule"""
@@ -52,7 +54,7 @@ def expand_excl(molecule):
                     molecule.interactions["exclusions"].append(excl)
     return molecule
 
-def find_atoms(molecule, **attrs):
+def find_atoms(molecule, ignore=[], **attrs):
     """
     Yields all indices of atoms that match `attrs`
 
@@ -67,17 +69,10 @@ def find_atoms(molecule, **attrs):
     collections.abc.Hashable
         All atom indices that match the specified `attrs`
     """
-    try:
-        ignore = attrs['ignore']  # We discussed this elsewhere.
-        del attrs['ignore']
-    except KeyError:
-        ignore = []
-
     for node_idx in molecule:
         node = molecule.nodes[node_idx]
         if vermouth.molecule.attributes_match(node, attrs, ignore_keys=ignore):
             yield node_idx
-
 
 def _build_link_interaction_from(molecule, interaction, match):
     """
@@ -138,40 +133,11 @@ def apply_explicit_link(molecule, link):
                                                     interaction.parameters,
                                                     meta=interaction.meta)
                 atoms = interaction.atoms
-                new_edges = [(at1, at2)
-                            for at1, at2 in zip(atoms[:-1], atoms[1:])]
+                new_edges = list(zip(atoms[:-1], atoms[1:]))
                 molecule.add_edges_from(new_edges)
             else:
                 raise IOError("Atoms of link interaction {} are not "
                               "part of the molecule.".format(interaction))
-
-def neighborhood(graph, source, max_length, min_length=1):
-    """
-    Returns all neighbours of `source` that are less or equal
-    to `cutoff` nodes away and more or equal to `start` away
-    within a graph excluding the node itself.
-
-    Parameters
-    ----------
-    graph: :class:`networkx.Graph`
-        A networkx graph definintion
-    source:
-        A node key matching one in the graph
-    max_length: :type:`int`
-        The maxdistance between the node and its
-        neighbours.
-    min_length: :type:`int`
-        The minimum length of a path. Default
-        is zero
-
-    Returns
-    --------
-    list
-       list of all nodes distance away from reference
-    """
-    paths = nx.single_source_shortest_path(G=graph, source=source, cutoff=max_length)
-    neighbours = [ node for node, path in paths.items() if min_length <= len(path)]
-    return neighbours
 
 def _check_relative_order(resids, orders):
     """
@@ -196,20 +162,85 @@ def _check_relative_order(resids, orders):
 
     return True
 
-def  _assing_link_resids(res_link, match):
-     link_node_to_resid = {}
-     for resid, link_node in match.items():
-         for node in res_link.nodes[link_node]['graph']:
-             link_node_to_resid[node] = resid
-     return link_node_to_resid
+def _assing_link_resids(res_link, match):
+    link_node_to_resid = {}
+    for resid, link_node in match.items():
+        for node in res_link.nodes[link_node]['graph']:
+            link_node_to_resid[node] = resid
+    return link_node_to_resid
+
+def match_link_and_residue_atoms(meta_molecule, link, link_to_resid):
+    """
+    Given a meta_molecule a link and a correspondance of the link
+    nodes and those in the meta_molecule, establish a correspondance
+    between the link nodes and those in the higher resolution
+    molecule of the meta_molecule. Note that the meta_molecule needs
+    to have the "block" attribute discribing which atoms a single
+    meta_molecule node described.
+
+    Parameters:
+    -----------
+    meta_molecule: `:class:polyply.src.meta_molecule.MetaMolecule`
+    link:          `:class:vermouth.molecule.Link`
+    link_to_resid:  dict
+        correspondance dict of link nodes to meta_molecule nodes
+
+    Returns:
+    --------
+    dict
+        correspondance dict of link nodes to atoms in the
+        the meta_molecule.molecule attribute
+    """
+    link_to_mol = {}
+    for node in link.nodes:
+        meta_mol_key = link_to_resid[node]
+        block = meta_molecule.nodes[meta_mol_key]["graph"]
+        attrs = link.nodes[node]
+        attrs.update({'resid': meta_mol_key + 1})
+        ignore = ['order', 'charge_group', 'replace']
+        matchs = list(find_atoms(block, ignore=ignore, **attrs))
+
+        if len(matchs) == 1:
+            link_to_mol[node] = matchs[0]
+        elif len(matchs) == 0:
+            msg = "Found no matchs for node {} in resiue {}. Cannot apply link."
+            raise MatchError(msg.format(node, attrs["resid"]))
+        else:
+            msg = "Found {} matches for node {} in resiue {}. Cannot apply link."
+            raise MatchError(msg.format(len(matchs), node, attrs["resid"]))
+
+    return link_to_mol
+
+def _res_match(node1, node2):
+    ignore = [key for key in node2.keys() if key != "resname"]
+    return attributes_match(node1, node2, ignore_keys=ignore)
 
 class ApplyLinks(Processor):
     """
     This processor takes a a class:`polyply.src.MetaMolecule` and
-    creates edges for the higher resolution molecule stored with
-    the MetaMolecule.
+    based on links defined in the `force-field` attribute of the
+    MetaMolecule applies them when appropiate.
+
+    Links are defined as connections between two residues at the
+    high resolution level whereas the MetaMolecule is the molecule
+    at residue level or higher degree of CG. The algorithm proceeds
+    by first coarse-graining a link to residue level. Subsequently
+    it is checked based on the connectivity of the link at residue
+    level and the residue name to which residues in the MetaMolecule
+    this link fits. Subsequently, based on the high resolution
+    definition the algorithm looks up the atoms in the matching residues
+    corresponding to the link. If all atoms are present the link is
+    applied otherwise the link is not applied.
+
+    Note that because links can overwrite each other they are first
+    stored in the instance variable `applied_links` and only written
+    to the MetaMolecule.molecule graph after all links have been
+    checked and overwritten if needed. This means the apply_links_between_residues
+    method only populates this instance variable, while write to
+    molecule applies those links.
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, debug=False, **kwargs):
+        self.debug = debug
         super().__init__(*args, **kwargs)
         self.applied_links = defaultdict(dict)
 
@@ -218,7 +249,7 @@ class ApplyLinks(Processor):
         Applies a link between specific residues, if and only if
         the link atoms (incl. all attributes) match at most one atom
         in a respective link. It adds the link to the applied_links
-        instance variable, which from which later the links are added to
+        instance variable, from which later the links are added to
         the molecule. Note that replace statements are already update
         the molecule, as they potentially apply to conscutive links.
         Edges are also updated in place.
@@ -234,36 +265,25 @@ class ApplyLinks(Processor):
         """
         # handy variable for later referencing
         molecule = meta_molecule.molecule
-        link = link.copy()
-        # we have to go on resid or at least one criterion otherwise
-        # the matching will be super slow, if we need to iterate
-        # over all combinations of a possible links.
-        #nx.set_node_attributes(link, dict(zip(link.nodes, resids)), 'resid')
 
-        link_to_mol = {}
-        for node in link.nodes:
-            meta_mol_key = link_to_resid[node]
-            block = meta_molecule.nodes[meta_mol_key]["block"]
-            attrs = link.nodes[node]
-            attrs.update({'ignore': ['order', 'charge_group', 'replace']})
-            matchs = [atom for atom in find_atoms(block, **attrs)]
+        # look-up which atoms in the link correspond
+        # to which atoms in the molecule this function
+        # raises an MatchError if no atoms are found
+        link_to_mol = match_link_and_residue_atoms(meta_molecule,
+                                                   link,
+                                                   link_to_resid)
 
-            if len(matchs) == 1:
-                link_to_mol[node] = matchs[0]
-            elif len(matchs) == 0:
-                msg = "Found no matchs for atom {} in resiue {}. Cannot apply link."
-                raise MatchError #(msg.format(attrs["atomname"])) #, attrs["resid"]))
-            else:
-                msg = "Found {} matches for atom {} in resiue {}. Cannot apply link."
-                raise MatchError #(msg.format(len(matchs), attrs["atomname"], attrs["resid"]))
-
+        # if all atoms have a match the link applies and we first
+        # replace any attributes from the link node section
         for node in link.nodes:
             if "replace" in link.nodes[node]:
-                # if we don't find a key a MatchError is directly detected and the link
-                # not applied
+                # if we don't find a key a MatchError is directly
+                # detected and the link not applied
                 for key, item in link.nodes[node]["replace"].items():
                     molecule.nodes[link_to_mol[node]][key] = item
 
+        # based on the match we build the link interaction
+        print(link.interactions)
         for inter_type in link.interactions:
             for interaction in link.interactions[inter_type]:
                 new_interaction = _build_link_interaction_from(molecule, interaction, link_to_mol)
@@ -274,6 +294,7 @@ class ApplyLinks(Processor):
                                   tuple([new_interaction.meta.get("version",1)])
                 self.applied_links[inter_type][interaction_key] = new_interaction
                 # now we already add the edges of this link
+                # links can overwrite each other but the edges must be the same
                 atoms = tuple(interaction.atoms)
                 new_edges = [(link_to_mol[at1], link_to_mol[at2])
                              for at1, at2 in zip(atoms[:-1], atoms[1:])]
@@ -297,27 +318,21 @@ class ApplyLinks(Processor):
         ---------
         :class: `polyply.src.meta_molecule.MetaMolecule`
         """
-        def _res_match(node1, node2):
-            ignore = [key for key in node2.keys() if key != "resname"]
-            return attributes_match(node1, node2, ignore_keys=ignore)
-
         molecule = meta_molecule.molecule
         force_field = meta_molecule.force_field
 
         for link in tqdm(force_field.links):
             res_link = make_residue_graph(link, attrs=('order',))
-            print(res_link.nodes(data=True))
             GM = nx.isomorphism.GraphMatcher(meta_molecule, res_link, node_match=_res_match)
             raw_matchs = GM.subgraph_isomorphisms_iter()
             for match in raw_matchs:
                 resids = match.keys()
                 orders = [ res_link.nodes[match[resid]]["order"] for resid in resids]
                 if _check_relative_order(resids, orders):
-                    print("go here")
                     link_node_to_resid = _assing_link_resids(res_link, match)
                     try:
                         self.apply_link_between_residues(meta_molecule, link, link_node_to_resid)
-                    except MatchError:
+                    except MatchError as error:
                         continue
 
         for inter_type in self.applied_links:
