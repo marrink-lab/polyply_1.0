@@ -108,7 +108,7 @@ class MapToMolecule(Processor):
         block = force_field.blocks[meta_molecule.nodes[0]["resname"]]
         new_mol = block.to_molecule()
         # we store the block together with the residue node
-        meta_molecule.nodes[0]["block"] = new_mol.copy()
+        meta_molecule.nodes[0]["graph"] = new_mol.copy()
         # TODO: Make a residue graph and check its length instead to make sure
         # you don't get tripped up by e.g. chains and insertion codes.
         if len(set(nx.get_node_attributes(block, "resid").values())) > 1:
@@ -129,7 +129,7 @@ class MapToMolecule(Processor):
                 data = new_mol.nodes[res_node]
                 residue.add_node(res_node, **data)
 
-            meta_molecule.nodes[node]["block"] = residue
+            meta_molecule.nodes[node]["graph"] = residue
 
             if len(set(nx.get_node_attributes(block, "resid").values())) > 1:
                 self.expand_meta_graph(meta_molecule, block, node)
