@@ -162,7 +162,34 @@ def _check_relative_order(resids, orders):
 
     return True
 
-def _assing_link_resids(res_link, match):
+def _assign_link_resids(res_link, match):
+    """
+    Given a link at residue level (`res_link`) and
+    a dict (`match`) specifying to which resids
+    the res_link nodes map, create a correspondence
+    dict that maps the higher resolution nodes to
+    the resids specified in` match`. Each `res_link`
+    node by definition can only map to one resid provided
+    in `match`. The lower resolution nodes assosicated
+    to a particular res_link node are stored in the 'graph'
+    attribute of res_link.
+    Note that the nodes in that graph are consecutive
+    and uniquely specify to a single node in the graph
+    specifying all residues at higher resolution.
+
+    Parameters:
+    -----------
+    res_link: `:class:nx.Graph`
+        must have a 'graph' attribute for each node
+        that itself is a graph of the atoms represented
+    match: dict
+        dict matching a resid to the node_key of res_link
+
+    Returns:
+    --------
+    dict
+        correspondence of high resolution nodes to resid
+    """
     link_node_to_resid = {}
     for resid, link_node in match.items():
         for node in res_link.nodes[link_node]['graph']:
@@ -171,11 +198,11 @@ def _assing_link_resids(res_link, match):
 
 def match_link_and_residue_atoms(meta_molecule, link, link_to_resid):
     """
-    Given a meta_molecule a link and a correspondance of the link
-    nodes and those in the meta_molecule, establish a correspondance
+    Given a meta_molecule a link and a correspondence of the link
+    nodes and those in the meta_molecule, establish a correspondence
     between the link nodes and those in the higher resolution
     molecule of the meta_molecule. Note that the meta_molecule needs
-    to have the "block" attribute discribing which atoms a single
+    to have the "block" attribute describing which atoms a single
     meta_molecule node described.
 
     Parameters:
@@ -183,12 +210,12 @@ def match_link_and_residue_atoms(meta_molecule, link, link_to_resid):
     meta_molecule: `:class:polyply.src.meta_molecule.MetaMolecule`
     link:          `:class:vermouth.molecule.Link`
     link_to_resid:  dict
-        correspondance dict of link nodes to meta_molecule nodes
+        correspondence dict of link nodes to meta_molecule nodes
 
     Returns:
     --------
     dict
-        correspondance dict of link nodes to atoms in the
+        correspondence dict of link nodes to atoms in the
         the meta_molecule.molecule attribute
     """
     link_to_mol = {}
@@ -251,7 +278,7 @@ class ApplyLinks(Processor):
         in a respective link. It adds the link to the applied_links
         instance variable, from which later the links are added to
         the molecule. Note that replace statements are already update
-        the molecule, as they potentially apply to conscutive links.
+        the molecule, as they potentially apply to consecutive links.
         Edges are also updated in place.
 
         Parameters
@@ -259,9 +286,8 @@ class ApplyLinks(Processor):
         meta_molecule: :class:`polyply.src.MetaMolecule`
         link: :class:`vermouth.molecule.Link`
             A vermouth link definition
-        resids: dictionary
-            a list of node attributes used for link matching aside from
-            the residue ordering
+        link_to_resids: dict
+            a dict matching link nodes to a resid in meta_molecule
         """
         # handy variable for later referencing
         molecule = meta_molecule.molecule
@@ -279,11 +305,11 @@ class ApplyLinks(Processor):
             if "replace" in link.nodes[node]:
                 # if we don't find a key a MatchError is directly
                 # detected and the link not applied
+           # molecule.nodes[link_to_mol[node]].update(link.nodes[node].get('replace', {}))
                 for key, item in link.nodes[node]["replace"].items():
                     molecule.nodes[link_to_mol[node]][key] = item
 
         # based on the match we build the link interaction
-        print(link.interactions)
         for inter_type in link.interactions:
             for interaction in link.interactions[inter_type]:
                 new_interaction = _build_link_interaction_from(molecule, interaction, link_to_mol)
@@ -329,7 +355,7 @@ class ApplyLinks(Processor):
                 resids = match.keys()
                 orders = [ res_link.nodes[match[resid]]["order"] for resid in resids]
                 if _check_relative_order(resids, orders):
-                    link_node_to_resid = _assing_link_resids(res_link, match)
+                    link_node_to_resid = _assign_link_resids(res_link, match)
                     try:
                         self.apply_link_between_residues(meta_molecule, link, link_node_to_resid)
                     except MatchError as error:
