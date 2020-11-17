@@ -122,10 +122,10 @@ class MapToMolecule(Processor):
             if node + 1 in nx.get_node_attributes(new_mol, "resid").values():
                 continue
             block = force_field.blocks[resname]
-            correspondance = new_mol.merge_molecule(block)
+            correspondence = new_mol.merge_molecule(block)
 
             residue = nx.Graph()
-            for res_node in correspondance.values():
+            for res_node in correspondence.values():
                 data = new_mol.nodes[res_node]
                 residue.add_node(res_node, **data)
 

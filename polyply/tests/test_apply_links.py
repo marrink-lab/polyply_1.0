@@ -175,6 +175,7 @@ def test_match_link_and_residue_atoms_fail(example_meta_molecule,
 
     link = nx.Graph()
     link.add_nodes_from(link_nodes)
+
     with pytest.raises(polyply.src.apply_links.MatchError):
          polyply.src.apply_links.match_link_and_residue_atoms(example_meta_molecule,
                                                               link,
@@ -392,7 +393,7 @@ def test_expand_exclusions():
                 frozenset([3, 4]),
                 frozenset([3, 1]),
                 frozenset([4, 1])]
-    print(mol.interactions["exclusions"])
+
     assert len(ref_excl) == len(mol.interactions["exclusions"])
     for excl in mol.interactions["exclusions"]:
         assert frozenset(excl.atoms) in ref_excl
