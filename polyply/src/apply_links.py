@@ -33,11 +33,11 @@ def expand_excl(molecule):
 
     Parameters:
     -----------
-    molecule: `:class:vermouth.molecule`
+    molecule: :class:`vermouth.molecule`
 
     Returns:
     --------
-    `:class:vermouth.molecule`
+    :class:`vermouth.molecule`
     """
     exclude = nx.get_node_attributes(molecule, "exclude")
     nrexcl = molecule.nrexcl
@@ -179,7 +179,7 @@ def _assign_link_resids(res_link, match):
 
     Parameters:
     -----------
-    res_link: `:class:nx.Graph`
+    res_link: :class:`nx.Graph`
         must have a 'graph' attribute for each node
         that itself is a graph of the atoms represented
     match: dict
@@ -187,7 +187,7 @@ def _assign_link_resids(res_link, match):
 
     Returns:
     --------
-    dict
+    :type:dict
         correspondence of high resolution nodes to resid
     """
     link_node_to_resid = {}
@@ -207,14 +207,14 @@ def match_link_and_residue_atoms(meta_molecule, link, link_to_resid):
 
     Parameters:
     -----------
-    meta_molecule: `:class:polyply.src.meta_molecule.MetaMolecule`
-    link:          `:class:vermouth.molecule.Link`
-    link_to_resid:  dict
+    meta_molecule: :class:`polyply.src.meta_molecule.MetaMolecule`
+    link:          :class:`vermouth.molecule.Link`
+    link_to_resid:  :type:dict
         correspondence dict of link nodes to meta_molecule nodes
 
     Returns:
     --------
-    dict
+    :type:dict
         correspondence dict of link nodes to atoms in the
         the meta_molecule.molecule attribute
     """
@@ -239,6 +239,26 @@ def match_link_and_residue_atoms(meta_molecule, link, link_to_resid):
     return link_to_mol
 
 def _res_match(node1, node2):
+    """
+    Helper function which returns true if the resname
+    attribute of two nodes matches and false otherwise.
+    This function correctly handles choice objects
+    for the resname.
+
+    Parameters:
+    -----------
+    node1:  :type:dict
+        attribute dict of node
+    node2:  :type:dict
+        attribute dict of node
+
+    Returns:
+    --------
+    bool
+    """
+    # this is not equivalent to comparing just the resname
+    # attributes because resname can be a choice object
+    # which at the moment does not compare properly
     ignore = [key for key in node2.keys() if key != "resname"]
     return attributes_match(node1, node2, ignore_keys=ignore)
 
@@ -286,7 +306,7 @@ class ApplyLinks(Processor):
         meta_molecule: :class:`polyply.src.MetaMolecule`
         link: :class:`vermouth.molecule.Link`
             A vermouth link definition
-        link_to_resids: dict
+        link_to_resids: :type:dict
             a dict matching link nodes to a resid in meta_molecule
         """
         # handy variable for later referencing
@@ -302,12 +322,7 @@ class ApplyLinks(Processor):
         # if all atoms have a match the link applies and we first
         # replace any attributes from the link node section
         for node in link.nodes:
-            if "replace" in link.nodes[node]:
-                # if we don't find a key a MatchError is directly
-                # detected and the link not applied
-           # molecule.nodes[link_to_mol[node]].update(link.nodes[node].get('replace', {}))
-                for key, item in link.nodes[node]["replace"].items():
-                    molecule.nodes[link_to_mol[node]][key] = item
+            molecule.nodes[link_to_mol[node]].update(link.nodes[node].get('replace', {}))
 
         # based on the match we build the link interaction
         for inter_type in link.interactions:
@@ -342,13 +357,20 @@ class ApplyLinks(Processor):
 
         Returns
         ---------
-        :class: `polyply.src.meta_molecule.MetaMolecule`
+        :class:`polyply.src.meta_molecule.MetaMolecule`
         """
         molecule = meta_molecule.molecule
         force_field = meta_molecule.force_field
 
         for link in tqdm(force_field.links):
+            # we only use the order because each order needs to be
+            # matching exactly 1 residue, which means their resname
+            # needs to match as well. However, resname can be a
+            # choice object which is not hashable so we don't
+            # use resname in constructing the res-graph.
             res_link = make_residue_graph(link, attrs=('order',))
+            # however when finding the LCIS we do match against the residue
+            # name and topology of the link
             GM = nx.isomorphism.GraphMatcher(meta_molecule, res_link, node_match=_res_match)
             raw_matchs = GM.subgraph_isomorphisms_iter()
             for match in raw_matchs:
