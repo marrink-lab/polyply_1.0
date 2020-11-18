@@ -508,6 +508,62 @@ class TestTopology:
         test 1
         """,
         {"bonds": [Interaction(atoms=(0, 1), parameters=["1", "0.1335", "502080.0"], meta={})]}
+        ),
+        # test virtual_sites n,2,3,4 are skipped
+        (
+        """
+        #define _FF_OPLS
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ atomtypes ]
+        opls_001   C   6      12.01100     0.500       A    3.75000e-01  4.39320e-01 ; SIG
+        [ bondtypes ]
+        C       C       1       0.1335  502080.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 opls_001   1 test C1 1   0.0 14.0
+        2 opls_001   1 test C2 2   0.0 12.0
+        3 opls_001   1 test C2 2   0.0 12.0
+        4 opls_001   1 test C2 2   0.0 12.0
+        5 opls_001   1 test C2 2   0.0 12.0
+        6 opls_001   1 test C2 2   0.0 12.0
+        7 opls_001   1 test C2 2   0.0 12.0
+        8 opls_001   1 test C2 2   0.0 12.0
+        9 opls_001   1 test C2 2   0.0 12.0
+        10 opls_001   1 test C2 2   0.0 12.0
+        [ bonds ]
+        1  2  1
+        1  8  1
+        1  9  1
+        2  9  1
+        8  9  1
+        ; currently not parsed accurately due to vermouth bug
+        ;[ virtual_sites2 ]
+        ;4   1  9  1  0.5000
+        [ virtual_sites3 ]
+        5   4  8  1  1  0.200  0.200
+        6   4  9  2  1  0.200  0.200
+        [ virtual_sites4 ]
+        10   4  8  1  7  1  0.200  0.200  0.300
+        [ virtual_sitesn ]
+        3   1   4   4   1  2
+        7   1   4   4   8  9
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        {"bonds": [Interaction(atoms=(0, 1), parameters=["1", "0.1335", "502080.0"], meta={}),
+                   Interaction(atoms=(0, 7), parameters=["1", "0.1335", "502080.0"], meta={}),
+                   Interaction(atoms=(0, 8), parameters=["1", "0.1335", "502080.0"], meta={}),
+                   Interaction(atoms=(1, 8), parameters=["1", "0.1335", "502080.0"], meta={}),
+                   Interaction(atoms=(7, 8), parameters=["1", "0.1335", "502080.0"], meta={})],
+         "virtual_sitesn": [Interaction(atoms=(2, 3, 3, 0, 1), parameters=["1"], meta={}),
+                            Interaction(atoms=(6, 3, 3, 7, 8), parameters=["1"], meta={})],
+         "virtual_sites4": [Interaction(atoms=(9, 3, 7, 0, 6), parameters=["1", "0.200", "0.200", "0.300"], meta={})],
+         "virtual_sites3": [Interaction(atoms=(4, 3, 7, 0), parameters=["1", "0.200", "0.200"], meta={}),
+                            Interaction(atoms=(5, 3, 8, 1), parameters=["1", "0.200", "0.200"], meta={})]}
         )
 	))
     def test_replace_types(lines, outcome):
