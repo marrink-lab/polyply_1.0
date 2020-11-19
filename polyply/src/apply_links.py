@@ -334,12 +334,12 @@ class ApplyLinks(Processor):
                 interaction_key = tuple(new_interaction.atoms) +\
                                   tuple([new_interaction.meta.get("version",1)])
                 self.applied_links[inter_type][interaction_key] = new_interaction
-                # now we already add the edges of this link
-                # links can overwrite each other but the edges must be the same
-                atoms = tuple(interaction.atoms)
-                new_edges = [(link_to_mol[at1], link_to_mol[at2])
-                             for at1, at2 in zip(atoms[:-1], atoms[1:])]
-                molecule.add_edges_from(new_edges)
+        # now we already add the edges of this link
+        # links can overwrite each other but the edges must be the same
+        # this is safer than using the make_edge method because it accounts
+        # for edges written in the edges directive
+        for edge in link.edges:
+            molecule.add_edge(link_to_mol[edge[0]], link_to_mol[edge[1]])
 
     def run_molecule(self, meta_molecule):
         """
