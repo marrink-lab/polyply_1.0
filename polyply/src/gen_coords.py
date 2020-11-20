@@ -34,11 +34,29 @@ from .build_file_parser import read_build_file
 def split_residues(molecule, split):
     max_resid = len(molecule.nodes)
     for split_string in split:
+        print("go here")
         max_resid = molecule.split_residue(split_string, max_resid)
+
+def find_starting_node_from_spec(topology, start_nodes):
+    start_dict = {mol_idx:None for mol_idx, _ in enumerate(topology.molecules)}
+    for start in start_nodes:
+        res_spec = parse_residue_spec(start)
+        if 'mol_idx' in res_spec:
+            mol_idx = res_spec['mol_idx']
+            node = list(_find_nodes(topology.molecules[mol_idx], res_spec))[0]
+            start_dict[mol_idx] = node
+        else:
+            for idx, molecule in enumerate(topology.molecules):
+                if molecule.mol_name == res_spec['molname']:
+                    node = list(_find_nodes(molecule, res_spec))[0]
+                    start_dict[idx] = node
+    return start_dict
 
 def gen_coords(args):
     # Read in the topology
+    print("reading topology")
     topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
+    print("processing it")
     topology.preprocess()
 
     # check if molecules are all connected
@@ -50,9 +68,12 @@ def gen_coords(args):
             raise IOError(msg.format(molecule.name))
 
     if args.split:
-       wrapper = partial(split_residues, split=args.split)
-       pool = multiprocessing.Pool(args.nproc)
-       pool.map(wrapper, tqdm(topology.molecules))
+       print("splitting residues")
+       #wrapper = partial(split_residues, split=args.split)
+       #pool = multiprocessing.Pool(args.nproc)
+       #pool.map(wrapper, tqdm(topology.molecules))
+       for molecule in topology.molecules:
+           split_residues(molecule, args.split)
 
     # read in coordinates if there are any
     if args.coordpath:
@@ -79,29 +100,20 @@ def gen_coords(args):
     else:
         box = []
 
+    # collect all starting points for the molecules
+    start_dict = find_starting_node_from_spec(topology, args.start)
+
     # handle grid input
     if args.grid:
         grid = np.loadtxt(args.grid)
     else:
         grid = None
 
-    # handle starting point input
-    start_dict = {mol_idx:None for mol_idx, _ in enumerate(topology.molecules)}
-    for start in args.start:
-        res_spec = parse_residue_spec(start)
-        if 'mol_idx' in res_spec:
-            mol_idx = res_spec['mol_idx']
-            node = _find_nodes(topology.molecules[mol_idx], res_spec)[0]
-            start_dict[mol_idx] = node
-        else:
-            for idx, molecule in enumerate(topology.molecules):
-                if molecule.mol_name == res_spec['molname']:
-                    node = _find_nodes(molecule, res_spec)[0]
-                    start_dict[idx] = node
 
     # Build polymer structure
+    print(topology.molecules[0].nodes(data=True))
     GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
-
+    print(topology.volumes)
     AnnotateLigands(topology, args.ligands).run_system(topology)
 
     BuildSystem(topology,

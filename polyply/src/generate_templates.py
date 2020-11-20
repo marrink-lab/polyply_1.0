@@ -300,8 +300,8 @@ class GenerateTemplates(Processor):
                 while True:
                     coords = _expand_inital_coords(block)
                     success, coords = optimize_geometry(block, coords, ["bonds", "constraints"])
-                    success, coords = optimize_geometry(block, coords, ["angles", "bonds", "constraints"])
-                    success, coords = optimize_geometry(block, coords, ["bonds", "angles", "dihedrals", "constraints"])
+                    success, coords = optimize_geometry(block, coords, ["bonds", "constraints", "angles"])
+                    success, coords = optimize_geometry(block, coords, ["bonds", "constraints", "angles", "dihedrals"])
 
                     if success:
                         break
@@ -313,6 +313,7 @@ class GenerateTemplates(Processor):
                         opt_counter += 1
 
                 self.volumes[resname] = compute_volume(meta_molecule, block, coords)
+                print(self.volumes[resname])
                 coords = map_from_CoG(coords)
                 self.templates[resname] = coords
 

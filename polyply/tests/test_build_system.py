@@ -28,43 +28,54 @@ from polyply.src.build_system import (_compute_box_size,
                                       _filter_by_molname
                                      )
 
+
 @pytest.fixture
-def nonbond_matrix():
-    toppath = TEST_DATA + "/struc_build/system.top"
-    topology = Topology.from_gmx_topfile(name="test", path=toppath)
+def topology():
+    top_lines ="""
+    [ defaults ]
+    1   1   no   1.0     1.0
+    [ atomtypes ]
+    N0 72.0 0.000 A 0.0 0.0
+    [ nonbond_params ]
+    N0   N0   1 4.700000e-01    3.700000e+00
+    [ moleculetype ]
+    testA 1
+    [ atoms ]
+    1    N0  1   GLY    BB   1 0.00     45
+    2    N0  1   GLY    SC1  1 0.00     45
+    3    N0  1   GLY    SC2  1 0.00     45
+    4    N0  2   GLU    BB   2 0.00     45
+    5    N0  2   GLU    SC1  2 0.00     45
+    6    N0  2   GLU    SC2  2 0.00     45
+    [ bonds ]
+    1    2    1  0.47 2000
+    2    3    1  0.47 2000
+    1    4    1  0.47 2000
+    4    5    1  0.47 2000
+    4    6    1  0.47 2000
+    [ moleculetype ]
+    testB 1
+    [ atoms ]
+    1    N0  1   ASP    BB   1 0.00     45
+    2    N0  1   ASP    SC1  1 0.00     45
+    3    N0  1   ASP    SC2  1 0.00     45
+    [ bonds ]
+    1    2    1  0.47 2000
+    2    3    1  0.47 2000
+    [ system ]
+    test system
+    [ molecules ]
+    testA 2
+    testB 1
+    """
+    lines = textwrap.dedent(top_lines)
+    lines = lines.splitlines()
+    force_field = ForceField("test")
+    topology = Topology(force_field)
+    read_topology(lines=lines, topology=topology, cwdir="./")
     topology.preprocess()
-    setattr(topology, "volumes", {"PEO":0.43})
-    return NonBondMatrix.from_topology(topology.molecules,
-                                       topology,
-                                       box=np.array([10., 10., 10.]))
-
-def create_topology(n_molecules):
-    toppath = TEST_DATA + "/struc_build/system.top"
-    topology = Topology.from_gmx_topfile(name="test", path=toppath)
-    molecule = topology.molecules[0]
-    print(molecule)
-    for n in range(1, n_molecules):
-        topology.molecules.append(molecule)
+    topology.volumes = {"GLY": 0.53, "GLU": 0.67, "ASP": 0.43}
     return topology
-
-
-def add_positions(nb_matrix, ncoords):
-    pos = np.array([[1.0, 1.0, 0.37],
-                    [1.0, 1.0, 0.74],
-                    [1.0, 1.0, 1.11],
-                    [1.0, 1.0, 1.48],
-                    [1.0, 1.0, 1.85],
-                    [1.0, 1.0, 2.22],
-                    [1.0, 1.0, 2.59],
-                    [1.0, 1.0, 2.96],
-                    [1.0, 1.0, 3.33],
-                    [1.0, 1.0, 3.70],
-                    [1.0, 1.0, 4.07]])
-
-    nb_matrix.add_positions(pos[0], mol_idx=0, node_key=0, start=True)
-    for idx, point in enumerate(pos[1:ncoords]):
-        nb_matrix.add_positions(point, mol_idx=0, node_key=idx+1, start=False)
-    return nb_matrix
 
 @pytest.mark.parametrize('density, result', (
     (1000.0,
@@ -78,43 +89,6 @@ def test_compute_box_size(density, result):
     assert np.isclose(_compute_box_size(top, density), result)
 
 
-@pytest.fixture()
-def test_system():
-    """
-    Create a dummy test system with three types of molecules AA, BB and
-    NA. NA is the molecule to be used a ligand. AA and BB are composed
-    of different residues.
-    """
-    # dummy vermouth force-field
-    force_field = vermouth.forcefield.ForceField(name='test_ff')
-    # monomers used in the meta-molecule
-    ALA = Monomer(resname="ALA", n_blocks=2)
-    GLU = Monomer(resname="GLU", n_blocks=1)
-    THR = Monomer(resname="THR", n_blocks=1)
-    # two meta-molecules
-    meta_mol_A = MetaMolecule.from_monomer_seq_linear(force_field,
-                                                      [ALA, GLU, THR],
-                                                      "AA")
-    meta_mol_B = MetaMolecule.from_monomer_seq_linear(force_field,
-                                                      [GLU, ALA, THR],
-                                                      "BB")
-    NA = MetaMolecule()
-    NA.add_monomer(current=0, resname="NA", connections=[])
-    # molecules for the system
-    molecules = [meta_mol_A, meta_mol_A.copy(),
-                 meta_mol_B.copy(), NA, NA.copy(),
-                 NA.copy(), NA.copy()]
-    # create the topology
-    top = Topology(force_field=force_field)
-    # set topology attributes
-    top.molecules = molecules
-    top.name = "test"
-    #top.atom_types = {}
-    #top.types = defaultdict(dict)
-    #top.nonbond_params = {}
-    setattr(top, "volumes", {"ALA": 0.5, "GLU": 0.8, "THR": 1.2})
-    top.mol_idx_by_name = {"AA":[0, 1], "BB": [2], "NA":[3, 4, 5, 6]}
-    return top
 
 @pytest.mark.parametrize('ignore', (
     ["NA"],
@@ -126,33 +100,33 @@ def test_filer_by_molname(test_system, ignore):
         assert molecule.mol_name not in ignore
 
 
-#@pytest.mark.parametrize('ignore', (
-#      density,
-#      start_dict,
-#      max_force=10**3,
-#      grid_spacing=0.2,
-#      maxiter=800,
-#      maxiter_random=50,
-#      box=[],
-#      step_fudge=1,
-#      push=[],
-#      ignore=[],
-#      grid=None):
+@pytest.mark.parametrize('ignore', (
+      density,
+      start_dict,
+      max_force=10**3,
+      grid_spacing=0.2,
+      maxiter=800,
+      maxiter_random=50,
+      box=[],
+      step_fudge=1,
+      push=[],
+      ignore=[],
+      grid=None):
 
-#def test_run_molecule(test_system, defaults):
-#   # iterate over
-#   # density vs box
-#   # grid_spacind vs grid
-#   # start and ignore
-#   BuildSystem(test_system,
-#               start_dict=start_dict,
-#               density=args.density,
-#               max_force=args.max_force,
-#               grid_spacing=args.grid_spacing,
-#               maxiter=args.maxiter,
-#               maxiter_random=args.maxiter_random,
-#               box=box,
-#               step_fudge=args.step_fudge,
-#               push=args.push,
-#               ignore=args.ignore,
-#               grid=grid).run_system(topology.molecules)
+def test_run_molecule(test_system, defaults):
+   # iterate over
+   # density vs box
+   # grid_spacind vs grid
+   # start and ignore
+   BuildSystem(test_system,
+               start_dict=start_dict,
+               density=args.density,
+               max_force=args.max_force,
+               grid_spacing=args.grid_spacing,
+               maxiter=args.maxiter,
+               maxiter_random=args.maxiter_random,
+               box=box,
+               step_fudge=args.step_fudge,
+               push=args.push,
+               ignore=args.ignore,
+               grid=grid).run_system(topology.molecules)
