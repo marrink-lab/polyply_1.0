@@ -44,7 +44,12 @@ class TestGenItp():
          "-seqf", TEST_DATA + "/gen_itp/input/PPI.json",
          "-name", "PPI",
          "-o", TEST_DATA + "/gen_itp/output/PPI_out.itp"],
-         TEST_DATA + "/gen_itp/ref/G3.itp")
+         TEST_DATA + "/gen_itp/ref/G3.itp"),
+        (["-f", TEST_DATA + "/gen_itp/input/test.ff",
+         "-seq", "N1:1", "N2:1", "N1:1", "N2:1", "N3:1",
+         "-name", "test",
+         "-o", TEST_DATA + "/gen_itp/output/test_out.itp"],
+         TEST_DATA + "/gen_itp/ref/test_rev.itp")
         ))
     def test_gen_itp(args_in, ref_file):
         parser = argparse.ArgumentParser(

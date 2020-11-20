@@ -3,3 +3,4 @@ coverage
 pytest-cov
 pylint
 codecov
+tqdm
