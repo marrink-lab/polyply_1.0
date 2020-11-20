@@ -194,6 +194,17 @@ def test_match_link_and_residue_atoms_fail(example_meta_molecule,
                          [(1, 4, 1)],
                          [(0, 0)]
                         ),
+                        # simple check single residue reverse
+                        ([[(0, {'name': 'BB'}),
+                          (1, {'name': 'BB1'})]],
+                         [{0: 1, 1: 0}],
+                         'bonds',
+                         [[vermouth.molecule.Interaction(atoms=(0, 1),
+                                                        parameters=['1', '0.33', '500'],
+                                                        meta={})]],
+                         [(4, 1, 1)],
+                         [(0, 0)]
+                        ),
                         # add replace with node
                         ([[(0, {'name': 'BB1', 'replace': {'charge': 1.0}}),
                           (1, {'name': 'BB'})]],
