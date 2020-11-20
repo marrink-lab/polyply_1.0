@@ -170,7 +170,7 @@ def _assign_link_resids(res_link, match):
     dict that maps the higher resolution nodes to
     the resids specified in` match`. Each `res_link`
     node by definition can only map to one resid provided
-    in `match`. The lower resolution nodes assosicated
+    in `match`. The lower resolution nodes associated
     to a particular res_link node are stored in the 'graph'
     attribute of res_link.
     Note that the nodes in that graph are consecutive

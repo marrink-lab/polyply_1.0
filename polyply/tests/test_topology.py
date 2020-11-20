@@ -539,8 +539,8 @@ class TestTopology:
         2  9  1
         8  9  1
         ; currently not parsed accurately due to vermouth bug
-        ;[ virtual_sites2 ]
-        ;4   1  9  1  0.5000
+        [ virtual_sites2 ]
+        4   1  9  1  0.5000
         [ virtual_sites3 ]
         5   4  8  1  1  0.200  0.200
         6   4  9  2  1  0.200  0.200
@@ -562,6 +562,7 @@ class TestTopology:
          "virtual_sitesn": [Interaction(atoms=(2, 3, 3, 0, 1), parameters=["1"], meta={}),
                             Interaction(atoms=(6, 3, 3, 7, 8), parameters=["1"], meta={})],
          "virtual_sites4": [Interaction(atoms=(9, 3, 7, 0, 6), parameters=["1", "0.200", "0.200", "0.300"], meta={})],
+         "virtual_sites2": [Interaction(atoms=(3, 0, 8), parameters=["1", "0.5000"], meta={})],
          "virtual_sites3": [Interaction(atoms=(4, 3, 7, 0), parameters=["1", "0.200", "0.200"], meta={}),
                             Interaction(atoms=(5, 3, 8, 1), parameters=["1", "0.200", "0.200"], meta={})]}
         )
