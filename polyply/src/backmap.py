@@ -204,7 +204,7 @@ class Backmap():
                 for atom_low  in low_res_atoms:
                     atomname = meta_molecule.molecule.nodes[atom_low]["atomname"]
                     vector = template[atomname]
-                    new_coords = cg_coord + vector * 0.3
+                    new_coords = cg_coord + vector * 0.45 #3
                     meta_molecule.molecule.nodes[atom_low]["position"] = new_coords
                 built_nodes.append(resid)
 

@@ -101,11 +101,11 @@ def test_geometric_restrictions(restraint_dict, point, result):
      ),
     (np.array([5., 5., 10.]),
      np.array([5., 6., 0.5]),
-     np.array([5., 1.0, 0.5])
+     np.array([0., 1.0, 0.5])
     ),
     (np.array([5., 5., 10.]),
      np.array([5., -3., 0.5]),
-     np.array([5., 2.0, 0.5])
+     np.array([0., 2.0, 0.5])
      )))
 def test_pbc_complete(box_vect, point, result):
     assert all(pbc_complete(point, box_vect) == result)

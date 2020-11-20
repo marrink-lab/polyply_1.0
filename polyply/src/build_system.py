@@ -94,18 +94,11 @@ class BuildSystem():
         # this should be done elsewhere
         topology.box = (self.box[0], self.box[1], self.box[2])
 
-        # filter all molecules that should be ignored during the building process
-        molecules = _filter_by_molname(self.topology.molecules, self.ignore)
-
-        # generate the nonbonded matrix wrapping all information about molecular
-        # interactions
-        self.nonbond_matrix = NonBondMatrix.from_topology(molecules, topology, self.box)
-
     def _handle_random_walk(self, molecule, mol_idx, vector_sphere):
         step_count = 0
         while True:
-            _int = np.random.randint(len(self.box_grid))
-            start = self.box_grid[_int]
+            start_idx = np.random.randint(len(self.box_grid))
+            start = self.box_grid[start_idx]
 
             processor = RandomWalk(mol_idx,
                                    self.nonbond_matrix.copy(),
@@ -171,6 +164,11 @@ class BuildSystem():
         Compose a system according to a the system
         specifications and a density value.
         """
-        molecules = _filter_by_molname(self.topology.molecules, self.ignore)
-        self._compose_system(molecules)
+        # filter all molecules that should be ignored during the building process
+        self.molecules = _filter_by_molname(self.topology.molecules, self.ignore)
+
+        # generate the nonbonded matrix wrapping all information about molecular
+        # interactions
+        self.nonbond_matrix = NonBondMatrix.from_topology(self.molecules, self.topology, self.box)
+        self._compose_system(self.molecules)
         return molecules

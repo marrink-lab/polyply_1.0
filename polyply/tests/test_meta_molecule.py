@@ -135,3 +135,22 @@ class TestPolyply:
 
        assert set(meta_mol.nodes) == set(nodes)
        assert set(meta_mol.edges) == set(edges)
+
+
+@pytest.fixture
+def example_molecule():
+    mol = nx.Graph()
+    nodes = [
+        {'resname': 'ALA', 'resid': 1, 'atomname':'BB'},
+        {'resname': 'ALA', 'resid': 1, 'atomname':'SC1'},
+        {'resname': 'ALA', 'resid': 2, 'atomname':'BB'},
+        {'resname': 'ALA', 'resid': 2, 'atomname':'SC1'},
+        {'resname': 'GLY', 'resid': 3, 'atomname':'BB'},
+        {'resname': 'GLY', 'resid': 3, 'atomname':'SC1'},
+    ]
+    mol.add_nodes_from(enumerate(nodes))
+    mol.add_edges_from([(0, 1), (0, 2), (2, 3), (2, 4), (4, 5)])
+    return mol
+
+def split_residue(example_molecule):
+    MetaMolecule(example_molecule)
