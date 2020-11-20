@@ -242,7 +242,8 @@ class Topology(System):
         """
         for block in self.force_field.blocks.values():
             for inter_type, interactions in block.interactions.items():
-                if inter_type in ["pairs", "exclusions", "virtual_sitesn"]:
+                if inter_type in ["pairs", "exclusions", "virtual_sitesn",
+                                  "virtual_sites2", "virtual_sites3", "virtual_sites4"]:
                     continue
                 for interaction in interactions:
                     if len(interaction.parameters) == 1:
