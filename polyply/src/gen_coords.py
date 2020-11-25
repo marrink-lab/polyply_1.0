@@ -111,9 +111,7 @@ def gen_coords(args):
 
 
     # Build polymer structure
-    print(topology.molecules[0].nodes(data=True))
     GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
-    print(topology.volumes)
     AnnotateLigands(topology, args.ligands).run_system(topology)
 
     BuildSystem(topology,
@@ -127,7 +125,8 @@ def gen_coords(args):
                 step_fudge=args.step_fudge,
                 push=args.push,
                 ignore=args.ignore,
-                grid=grid).run_system(topology.molecules)
+                grid=grid,
+                nrewind=args.nrewind).run_system(topology.molecules)
 
     AnnotateLigands(topology, args.ligands).split_ligands()
 

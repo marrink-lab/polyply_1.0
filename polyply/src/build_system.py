@@ -63,7 +63,8 @@ class BuildSystem():
                  step_fudge=1,
                  push=[],
                  ignore=[],
-                 grid=None):
+                 grid=None,
+                 nrewind=5):
 
         self.topology = topology
         self.density = density
@@ -76,6 +77,7 @@ class BuildSystem():
         self.ignore = ignore
         self.box_grid = grid
         self.start_dict = start_dict
+        self.nrewind = nrewind
 
         # set the box if a box is given
         if len(box) != 0:
@@ -109,6 +111,7 @@ class BuildSystem():
                                    max_force=self.max_force,
                                    vector_sphere=vector_sphere,
                                    push=self.push,
+                                   nrewind=self.nrewind,
                                    start_node=self.start_dict[mol_idx])
 
             processor.run_molecule(molecule)

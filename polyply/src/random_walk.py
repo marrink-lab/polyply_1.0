@@ -245,7 +245,8 @@ class RandomWalk(Processor):
                  max_force=10**3.0,
                  vector_sphere=norm_sphere(5000),
                  push=[],
-                 start_node=None):
+                 start_node=None,
+                 nrewind=5):
 
         self.mol_idx = mol_idx
         self.nonbond_matrix = nonbond_matrix
@@ -258,6 +259,7 @@ class RandomWalk(Processor):
         self.push = push
         self.step_fudge = step_fudge
         self.start_node = start_node
+        self.nrewind = nrewind
 
     def _rewind(self, current_step, placed_nodes, nsteps):
         for _, node in placed_nodes[-nsteps:-1]:
@@ -358,11 +360,10 @@ class RandomWalk(Processor):
             # we need to check the performance in terms of strucutre
             # generation before doing any adjustments here
             if not self.success and count < self.maxiter:
-                nrewind = 10 #5
-                if len(placed_nodes) < nrewind+1:
+                if len(placed_nodes) < self.nrewind+1:
                    return
-                step_count = self._rewind(step_count, placed_nodes, nrewind)
-                placed_nodes = placed_nodes[:-nrewind]
+                step_count = self._rewind(step_count, placed_nodes, self.nrewind)
+                placed_nodes = placed_nodes[:-self.nrewind]
             elif not self.success:
                 return
             else:
