@@ -131,7 +131,7 @@ class PolyplyParser(ITPDirector):
        for link in self.force_field.links:
            inter_types = list(link.interactions.keys())
            for inter_type in inter_types:
-               block.make_edges_from_interaction_type(type_=inter_type)
+               link.make_edges_from_interaction_type(type_=inter_type)
 
     # overwrites the finalize method to deal with dangling bonds
     # and to deal with multiple interactions in the way needed
