@@ -21,7 +21,7 @@ from vermouth.forcefield import ForceField
 import polyply
 from polyply.src.topology import Topology
 from polyply.src.top_parser import read_topology
-from polyply.src.nonbond_matrix import NonBondMatrix
+from polyply.src.nonbond_engine import NonBondEngine
 
 @pytest.fixture
 def topology():
@@ -88,7 +88,7 @@ def  test_nb_engine_from_top_file(topology, n_pos):
                 continue
 
      # initiate the nb_engine
-     nb_engine =  NonBondMatrix.from_topology(topology.molecules,
+     nb_engine =  NonBondEngine.from_topology(topology.molecules,
                                               topology,
                                               box=np.array([10., 10., 10.]))
 
@@ -125,7 +125,7 @@ def test_add_positions(topology):
              except IndexError:
                 continue
 
-     nb_engine =  NonBondMatrix.from_topology(topology.molecules,
+     nb_engine =  NonBondEngine.from_topology(topology.molecules,
                                               topology,
                                               box=np.array([10., 10., 10.]))
 
@@ -143,7 +143,7 @@ def test_remove_positions(topology):
              except IndexError:
                 continue
 
-     nb_engine =  NonBondMatrix.from_topology(topology.molecules,
+     nb_engine =  NonBondEngine.from_topology(topology.molecules,
                                               topology,
                                               box=np.array([10., 10., 10.]))
 
@@ -159,7 +159,7 @@ def test_update_positions_in_molecules(topology):
              print(mol_idx, node)
              mol.nodes[node]["position"] = positions[mol_idx + node]
 
-     nb_engine =  NonBondMatrix.from_topology(topology.molecules,
+     nb_engine =  NonBondEngine.from_topology(topology.molecules,
                                               topology,
                                               box=np.array([10., 10., 10.]))
      # now we overwrite those positoins one
@@ -176,7 +176,7 @@ def test_update_positions_in_molecules(topology):
                          (0, 2, 1, 0, (0.43+0.67)/2.0)))
 def test_get_interaction(topology, mol_idx_a, mol_idx_b, node_a, node_b, expected):
      # initiate the nb_engine
-     nb_engine =  NonBondMatrix.from_topology(topology.molecules,
+     nb_engine =  NonBondEngine.from_topology(topology.molecules,
                                               topology,
                                               box=np.array([10., 10., 10.]))
 
@@ -204,5 +204,5 @@ def test_get_interaction(topology, mol_idx_a, mol_idx_b, node_a, node_b, expecte
 def test_LJ_force(dist, ref, expected):
      point = np.array([0.0, 0.0, 0.0])
      params = (0.35, 2.1)
-     value = polyply.src.nonbond_matrix._lennard_jones_force(dist, point, ref, params)
+     value = polyply.src.nonbond_engine._lennard_jones_force(dist, point, ref, params)
      assert all(np.isclose(value, expected))

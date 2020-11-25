@@ -22,7 +22,7 @@ import numpy as np
 from tqdm import tqdm
 from .random_walk import RandomWalk
 from .linalg_functions import norm_sphere
-from .nonbond_matrix import NonBondMatrix
+from .nonbond_engine import NonBondEngine
 
 def _compute_box_size(topology, density):
     """
@@ -229,6 +229,6 @@ class BuildSystem():
 
         # generate the nonbonded matrix wrapping all information about molecular
         # interactions
-        self.nonbond_matrix = NonBondMatrix.from_topology(self.molecules, self.topology, self.box)
+        self.nonbond_matrix = NonBondEngine.from_topology(self.molecules, self.topology, self.box)
         self._compose_system(self.molecules)
         return molecules
