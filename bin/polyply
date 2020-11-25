@@ -132,6 +132,8 @@ def main():
                             help='max force to allow in residue placing', default=10**3.0)
     random_walk_group.add_argument('-push', dest='push', type=str,
                             help='one of x,y,z nx, ny, nz', default=[], nargs='+')
+    random_walk_group.add_argument('-nr', dest='nrewind', type=int,
+                            help='number of residues to trace back when RW fails in first attempt', default=5)
     parser_gen_coords.set_defaults(func=gen_coords)
 
     #============================================================================
