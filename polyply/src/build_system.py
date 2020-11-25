@@ -17,6 +17,7 @@
 """
 Processor for building systems with more than one molecule
 """
+import inspect
 import numpy as np
 from tqdm import tqdm
 from .random_walk import RandomWalk
@@ -24,6 +25,23 @@ from .linalg_functions import norm_sphere
 from .nonbond_matrix import NonBondMatrix
 
 def _compute_box_size(topology, density):
+    """
+    Lookup the masses in the `topology`
+    and compute a cubic box that matches
+    the `density` given the number of molecules
+    defined in the topology. Units are nm
+
+    Parameters:
+    -----------
+    topology: :class:`polyply.src.topology`
+    density: float
+       target density
+
+    Returns:
+    --------
+    float
+        the edge length of cubix box
+    """
     total_mass = 0
     for meta_molecule in topology.molecules:
         molecule = meta_molecule.molecule
@@ -31,56 +49,99 @@ def _compute_box_size(topology, density):
             if 'mass' in molecule.nodes[node]:
                 total_mass += molecule.nodes[node]['mass']
             else:
-                atype = molecule.nodes[node]["atype"]
-                total_mass += topology.atom_types[atype]['mass']
-    #print(total_mass)
+                try:
+                    atype = molecule.nodes[node]["atype"]
+                    total_mass += topology.atom_types[atype]['mass']
+                except KeyError:
+                    msg = ("Trying to compute system density, but cannot "
+                           "find mass of atom {} with type {} in topology.")
+                    atom = molecule.nodes[node]["atomname"]
+                    raise KeyError(msg.format(atom, atype))
+
     # amu -> kg and cm3 -> nm3
-    #conversion = 1.6605410*10**-27 * 10**27
+    # conversion = 1.6605410*10**-27 * 10**27
     box = (total_mass*1.6605410/density)**(1/3.)
     return box
 
 def _filter_by_molname(molecules, ignore):
-    ellegible_molecules = []
+    """
+    Selects all molecules from `molecules` which
+    do not have a name mentioned in `ignore`.
+    """
     for molecule in molecules:
         if molecule.mol_name not in ignore:
-            ellegible_molecules.append(molecule)
-    return ellegible_molecules
+            yield molecule
 
 class BuildSystem():
     """
     Compose a system of molecules according
     to the definitions in the topology file.
+
+    This class when run for a system or a molecule
+    calls the random-walk processor to generate the
+    coordinates for a single moleccule. In contrast
+    to the random-walk processor this class handles
+    all system related accouting matters such as
+    starting points, box-dimensions and existing
+    molecules and so forth.
+
+    Parameters:
+    -----------
+    topology: :class:`polyply.src.topology`
+    density: float
+        the system density
+    start_dict: dict
+        a dictionary associating ...
+    grid_spacing: flaot
+        the distance between grid points
+    grid: np.ndarray
+        a grid defining grid points this argument
+        overwrides generation of the grid using
+        the grid-spacing
+    maxiter: int
+        maximum number of tries to genrate a single
+        molecule
+    box: np.ndarray[3,1]
+        box size, this overwrites generation of the box
+        by the density argument
+    ignore: list[str]
+        list of molecule names to ignore when building
+    **kwargs:
+        all passed down to random-walk
     """
 
-    def __init__(self, topology,
+    def __init__(self,
+                 topology,
                  density,
                  start_dict,
-                 max_force=10**3,
                  grid_spacing=0.2,
                  maxiter=800,
-                 maxiter_random=50,
-                 box=[],
-                 step_fudge=1,
-                 push=[],
+                 box=None,
                  ignore=[],
                  grid=None,
-                 nrewind=5):
+                 **kwargs):
 
         self.topology = topology
         self.density = density
         self.grid_spacing = grid_spacing
         self.maxiter = maxiter
-        self.push = push
-        self.step_fudge = step_fudge
-        self.maxiter_random = maxiter_random
-        self.max_force = max_force
         self.ignore = ignore
         self.box_grid = grid
+        self.box = box
         self.start_dict = start_dict
-        self.nrewind = nrewind
+
+        # first we check if **kwargs are actually in random-walk
+        valid_kwargs = inspect.getfullargspec(RandomWalk).args
+        for kwarg in kwargs:
+            if kwarg not in valid_kwargs:
+               msg = ("Keyword argument {} is not valid for the "
+                      "RandomWalk processor class. ")
+               raise TypeError(msg.format(kwarg))
+        self.rwargs = kwargs
 
         # set the box if a box is given
-        if len(box) != 0:
+        # we use type comparison because box is an array
+        if not isinstance(self.box, type(None)):
             self.box = box
         # if box is not given but density compute it from density
         else:
@@ -104,15 +165,11 @@ class BuildSystem():
 
             processor = RandomWalk(mol_idx,
                                    self.nonbond_matrix.copy(),
-                                   step_fudge=self.step_fudge,
                                    start=start,
-                                   maxiter=50,
                                    maxdim=self.box,
-                                   max_force=self.max_force,
                                    vector_sphere=vector_sphere,
-                                   push=self.push,
-                                   nrewind=self.nrewind,
-                                   start_node=self.start_dict[mol_idx])
+                                   start_node=self.start_dict[mol_idx],
+                                   **self.rwargs)
 
             processor.run_molecule(molecule)
 
@@ -168,7 +225,7 @@ class BuildSystem():
         specifications and a density value.
         """
         # filter all molecules that should be ignored during the building process
-        self.molecules = _filter_by_molname(self.topology.molecules, self.ignore)
+        self.molecules = list(_filter_by_molname(self.topology.molecules, self.ignore))
 
         # generate the nonbonded matrix wrapping all information about molecular
         # interactions
