@@ -130,7 +130,7 @@ def gen_coords(args):
 
     AnnotateLigands(topology, args.ligands).split_ligands()
 
-    Backmap(args.nproc).run_system(topology)
+    Backmap(args.nproc, fudge_coords=args.bfudge).run_system(topology)
 
     # Write output
     command = ' '.join(sys.argv)

@@ -173,12 +173,12 @@ class Backmap():
     for the lower resolution molecule associated with the MetaMolecule.
     """
 
-    def __init__(self, nproc, *args, **kwargs):
+    def __init__(self, nproc, fudge_coords=0.4, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.nproc = nproc
+        self.fudge_coords = fudge_coords
 
-    @staticmethod
-    def _place_init_coords(meta_molecule):
+    def _place_init_coords(self, meta_molecule):
         """
         For each residue in a class:`polyply.src.MetaMolecule` the
         positions of the atoms associated with that residue stored in
@@ -204,7 +204,7 @@ class Backmap():
                 for atom_low  in low_res_atoms:
                     atomname = meta_molecule.molecule.nodes[atom_low]["atomname"]
                     vector = template[atomname]
-                    new_coords = cg_coord + vector * 0.45 #3
+                    new_coords = cg_coord + vector * self.fudge_coords
                     meta_molecule.molecule.nodes[atom_low]["position"] = new_coords
                 built_nodes.append(resid)
 
