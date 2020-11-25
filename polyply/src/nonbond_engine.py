@@ -15,7 +15,6 @@ import itertools
 import multiprocessing
 import numpy as np
 import scipy.spatial
-from numba import jit
 from .topology import lorentz_berthelot_rule
 
 
@@ -44,8 +43,14 @@ def _lennard_jones_force(dist, point, ref, params):
     vect = point - ref
     force = 24 * eps / dist * ((2 * (sig/dist)**12.0) - (sig/dist)**6) * vect/dist
     return force
-lennard_jones_force = jit(_lennard_jones_force, nopython=True, cache=True, fastmath=True)
 
+# if numba is installed use the installation
+# if not just use straight computation
+try:
+    from numba import jit
+    lennard_jones_force = jit(_lennard_jones_force, nopython=True, cache=True, fastmath=True)
+except ImportError:
+    lennard_jones_force = _lennard_jones_force
 
 POTENTIAL_FUNC = {"LJ": lennard_jones_force}
 
@@ -60,18 +65,14 @@ def _n_particles(molecules):
         n_atoms += len(molecule.nodes)
     return n_atoms
 
-class NonBondMatrix():
+class NonBondEngine():
     """
-    Object for handeling nonbonded interactions
-    of the topology. It stores the positions using
-    infinity for undefined positions. It also creats
-    a mapping of node and molecule index to the global
-    index in the position matrix as well as a cdk tree
-    of defined positions and a mapping between global
-    indices and defined positions. Furthermore, it stores
-    the interaction matrix between atomtypes and the atom
-    types, where each atomtype corresponds to one of the
-    global indices.
+    Stores interactions, positions, and pbc
+    conditions in an efficent manner such
+    that they can be queried, modified and used to
+    compute non-bonded forces in a fast manner.
+    The class can be created from the `polyply.src.topology`
+    class using the class creation method from_topology.
     """
 
     def __init__(self,
@@ -81,6 +82,22 @@ class NonBondMatrix():
                  interaction_matrix,
                  cut_off,
                  boxsize):
+        """
+        Parameters:
+        -----------
+        positions: np.ndarray
+        nodes_to_idx: dict[(mol_idx, node_key)]
+             correspondance dict between indices in position array
+             and a unique node in the system identified by molecule
+             index and node_key
+        atomtypes:  np.ndarray
+             array of atom_types corresponding to the atoms in positions
+        interaction_matrix: dict[forzenset(atom_type, atom_type)]
+        cut_off: float
+             cut-off for which to compute the interaction
+        boxsize: np.ndarray
+             box dimensions
+        """
 
         self.positions = positions
         self.nodes_to_gndx = nodes_to_idx
@@ -97,17 +114,18 @@ class NonBondMatrix():
         """
         Return new instance and deep copy of the objects position attribute.
         """
-        new_obj = NonBondMatrix(self.positions.copy(),
-                                self.nodes_to_gndx,
-                                self.atypes,
-                                self.interaction_matrix,
-                                cut_off=self.cut_off,
-                                boxsize=self.boxsize)
+        new_obj = self.__class__(self.positions.copy(),
+                                 self.nodes_to_gndx,
+                                 self.atypes,
+                                 self.interaction_matrix,
+                                 cut_off=self.cut_off,
+                                 boxsize=self.boxsize)
         return new_obj
 
     def add_positions(self, point, mol_idx, node_key, start=True):
         """
-        Add `point` with global index `gndx` to the nonbonded definitions.
+        Add `point` with global index `gndx` to the position-matrix
+        and position tree.
         """
         gndx = self.nodes_to_gndx[(mol_idx, node_key)]
         self.positions[gndx] = point
@@ -128,7 +146,8 @@ class NonBondMatrix():
 
     def remove_positions(self, mol_idx, node_key):
         """
-        remove `point` with global index `gndx` to the nonbonded definitions.
+        Remove `point` with global index `gndx` from the positions
+        matrix and position-tree.
         """
         gndx = self.nodes_to_gndx[(mol_idx, node_key)]
         self.positions[gndx] = np.array([np.inf, np.inf, np.inf])
@@ -150,10 +169,18 @@ class NonBondMatrix():
                 molecule.nodes[node]["position"] = self.positions[gndx]
 
     def get_point(self, mol_idx, node):
+        """
+        Get the position of a point from the molecule index
+        and node_key.
+        """
         gndx = self.nodes_to_gndx[(mol_idx, node)]
         return self.positions[gndx]
 
     def get_interaction(self, mol_idx_a, mol_idx_b, node_a, node_b):
+        """
+        Get the interaction parameters between two nodes identified
+        by their molecule indices and node-keys.
+        """
         gndx_a = self.nodes_to_gndx[(mol_idx_a, node_a)]
         gndx_b = self.nodes_to_gndx[(mol_idx_b, node_b)]
         atype_a = self.atypes[gndx_a]
@@ -203,11 +230,20 @@ class NonBondMatrix():
                     other_atype = self.atypes[gndx_pair]
                     params = self.interaction_matrix[frozenset([current_atype, other_atype])]
                     force += POTENTIAL_FUNC[potential](dist, point, self.positions[gndx_pair], params)
-        #print(force)
         return force
 
     @classmethod
     def from_topology(cls, molecules, topology, box):
+        """
+        Create a class instance from a topology object
+        a list of molecules and a box.
+
+        Parameters:
+        -----------
+        molecules: list
+        topology: :class:`polyply.src.topology`
+        box: np.nadarray
+        """
 
         n_atoms = _n_particles(molecules)
 

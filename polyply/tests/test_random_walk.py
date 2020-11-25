@@ -22,17 +22,12 @@ import networkx as nx
 import polyply
 from polyply import TEST_DATA
 from polyply.src.topology import Topology
-from polyply.src.nonbond_matrix import NonBondMatrix
+from polyply.src.nonbond_engine import NonBondEngine
 from polyply.src.random_walk import (full_fill_geometrical_constraints,
                                      pbc_complete,
                                      not_exceeds_max_dimensions,
                                      _take_step,
                                      RandomWalk)
-# from ..src.random_walk import (
-#    RandomWalk, _take_step, _is_overlap, update_positions)
-
-# test the geometrical functions
-
 
 @pytest.mark.parametrize('restraint_dict, point, result', (
     # test single geometrical constraint
@@ -139,7 +134,7 @@ def nonbond_matrix():
     topology = Topology.from_gmx_topfile(name="test", path=toppath)
     topology.preprocess()
     setattr(topology, "volumes", {"PEO":0.43})
-    return NonBondMatrix.from_topology(topology.molecules,
+    return NonBondEngine.from_topology(topology.molecules,
                                        topology,
                                        box=np.array([10., 10., 10.]))
 @pytest.fixture
@@ -167,7 +162,6 @@ def add_positions(nb_matrix, ncoords, pos=None):
         if all(point != np.array([np.inf, np.inf, np.inf])):
            nb_matrix.add_positions(point, mol_idx=0, node_key=idx+1, start=False)
     return nb_matrix
-
 
 def test_rewind(nonbond_matrix):
     nb_matrix = add_positions(nonbond_matrix, 6)
