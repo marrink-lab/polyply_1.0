@@ -39,7 +39,9 @@ def _lennard_jones_force(dist, point, ref, params):
         the force vector
     """
     sig, eps = params
-    # doing this here with numba is faster than separate
+    # computing the vector here with numba is faster than separate
+    # the distance however again is faster computed with the cKDtree
+    # directly
     vect = point - ref
     force = 24 * eps / dist * ((2 * (sig/dist)**12.0) - (sig/dist)**6) * vect/dist
     return force
@@ -60,10 +62,7 @@ def _n_particles(molecules):
     Count the number of meta_molecule nodes
     in the topology.
     """
-    n_atoms = 0
-    for molecule in molecules:
-        n_atoms += len(molecule.nodes)
-    return n_atoms
+    return sum(map(len, molecules))
 
 class NonBondEngine():
     """
@@ -130,6 +129,9 @@ class NonBondEngine():
         gndx = self.nodes_to_gndx[(mol_idx, node_key)]
         self.positions[gndx] = point
 
+        # at around 5000 coordinates it is faster to make a new tree than to add the
+        # point to the old tree and profit from faster calculation of distances within
+        # a single tree
         if start and self.position_trees[-1].n > 5000:
            self.defined_idxs.append([gndx])
            self.position_trees.append(scipy.spatial.ckdtree.cKDTree(point.reshape(1,3),
@@ -270,12 +272,14 @@ class NonBondEngine():
 
         inter_matrix = {}
         for res_a, res_b in itertools.combinations(set(atom_types), r=2):
+            # as by model definition all epsilon values are set to 1
             params = lorentz_berthelot_rule(topology.volumes[res_a],
                                             topology.volumes[res_b], 1.0, 1.0)
             inter_matrix[frozenset([res_a, res_b])] = params
 
         for resname in set(atom_types):
             vdw_radius = topology.volumes[resname]
+            # as by model definition all epsilon values are set to 1
             inter_matrix[frozenset([resname, resname])] = (vdw_radius, 1.0)
 
         nonbond_matrix = cls(positions, nodes_to_gndx,
