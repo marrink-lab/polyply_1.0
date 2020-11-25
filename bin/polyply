@@ -134,7 +134,14 @@ def main():
                             help='one of x,y,z nx, ny, nz', default=[], nargs='+')
     random_walk_group.add_argument('-nr', dest='nrewind', type=int,
                             help='number of residues to trace back when RW fails in first attempt', default=5)
+
+    backmap_group = parser_gen_coords.add_argument_group('Variables for backmapping')
+    backmap_group.add_argument('-back_fudge', dest='bfudge', type=float,
+                            help='factor by which to scale the coordinates when backmapping.', default=0.4)
+
     parser_gen_coords.set_defaults(func=gen_coords)
+
+
 
     #============================================================================
     #           Input Arguments for the sequence generation tool
