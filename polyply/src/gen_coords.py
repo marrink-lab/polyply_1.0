@@ -94,21 +94,12 @@ def gen_coords(args):
             lines = build_file.readlines()
             read_build_file(lines, topology.molecules)
 
-    # deal with box-input
-    if len(args.box) != 0:
-        box = np.array(args.box)
-    else:
-        box = []
-
     # collect all starting points for the molecules
     start_dict = find_starting_node_from_spec(topology, args.start)
 
     # handle grid input
     if args.grid:
-        grid = np.loadtxt(args.grid)
-    else:
-        grid = None
-
+        args.grid = np.loadtxt(args.grid)
 
     # Build polymer structure
     GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
@@ -120,12 +111,11 @@ def gen_coords(args):
                 max_force=args.max_force,
                 grid_spacing=args.grid_spacing,
                 maxiter=args.maxiter,
-                maxiter_random=args.maxiter_random,
-                box=box,
+                box=args.box,
                 step_fudge=args.step_fudge,
                 push=args.push,
                 ignore=args.ignore,
-                grid=grid,
+                grid=args.grid,
                 nrewind=args.nrewind).run_system(topology.molecules)
 
     AnnotateLigands(topology, args.ligands).split_ligands()

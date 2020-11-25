@@ -21,6 +21,7 @@ different subcommands. This is the main executable.
 import os
 import argparse
 from pathlib import Path
+import numpy as np
 import polyply
 from polyply import (gen_itp, gen_coords, gen_seq, DATA_PATH)
 from polyply.src.load_library import load_library
@@ -110,12 +111,12 @@ def main():
     system_group = parser_gen_coords.add_argument_group('Variables for system generation')
     system_group.add_argument('-dens', dest='density', type=float,
                             help='density of system', default=None)
-    system_group.add_argument('-box', dest='box', type=float,
-                            help='rectangluar box x y z', default=[], nargs=3)
+    system_group.add_argument('-box', dest='box', type=lambda s: np.array(s),
+                            help='rectangluar box x y z', default=None, nargs=3)
     system_group.add_argument('-gs', dest='grid_spacing', type=int,
                             help='grid spacing in nm', default=0.2)
     system_group.add_argument('-grid', dest='grid', type=str,
-                            help='file with grid-points')
+                            help='file with grid-points', default=None)
     system_group.add_argument('-mi', dest='maxiter', type=int,
                             help='max number of trys to grow a molecule', default=800)
     system_group.add_argument('-start', dest='start', nargs='+', type=str,
