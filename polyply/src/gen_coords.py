@@ -46,20 +46,27 @@ def find_starting_node_from_spec(topology, start_nodes):
                     start_dict[idx] = node
     return start_dict
 
+def _check_molecules(molecules):
+    """
+    Helper method which raises an IOError
+    if any molecule in `molecules` is
+    disconnected.
+    """
+    # check if molecules are all connected
+    for molecule in molecules:
+        if not nx.is_connected(molecule):
+            msg = ('\n Molecule {} consistes of two disconnected parts. '
+                   'Make sure all atoms/particles in a molecule are '
+                   'connected by bonds, constraints or virual-sites')
+            raise IOError(msg.format(molecule.name))
+
 def gen_coords(args):
     # Read in the topology
     print("reading topology")
     topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
     print("processing it")
     topology.preprocess()
-
-    # check if molecules are all connected
-    for molecule in topology.molecules:
-        if not nx.is_connected(molecule):
-            msg = ('\n Molecule {} consistes of two disconnected parts. '
-                   'Make sure all atoms/particles in a molecule are '
-                   'connected by bonds, constraints or virual-sites')
-            raise IOError(msg.format(molecule.name))
+    _check_molecules(topology.molecules)
 
     if args.split:
        print("splitting residues")
@@ -69,15 +76,15 @@ def gen_coords(args):
     # read in coordinates if there are any
     if args.coordpath:
         topology.add_positions_from_file(args.coordpath, args.build_res)
-    else:
-        for molecule in topology.molecules:
-            for node in molecule.nodes:
-                molecule.nodes[node]["build"] = True
+  # else:
+  #     for molecule in topology.molecules:
+  #         for node in molecule.nodes:
+  #             molecule.nodes[node]["build"] = True
 
-    for molecule in topology.molecules:
-        for node in molecule.nodes:
-            if not molecule.nodes[node]["build"]:
-                molecule.nodes[node]["build"] = False
+  # for molecule in topology.molecules:
+  #     for node in molecule.nodes:
+  #         if not molecule.nodes[node]["build"]:
+  #             molecule.nodes[node]["build"] = False
 
     # load in built file
     if args.build:

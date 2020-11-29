@@ -84,6 +84,7 @@ class MetaMolecule(nx.Graph):
         self.mol_name = kwargs.pop('mol_name', None)
         super().__init__(*args, **kwargs)
         self.molecule = None
+        nx.set_node_attributes(self, True, "build")
 
     def add_monomer(self, current, resname, connections):
         """
@@ -99,7 +100,7 @@ class MetaMolecule(nx.Graph):
         else:
            resid = 1
 
-        self.add_node(current, resname=resname, resid=resid)
+        self.add_node(current, resname=resname, resid=resid, build=True)
         for edge in connections:
             if self.has_node(edge[0]) and self.has_node(edge[1]):
                 self.add_edge(edge[0], edge[1])
