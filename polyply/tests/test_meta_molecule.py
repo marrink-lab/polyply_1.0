@@ -24,6 +24,7 @@ import vermouth.molecule
 from polyply import TEST_DATA
 import polyply.src.meta_molecule
 from polyply.src.meta_molecule import (MetaMolecule, Monomer)
+from .example_fixtures import example_meta_molecule
 
 class TestPolyply:
     @staticmethod
@@ -36,6 +37,14 @@ class TestPolyply:
         assert nx.get_node_attributes(meta_mol, "resname") == {0: 'PEO', 1: 'PEO'}
         assert list(meta_mol.nodes) == [0, 1]
         assert list(meta_mol.edges) == [(0, 1)]
+
+    @staticmethod
+    def test_add_monomer_fail():
+        ff = vermouth.forcefield.ForceField(name='test_ff')
+        meta_mol = MetaMolecule(name="test", force_field=ff)
+        meta_mol.add_monomer(0,"PEO",[])
+        with pytest.raises(IOError):
+            meta_mol.add_monomer(1,"PEO",[(1, 8)])
 
     @staticmethod
     def test_get_edge_resname():
@@ -136,21 +145,42 @@ class TestPolyply:
        assert set(meta_mol.nodes) == set(nodes)
        assert set(meta_mol.edges) == set(edges)
 
+@pytest.mark.parametrize('split_pattern, expct_high_res, expct_low_res, edges', (
+    # split single residues of one type into two
+    (
+    ["B:B1-BB,BB1,BB2:B2-SC1,SC2"],
+    {0: "A", 1: "A", 2: "A", 3: "A", 4: "B1", 5: "B1", 6: "B1", 7: "B2", 8: "B2",
+     9: "A", 10: "A", 11: "A", 12: "A"},
+    {0: "A", 1: "B1", 2: "B2", 3: "A"},
+    [(0, 1), (1, 3), (1, 2)]
+    ),
+    # split two residues of one type into two
+    (
+    ["A:A1-BB,BB1:A2-SC1,SC2"],
+    {0: "A1", 1: "A1", 2: "A2", 3: "A2", 4: "B", 5: "B", 6: "B", 7: "B", 8: "B",
+     9: "A1", 10: "A1", 11: "A2", 12: "A2"},
+    {0: "A1", 1: "A2", 2: "B", 3: "A1", 4: "A2"},
+    [(0, 1), (0, 2), (2, 3), (3, 4)]
+    ),
+    # split all residues
+    (
+    ["A:A1-BB,BB1:A2-SC1,SC2", "B:B1-BB,BB1,BB2:B2-SC1,SC2"],
+    {0: "A1", 1: "A1", 2: "A2", 3: "A2", 4: "B1", 5: "B1", 6: "B1", 7: "B2", 8: "B2",
+     9: "A1", 10: "A1", 11: "A2", 12: "A2"},
+    {0: "A1", 1: "A2", 2: "B1", 3: "B2", 4: "A1", 5: "A2"},
+    [(0, 1), (0, 2), (2, 3), (2, 4), (4, 5)]
+    ),
+    ))
+def test_split_residue(example_meta_molecule, split_pattern, expct_high_res, expct_low_res, edges):
+    example_meta_molecule.split_residue(split_pattern)
+    new_resnames_high = nx.get_node_attributes(example_meta_molecule.molecule, "resname")
+    assert new_resnames_high == expct_high_res
+    new_resnames_low = nx.get_node_attributes(example_meta_molecule, "resname")
+    assert new_resnames_low == expct_low_res
+    for node_a, node_b in edges:
+        assert example_meta_molecule.has_edge(node_a, node_b)
 
-@pytest.fixture
-def example_molecule():
-    mol = nx.Graph()
-    nodes = [
-        {'resname': 'ALA', 'resid': 1, 'atomname':'BB'},
-        {'resname': 'ALA', 'resid': 1, 'atomname':'SC1'},
-        {'resname': 'ALA', 'resid': 2, 'atomname':'BB'},
-        {'resname': 'ALA', 'resid': 2, 'atomname':'SC1'},
-        {'resname': 'GLY', 'resid': 3, 'atomname':'BB'},
-        {'resname': 'GLY', 'resid': 3, 'atomname':'SC1'},
-    ]
-    mol.add_nodes_from(enumerate(nodes))
-    mol.add_edges_from([(0, 1), (0, 2), (2, 3), (2, 4), (4, 5)])
-    return mol
-
-def split_residue(example_molecule):
-    MetaMolecule(example_molecule)
+def test_split_residue_err(example_meta_molecule):
+    split_pattern = ["A:A1-BB,BB1:A2-BB1,SC1,SC2"]
+    with pytest.raises(IOError):
+         example_meta_molecule.split_residue(split_pattern)
