@@ -31,12 +31,6 @@ from .build_system import BuildSystem
 from .annotate_ligands import AnnotateLigands, parse_residue_spec, _find_nodes
 from .build_file_parser import read_build_file
 
-def split_residues(molecule, split):
-    max_resid = len(molecule.nodes)
-    for split_string in split:
-        print("go here")
-        max_resid = molecule.split_residue(split_string, max_resid)
-
 def find_starting_node_from_spec(topology, start_nodes):
     start_dict = {mol_idx:None for mol_idx, _ in enumerate(topology.molecules)}
     for start in start_nodes:
@@ -69,11 +63,8 @@ def gen_coords(args):
 
     if args.split:
        print("splitting residues")
-       #wrapper = partial(split_residues, split=args.split)
-       #pool = multiprocessing.Pool(args.nproc)
-       #pool.map(wrapper, tqdm(topology.molecules))
        for molecule in topology.molecules:
-           split_residues(molecule, args.split)
+           molecule.split_residue(args.split)
 
     # read in coordinates if there are any
     if args.coordpath:
