@@ -17,6 +17,7 @@ from vermouth.forcefield import ForceField
 import polyply
 from polyply.src.topology import Topology
 from polyply.src.top_parser import read_topology
+from .example_fixtures import example_meta_molecule
 
 @pytest.fixture
 def test_topology():
@@ -86,3 +87,11 @@ def test_find_starting_node_from_spec(test_topology, start_nodes, expected):
    result = polyply.src.gen_coords.find_starting_node_from_spec(test_topology,
                                                                 start_nodes)
    assert result == expected
+
+def test_check_molecule(example_meta_molecule):
+    # test if check passes for connected molecule
+    polyply.src.gen_coords._check_molecules([example_meta_molecule])
+    # check that if we delte an edge an error is raised
+    example_meta_molecule.remove_edge(0, 1)
+    with pytest.raises(IOError):
+        polyply.src.gen_coords._check_molecules([example_meta_molecule])
