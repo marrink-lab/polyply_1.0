@@ -40,3 +40,23 @@ def neighborhood(graph, source, max_length, min_length=1):
     paths = nx.single_source_shortest_path(G=graph, source=source, cutoff=max_length)
     neighbours = [ node for node, path in paths.items() if min_length <= len(path)]
     return neighbours
+
+def is_branched(graph):
+    """
+    Check if any node has a degree larger than 2
+
+    Parameters:
+    -----------
+    graph: :class:`networkx.Graph`
+        A networkx graph definintion
+
+    Returns:
+    --------
+    bool
+       is branched
+    """
+    degrees = nx.degree(graph, nbunch=(graph.nodes))
+    for node, deg in degrees:
+        if deg > 2:
+           return True
+    return False
