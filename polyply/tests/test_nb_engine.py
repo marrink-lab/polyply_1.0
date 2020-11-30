@@ -129,12 +129,12 @@ def test_add_positions(topology):
                                               topology,
                                               box=np.array([10., 10., 10.]))
 
-     # now we check if the 8th is added correctly
+     # now we check if the 3rd is added correctly
      nb_engine.add_positions(np.array([5.0, 5.0, 5.0]), mol_idx=2, node_key=0, start=False)
      assert all(nb_engine.get_point(2, 0) == np.array([5.0, 5.0, 5.0]))
 
 def test_remove_positions(topology):
-     # we add 7 positions to the nb_matrix
+     # we add 5 positions to the nb_matrix
      positions = np.random.random(5*3).reshape(-1, 3)
      for mol_idx, mol in enumerate(topology.molecules):
          for node in mol.nodes:
@@ -147,7 +147,7 @@ def test_remove_positions(topology):
                                               topology,
                                               box=np.array([10., 10., 10.]))
 
-     # now we check if the 8th is added correctly
+     # now we check if the 3rd is removed correctly
      nb_engine.remove_positions(mol_idx=2, node_key=0)
      assert all(nb_engine.get_point(2, 0) == np.array([np.inf, np.inf, np.inf]))
 
@@ -199,10 +199,19 @@ def test_get_interaction(topology, mol_idx_a, mol_idx_b, node_a, node_b, expecte
                         # pick one point inbetween
                          (0.42,
                           np.array([0.0, 0.0, 0.42]),
-                          np.array([0.0, 0.0, 13.27016]))
+                          np.array([0.0, 0.0, 13.27016])),
+                        # distance along different vector
+                         (0.42,
+                          np.array([0.0, 0.42, 0.0]),
+                          np.array([0.0, 13.27016, 0.0])),
+                        # truly 3d distance
+                         (0.42,
+                          np.array([0.2, 0.4, 0.2]),
+                          np.array([ 6.31912, 12.63825,  6.31912]))
                         ))
 def test_LJ_force(dist, ref, expected):
      point = np.array([0.0, 0.0, 0.0])
      params = (0.35, 2.1)
      value = polyply.src.nonbond_engine._lennard_jones_force(dist, point, ref, params)
-     assert all(np.isclose(value, expected))
+     print(value)
+     assert np.allclose(value, expected)

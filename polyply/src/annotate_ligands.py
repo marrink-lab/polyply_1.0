@@ -99,7 +99,7 @@ class AnnotateLigands(Processor):
 
     def __init__(self, topology, ligands):
         """
-        Initalize the processor with a `:class:topology`
+        Initalize the processor with a :class:`topology`
         and a list of `ligand definitions` which
         are used both in annotating and extracting
         the positions later. Format of ligand definitions
@@ -124,7 +124,7 @@ class AnnotateLigands(Processor):
                 if "molname" in mol_attr:
                     mol_name = mol_attr["molname"]
                     allowed_idxs = self.topology.mol_idx_by_name[mol_name]
-                    if any([idx not in allowed_idxs for idx in mol_idxs]):
+                    if any(idx not in allowed_idxs for idx in mol_idxs):
                        msg = ("Your molecule name {} does not"
                               " match your molecule index {}.")
                        raise IOError(msg.format(mol_name, mol_idxs))
@@ -133,7 +133,7 @@ class AnnotateLigands(Processor):
                 mol_name = mol_attr["molname"]
                 mol_idxs = self.topology.mol_idx_by_name[mol_name]
             # if neither molname nor index are provided all molecules
-            # are ellagible
+            # are eligible
             else:
                 mol_idxs = range(0, len(self.topology.molecules))
 

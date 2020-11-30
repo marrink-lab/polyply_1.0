@@ -38,7 +38,7 @@ def _interpret_residue_mapping(graph, resname, new_residues):
     Find all nodes corresponding to resname in graph
     and generate a corrspondance dict of these nodes
     to new resnames as defined by new_residues string
-    which has the format <resname:atom1,atom2 ...>.
+    which has the format <resname-atom1,atom2 ...>.
 
     Parameters:
     -----------
@@ -61,7 +61,7 @@ def _interpret_residue_mapping(graph, resname, new_residues):
         for name in names:
             if name in had_atoms:
                 msg = ("You are trying to split residue {} into {} residues. "
-                       "However, atom {} is mentioned more than one. This is not "
+                       "However, atom {} is mentioned more than once. This is not "
                        "allowed. ")
                 raise IOError(msg.format(resname, len(new_residues), name))
             nodes = find_nodes_with_attributes(graph, resname=resname, atomname=name)
@@ -112,7 +112,7 @@ class MetaMolecule(nx.Graph):
     def get_edge_resname(self, edge):
         return [self.nodes[edge[0]]["resname"], self.nodes[edge[1]]["resname"]]
 
-    def relable_and_redo_res_graph(self, mapping):
+    def relabel_and_redo_res_graph(self, mapping):
         """
         Relable the nodes of `self.molecule` using `mapping`
         and regenerate the meta_molecule (i.e. residue graph).
@@ -122,7 +122,7 @@ class MetaMolecule(nx.Graph):
         mapping: dict
             mapping of node-key to new residue name
         """
-        # find the maxium resiude id
+        # find the maximum resiude id
         max_resid = max(nx.get_node_attributes(self.molecule, "resid").values())
         # resname the residues and increase with pseudo-resid
         for node, resname in mapping.items():
@@ -155,12 +155,11 @@ class MetaMolecule(nx.Graph):
         mapping = {}
         for split_string in split_strings:
             # split resname and new resiude definitions
-            resname = split_string.split(":")[0]
-            new_residues = split_string.split(":")[1:]
+            resname, *new_residues = split_string.split(":")
             # find out which atoms map to which new residues
             mapping.update(_interpret_residue_mapping(self.molecule, resname, new_residues))
-        # relable graph and redo residue graph
-        self.relable_and_redo_res_graph(mapping)
+        # relabel graph and redo residue graph
+        self.relabel_and_redo_res_graph(mapping)
         return mapping
 
     @staticmethod

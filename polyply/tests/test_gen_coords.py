@@ -20,7 +20,7 @@ from polyply.src.top_parser import read_topology
 from .example_fixtures import example_meta_molecule
 
 @pytest.fixture
-def test_topology():
+def example_topology():
     top_lines ="""
     [ defaults ]
     1   1   no   1.0     1.0
@@ -82,9 +82,9 @@ def test_topology():
    ["testA#0-GLU", "testB#1-GLY" ,"testB-ASP"],
    {0:1, 1:0, 2:0}
    )))
-def test_find_starting_node_from_spec(test_topology, start_nodes, expected):
+def test_find_starting_node_from_spec(example_topology, start_nodes, expected):
    """<mol_name>#<mol_idx>-<resname>#<resid>"""
-   result = polyply.src.gen_coords.find_starting_node_from_spec(test_topology,
+   result = polyply.src.gen_coords.find_starting_node_from_spec(example_topology,
                                                                 start_nodes)
    assert result == expected
 
