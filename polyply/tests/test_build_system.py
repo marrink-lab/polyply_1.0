@@ -27,7 +27,7 @@ from polyply.src.build_system import (_compute_box_size,
                                      )
 
 @pytest.fixture
-def test_topology():
+def example_topology():
     top_lines ="""
     [ defaults ]
     1   1   no   1.0     1.0
@@ -81,8 +81,8 @@ def test_topology():
     (600.0,
      1.2315934632345062
      )))
-def test_compute_box_size(test_topology, density, result):
-    top = test_topology
+def test_compute_box_size(example_topology, density, result):
+    top = example_topology
     print(_compute_box_size(top, density))
     assert np.isclose(_compute_box_size(top, density), result)
 
@@ -90,8 +90,8 @@ def test_compute_box_size(test_topology, density, result):
     ["test_A"],
     ["test_A", "test_B"],
      ))
-def test_filer_by_molname(test_topology, ignore):
-    molecules = _filter_by_molname(test_topology.molecules, ignore)
+def test_filer_by_molname(example_topology, ignore):
+    molecules = _filter_by_molname(example_topology.molecules, ignore)
     for molecule in molecules:
         assert molecule.mol_name not in ignore
 
@@ -122,13 +122,13 @@ def test_filer_by_molname(test_topology, ignore):
     np.array([5.0, 5.0, 5.0]),
    ),
    ))
-def test_init(test_topology,
+def test_init(example_topology,
              box, density,
              grid_spacing, grid,
              expected_grid_shape,
              expected_box):
 
-   processor = BuildSystem(test_topology,
+   processor = BuildSystem(example_topology,
                            start_dict={},
                            box=box,
                            density=density,
@@ -140,7 +140,7 @@ def test_init(test_topology,
 
 def test_rw_arg_failure():
     with pytest.raises(TypeError):
-         BuildSystem(test_topology,
+         BuildSystem(example_topology,
                      start_dict={},
                      random_argument=10)
 
@@ -188,13 +188,13 @@ def test_rw_arg_failure():
    ),
    ))
 def test_build_system(positions,
-                      test_topology,
+                      example_topology,
                       box,
                       starting_grid,
                       starting_nodes):
 
    total = 0
-   for mol in test_topology.molecules:
+   for mol in example_topology.molecules:
        for node in mol.nodes:
            try:
                mol.nodes[node]["position"] = positions[total]
@@ -204,15 +204,15 @@ def test_build_system(positions,
            total += 1
 
 
-   processor = BuildSystem(test_topology,
+   processor = BuildSystem(example_topology,
                            density=1000,
                            start_dict=starting_nodes,
                            box=box,
                            grid=starting_grid,
                            )
-   processor.run_system(test_topology)
+   processor.run_system(example_topology)
    total = 0
-   for mol_idx, mol in enumerate(test_topology.molecules):
+   for mol_idx, mol in enumerate(example_topology.molecules):
        for node in mol.nodes:
            if total < len(positions):
               assert all(mol.nodes[node]["position"] == positions[total])

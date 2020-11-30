@@ -32,7 +32,26 @@ from .annotate_ligands import AnnotateLigands, parse_residue_spec, _find_nodes
 from .build_file_parser import read_build_file
 
 def find_starting_node_from_spec(topology, start_nodes):
-    start_dict = {mol_idx:None for mol_idx, _ in enumerate(topology.molecules)}
+    """
+    Given a definition of one or multiple nodes in
+    `start_nodes` find the corresponding molecule index
+    and node key in `topology`. The format of start nodes
+    is equivalent to that for annotating the residue and
+    is described in detail in the function
+    `annotate_molecules.parse_residue_spec`.
+
+    Parameters:
+    -----------
+    topology: :class:`polyply.src.topology.Topology`
+    start_nodes: list[str]
+        a list of resiude-specs
+
+    Returns:
+    --------
+    dict
+        a dict of molecule_idx as key and node key as value
+    """
+    start_dict = {mol_idx: None for mol_idx in range(len(topology.molecules))}
     for start in start_nodes:
         res_spec = parse_residue_spec(start)
         if 'mol_idx' in res_spec:
@@ -76,15 +95,6 @@ def gen_coords(args):
     # read in coordinates if there are any
     if args.coordpath:
         topology.add_positions_from_file(args.coordpath, args.build_res)
-  # else:
-  #     for molecule in topology.molecules:
-  #         for node in molecule.nodes:
-  #             molecule.nodes[node]["build"] = True
-
-  # for molecule in topology.molecules:
-  #     for node in molecule.nodes:
-  #         if not molecule.nodes[node]["build"]:
-  #             molecule.nodes[node]["build"] = False
 
     # load in built file
     if args.build:

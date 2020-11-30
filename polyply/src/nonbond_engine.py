@@ -92,10 +92,11 @@ class NonBondEngine():
         atomtypes:  np.ndarray
              array of atom_types corresponding to the atoms in positions
         interaction_matrix: dict[forzenset(atom_type, atom_type)]
+             atom_type is a str defining the atom_type
         cut_off: float
-             cut-off for which to compute the interaction
+             cut-off for which to compute the interaction in nm
         boxsize: np.ndarray
-             box dimensions
+             box dimensions in nm
         """
 
         self.positions = positions
@@ -237,7 +238,7 @@ class NonBondEngine():
     @classmethod
     def from_topology(cls, molecules, topology, box):
         """
-        Create a class instance from a topology object
+        Create a class instance from a topology object,
         a list of molecules and a box.
 
         Parameters:

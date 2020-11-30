@@ -52,11 +52,11 @@ def _compute_box_size(topology, density):
                 try:
                     atype = molecule.nodes[node]["atype"]
                     total_mass += topology.atom_types[atype]['mass']
-                except KeyError:
+                except KeyError as error:
                     msg = ("Trying to compute system density, but cannot "
                            "find mass of atom {} with type {} in topology.")
                     atom = molecule.nodes[node]["atomname"]
-                    raise KeyError(msg.format(atom, atype))
+                    raise KeyError(msg.format(atom, atype)) from error
 
     # amu -> kg and cm3 -> nm3
     # conversion = 1.6605410*10**-27 * 10**27
