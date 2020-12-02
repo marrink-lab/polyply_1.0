@@ -111,7 +111,7 @@ def main():
     system_group = parser_gen_coords.add_argument_group('Variables for system generation')
     system_group.add_argument('-dens', dest='density', type=float,
                             help='density of system', default=None)
-    system_group.add_argument('-box', dest='box', type=lambda s: np.array(s),
+    system_group.add_argument('-box', dest='box', type=lambda s: np.array(s, dtype=float),
                             help='rectangluar box x y z', default=None, nargs=3)
     system_group.add_argument('-gs', dest='grid_spacing', type=int,
                             help='grid spacing in nm', default=0.2)

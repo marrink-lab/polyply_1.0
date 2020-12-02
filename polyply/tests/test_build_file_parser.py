@@ -23,19 +23,22 @@ import polyply
 from polyply.src.meta_molecule import Monomer, MetaMolecule
 from polyply.src.topology import Topology
 
-@pytest.mark.parametrize('tokens, expected', (
+@pytest.mark.parametrize('tokens, _type, expected', (
    # for cylinder
    (["PEO", "63", "154", "in", "5", "5", "5", "5", "5"],
-    {"resname": "PEO", "start": 63, "stop": 154, "parameters":["in", np.array([5.0, 5.0, 5.0]), 5.0, 5.0]})
+    "cylinder",
+    {"resname": "PEO", "start": 63, "stop": 154, "parameters":["in", np.array([5.0, 5.0, 5.0]), 5.0, 5.0, "cylinder"]})
    # for recangle
    ,(["PEO", "0", "10", "out", "10", "10", "10", "5", "5", "3"],
-    {"resname": "PEO", "start": 0, "stop": 10, "parameters":["out", np.array([10.0, 10.0, 10.0]), 5.0, 5.0, 3.0]})
+    "rectangle",
+    {"resname": "PEO", "start": 0, "stop": 10, "parameters":["out", np.array([10.0, 10.0, 10.0]), 5.0, 5.0, 3.0, "rectangle"]})
    # for sphere
    ,(["PEO", "0", "10", "in", "10", "10", "10", "5"],
-    {"resname": "PEO", "start": 0, "stop": 10, "parameters":["in", np.array([10.0, 10.0, 10.0]), 5.0]})
+    "sphere",
+    {"resname": "PEO", "start": 0, "stop": 10, "parameters":["in", np.array([10.0, 10.0, 10.0]), 5.0, "sphere"]})
    ))
-def test_base_parser_geometry(tokens, expected):
-    result = polyply.src.build_file_parser.BuildDirector._base_parser_geometry(tokens)
+def test_base_parser_geometry(tokens, _type, expected):
+    result = polyply.src.build_file_parser.BuildDirector._base_parser_geometry(tokens, _type)
     assert result.keys() == expected.keys()
     for key in result:
         if key != "parameters":
@@ -45,6 +48,28 @@ def test_base_parser_geometry(tokens, expected):
             assert all(result[key][1] == expected[key][1])
             for result_param, expected_param in zip(result[key][2:], expected[key][2:]):
                 assert result_param == expected_param
+
+@pytest.mark.parametrize('line, expected', (
+   # simple example
+   ("PEO 63 154 5.0 3.0 2.0 50.0",
+    {"resname": "PEO", "start": 63, "stop": 154, "parameters": [np.array([5.0, 3.0, 2.0]), 50.]})
+   # other example
+   ,("PEO 0 10 4.0 4.0 1.0 25.0",
+    {"resname": "PEO", "start": 0, "stop": 10, "parameters": [np.array([4.0, 4.0, 1.0]), 25.0]})
+   ))
+def test_base_parser_geometry(line, expected):
+    processor = polyply.src.build_file_parser.BuildDirector([])
+    processor.current_molidxs = [1]
+    processor.current_molname = "PEO"
+    processor._rw_restriction(line)
+    result =  processor.rw_options[("PEO", 1)]
+    assert result.keys() == expected.keys()
+    for key in processor.rw_options[("PEO", 1)]:
+        if key != "parameters":
+            assert result[key] == expected[key]
+        else:
+            assert all(result[key][0] == expected[key][0])
+            assert result[key][1] == expected[key][1]
 
 @pytest.fixture
 def test_molecule():
@@ -123,8 +148,8 @@ def test_system():
    # basic test
    ("""
    [ molecule ]
-   ; name nexcl.
-   AA    1
+   ; name from to
+   AA    0  2
    ;
    [ cylinder ]
    ; resname start stop  inside-out  x  y  z  r   z
@@ -135,7 +160,7 @@ def test_system():
    # test that a different molecule is tagged
    ("""
    [ molecule ]
-   BB 1
+   BB  2  3
    [ rectangle ]
    ; resname start stop  inside-out  x  y  z a b c
    ALA   3    6  in  5  5  5  5  5 5
@@ -145,7 +170,7 @@ def test_system():
    # test nothing is tagged based on the molname
    ("""
    [ molecule ]
-   CC 1
+   CC 1 6
    [ sphere ]
    ; resname start stop  inside-out  x  y  z r
    ALA   2    4  in  5  5  5  5

@@ -22,6 +22,7 @@ class BuildDirector(SectionLineParser):
     def __init__(self, molecules):
         super().__init__()
         self.molecules = molecules
+        self.current_molidxs = []
         self.build_options = defaultdict(list)
         self.current_molname = None
         self.rw_options = dict()
@@ -32,7 +33,9 @@ class BuildDirector(SectionLineParser):
         Parses the lines in the '[molecule]'
         directive and stores it.
         """
-        self.current_molname = line.split()[0]
+        tokens = line.split()
+        self.current_molname = tokens[0]
+        self.current_molidxs = np.arange(float(tokens[1]), float(tokens[2]), 1., dtype=int)
 
     @SectionLineParser.section_parser('molecule', 'cylinder', geom_type="cylinder")
     @SectionLineParser.section_parser('molecule', 'sphere', geom_type="sphere")
@@ -53,8 +56,24 @@ class BuildDirector(SectionLineParser):
         reactangle - 1/2 a, b, c which are the lengths
         """
         tokens = line.split()
-        geometry_def = self._base_parser_geometry(tokens)
-        self.build_options[self.current_molname].append((geom_type, geometry_def))
+        geometry_def = self._base_parser_geometry(tokens, geom_type)
+        for idx in self.current_molidxs:
+            self.build_options[(self.current_molname, idx)].append(geometry_def)
+
+    @SectionLineParser.section_parser('molecule', 'rw_restriction')
+    def _rw_restriction(self, line, lineno=0):
+        """
+        Restrict random walk in specific direction.
+        """
+        tokens = line.split()
+        geometry_def = {}
+        geometry_def["resname"] = tokens[0]
+        geometry_def["start"] = int(tokens[1])
+        geometry_def["stop"] = int(tokens[2])
+        geometry_def["parameters"] =[ np.array([float(tokens[3]), float(tokens[4]), float(tokens[5])])]
+        geometry_def["parameters"].append(float(tokens[6]))
+        for idx in self.current_molidxs:
+            self.rw_options[(self.current_molname, idx)] = geometry_def
 
     @SectionLineParser.section_parser('molecule', 'chiral')
     def _chiral(self, line, lineno=0):
@@ -77,27 +96,33 @@ class BuildDirector(SectionLineParser):
         Tag each molecule node with the chirality and build options
         if that molecule is mentioned in the build file by name.
         """
-        for molecule in self.molecules:
-            if molecule.mol_name in self.build_options:
-                for _type, option in self.build_options[molecule.mol_name]:
-                    self._tag_nodes(molecule, _type, option)
+        for mol_idx, molecule in enumerate(self.molecules):
+            if (molecule.mol_name, mol_idx) in self.build_options:
+                for option in self.build_options[(molecule.mol_name, mol_idx)]:
+                    self._tag_nodes(molecule, "restraints", option)
+
+        for mol_idx, molecule in enumerate(self.molecules):
+            if (molecule.mol_name, mol_idx)  in self.rw_options:
+                self._tag_nodes(molecule, "rw_options",
+                                self.rw_options[(molecule.mol_name, mol_idx)])
 
         super().finalize
 
     @staticmethod
-    def _tag_nodes(molecule, _type, option):
+    def _tag_nodes(molecule, keyword, option):
         resids = np.arange(option['start'], option['stop'], 1.)
         resname = option["resname"]
+        #print("go here")
         for node in molecule.nodes:
             if molecule.nodes[node]["resid"] in resids\
             and molecule.nodes[node]["resname"] == resname:
-                if "restraints" in molecule.nodes[node]:
-                    molecule.nodes[node]["restraints"].append((_type, option["parameters"]))
+                if keyword in molecule.nodes[node]:
+                    molecule.nodes[node][keyword].append(option["parameters"])
                 else:
-                    molecule.nodes[node]["restraints"] = [(_type, option["parameters"])]
+                    molecule.nodes[node][keyword] = [option["parameters"]]
 
     @staticmethod
-    def _base_parser_geometry(tokens):
+    def _base_parser_geometry(tokens, _type):
         geometry_def = {}
         geometry_def["resname"] = tokens[0]
         geometry_def["start"] = float(tokens[1])
@@ -109,6 +134,7 @@ class BuildDirector(SectionLineParser):
         for param in tokens[7:]:
             parameters.append(float(param))
 
+        parameters.append(_type)
         geometry_def["parameters"] = parameters
         return geometry_def
 

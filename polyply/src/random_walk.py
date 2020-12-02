@@ -18,7 +18,7 @@ import numpy as np
 from numpy.linalg import norm
 from .processor import Processor
 from .linalg_functions import norm_sphere
-
+from .linalg_functions import _vector_angle_degrees
 """
 Processor implementing a random-walk to generate
 coordinates for a meta-molecule.
@@ -41,12 +41,6 @@ def pbc_complete(point, maxdim):
     np.ndarray
     """
     return point % maxdim
-   # for idx, max_coord in enumerate(maxdim):
-   #    if point[idx] > max_coord:
-   #       point[idx] =  point[idx] - max_coord
-   #    elif point[idx] < 0.0:
-   #       point[idx] =  point[idx] + max_coord
-   # return point
 
 def _take_step(vectors, step_length, coord, box):
     """
@@ -88,27 +82,30 @@ def not_exceeds_max_dimensions(point, maxdim):
     """
     return np.all(point < maxdim) and np.all(point > np.array([0., 0., 0.]))
 
-def is_pushed(point, old_point, push):
-    allowed = {"x": [0, 1],
-              "y": [1, 1],
-              "z": [2, 1],
-              "nx": [0, -1],
-              "ny": [1, -1],
-              "nz": [2, -1]}
-    if any([vect not in allowed for vect in push]):
-       raise IOError
+def is_pushed(point, old_point, node_dict):
+    """
+    We compute the signed angle the vector
+    `point`-`old_point` has with the plane defined
+    by a `normal` and compare to the reference `angle`.
+    The angle needs to have the same sign as `angle`
+    and not be smaller in magnitude.
+    """
 
-    if len(push) >= 6:
-        raise IOError
+    if not "rw_options" in node_dict:
+       return True
 
-    for direction in push:
-        pos, sign = allowed[direction]
-        if direction in ["x", "y", "z"] and point[pos] < old_point[pos]:
-            return False
-        elif  direction in ["nx", "ny", "nz"] and point[pos] > old_point[pos]:
-            return False
-    else:
-        return True
+    normal, ref_angle = node_dict["rw_options"][0]
+    # check condition 1
+    sign = np.sign(np.dot(normal, point - old_point))
+    if sign != np.sign(ref_angle):
+       return False
+
+    # check condition 2
+    angle  = _vector_angle_degrees(normal, point - old_point)
+    if angle > np.abs(ref_angle):
+       return False
+    return True
+
 
 def in_cylinder(point, parameters):
     """
@@ -210,7 +207,8 @@ def full_fill_geometrical_constraints(point, node_dict):
     if not "restraints" in node_dict:
         return True
 
-    for restr_type, restraint in node_dict['restraints']:
+    for restraint in node_dict['restraints']:
+       restr_type = restraint[-1]
        if not RESTRAINT_METHODS[restr_type](point, restraint):
            return False
 
@@ -260,7 +258,6 @@ class RandomWalk(Processor):
         self.step_fudge = step_fudge
         self.start_node = start_node
         self.nrewind = nrewind
-
     def _rewind(self, current_step, placed_nodes, nsteps):
         for _, node in placed_nodes[-nsteps:-1]:
              dummy_point = np.array([np.inf, np.inf, np.inf])
@@ -304,15 +301,17 @@ class RandomWalk(Processor):
         while True:
 
             new_point, index = _take_step(vector_bundle, step_length, last_point, self.maxdim)
-            pushed = is_pushed(new_point, last_point, self.push)
-            overlap = self._is_overlap(new_point, current_node)
-            in_box = not_exceeds_max_dimensions(new_point, self.maxdim)
-            constrained = full_fill_geometrical_constraints(new_point, self.molecule.nodes[current_node])
-            if not overlap and in_box and constrained and pushed:
+
+            if not_exceeds_max_dimensions(new_point, self.maxdim)\
+            and full_fill_geometrical_constraints(new_point, self.molecule.nodes[current_node])\
+            and is_pushed(new_point, last_point, self.molecule.nodes[current_node])\
+            and not self._is_overlap(new_point, current_node):
                 self.nonbond_matrix.add_positions(new_point, self.mol_idx, current_node, start=False)
                 return True
+
             elif step_count == self.maxiter:
                 return False
+
             else:
                 step_count += 1
                 vector_bundle = np.delete(vector_bundle, index, axis=0)
@@ -330,6 +329,7 @@ class RandomWalk(Processor):
             first_node = _find_starting_node(meta_molecule)
         else:
             first_node = self.start_node
+
         if "position" not in meta_molecule.nodes[first_node]:
             constrained = full_fill_geometrical_constraints(self.start, self.molecule.nodes[first_node])
             if not self._is_overlap(self.start, first_node) and constrained:
@@ -338,6 +338,8 @@ class RandomWalk(Processor):
             else:
                 self.success = False
                 return
+        else:
+             print( meta_molecule.nodes[first_node]["position"])
 
         vector_bundle = self.vector_sphere.copy()
         count = 0
