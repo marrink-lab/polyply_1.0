@@ -55,8 +55,7 @@ def is_branched(graph):
     bool
        is branched
     """
-    degrees = nx.degree(graph, nbunch=(graph.nodes))
-    for node, deg in degrees:
+    for node, deg in graph.degree:
         if deg > 2:
            return True
     return False

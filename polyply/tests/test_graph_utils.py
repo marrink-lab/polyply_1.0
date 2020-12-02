@@ -30,3 +30,19 @@ def test_neighbourhood(source, max_length, min_length, expected):
                                                       max_length,
                                                       min_length=min_length)
     assert set(neighbours) == set(expected)
+
+@pytest.mark.parametrize('edges, expected',(
+                        # simple linear
+                        ([(0, 1), (1, 2), (2, 3)], False),
+                        # simple cyclic
+                        ([(0, 1), (1, 2), (2, 3), (3, 0)], False),
+                        # simple branched
+                        ([(0, 1), (1, 2), (1, 3), (3, 4)], True),
+                        # cyclic branched
+                        ([(0, 1), (1, 2), (2, 3), (3, 0), (0, 5)], True),
+                        ))
+def test_is_branched(edges, expected):
+    graph = nx.Graph()
+    graph.add_edges_from(edges)
+    result = polyply.src.graph_utils.is_branched(graph)
+    assert result == expected
