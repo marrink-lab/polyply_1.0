@@ -333,7 +333,7 @@ class Topology(System):
 
             for node in meta_mol:
                 resid = meta_mol.nodes[node]["resid"]
-                atoms_in_res = find_atoms(meta_mol.molecule, "resid", resid)
+                atoms_in_res = list(meta_mol.nodes[node]["graph"].nodes)  #find_atoms(meta_mol.molecule, "resid", resid)
 
                 if all(atom not in no_coords for atom in atoms_in_res):
                     positions = np.array([meta_mol.molecule.nodes[atom]["position"] for

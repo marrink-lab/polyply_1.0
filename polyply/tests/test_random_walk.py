@@ -27,55 +27,56 @@ from polyply.src.random_walk import (full_fill_geometrical_constraints,
                                      pbc_complete,
                                      not_exceeds_max_dimensions,
                                      _take_step,
-                                     RandomWalk)
+                                     RandomWalk,
+                                     is_pushed)
 
 @pytest.mark.parametrize('restraint_dict, point, result', (
     # test single geometrical constraint
-    ({"restraints": [("sphere", ["in", np.array([0.0, 0.0, 0.0]), 1.0])]},
+    ({"restraints": [["in", np.array([0.0, 0.0, 0.0]), 1.0, "sphere"]]},
      np.array([0, 0, 0.5]),
      True
      ),
-    ({"restraints": [("sphere", ["out", np.array([0.0, 0.0, 0.0]), 1.0])]},
+    ({"restraints": [["out", np.array([0.0, 0.0, 0.0]), 1.0, "sphere"]]},
      np.array([0, 0, 1.5]),
      True
      ),
-    ({"restraints": [("sphere", ["in", np.array([0.0, 0.0, 0.0]), 1.0])]},
+    ({"restraints": [["in", np.array([0.0, 0.0, 0.0]), 1.0, "sphere"]]},
      np.array([0, 0, 1.5]),
      False
      ),
-    ({"restraints": [("sphere", ["out", np.array([0.0, 0.0, 0.0]), 1.0])]},
+    ({"restraints": [["out", np.array([0.0, 0.0, 0.0]), 1.0, "sphere"]]},
      np.array([0.0, 0.0, 0.5]),
      False
      ),
-    ({"restraints": [("cylinder", ["in", np.array([0.0, 0.0, 0.0]), 1.0, 2.0])]},
+    ({"restraints": [["in", np.array([0.0, 0.0, 0.0]), 1.0, 2.0, "cylinder"]]},
      np.array([0, 0.5, 0.5]),
      True
      ),
-    ({"restraints": [("cylinder", ["out", np.array([0.0, 0.0, 0.0]), 1.0, 2.0])]},
+    ({"restraints": [["out", np.array([0.0, 0.0, 0.0]), 1.0, 2.0, "cylinder"]]},
      np.array([0, 1.5, 1.5]),
      True
      ),
-    ({"restraints": [("cylinder", ["in", np.array([0.0, 0.0, 0.0]), 1.0, 2.0])]},
+    ({"restraints": [["in", np.array([0.0, 0.0, 0.0]), 1.0, 2.0, "cylinder"]]},
      np.array([0, 1.5, 1.5]),
      False
      ),
-    ({"restraints": [("rectangle", ["out", np.array([0.0, 0.0, 0.0]), 2.0, 2.0, 4.0])]},
+    ({"restraints": [["out", np.array([0.0, 0.0, 0.0]), 2.0, 2.0, 4.0, "rectangle"]]},
      np.array([0, 0.5, 0.5]),
      False
      ),
-    ({"restraints": [("rectangle", ["in", np.array([0.0, 0.0, 0.0]), 2.0, 2.0, 4.0])]},
+    ({"restraints": [["in", np.array([0.0, 0.0, 0.0]), 2.0, 2.0, 4.0, "rectangle"]]},
      np.array([0, 1.0, 0.5]),
      True
      ),
-    ({"restraints": [("rectangle", ["out", np.array([0.0, 0.0, 0.0]), 2.0, 2.0, 4.0])]},
+    ({"restraints": [["out", np.array([0.0, 0.0, 0.0]), 2.0, 2.0, 4.0, "rectangle"]]},
      np.array([0, 1.5, 4.5]),
      True
      ),
-    ({"restraints": [("rectangle", ["in", np.array([0.0, 0.0, 0.0]), 2.0, 2.0, 4.0])]},
+    ({"restraints": [["in", np.array([0.0, 0.0, 0.0]), 2.0, 2.0, 4.0, "rectangle"]]},
      np.array([0, 1.5, 4.5]),
      False
      ),
-    ({"restraints": [("rectangle", ["out", np.array([0.0, 0.0, 0.0]), 2.0, 2.0, 4.0])]},
+    ({"restraints": [["out", np.array([0.0, 0.0, 0.0]), 2.0, 2.0, 4.0, "rectangle"]]},
      np.array([0, 1.5, 3.9]),
      False
      ),
@@ -288,3 +289,25 @@ def test_run_molecule(nonbond_matrix, molecule, build_attr, npos, pos, start):
     proccessor.run_molecule(molecule)
     for pos in proccessor.nonbond_matrix.positions:
         assert all(pos != np.array([np.inf, np.inf, np.inf]))
+
+
+@pytest.mark.parametrize('point, old_point, node_dict, expected', (
+    # basic example
+    (np.array([1., 1., 2.]),
+     np.array([1., 1., 1.]),
+     {"rw_options": [[np.array([0., 0., 1.0]), 90.0]]},
+     True),
+    # false because goes back
+    (np.array([1., 1., 0.5]),
+     np.array([1., 1., 1.]),
+     {"rw_options": [[np.array([0., 0., 1.0]), 90.0]]},
+     False),
+    # false because angle not large enough
+    (np.array([1.5, 1.5, 1.5]),
+     np.array([1., 1., 1.]),
+     {"rw_options": [[np.array([0., 0., 1.0]), 50.0]]},
+     False),
+))
+def test_vector_push(point, old_point, node_dict, expected):
+    status = is_pushed(point, old_point, node_dict)
+    assert status == expected
