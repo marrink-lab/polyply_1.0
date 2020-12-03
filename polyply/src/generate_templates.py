@@ -110,7 +110,7 @@ def _expand_inital_coords(block, bond=None, pos=None, fixed=None,
     # replace by kamada kwau
     return nx.kamada_kawai_layout(block, dim=3)
 
-def compute_volume(molecule, block, coords):
+def compute_volume(molecule, block, coords, treshold=1e-18):
     """
     Given a `block`, which is part of `molecule` and
     has the coordinates `coord` compute the radius
@@ -123,7 +123,11 @@ def compute_volume(molecule, block, coords):
     molecule:  :class:vermouth.molecule.Molecule
     block:     :class:vermouth.molecule.Block
     coords:    :class:dict
-      dictionary of positions in from node_idx: np.array
+        dictionary of positions in from node_idx: np.array
+    treshold: float
+        distance from center of geometry at which the
+        particle is not taken into account for the volume
+        computation
 
     Returns
     -------
@@ -139,12 +143,10 @@ def compute_volume(molecule, block, coords):
         atom_key = block.nodes[node]["atype"]
         rad = float(molecule.nonbond_params[frozenset([atom_key, atom_key])]["nb1"])
         diff = coord - res_center_of_geometry
-        # if the atom/bead is exactly in the geometrical center it doesn't
-        # contribute to the Rg value
-        if not all(diff == np.array([0.0, 0.0, 0.0])):
-           geom_vects[idx, :] = diff + u_vect(diff) * rad
-        else:
+        if np.linalg.norm(diff) < treshold:
            continue
+        else:
+           geom_vects[idx, :] = diff + u_vect(diff) * rad
         idx += 1
 
     if geom_vects.shape[0] > 1:
