@@ -81,6 +81,7 @@ def _check_molecules(molecules):
 
 def gen_coords(args):
     # Read in the topology
+    # TODO Write Logger for all print statements
     print("reading topology")
     topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
     print("processing it")

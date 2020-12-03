@@ -269,7 +269,7 @@ class RandomWalk(Processor):
                  step_fudge=0.8,
                  maxiter=80,
                  maxdim=None,
-                 max_force=10**3.0,
+                 max_force=1e3,
                  vector_sphere=norm_sphere(5000),
                  push=[],
                  start_node=None,
@@ -315,10 +315,10 @@ class RandomWalk(Processor):
         Parameters
         ----------
         vector_bunde: np.ndarray(m,3)
-        meta_molecule: :class:polyply.src.meta_molecule.MetaMolecule
+        meta_molecule: :class:`polyply.src.meta_molecule.MetaMolecule`
         current_node: node_key[int, str]
         prev_node: node_key[int, str]
-        topology: :class:polyply.src.topology.Topology
+        topology: :class:`polyply.src.topology.Topology`
         maxiter: int
            maximum number of iterations
         """

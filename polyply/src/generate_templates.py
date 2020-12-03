@@ -146,7 +146,7 @@ def compute_volume(molecule, block, coords):
         else:
            continue
         idx += 1
-    #print(geom_vects)
+
     if geom_vects.shape[0] > 1:
         radgyr = radius_of_gyration(geom_vects)
     else:
@@ -313,7 +313,6 @@ class GenerateTemplates(Processor):
                         opt_counter += 1
 
                 self.volumes[resname] = compute_volume(meta_molecule, block, coords)
-                print(self.volumes[resname])
                 coords = map_from_CoG(coords)
                 self.templates[resname] = coords
 
