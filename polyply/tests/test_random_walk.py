@@ -134,7 +134,7 @@ def nonbond_matrix():
     toppath = TEST_DATA + "/struc_build/system.top"
     topology = Topology.from_gmx_topfile(name="test", path=toppath)
     topology.preprocess()
-    setattr(topology, "volumes", {"PEO":0.43})
+    topology.volumes = {"PEO":0.43}
     return NonBondEngine.from_topology(topology.molecules,
                                        topology,
                                        box=np.array([10., 10., 10.]))
@@ -186,7 +186,7 @@ def test_rewind(nonbond_matrix):
 def test_is_overlap(nonbond_matrix, molecule, new_point, result):
     nb_matrix = add_positions(nonbond_matrix, 6)
     proccessor = RandomWalk(mol_idx=0, nonbond_matrix=nb_matrix)
-    setattr(proccessor, "molecule", molecule)
+    proccessor.molecule = molecule
     # node 4 is already placed and hence is skipped over
     assert proccessor._is_overlap(new_point, 7, nrexcl=1) == result
 
@@ -220,7 +220,7 @@ def test_update_positions(nonbond_matrix, molecule, pos, expected):
                             max_force=100.0,
                             maxiter=49)
     # set molecule attribute which is normally set by the run_molecule class
-    setattr(proccessor, "molecule", molecule)
+    proccessor.molecule = molecule
     vector_bundle = polyply.src.linalg_functions.norm_sphere(50)
     status = proccessor.update_positions(vector_bundle=vector_bundle, current_node=7, prev_node=6)
     assert status == expected
