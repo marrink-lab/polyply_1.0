@@ -28,6 +28,7 @@ from polyply.src.load_library import load_library
 
 VERSION = 'polyply version {}'.format(polyply.__version__)
 
+
 def main():
     """
     Parses commandline arguments and call relevant sub_programs.
@@ -51,9 +52,9 @@ def main():
     parser_gen_coords = subparsers.add_parser('gen_coords')
     parser_gen_seq = subparsers.add_parser('gen_seq')
 
-    #=============================================================================
+    # =============================================================================
     # Input Arguments for the itp generation tool
-    #=============================================================================
+    # =============================================================================
 
     parser_gen_itp.add_argument('-name', required=True, type=str, dest="name",
                                 help="name of the final molecule")
@@ -73,15 +74,15 @@ def main():
 
     parser_gen_itp.set_defaults(func=gen_itp)
 
-    #============================================================================
+    # ============================================================================
     #           Input Arguments for the coordinate generation tool
-    #============================================================================
+    # ============================================================================
 
     parser_gen_coords.add_argument('-name', required=True, type=str, dest="name",
                                    help="name of the final molecule")
 
     parser_gen_coords.add_argument('-np', required=False, type=int, dest="nproc",
-                                help="number of available processors", default=1)
+                                   help="number of available processors", default=1)
 
     file_group = parser_gen_coords.add_argument_group('Input and output files')
     file_group.add_argument('-p', dest='toppath', required=False, type=Path,
@@ -93,60 +94,64 @@ def main():
     file_group.add_argument('-b', dest='build', type=Path,
                             default=None, help=('file specifinycing build options'))
 
-    topology_group = parser_gen_coords.add_argument_group('Change or modify topology')
+    topology_group = parser_gen_coords.add_argument_group(
+        'Change or modify topology')
     topology_group.add_argument('-res', dest='build_res', type=str,
-                            help='list of residues to built', default=[], nargs='+')
+                                help='list of residues to built', default=[], nargs='+')
     topology_group.add_argument('-ign', dest='ignore', type=str,
-                            help='molecules to ignore when building structure', default=[], nargs='+')
+                                help='molecules to ignore when building structure',
+                                default=[], nargs='+')
     topology_group.add_argument('-split', dest='split', nargs='+', type=str,
-                            help='split residues', default=[])
+                                help='split residues', default=[])
     topology_group.add_argument('-lig', dest='ligands', nargs='+', type=lambda s: s.split(':'),
-                            default=[],
-                            help=('Specify ligands of molecules which should be placed close '
-                                  'to a specific molecule. The format is as follows: '
-                                  '<mol_name>#<mol_idx>-<resname>#<resid>:<mol_name>#<mol_idx>-<resname>#<resid>. '
-                                  'Elements of the specification can be omitted as required. Note mol_name and resname' 
-                                  'cannot contain the characters # and -.'))
+                                default=[],
+                                help=('Specify ligands of molecules which should be placed close '
+                                      'to a specific molecule. The format is as follows: '
+                                      '<mol_name>#<mol_idx>-<resname>#<resid>:<mol_name>#<mol_idx>-<resname>#<resid>. '
+                                      'Elements of the specification can be omitted as required.a'
+                                      ' Note mol_name and resname cannot contain the characters # and -.'))
 
     system_group = parser_gen_coords.add_argument_group('Variables for system generation')
     system_group.add_argument('-dens', dest='density', type=float,
-                            help='density of system', default=None)
+                              help='density of system', default=None)
     system_group.add_argument('-box', dest='box', type=lambda s: np.array(s, dtype=float),
-                            help='rectangluar box x y z', default=None, nargs=3)
+                              help='rectangluar box x y z', default=None, nargs=3)
     system_group.add_argument('-gs', dest='grid_spacing', type=int,
-                            help='grid spacing in nm', default=0.2)
+                              help='grid spacing in nm', default=0.2)
     system_group.add_argument('-grid', dest='grid', type=str,
-                            help='file with grid-points', default=None)
+                              help='file with grid-points', default=None)
     system_group.add_argument('-mi', dest='maxiter', type=int,
-                            help='max number of trys to grow a molecule', default=800)
+                              help='max number of trys to grow a molecule', default=800)
     system_group.add_argument('-start', dest='start', nargs='+', type=str,
-                            default=[],
-                            help=('<mol_name>#<mol_idx>-<resname>#<resid>. '
-                                  'Specify which residue to build first.'))
+                              default=[],
+                              help=('<mol_name>#<mol_idx>-<resname>#<resid>. '
+                                    'Specify which residue to build first.'))
 
-    random_walk_group = parser_gen_coords.add_argument_group('Variables for random walk')
+    random_walk_group = parser_gen_coords.add_argument_group(
+        'Variables for random walk')
     random_walk_group.add_argument('-mir', dest='maxiter_random', type=int,
-                            help='max number of trys to place a residue', default=100)
+                                   help='max number of trys to place a residue', default=100)
     random_walk_group.add_argument('-sf', dest='step_fudge', type=float,
-                            help='scale step length in random walk by fudge factor', default=0.8)
+                                   help='scale step length in random walk by fudge factor',
+                                   default=0.8)
     random_walk_group.add_argument('-mf', dest='max_force', type=float,
-                            help='max force to allow in residue placing', default=10**3.0)
+                                   help='max force to allow in residue placing', default=10**3.0)
     random_walk_group.add_argument('-push', dest='push', type=str,
-                            help='one of x,y,z nx, ny, nz', default=[], nargs='+')
-    random_walk_group.add_argument('-nr', dest='nrewind', type=int,
-                            help='number of residues to trace back when RW fails in first attempt', default=5)
+                                   help='one of x,y,z nx, ny, nz', default=[], nargs='+')
+    random_walk_group.add_argument('-nr', dest='nrewind', type=int, default=5,
+                                   help=('number of residues to trace back '
+                                         ' when RW fails in first attempt'))
 
-    backmap_group = parser_gen_coords.add_argument_group('Variables for backmapping')
-    backmap_group.add_argument('-back_fudge', dest='bfudge', type=float,
-                            help='factor by which to scale the coordinates when backmapping.', default=0.4)
+    backmap_group = parser_gen_coords.add_argument_group(
+        'Variables for backmapping')
+    backmap_group.add_argument('-back_fudge', dest='bfudge', type=float, default=0.4,
+                               help='factor by which to scale the coordinates when backmapping.')
 
     parser_gen_coords.set_defaults(func=gen_coords)
 
-
-
-    #============================================================================
+    # ============================================================================
     #           Input Arguments for the sequence generation tool
-    #============================================================================
+    # ============================================================================
 
     parser_gen_seq.add_argument('-name', required=True, type=str, dest="name",
                                 help="name of the final molecule")
@@ -191,9 +196,9 @@ def main():
 
     parser_gen_seq.set_defaults(func=gen_seq)
 
-    #============================================================================
+    # ============================================================================
     # Deal with queries of the polyply library
-    #============================================================================
+    # ============================================================================
 
     args = parser.parse_args()
 
@@ -218,6 +223,7 @@ def main():
 #        parser.exit()
 
     args.func(args)
+
 
 if __name__ == '__main__':
     main()
