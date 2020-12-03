@@ -130,16 +130,6 @@ def geometric_rule(C6_A, C6_B, C12_A, C12_B):
     return C6, C12
 
 
-def find_atoms(molecule, attr, value):
-    nodes = []
-    for node in molecule.nodes:
-        if attr in molecule.nodes[node]:
-            if molecule.nodes[node][attr] == value:
-                nodes.append(node)
-
-    return nodes
-
-
 class Topology(System):
     """
     Ties together vermouth molecule definitions, and
@@ -333,7 +323,7 @@ class Topology(System):
 
             for node in meta_mol:
                 resid = meta_mol.nodes[node]["resid"]
-                atoms_in_res = list(meta_mol.nodes[node]["graph"].nodes)  #find_atoms(meta_mol.molecule, "resid", resid)
+                atoms_in_res = list(meta_mol.nodes[node]["graph"].nodes)
 
                 if all(atom not in no_coords for atom in atoms_in_res):
                     positions = np.array([meta_mol.molecule.nodes[atom]["position"] for
