@@ -38,13 +38,13 @@ def find_starting_node_from_spec(topology, start_nodes):
     and node key in `topology`. The format of start nodes
     is equivalent to that for annotating the residue and
     is described in detail in the function
-    `annotate_molecules.parse_residue_spec`.
+    :meth:`polyply.src.annotate_ligands.annotate_molecules.parse_residue_spec`.
 
     Parameters:
     -----------
     topology: :class:`polyply.src.topology.Topology`
     start_nodes: list[str]
-        a list of resiude-specs
+        a list of residue-specs
 
     Returns:
     --------
