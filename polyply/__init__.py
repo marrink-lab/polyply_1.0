@@ -32,6 +32,16 @@ else:
 
 del pbr
 
+# import numba if available
+import functools
+try:
+    from numba import jit
+except:
+    jit = lambda x: x  # See also https://docs.python.org/3/library/functools.html#functools.wraps
+    logging.info("Couldn't import numba. Install it for a speed boost.")
+else:
+    jit = functools.partial(jit,  nopython=True, cache=True, fastmath=True)
+
 # This could be useful for the high level API
 from .src.meta_molecule import (Monomer, MetaMolecule)
 from .src.apply_links import ApplyLinks

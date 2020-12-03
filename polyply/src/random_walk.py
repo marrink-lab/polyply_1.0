@@ -86,7 +86,6 @@ def not_exceeds_max_dimensions(point, maxdim):
     """
     return np.all(point < maxdim) and np.all(point > np.array([0., 0., 0.]))
 
-
 def is_restricted(point, old_point, node_dict):
     """
     The function checks, if the step `old_point` to
@@ -330,8 +329,7 @@ class RandomWalk(Processor):
         step_count = 0
         while True:
 
-            new_point, index = _take_step(
-                vector_bundle, step_length, last_point, self.maxdim)
+            new_point, index = _take_step(vector_bundle, step_length, last_point, self.maxdim)
 
             if not_exceeds_max_dimensions(new_point, self.maxdim)\
                 and fullfill_geometrical_constraints(new_point, self.molecule.nodes[current_node])\
@@ -366,11 +364,14 @@ class RandomWalk(Processor):
             first_node = self.start_node
 
         if "position" not in meta_molecule.nodes[first_node]:
-            constrained = fullfill_geometrical_constraints(
-                self.start, self.molecule.nodes[first_node])
-            if not self._is_overlap(self.start, first_node) and constrained:
-                self.nonbond_matrix.add_positions(
-                    self.start, self.mol_idx, first_node, start=True)
+            constrained = fullfill_geometrical_constraints(self.start,
+                                                           self.molecule.nodes[first_node])
+
+            if constrained and not self._is_overlap(self.start, first_node):
+                self.nonbond_matrix.add_positions(self.start,
+                                                  self.mol_idx,
+                                                  first_node,
+                                                  start=True)
                 self.success = True
             else:
                 self.success = False
