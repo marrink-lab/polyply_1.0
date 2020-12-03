@@ -59,9 +59,7 @@ def find_nodes_with_attributes(graph, **attrs):
     """
     for node in graph.nodes:
         for attr, value in attrs.items():
-            if attr not in graph.nodes[node]:
-               break
-            elif graph.nodes[node][attr] != value:
-               break
+            if attr not in graph.nodes[node] or graph.nodes[node][attr] != value:
+                break
         else:
             yield node
