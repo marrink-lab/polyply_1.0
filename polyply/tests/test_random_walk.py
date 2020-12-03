@@ -23,12 +23,12 @@ import polyply
 from polyply import TEST_DATA
 from polyply.src.topology import Topology
 from polyply.src.nonbond_engine import NonBondEngine
-from polyply.src.random_walk import (full_fill_geometrical_constraints,
+from polyply.src.random_walk import (fullfill_geometrical_constraints,
                                      pbc_complete,
                                      not_exceeds_max_dimensions,
                                      _take_step,
                                      RandomWalk,
-                                     is_pushed)
+                                     is_restricted)
 
 @pytest.mark.parametrize('restraint_dict, point, result', (
     # test single geometrical constraint
@@ -87,7 +87,7 @@ from polyply.src.random_walk import (full_fill_geometrical_constraints,
      ),
 ))
 def test_geometric_restrictions(restraint_dict, point, result):
-    assert full_fill_geometrical_constraints(point, restraint_dict) == result
+    assert fullfill_geometrical_constraints(point, restraint_dict) == result
 
 
 @pytest.mark.parametrize('box_vect, point, result', (
@@ -309,5 +309,5 @@ def test_run_molecule(nonbond_matrix, molecule, build_attr, npos, pos, start):
      False),
 ))
 def test_vector_push(point, old_point, node_dict, expected):
-    status = is_pushed(point, old_point, node_dict)
+    status = is_restricted(point, old_point, node_dict)
     assert status == expected
