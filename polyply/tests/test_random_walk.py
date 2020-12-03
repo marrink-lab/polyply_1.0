@@ -166,12 +166,11 @@ def add_positions(nb_matrix, ncoords, pos=None):
 
 def test_rewind(nonbond_matrix):
     nb_matrix = add_positions(nonbond_matrix, 6)
-    proccessor = RandomWalk(mol_idx=0, nonbond_matrix=nb_matrix)
+    processor = RandomWalk(mol_idx=0, nonbond_matrix=nb_matrix)
     # node 4 is already placed and hence is skipped over
-    placed_nodes = [(0, 0), (1, 1), (2, 2), (3, 3), (4, 5), (5, 6)]
-    last_idx = proccessor._rewind(current_step=5,
-                                  placed_nodes=placed_nodes,
-                                  nsteps=3)
+    processor.placed_nodes = [(0, 0), (1, 1), (2, 2), (3, 3), (4, 5), (5, 6)]
+    last_idx = processor._rewind(current_step=5,
+                                 nsteps=3)
     assert last_idx == 3
     for idx in [6, 5, 3]:
         assert all(nb_matrix.positions[idx] == np.array([np.inf, np.inf, np.inf]))
