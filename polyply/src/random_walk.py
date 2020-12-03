@@ -133,7 +133,8 @@ def is_restricted(point, old_point, node_dict):
 def in_cylinder(point, parameters):
     """
     Assert if a point is within a cylinder or outside a
-    cylinder as defined in paramters:
+    cylinder as defined in paramters. Note the cylinder
+    is z-aligned always.
 
     Parameters:
     -----------
@@ -147,15 +148,14 @@ def in_cylinder(point, parameters):
     """
     in_out = parameters[0]
     diff = parameters[1] - point
-    r = norm(diff[:2])
-    d = diff[2]
-    if in_out == "in" and r < parameters[2] and np.abs(d) < parameters[3]:
+    radius = norm(diff[:2])
+    half_heigth = diff[2]
+    if in_out == "in" and radius < parameters[2] and np.abs(half_heigth) < parameters[3]:
         return True
-    elif in_out == "out" and (r > parameters[2] or d > np.abs(parameters[3])):
+    elif in_out == "out" and (radius > parameters[2] or half_heigth > np.abs(parameters[3])):
         return True
     else:
         return False
-
 
 def in_rectangle(point, parameters):
     """
@@ -232,7 +232,7 @@ def fullfill_geometrical_constraints(point, node_dict):
     --------
     bool
     """
-    if not "restraints" in node_dict:
+    if "restraints" not in node_dict:
         return True
 
     for restraint in node_dict['restraints']:
@@ -249,9 +249,9 @@ def _find_starting_node(meta_molecule):
     otherwise return first node in list of nodes.
     """
     for node in meta_molecule.nodes:
-        if not "build" in meta_molecule.nodes[node]:
+        if "build" not in meta_molecule.nodes[node]:
             return node
-    return list(meta_molecule.nodes())[0]
+    return next(iter(meta_molecule.nodes()))
 
 
 class RandomWalk(Processor):
@@ -289,7 +289,6 @@ class RandomWalk(Processor):
 
     def _rewind(self, current_step, placed_nodes, nsteps):
         for _, node in placed_nodes[-nsteps:-1]:
-            dummy_point = np.array([np.inf, np.inf, np.inf])
             self.nonbond_matrix.remove_positions(self.mol_idx,
                                                  node)
         return placed_nodes[-nsteps][0]
@@ -402,8 +401,7 @@ class RandomWalk(Processor):
             if not self.success and count < self.maxiter:
                 if len(placed_nodes) < self.nrewind+1:
                     return
-                step_count = self._rewind(
-                    step_count, placed_nodes, self.nrewind)
+                step_count = self._rewind(step_count, placed_nodes, self.nrewind)
                 placed_nodes = placed_nodes[:-self.nrewind]
             elif not self.success:
                 return
