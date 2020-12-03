@@ -330,8 +330,7 @@ class RandomWalk(Processor):
 
             new_point, index = _take_step(vector_bundle, step_length, last_point, self.maxdim)
 
-            if not_exceeds_max_dimensions(new_point, self.maxdim)\
-                and fullfill_geometrical_constraints(new_point, self.molecule.nodes[current_node])\
+            if fullfill_geometrical_constraints(new_point, self.molecule.nodes[current_node])\
                 and is_restricted(new_point, last_point, self.molecule.nodes[current_node])\
                 and not self._is_overlap(new_point, current_node):
 
