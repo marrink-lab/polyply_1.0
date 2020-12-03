@@ -25,9 +25,9 @@ from polyply.src.topology import Topology
 
 @pytest.mark.parametrize('tokens, _type, expected', (
    # for cylinder
-   (["PEO", "63", "154", "in", "5", "5", "5", "5", "5"],
+   (["PEO", "63", "154", "in", "5", "5", "5", "6", "7"],
     "cylinder",
-    {"resname": "PEO", "start": 63, "stop": 154, "parameters":["in", np.array([5.0, 5.0, 5.0]), 5.0, 5.0, "cylinder"]})
+    {"resname": "PEO", "start": 63, "stop": 154, "parameters":["in", np.array([5.0, 5.0, 5.0]), 6.0, 7.0, "cylinder"]})
    # for recangle
    ,(["PEO", "0", "10", "out", "10", "10", "10", "5", "5", "3"],
     "rectangle",
