@@ -22,6 +22,7 @@ import polyply
                         (4, 1, 1, [4, 1, 9, 10]),
                         (4, 2, 1, [4, 1, 9, 10, 0, 3]),
                         (4, 3, 3, [0, 3, 7, 8, 2]),
+                        (0, 1, 1, [0, 1, 2])
                         ))
 def test_neighbourhood(source, max_length, min_length, expected):
     graph = nx.balanced_tree(r=2, h=3)
