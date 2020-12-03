@@ -66,12 +66,11 @@ class BuildDirector(SectionLineParser):
         Restrict random walk in specific direction.
         """
         tokens = line.split()
-        geometry_def = {}
-        geometry_def["resname"] = tokens[0]
-        geometry_def["start"] = int(tokens[1])
-        geometry_def["stop"] = int(tokens[2])
-        geometry_def["parameters"] =[ np.array([float(tokens[3]), float(tokens[4]), float(tokens[5])])]
-        geometry_def["parameters"].append(float(tokens[6]))
+        geometry_def = {"resname": tokens[0],
+                        "start": int(tokens[1]),
+                        "stop":  int(tokens[2]),
+                        "parameters": [np.array([float(tokens[3]), float(tokens[4]), float(tokens[5])]),
+                                       float(tokens[6])]}
         for idx in self.current_molidxs:
             self.rw_options[(self.current_molname, idx)] = geometry_def
 
@@ -101,7 +100,6 @@ class BuildDirector(SectionLineParser):
                 for option in self.build_options[(molecule.mol_name, mol_idx)]:
                     self._tag_nodes(molecule, "restraints", option)
 
-        for mol_idx, molecule in enumerate(self.molecules):
             if (molecule.mol_name, mol_idx)  in self.rw_options:
                 self._tag_nodes(molecule, "rw_options",
                                 self.rw_options[(molecule.mol_name, mol_idx)])
@@ -112,14 +110,11 @@ class BuildDirector(SectionLineParser):
     def _tag_nodes(molecule, keyword, option):
         resids = np.arange(option['start'], option['stop'], 1.)
         resname = option["resname"]
-        #print("go here")
         for node in molecule.nodes:
             if molecule.nodes[node]["resid"] in resids\
             and molecule.nodes[node]["resname"] == resname:
-                if keyword in molecule.nodes[node]:
-                    molecule.nodes[node][keyword].append(option["parameters"])
-                else:
-                    molecule.nodes[node][keyword] = [option["parameters"]]
+                molecule.nodes[node][keyword] = molecule.nodes[node].get(keyword, []) +\
+                                                [option['parameters']]
 
     @staticmethod
     def _base_parser_geometry(tokens, _type):
