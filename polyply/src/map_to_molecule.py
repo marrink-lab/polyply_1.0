@@ -60,11 +60,12 @@ class MapToMolecule(Processor):
                            "virtual_sites2", "virtual_sites3", "virtual_sites4"]:
             block.make_edges_from_interaction_type(inter_type)
 
-        # 1. make residue graph and check it is not branched
-        # we cannot do branched block expansion
+        # 1. make residue graph
         expanded_graph = make_residue_graph(block)
 
-        # 2. clear out all old edges
+        # 2. clear out all old edges, because the
+        # inserted part will not have any edges with the
+        # rest of the meta_molecule as we don't know those
         old_edges = list(meta_molecule.edges(meta_mol_node))
         meta_molecule.remove_edges_from(old_edges)
 

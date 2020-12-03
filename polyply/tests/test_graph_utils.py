@@ -40,6 +40,8 @@ def test_neighbourhood(source, max_length, min_length, expected):
                         ([(0, 1), (1, 2), (1, 3), (3, 4)], True),
                         # cyclic branched
                         ([(0, 1), (1, 2), (2, 3), (3, 0), (0, 5)], True),
+                        # no nodes
+                        ([], False)
                         ))
 def test_is_branched(edges, expected):
     graph = nx.Graph()
