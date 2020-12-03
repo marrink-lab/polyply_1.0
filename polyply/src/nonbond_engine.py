@@ -39,9 +39,12 @@ def _lennard_jones_force(dist, point, ref, params):
         the force vector
     """
     sig, eps = params
-    # computing the vector here with numba is faster than separate
-    # the distance however again is faster computed with the cKDtree
-    # directly
+    # distances are computed directly from the KD tree, as we compute the force here
+    # we also need the distance vector, which does not come from the KDtree. Computing
+    # the distance vector here rather than outside the function profits from the numba
+    # acceleration. Computing the distance also here would, however, not be faster
+    # as the cKDtree is better optimized still. So we get the distance from outside
+    # and compute the vector here. All hail the microoptimization.
     vect = point - ref
     force = 24 * eps / dist * ((2 * (sig/dist)**12.0) - (sig/dist)**6) * vect/dist
     return force
