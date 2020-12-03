@@ -15,8 +15,8 @@ import itertools
 import multiprocessing
 import numpy as np
 import scipy.spatial
+from polyply import jit
 from .topology import lorentz_berthelot_rule
-
 
 def _lennard_jones_force(dist, point, ref, params):
     """
@@ -46,13 +46,8 @@ def _lennard_jones_force(dist, point, ref, params):
     force = 24 * eps / dist * ((2 * (sig/dist)**12.0) - (sig/dist)**6) * vect/dist
     return force
 
-# if numba is installed use the installation
-# if not just use straight computation
-try:
-    from numba import jit
-    lennard_jones_force = jit(_lennard_jones_force, nopython=True, cache=True, fastmath=True)
-except ImportError:
-    lennard_jones_force = _lennard_jones_force
+# numba implementation if available
+lennard_jones_force = jit(_lennard_jones_force)
 
 POTENTIAL_FUNC = {"LJ": lennard_jones_force}
 
@@ -91,8 +86,10 @@ class NonBondEngine():
              index and node_key
         atomtypes:  np.ndarray
              array of atom_types corresponding to the atoms in positions
-        interaction_matrix: dict[forzenset(atom_type, atom_type)]
-             atom_type is a str defining the atom_type
+        interaction_matrix:  dict[frozenset(str, str), tuple(float, float)]
+             Dict mapping the atom_types to LJ type interaction parameters,
+             that is sigma, epsilon or C6, C12 depending on the potential
+             used. Currently only the sigma epsilon form is implemented.
         cut_off: float
              cut-off for which to compute the interaction in nm
         boxsize: np.ndarray

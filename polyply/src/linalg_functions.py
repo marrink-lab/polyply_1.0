@@ -15,7 +15,7 @@ import numpy as np
 from numpy import sqrt, pi, cos, sin, dot, cross, arccos, degrees
 from numpy.linalg import norm
 from scipy.spatial.transform import Rotation
-from numba import jit
+from polyply import jit
 
 def _vector_angle_degrees(v1, v2):
     """
@@ -36,7 +36,7 @@ def _vector_angle_degrees(v1, v2):
     return angle
 
 # this is the numba implementation
-vector_angle_degrees = jit(_vector_angle_degrees, nopython=True, cache=True, fastmath=True)
+vector_angle_degrees = jit(_vector_angle_degrees)
 
 def _u_vect(vect):
     """
@@ -54,7 +54,7 @@ def _u_vect(vect):
     return u_vect
 
 # this is the numba implementation
-u_vect = jit(_u_vect, nopython=True, cache=True, fastmath=True)
+u_vect = jit(_u_vect)
 
 def _angle(A, B, C):
     """
@@ -74,7 +74,7 @@ def _angle(A, B, C):
     v2 = B - C
     angle = vector_angle_degrees(v1, v2)
     return angle
-angle = jit(_angle, nopython=True, cache=True, fastmath=True)
+angle = jit(_angle)
 
 def _dih(A, B, C, D):
     """
@@ -97,7 +97,7 @@ def _dih(A, B, C, D):
     n2 = u_vect(cross(r2, r3))
     dih = vector_angle_degrees(n1, n2)
     return dih
-dih = jit(_dih, nopython=True, cache=True, fastmath=True)
+dih = jit(_dih)
 
 def center_of_geometry(points):
     """
@@ -161,7 +161,7 @@ def _radius_of_gyration(points):
             count = count + 1
     RG = np.sqrt(1/(2*N**2.0) * np.sum(diff))
     return RG
-radius_of_gyration = jit(_radius_of_gyration, nopython=True, cache=True, fastmath=True)
+radius_of_gyration = jit(_radius_of_gyration)
 
 def rotate_xyz(object_xyz, theta_x, theta_y, theta_z):
     """
