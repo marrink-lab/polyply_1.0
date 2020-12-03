@@ -286,12 +286,15 @@ class RandomWalk(Processor):
         self.step_fudge = step_fudge
         self.start_node = start_node
         self.nrewind = nrewind
+        self.placed_nodes = []
 
-    def _rewind(self, current_step, placed_nodes, nsteps):
-        for _, node in placed_nodes[-nsteps:-1]:
+    def _rewind(self, current_step, nsteps):
+        for _, node in self.placed_nodes[-nsteps:-1]:
             self.nonbond_matrix.remove_positions(self.mol_idx,
                                                  node)
-        return placed_nodes[-nsteps][0]
+        step_count = self.placed_nodes[-nsteps][0]
+        self.placed_nodes = self.placed_nodes[:-self.nrewind]
+        return step_count
 
     def _is_overlap(self, point, node, nrexcl=1):
         neighbours = neighborhood(self.molecule, node, nrexcl)
@@ -377,7 +380,6 @@ class RandomWalk(Processor):
 
         vector_bundle = self.vector_sphere.copy()
         count = 0
-        placed_nodes = []
         path = list(nx.bfs_edges(meta_molecule, source=first_node))
         step_count = 0
 
@@ -392,16 +394,15 @@ class RandomWalk(Processor):
                                            current_node,
                                            prev_node)
             self.success = status
-            placed_nodes.append((step_count, current_node))
+            self.placed_nodes.append((step_count, current_node))
 
             # in principle this count here is not needed, however,
             # we need to check the performance in terms of strucutre
             # generation before doing any adjustments here
             if not self.success and count < self.maxiter:
-                if len(placed_nodes) < self.nrewind+1:
+                if len(self.placed_nodes) < self.nrewind+1:
                     return
-                step_count = self._rewind(step_count, placed_nodes, self.nrewind)
-                placed_nodes = placed_nodes[:-self.nrewind]
+                step_count = self._rewind(step_count, self.nrewind)
             elif not self.success:
                 return
             else:
