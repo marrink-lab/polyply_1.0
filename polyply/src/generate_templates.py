@@ -308,8 +308,9 @@ class GenerateTemplates(Processor):
                     if success:
                         break
                     elif opt_counter > self.max_opt:
-                        print("Warning: Failed to optimize structure for block {}.".format(resname))
-                        print("Proceeding with unoptimized coordinates.")
+                        print("WARNING: Failed to optimize structure for block {}.".format(resname))
+                        print("         Proceeding with unoptimized coordinates.")
+                        print("         Usually this is OK, but check your final structure.")
                         break
                     else:
                         opt_counter += 1
