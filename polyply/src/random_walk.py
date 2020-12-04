@@ -215,9 +215,9 @@ RESTRAINT_METHODS = {"cylinder": in_cylinder,
                      "sphere":  in_sphere}
 
 
-def fullfill_geometrical_constraints(point, node_dict):
+def fulfill_geometrical_constraints(point, node_dict):
     """
-    Assert if a point fullfills a geometrical constraint
+    Assert if a point fulfills a geometrical constraint
     as defined by the "restraint" key in a dictionary.
     If there is no key "restraint" the function returns true.
 
@@ -270,7 +270,6 @@ class RandomWalk(Processor):
                  maxdim=None,
                  max_force=1e3,
                  vector_sphere=norm_sphere(5000),
-                 push=[],
                  start_node=None,
                  nrewind=5):
 
@@ -282,17 +281,16 @@ class RandomWalk(Processor):
         self.vector_sphere = vector_sphere
         self.success = False
         self.max_force = max_force
-        self.push = push
         self.step_fudge = step_fudge
         self.start_node = start_node
         self.nrewind = nrewind
         self.placed_nodes = []
 
-    def _rewind(self, current_step, nsteps):
-        for _, node in self.placed_nodes[-nsteps:-1]:
+    def _rewind(self, current_step):
+        for _, node in self.placed_nodes[-self.nrewind:-1]:
             self.nonbond_matrix.remove_positions(self.mol_idx,
                                                  node)
-        step_count = self.placed_nodes[-nsteps][0]
+        step_count = self.placed_nodes[-self.nrewind][0]
         self.placed_nodes = self.placed_nodes[:-self.nrewind]
         return step_count
 
@@ -305,7 +303,6 @@ class RandomWalk(Processor):
                                                              potential="LJ")
         return norm(force_vect) > self.max_force
 
-    # @profile
     def update_positions(self, vector_bundle, current_node, prev_node):
         """
         Take an array of unit vectors `vector_bundle` and generate the coordinates
@@ -333,15 +330,15 @@ class RandomWalk(Processor):
 
             new_point, index = _take_step(vector_bundle, step_length, last_point, self.maxdim)
 
-            if fullfill_geometrical_constraints(new_point, self.molecule.nodes[current_node])\
+            if fulfill_geometrical_constraints(new_point, self.molecule.nodes[current_node])\
                 and is_restricted(new_point, last_point, self.molecule.nodes[current_node])\
                 and not self._is_overlap(new_point, current_node):
 
-                self.nonbond_matrix.add_positions(new_point,
-                                                  self.mol_idx,
-                                                  current_node,
-                                                  start=False)
-                return True
+                    self.nonbond_matrix.add_positions(new_point,
+                                                      self.mol_idx,
+                                                      current_node,
+                                                      start=False)
+                    return True
 
             elif step_count == self.maxiter:
                 return False
@@ -365,8 +362,8 @@ class RandomWalk(Processor):
             first_node = self.start_node
 
         if "position" not in meta_molecule.nodes[first_node]:
-            constrained = fullfill_geometrical_constraints(self.start,
-                                                           self.molecule.nodes[first_node])
+            constrained = fulfill_geometrical_constraints(self.start,
+                                                          self.molecule.nodes[first_node])
 
             if constrained and not self._is_overlap(self.start, first_node):
                 self.nonbond_matrix.add_positions(self.start,
@@ -402,7 +399,7 @@ class RandomWalk(Processor):
             if not self.success and count < self.maxiter:
                 if len(self.placed_nodes) < self.nrewind+1:
                     return
-                step_count = self._rewind(step_count, self.nrewind)
+                step_count = self._rewind(step_count)
             elif not self.success:
                 return
             else:
