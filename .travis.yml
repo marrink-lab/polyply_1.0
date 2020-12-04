@@ -64,17 +64,18 @@ jobs:
         - python run_pylint.py --disable=fixme --fail-under=9.5 bin/polyply
       after_success: skip
 
-#    - stage: deploy
-#      python: "3.7"
-#      addons: skip
-#      env: WITH_CODECOV=false
-#      before_script: skip
-#      script: skip
-#      deploy:
-#          provider: pypi
-#          user: pckroon
-#          password:
-#              # travis encrypt --add deploy.password
-#              secure:
-#          on:
-#              tags: true
+    - stage: deploy
+      python: "3.7"
+      addons: skip
+      env: WITH_CODECOV=false
+      before_script: skip
+      script: skip
+      deploy:
+          provider: pypi
+          user: __token__
+          server: https://test.pypi.org/legacy
+          password:
+              # travis encrypt --add deploy.password
+              secure: "awerGF26dxl08ZKcKif9yQJx0BHBpCG4PYjLpqBlEiM+CbrLNn5K/oTPolhb0q1Yee8tsE+KHbw89A8FLoMCVWO3quVBWK2rK7jaibnY17XBPlPlnPkaWNKg4BIJuXUSCe7aCGf07KlolPMxQ+z51rXpP59nQ2tOEaK7seUBuMzArh+BpYvqzjWkB5FpKmOwSqRRx8jg0j1wCxwO7P0OxtEGxBq47SBSCmaCm2iU2c9tw8HELY3XJUnbqwB/7AIYai0T0ExlyhszetBLHqI8lhY8Z0ThSDcElz0CVgO2eekz6cjMdXRa12NUEGOuRaThg+eZQgbpF8hvpwz2e6J40lrygbUdz1V54ercD38XPLDv6EkvmwTyCs+RbVnX0RMjkW50qYuydHzE+qkc1TaNqhYv8idDgYdcF3HgE32xxmOmxU8wLCt9cEfvT4hAT+TW0B0/0Jzj03h3lGSd4PlL5KOjZggqfxLgFgdbfS10TsygxQm0d/+/8m9Rck2AP/DVNqK2mZaONZUWWZCctkM5KuEKAtCyWBQVnNIJleEsNOe5JA3F0c3pFhi/43XpBg3w8UH1wMzDRRbxr+YJpTkXURh+V9XgfgcU1/xSsB5Qqk7FK8ca18JsdDEEjw7n4TfBso18bJD/SVC/XOt7zqZ+xnieFX6US8TJUChdWRuF2nM="
+          on:
+              tags: true
