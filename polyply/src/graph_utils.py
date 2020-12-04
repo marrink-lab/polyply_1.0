@@ -63,3 +63,22 @@ def find_nodes_with_attributes(graph, **attrs):
                 break
         else:
             yield node
+
+def is_branched(graph):
+    """
+    Check if any node has a degree larger than 2
+
+    Parameters:
+    -----------
+    graph: :class:`networkx.Graph`
+        A networkx graph definintion
+
+    Returns:
+    --------
+    bool
+       is branched
+    """
+    for node, deg in graph.degree:
+        if deg > 2:
+           return True
+    return False
