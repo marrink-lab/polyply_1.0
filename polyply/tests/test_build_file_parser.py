@@ -25,17 +25,17 @@ from polyply.src.topology import Topology
 
 @pytest.mark.parametrize('tokens, _type, expected', (
    # for cylinder
-   (["PEO", "63", "154", "in", "5", "5", "5", "6", "7"],
+   (["PEO", "63", "154", "in", "1", "2", "3", "6", "7"],
     "cylinder",
-    {"resname": "PEO", "start": 63, "stop": 154, "parameters":["in", np.array([5.0, 5.0, 5.0]), 6.0, 7.0, "cylinder"]})
+    {"resname": "PEO", "start": 63, "stop": 154, "parameters":["in", np.array([1.0, 2.0, 3.0]), 6.0, 7.0, "cylinder"]})
    # for recangle
-   ,(["PEO", "0", "10", "out", "10", "10", "10", "5", "5", "3"],
+   ,(["PEO", "0", "10", "out", "11", "12", "14", "1", "2", "3"],
     "rectangle",
-    {"resname": "PEO", "start": 0, "stop": 10, "parameters":["out", np.array([10.0, 10.0, 10.0]), 5.0, 5.0, 3.0, "rectangle"]})
+    {"resname": "PEO", "start": 0, "stop": 10, "parameters":["out", np.array([11.0, 12.0, 13.0]), 1.0, 2.0, 3.0, "rectangle"]})
    # for sphere
-   ,(["PEO", "0", "10", "in", "10", "10", "10", "5"],
+   ,(["PEO", "0", "10", "in", "11", "12", "13", "5"],
     "sphere",
-    {"resname": "PEO", "start": 0, "stop": 10, "parameters":["in", np.array([10.0, 10.0, 10.0]), 5.0, "sphere"]})
+    {"resname": "PEO", "start": 0, "stop": 10, "parameters":["in", np.array([11.0, 12.0, 13.0]), 5.0, "sphere"]})
    ))
 def test_base_parser_geometry(tokens, _type, expected):
     result = polyply.src.build_file_parser.BuildDirector._base_parser_geometry(tokens, _type)

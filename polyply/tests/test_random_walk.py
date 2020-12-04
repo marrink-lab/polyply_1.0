@@ -23,7 +23,7 @@ import polyply
 from polyply import TEST_DATA
 from polyply.src.topology import Topology
 from polyply.src.nonbond_engine import NonBondEngine
-from polyply.src.random_walk import (fullfill_geometrical_constraints,
+from polyply.src.random_walk import (fulfill_geometrical_constraints,
                                      pbc_complete,
                                      not_exceeds_max_dimensions,
                                      _take_step,
@@ -87,7 +87,7 @@ from polyply.src.random_walk import (fullfill_geometrical_constraints,
      ),
 ))
 def test_geometric_restrictions(restraint_dict, point, result):
-    assert fullfill_geometrical_constraints(point, restraint_dict) == result
+    assert fulfill_geometrical_constraints(point, restraint_dict) == result
 
 
 @pytest.mark.parametrize('box_vect, point, result', (
@@ -166,11 +166,10 @@ def add_positions(nb_matrix, ncoords, pos=None):
 
 def test_rewind(nonbond_matrix):
     nb_matrix = add_positions(nonbond_matrix, 6)
-    processor = RandomWalk(mol_idx=0, nonbond_matrix=nb_matrix)
+    processor = RandomWalk(mol_idx=0, nonbond_matrix=nb_matrix, nrewind=3)
     # node 4 is already placed and hence is skipped over
     processor.placed_nodes = [(0, 0), (1, 1), (2, 2), (3, 3), (4, 5), (5, 6)]
-    last_idx = processor._rewind(current_step=5,
-                                 nsteps=3)
+    last_idx = processor._rewind(current_step=5)
     assert last_idx == 3
     for idx in [6, 5, 3]:
         assert all(nb_matrix.positions[idx] == np.array([np.inf, np.inf, np.inf]))
