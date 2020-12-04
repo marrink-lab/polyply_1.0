@@ -13,7 +13,10 @@
 # limitations under the License.
 
 import networkx as nx
+from vermouth.graph_utils import (make_residue_graph,
+                                  collect_residues)
 from polyply.src.processor import Processor
+from polyply.src.graph_utils import is_branched
 
 def tag_exclusions(blocks, force_field):
     """
@@ -52,48 +55,40 @@ class MapToMolecule(Processor):
         residues are added instead of the orignial block to
         the meta molecule.
         """
-        # 1. relable nodes to make space for new nodes to be inserted
+        # 0. make edges for the block
+        for inter_type in ["bonds", "constraints", "virtual_sitesn",
+                           "virtual_sites2", "virtual_sites3", "virtual_sites4"]:
+            block.make_edges_from_interaction_type(inter_type)
+
+        # 1. make residue graph
+        expanded_graph = make_residue_graph(block)
+
+        # 2. clear out all old edges, because the
+        # inserted part will not have any edges with the
+        # rest of the meta_molecule as we don't know those
+        old_edges = list(meta_molecule.edges(meta_mol_node))
+        meta_molecule.remove_edges_from(old_edges)
+
+        # 3. relable nodes to make space for new nodes to be inserted
         mapping = {}
-        offset = len(set(nx.get_node_attributes(block, "resid").values())) - 1
-        #print("offset", offset)
+        offset = len(expanded_graph.nodes) - 1
         for node in meta_molecule.nodes:
             if node > meta_mol_node:
                 mapping[node] = node + offset
 
         nx.relabel_nodes(meta_molecule, mapping, copy=False)
+        # 4. add the new nodes to the meta molecule overwriting
+        # the inital nodes inserting the graph
+        nodes = sorted(expanded_graph.nodes)
+        for node in nodes:
+            node_key = node + meta_mol_node
+            attrs = expanded_graph.nodes[node]
+            attrs["links"] = False
+            meta_molecule.add_node(node_key, **attrs)
 
-        # 2. add the new nodes to the meta molecule overwriting
-        # the inital node
-        node_to_resid = {}
-        resids = nx.get_node_attributes(block, "resid")
-        for node, resid in resids.items():
-            if resid != meta_mol_node:
-                node_to_resid[node] = resid + meta_mol_node - 1
-            else:
-                node_to_resid[node] = resid
-
-        #print(node_to_resid)
-        meta_molecule.add_nodes_from(set(node_to_resid.values()))
-
-        # 3. set node attributes
-        name_dict = {}
-        ignore_dict = {}
-        resnames = nx.get_node_attributes(block, "resname")
-        for idx, value in resnames.items():
-            name_dict.update({node_to_resid[idx]:value})
-            ignore_dict.update({node_to_resid[idx]:False})
-
-        nx.set_node_attributes(meta_molecule, name_dict, "resname")
-        nx.set_node_attributes(meta_molecule, ignore_dict, "links")
-
-        # 4. add all missing edges
-        block.make_edges_from_interaction_type(type_="bonds")
-        #print(block.edges)
-        for edge in block.edges:
-            v1 = node_to_resid[edge[0]]
-            v2 = node_to_resid[edge[1]]
-            if v1 != v2:
-                meta_molecule.add_edge(v1, v2)
+        # 5. add all edges within the exapnded block
+        for edge in expanded_graph.edges:
+            meta_molecule.add_edge(edge[0] + meta_mol_node, edge[1] + meta_mol_node)
 
     def add_blocks(self, meta_molecule):
         """
@@ -109,9 +104,11 @@ class MapToMolecule(Processor):
         new_mol = block.to_molecule()
         # we store the block together with the residue node
         meta_molecule.nodes[0]["graph"] = new_mol.copy()
-        # TODO: Make a residue graph and check its length instead to make sure
-        # you don't get tripped up by e.g. chains and insertion codes.
-        if len(set(nx.get_node_attributes(block, "resid").values())) > 1:
+        # here we generate a residue dict which is a collection
+        # of all unique residue regardless of connectivity
+        # it is faster than making the complete residue graph
+        res_dict = collect_residues(block, attrs=('resid', 'resname'))
+        if len(res_dict) > 1:
             self.expand_meta_graph(meta_molecule, block, 0)
 
         node_keys = list(meta_molecule.nodes.keys())
@@ -131,7 +128,11 @@ class MapToMolecule(Processor):
 
             meta_molecule.nodes[node]["graph"] = residue
 
-            if len(set(nx.get_node_attributes(block, "resid").values())) > 1:
+            # here we generate a residue dict which is a collection
+            # of all unique residue regardless of connectivity
+            # it is faster than making the complete residue graph
+            res_dict = collect_residues(block, attrs=('resid', 'resname'))
+            if len(res_dict) > 1:
                 self.expand_meta_graph(meta_molecule, block, node)
 
         return new_mol
