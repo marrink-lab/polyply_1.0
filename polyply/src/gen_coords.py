@@ -82,23 +82,25 @@ def _check_molecules(molecules):
 def gen_coords(args):
     # Read in the topology
     # TODO Write Logger for all print statements
-    print("reading topology")
+    print("INFO - reading topology")
     topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
-    print("processing it")
+    print("INFO - processing topology")
     topology.preprocess()
     _check_molecules(topology.molecules)
 
     if args.split:
-       print("splitting residues")
+       print("INFO - splitting residues")
        for molecule in topology.molecules:
            molecule.split_residue(args.split)
 
     # read in coordinates if there are any
     if args.coordpath:
+        print("INFO - loading coordinates")
         topology.add_positions_from_file(args.coordpath, args.build_res)
 
     # load in built file
     if args.build:
+        print("INFO - reading build file")
         with open(args.build) as build_file:
             lines = build_file.readlines()
             read_build_file(lines, topology.molecules)
@@ -108,12 +110,15 @@ def gen_coords(args):
 
     # handle grid input
     if args.grid:
+        print("INFO - loading grid")
         args.grid = np.loadtxt(args.grid)
 
     # Build polymer structure
+    print("INFO - generating templates")
     GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
+    print("INFO - annotating ligands")
     AnnotateLigands(topology, args.ligands).run_system(topology)
-
+    print("INFO - starting system generation")
     BuildSystem(topology,
                 start_dict=start_dict,
                 density=args.density,
@@ -122,16 +127,16 @@ def gen_coords(args):
                 maxiter=args.maxiter,
                 box=args.box,
                 step_fudge=args.step_fudge,
-                push=args.push,
                 ignore=args.ignore,
                 grid=args.grid,
                 nrewind=args.nrewind).run_system(topology.molecules)
 
     AnnotateLigands(topology, args.ligands).split_ligands()
-
+    print("INFO - backmapping")
     Backmap(args.nproc, fudge_coords=args.bfudge).run_system(topology)
 
     # Write output
+    print("INFO - writing output")
     command = ' '.join(sys.argv)
     system = topology.convert_to_vermouth_system()
     vermouth.gmx.gro.write_gro(system, args.outpath, precision=7,
