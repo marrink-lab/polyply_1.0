@@ -102,16 +102,17 @@ def main():
                                 default=[], nargs='+')
     topology_group.add_argument('-split', dest='split', nargs='+', type=str, default=[],
                                 help=('split single residue into more residues. The syntax is '
-                                      '<resname>:<new_resname>-<atom1>,<atom2><etc>:<new_resname2> '
-                                      'Note that all atoms of the old residues need to be in at most '
-                                      'one new residue and must all be accounted for.'))
+                                      '<resname>:<new_resname>-<atom1>,<atom2><etc>:<new_resname> '
+                                      'Note that all atoms of the old residues need to be in at '
+                                      'most one new residue and must all be accounted for.'))
     topology_group.add_argument('-lig', dest='ligands', nargs='+', type=lambda s: s.split(':'),
                                 default=[],
                                 help=('Specify ligands of molecules which should be placed close '
                                       'to a specific molecule. The format is as follows: '
                                       '<mol_name>#<mol_idx>-<resname>#<resid>:<mol_name>#<mol_idx>-<resname>#<resid>. '
                                       'Elements of the specification can be omitted as required. '
-                                      'Note mol_name and resname cannot contain the characters # and -.'))
+                                      'Note mol_name and resname cannot contain the characters '
+                                      '# and -.'))
 
     system_group = parser_gen_coords.add_argument_group('Options for system generation')
     system_group.add_argument('-dens', dest='density', type=float,
