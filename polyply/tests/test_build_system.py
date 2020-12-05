@@ -83,8 +83,16 @@ def example_topology():
      )))
 def test_compute_box_size(example_topology, density, result):
     top = example_topology
-    print(_compute_box_size(top, density))
     assert np.isclose(_compute_box_size(top, density), result)
+
+
+def test_compute_box_size_error(example_topology):
+    top = example_topology
+    # clear the atomtypes to see if error is raised
+    # when no mass can be found
+    top.atom_types = {}
+    with pytest.raises(KeyError):
+        _compute_box_size(top, 1000)
 
 @pytest.mark.parametrize('ignore', (
     ["test_A"],
@@ -141,6 +149,7 @@ def test_init(example_topology,
 def test_rw_arg_failure():
     with pytest.raises(TypeError):
          BuildSystem(example_topology,
+                     density=1000,
                      start_dict={},
                      random_argument=10)
 
