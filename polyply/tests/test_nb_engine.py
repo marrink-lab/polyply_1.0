@@ -103,7 +103,7 @@ def  test_nb_engine_from_top_file(topology, n_pos):
                        }
 
      # make sure the cut_off is set dynamically and accurate
-     assert nb_engine.cut_off == 1.34
+     assert nb_engine.cut_off == 2*0.67
 
      # check if all interactions are created properly
      for res_combo, interaction in nb_interactions.items():
