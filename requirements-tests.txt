@@ -3,5 +3,4 @@ coverage
 pytest-cov
 pylint
 codecov
-numba
 tqdm
