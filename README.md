@@ -19,7 +19,7 @@ using the pip command:
 ```
 pip install polyply
 ```
-This installs the last released version. You can update an existing installation by running pip install -U polyply. 
+This installs the last released version. You can update an existing installation by running `pip install -U polyply`. 
 In some cases you may want to experiment with running the latest development version. You can install this 
 version with the following command:
 ```
