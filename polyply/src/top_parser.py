@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import copy
 from itertools import zip_longest
 from vermouth.parser_utils import SectionLineParser
 from vermouth.molecule import Interaction
 from vermouth.gmx.itp_read import read_itp
-from .meta_molecule import MetaMolecule
+from .meta_molecule import MetaMolecule, _make_edges
+from tqdm import tqdm
 
 class TOPDirector(SectionLineParser):
 
@@ -235,18 +237,27 @@ class TOPDirector(SectionLineParser):
         for lines in self.itp_lines:
             read_itp(lines, self.force_field)
 
+        total_count = 0
+        _make_edges(self.force_field)
+
         for mol_name, n_mol in self.molecules:
             block = self.force_field.blocks[mol_name]
-            meta_molecule = MetaMolecule.from_block(self.force_field,
-                                                    block,
-                                                    mol_name)
-            meta_molecule.atom_types = self.topology.atom_types
-            meta_molecule.defaults = self.topology.defaults
-            meta_molecule.nonbond_params = self.topology.nonbond_params
-            meta_molecule.defines = self.topology.defines
-            meta_molecule.name = mol_name
-            for idx in range(0, int(n_mol)):
-                 self.topology.add_molecule(meta_molecule)
+            graph = MetaMolecule._block_graph_to_res_graph(block)
+            for idx in tqdm(range(0, int(n_mol))):
+                graph_copy = copy.deepcopy(graph)
+                new_mol = MetaMolecule(graph_copy,
+                                       force_field=self.force_field,
+                                       mol_name=mol_name)
+                new_mol.molecule = self.force_field.blocks[mol_name].to_molecule()
+                new_mol.atom_types = self.topology.atom_types
+                new_mol.defaults = self.topology.defaults
+                new_mol.nonbond_params = self.topology.nonbond_params
+                new_mol.defines = self.topology.defines
+                new_mol.mol_name = mol_name
+
+                self.topology.add_molecule(new_mol)
+                self.topology.mol_idx_by_name[mol_name].append(total_count)
+                total_count += 1
 
         super().finalize()
 
@@ -325,7 +336,7 @@ class TOPDirector(SectionLineParser):
             raise OSError(msg.format(line))
 
         self.topology.atom_types[atom_name] = atom_type_line
-
+        
     @SectionLineParser.section_parser('nonbond_params')
     def _nonbond_params(self, line, lineno=0):
         """

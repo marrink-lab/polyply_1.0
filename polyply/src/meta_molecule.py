@@ -17,6 +17,7 @@ import networkx as nx
 from networkx.readwrite import json_graph
 from vermouth.graph_utils import make_residue_graph
 from .polyply_parser import read_polyply
+from .graph_utils import find_nodes_with_attributes
 
 Monomer = namedtuple('Monomer', 'resname, n_blocks')
 
@@ -24,12 +25,52 @@ def _make_edges(force_field):
     for block in force_field.blocks.values():
         inter_types = list(block.interactions.keys())
         for inter_type in inter_types:
-            block.make_edges_from_interaction_type(type_=inter_type)
+            if inter_type not in ["pairs", "exclusions"]:
+               block.make_edges_from_interaction_type(type_=inter_type)
 
     for link in force_field.links:
         inter_types = list(link.interactions.keys())
         for inter_type in inter_types:
             link.make_edges_from_interaction_type(type_=inter_type)
+
+def _interpret_residue_mapping(graph, resname, new_residues):
+    """
+    Find all nodes corresponding to resname in graph
+    and generate a corrspondance dict of these nodes
+    to new resnames as defined by new_residues string
+    which has the format <resname-atom1,atom2 ...>.
+
+    Parameters:
+    -----------
+    graph: networkx.graph
+    resname: str
+    new_residues:  list[str]
+
+    Returns:
+    --------
+    dict
+        mapping of nodes to new residue name
+    """
+    atom_name_to_resname = {}
+    had_atoms = []
+
+    for new_res in new_residues:
+        new_name, atoms = new_res.split("-")
+        names = atoms.split(",")
+
+        for name in names:
+            if name in had_atoms:
+                msg = ("You are trying to split residue {} into {} residues. "
+                       "However, atom {} is mentioned more than once. This is not "
+                       "allowed. ")
+                raise IOError(msg.format(resname, len(new_residues), name))
+            nodes = find_nodes_with_attributes(graph, resname=resname, atomname=name)
+            had_atoms.append(name)
+
+            for node in nodes:
+                atom_name_to_resname[node] = new_name
+
+    return atom_name_to_resname
 
 class MetaMolecule(nx.Graph):
     """
@@ -40,8 +81,10 @@ class MetaMolecule(nx.Graph):
 
     def __init__(self, *args, **kwargs):
         self.force_field = kwargs.pop('force_field', None)
+        self.mol_name = kwargs.pop('mol_name', None)
         super().__init__(*args, **kwargs)
         self.molecule = None
+        nx.set_node_attributes(self, True, "build")
 
     def add_monomer(self, current, resname, connections):
         """
@@ -50,7 +93,14 @@ class MetaMolecule(nx.Graph):
         that matches may only refer to already existing nodes.
         But connections can be an empty list.
         """
-        self.add_node(current, resname=resname)
+        resids = nx.get_node_attributes(self, "resid")
+
+        if resids:
+           resid = max(resids.values()) + 1
+        else:
+           resid = 1
+
+        self.add_node(current, resname=resname, resid=resid, build=True)
         for edge in connections:
             if self.has_node(edge[0]) and self.has_node(edge[1]):
                 self.add_edge(edge[0], edge[1])
@@ -61,6 +111,56 @@ class MetaMolecule(nx.Graph):
 
     def get_edge_resname(self, edge):
         return [self.nodes[edge[0]]["resname"], self.nodes[edge[1]]["resname"]]
+
+    def relabel_and_redo_res_graph(self, mapping):
+        """
+        Relable the nodes of `self.molecule` using `mapping`
+        and regenerate the meta_molecule (i.e. residue graph).
+
+        Parameters:
+        -----------
+        mapping: dict
+            mapping of node-key to new residue name
+        """
+        # find the maximum resiude id
+        max_resid = max(nx.get_node_attributes(self.molecule, "resid").values())
+        # resname the residues and increase with pseudo-resid
+        for node, resname in mapping.items():
+            self.molecule.nodes[node]["resname"] = resname
+            old_resid = self.molecule.nodes[node]["resid"]
+            self.molecule.nodes[node]["resid"] = old_resid + max_resid + 1
+
+        # make a new residue graph and overwrite the old one
+        new_meta_graph = make_residue_graph(self.molecule, attrs=('resid', 'resname'))
+        self.clear()
+        self.add_nodes_from(new_meta_graph.nodes(data=True))
+        self.add_edges_from(new_meta_graph.edges)
+
+    def split_residue(self, split_strings):
+        """
+        Split all residues defind by the in `split_strings`, which is a list
+        of strings with format <resname>:<new_resname>-<atom1>,<atom2><etc>
+        into new residues and also update the underlying molecule with these
+        new residues.
+
+        Parameters:
+        -----------
+        split_strings:  list[str]
+             list of split strings
+
+        Returns:
+        dict
+            mapping of the nodes to the new resnames
+        """
+        mapping = {}
+        for split_string in split_strings:
+            # split resname and new resiude definitions
+            resname, *new_residues = split_string.split(":")
+            # find out which atoms map to which new residues
+            mapping.update(_interpret_residue_mapping(self.molecule, resname, new_residues))
+        # relabel graph and redo residue graph
+        self.relabel_and_redo_res_graph(mapping)
+        return mapping
 
     @staticmethod
     def _block_graph_to_res_graph(block):
@@ -85,7 +185,7 @@ class MetaMolecule(nx.Graph):
         which is the default assumption from
         """
 
-        meta_mol_graph = cls(force_field=force_field, name=mol_name)
+        meta_mol_graph = cls(force_field=force_field, mol_name=mol_name)
         res_count = 0
 
         for monomer in monomers:
@@ -139,13 +239,12 @@ class MetaMolecule(nx.Graph):
         return meta_mol
 
     @classmethod
-    def from_block(cls, force_field, block, mol_name):
+    def from_block(cls, force_field, mol_name):
         """
         Constructs a :class::`MetaMolecule` from an vermouth.molecule.
         """
-        # ToDo can't we get block from force-field using mol-name?
-        # this function can be cleaned up a bit
         _make_edges(force_field)
+        block = force_field[mol_name]
         graph = MetaMolecule._block_graph_to_res_graph(block)
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
         meta_mol.molecule = force_field.blocks[mol_name].to_molecule()

@@ -107,10 +107,10 @@ def _expand_inital_coords(block, bond=None, pos=None, fixed=None,
     dict
       dictonary of node index and position
     """
-    return nx.spring_layout(block, dim=3, k=bond, pos=pos, fixed=fixed,
-                            iterations=iterations, weight=weight, scale=max_box)
+    # replace by kamada kwau
+    return nx.kamada_kawai_layout(block, dim=3)
 
-def compute_volume(molecule, block, coords):
+def compute_volume(molecule, block, coords, treshold=1e-18):
     """
     Given a `block`, which is part of `molecule` and
     has the coordinates `coord` compute the radius
@@ -123,7 +123,11 @@ def compute_volume(molecule, block, coords):
     molecule:  :class:vermouth.molecule.Molecule
     block:     :class:vermouth.molecule.Block
     coords:    :class:dict
-      dictionary of positions in from node_idx: np.array
+        dictionary of positions in from node_idx: np.array
+    treshold: float
+        distance from center of geometry at which the
+        particle is not taken into account for the volume
+        computation
 
     Returns
     -------
@@ -139,13 +143,17 @@ def compute_volume(molecule, block, coords):
         atom_key = block.nodes[node]["atype"]
         rad = float(molecule.nonbond_params[frozenset([atom_key, atom_key])]["nb1"])
         diff = coord - res_center_of_geometry
-        geom_vects[idx, :] = diff + u_vect(diff) * rad
+        if np.linalg.norm(diff) < treshold:
+           continue
+        else:
+           geom_vects[idx, :] = diff + u_vect(diff) * rad
         idx += 1
 
     if geom_vects.shape[0] > 1:
         radgyr = radius_of_gyration(geom_vects)
     else:
         radgyr = rad
+
     return radgyr
 
 def map_from_CoG(coords):
@@ -254,12 +262,13 @@ class GenerateTemplates(Processor):
     in the templates attribute. The processor also stores the volume
     of each block in the volume attribute.
     """
-    def __init__(self, max_opt, *args, **kwargs):
+    def __init__(self, topology, max_opt, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.templates = {}
         self.resnames = []
         self.volumes = {}
         self.max_opt = max_opt
+        self.topology = topology
 
     def _gen_templates(self, meta_molecule):
         """
@@ -292,12 +301,16 @@ class GenerateTemplates(Processor):
                 opt_counter = 0
                 while True:
                     coords = _expand_inital_coords(block)
-                    success, coords = optimize_geometry(block, coords)
+                    success, coords = optimize_geometry(block, coords, ["bonds", "constraints"])
+                    success, coords = optimize_geometry(block, coords, ["bonds", "constraints", "angles"])
+                    success, coords = optimize_geometry(block, coords, ["bonds", "constraints", "angles", "dihedrals"])
+
                     if success:
                         break
                     elif opt_counter > self.max_opt:
-                        print("Warning: Failed to optimize structure for block {}.".format(resname))
-                        print("Proceeding with unoptimized coordinates.")
+                        print("WARNING: Failed to optimize structure for block {}.".format(resname))
+                        print("         Proceeding with unoptimized coordinates.")
+                        print("         Usually this is OK, but check your final structure.")
                         break
                     else:
                         opt_counter += 1
@@ -315,5 +328,5 @@ class GenerateTemplates(Processor):
         """
         templates, volumes = self._gen_templates(meta_molecule)
         meta_molecule.templates = self.templates
-        meta_molecule.volumes = self.volumes
+        self.topology.volumes = self.volumes
         return meta_molecule

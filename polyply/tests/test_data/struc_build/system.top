@@ -1,0 +1,7 @@
+#include "martini_PEO_PS_CNP.itp"
+#include "PEO.itp"
+
+[system]
+test
+[molecules]
+PEO 1
