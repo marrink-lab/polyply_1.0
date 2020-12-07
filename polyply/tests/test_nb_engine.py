@@ -102,6 +102,9 @@ def  test_nb_engine_from_top_file(topology, n_pos):
                         frozenset(["GLU", "GLU"]): 0.67,
                        }
 
+     # make sure the cut_off is set dynamically and accurate
+     assert nb_engine.cut_off == 1.34
+
      # check if all interactions are created properly
      for res_combo, interaction in nb_interactions.items():
           assert nb_engine.interaction_matrix[res_combo] == (nb_interactions[res_combo], 1.0)
