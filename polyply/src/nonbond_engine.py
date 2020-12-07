@@ -283,6 +283,9 @@ class NonBondEngine():
             # as by model definition all epsilon values are set to 1
             inter_matrix[frozenset([resname, resname])] = (vdw_radius, 1.0)
 
+        # dynamically set the cut-off as twice the largest vdw-radius
+        cut_off = max(list(inter_matrix.values()))[0] * 2.
+        print(cut_off)
         nonbond_matrix = cls(positions, nodes_to_gndx,
-                             atom_types, inter_matrix, cut_off=2.1, boxsize=box)
+                             atom_types, inter_matrix, cut_off=cut_off, boxsize=box)
         return nonbond_matrix
