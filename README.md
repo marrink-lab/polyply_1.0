@@ -63,7 +63,11 @@ polyply gen_coords -p <top> -o <name_outfile + .gro> -name <name of molecule> -b
 ```
 In order to append coordinates to an already existing coordinate file run:
 ```
-polyply gen_coords -p <top> -o <name_outfile + .gro> -name <name of molecule> -c <init_coords.gro> -box/-dens
+polyply gen_coords -p <top> -o <name_outfile + .gro> -name <name of molecule> -c <init_coords.gro> -box <x, y, z>
+```
+or
+```
+polyply gen_coords -p <top> -o <name_outfile + .gro> -name <name of molecule> -c <init_coords.gro> -dens <density>
 ```
 Note that at the moment polyply can only generate disordered structures of polymers. All molecules
 that have secondary structure (e.g. DNA, proteins) cannot be generated accurately. At the moment
