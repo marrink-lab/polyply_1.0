@@ -14,20 +14,19 @@ Make sure to always verify the results and give appropriate credit to the develo
 force-field, molecule parameters and this program.
 
 ### Installation
-Polyply can be installed from GitHub directly and currently needs the vermouth development
-package as requirement. To install polyply first install the development version of vermouth
-by running:
+Polyply requires python 3.6 or greater. It is distributed via [PyPi][pypi_polyply], and can be installed 
+using the pip command:
 ```
-pip install git+https://github.com/marrink-lab/vermouth-martinize.git#vermouth
+pip install polyply
 ```
-Then downloads this repository and within the downloaded repository execute the following command:
-```
-pip install ./
-```
-Alternatively when using pip, polyply can be installed directly via the following command:
+This installs the last released version. You can update an existing installation by running pip install -U polyply. 
+In some cases you may want to experiment with running the latest development version. You can install this 
+version with the following command:
 ```
 pip install git+https://github.com/fgrunewald/polyply_1.0.git#polyply_1.0
 ```
+The behavior of the pip command can vary depending of the specificity of your python installation. See the 
+[documentation on installing a python package][pipdoc] to learn more.
 
 ### Polymer Library
 Some macro molecules are implemented in our library for a range of different force-fields.
@@ -56,15 +55,20 @@ to combine them with existing itp-files see the wiki pages.
 ### Initial structure generation
 To generate an initial structure run:
 ```
-polyply gen_coords -p <top> -o <name_outfile + .gro> -name <name of molecule>
+polyply gen_coords -p <top> -o <name_outfile + .gro> -name <name of molecule> -dens <density>
+```
+or:
+```
+polyply gen_coords -p <top> -o <name_outfile + .gro> -name <name of molecule> -box <x, y, z>
 ```
 In order to append coordinates to an already existing coordinate file run:
 ```
-polyply gen_coords -p <top> -o <name_outfile + .gro> -name <name of molecule> -c <init_coords.gro>
+polyply gen_coords -p <top> -o <name_outfile + .gro> -name <name of molecule> -c <init_coords.gro> -box/-dens
 ```
 Note that at the moment polyply can only generate disordered structures of polymers. All molecules
 that have secondary structure (e.g. DNA, proteins) cannot be generated accurately. At the moment
-chirality is also not taken into account. All polymers are atactic.
+chirality is also not taken into account. All polymers are atactic unless a dihedral specifies the 
+chirality.
 
 ## Contributions
 The development of polyply is done on [github]. Contributions
@@ -95,3 +99,5 @@ The full text of the license is available in the source repository.
 [github]: https://github.com/marrink-lab/polyply_1.0
 [bug reports]: https://github.com/marrink-lab/polyply_1.0/issues
 [pull requests]: https://github.com/marrink-lab/polyply_1.0/pulls
+[pypi_polyply]: https://pypi.org/project/polyply/
+[pipdoc]: https://packaging.python.org/tutorials/installing-packages/#installing-packages
