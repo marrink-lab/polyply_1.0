@@ -130,16 +130,6 @@ def geometric_rule(C6_A, C6_B, C12_A, C12_B):
     return C6, C12
 
 
-def find_atoms(molecule, attr, value):
-    nodes = []
-    for node in molecule.nodes:
-        if attr in molecule.nodes[node]:
-            if molecule.nodes[node][attr] == value:
-                nodes.append(node)
-
-    return nodes
-
-
 class Topology(System):
     """
     Ties together vermouth molecule definitions, and
@@ -174,6 +164,7 @@ class Topology(System):
         self.atom_types = {}
         self.types = defaultdict(dict)
         self.nonbond_params = {}
+        self.mol_idx_by_name = defaultdict(list)
 
     def preprocess(self):
         """
@@ -307,7 +298,7 @@ class Topology(System):
 
             self.nonbond_params.update({atom_pair: {"nb1": sig, "nb2": eps}})
 
-    def add_positions_from_file(self, path):
+    def add_positions_from_file(self, path, build_res=[]):
         """
         Add positions to topology from coordinate file.
         """
@@ -318,6 +309,10 @@ class Topology(System):
         for meta_mol in self.molecules:
             no_coords = []
             for node in meta_mol.molecule.nodes:
+                resname = meta_mol.molecule.nodes[node]["resname"]
+                if resname in build_res:
+                   no_coords.append(node)
+                   continue
                 try:
                     position = molecules.nodes[total]["position"]
                 except KeyError:
@@ -328,7 +323,7 @@ class Topology(System):
 
             for node in meta_mol:
                 resid = meta_mol.nodes[node]["resid"]
-                atoms_in_res = find_atoms(meta_mol.molecule, "resid", resid)
+                atoms_in_res = list(meta_mol.nodes[node]["graph"].nodes)
 
                 if all(atom not in no_coords for atom in atoms_in_res):
                     positions = np.array([meta_mol.molecule.nodes[atom]["position"] for

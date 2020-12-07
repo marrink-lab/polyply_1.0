@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import networkx as nx
+import vermouth
 
 def neighborhood(graph, source, max_length, min_length=1):
     """
@@ -40,6 +41,28 @@ def neighborhood(graph, source, max_length, min_length=1):
     paths = nx.single_source_shortest_path(G=graph, source=source, cutoff=max_length)
     neighbours = [ node for node, path in paths.items() if min_length <= len(path)]
     return neighbours
+
+def find_nodes_with_attributes(graph, **attrs):
+    """
+    Yields all nodes in graph, which have all
+    attributes in attrs set to value.
+
+    Parameters:
+    -----------
+    graph: nx.Graph
+    **attrs: collections.abc.Mapping
+        The attributes and their desired values.
+
+    Yields:
+    --------
+    collections.abc.Hashable
+    """
+    for node in graph.nodes:
+        for attr, value in attrs.items():
+            if attr not in graph.nodes[node] or graph.nodes[node][attr] != value:
+                break
+        else:
+            yield node
 
 def is_branched(graph):
     """

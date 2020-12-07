@@ -11,9 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import multiprocessing
 import numpy as np
 import scipy.optimize
 import networkx as nx
+from tqdm import tqdm
 from .processor import Processor
 from .generate_templates import find_atoms
 from .linalg_functions import rotate_xyz
@@ -54,7 +56,7 @@ def find_edges(molecule, attr, value):
 
     return edges
 
-
+#@profile
 def orient_template(meta_molecule, current_node, template, built_nodes):
     """
     Given a `template` and a `node` of a `meta_molecule` at lower resolution
@@ -164,14 +166,19 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
 
     return template_rotated
 
-class Backmap(Processor):
+class Backmap():
     """
     This processor takes a a class:`polyply.src.MetaMolecule` and
     places coordinates form a higher resolution createing positions
     for the lower resolution molecule associated with the MetaMolecule.
     """
-    @staticmethod
-    def _place_init_coords(meta_molecule):
+
+    def __init__(self, nproc, fudge_coords=0.4, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.nproc = nproc
+        self.fudge_coords = fudge_coords
+
+    def _place_init_coords(self, meta_molecule):
         """
         For each residue in a class:`polyply.src.MetaMolecule` the
         positions of the atoms associated with that residue stored in
@@ -184,6 +191,7 @@ class Backmap(Processor):
         """
         built_nodes = []
         for node in meta_molecule.nodes:
+            #print(node)
             if  meta_molecule.nodes[node]["build"]:
                 resname = meta_molecule.nodes[node]["resname"]
                 cg_coord = meta_molecule.nodes[node]["position"]
@@ -196,7 +204,7 @@ class Backmap(Processor):
                 for atom_low  in low_res_atoms:
                     atomname = meta_molecule.molecule.nodes[atom_low]["atomname"]
                     vector = template[atomname]
-                    new_coords = cg_coord + vector
+                    new_coords = cg_coord + vector * self.fudge_coords
                     meta_molecule.molecule.nodes[atom_low]["position"] = new_coords
                 built_nodes.append(resid)
 
@@ -207,3 +215,14 @@ class Backmap(Processor):
         """
         self._place_init_coords(meta_molecule)
         return meta_molecule
+
+    def run_system(self, system):
+        """
+        Process `system`.
+        Parameters
+        ----------
+        system: vermouth.system.System
+            The system to process. Is modified in-place.
+        """
+        pool = multiprocessing.Pool(self.nproc)
+        system.molecules = pool.map(self.run_molecule, tqdm(system.molecules))

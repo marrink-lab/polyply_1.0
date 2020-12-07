@@ -15,43 +15,130 @@
 """
 High level API for the polyply coordinate generator
 """
-
+import sys
+from collections import defaultdict
+from functools import partial
+import multiprocessing
+import numpy as np
 import networkx as nx
+from tqdm import tqdm
 import vermouth.forcefield
-from vermouth.file_writer import open, DeferredFileWriter
+from vermouth.file_writer import DeferredFileWriter
 from .generate_templates import GenerateTemplates
-from .random_walk import RandomWalk
 from .backmap import Backmap
 from .topology import Topology
+from .build_system import BuildSystem
+from .annotate_ligands import AnnotateLigands, parse_residue_spec, _find_nodes
+from .build_file_parser import read_build_file
 
-def gen_coords(args):
-    # Read in the topology
-    topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
-    topology.preprocess()
+def find_starting_node_from_spec(topology, start_nodes):
+    """
+    Given a definition of one or multiple nodes in
+    `start_nodes` find the corresponding molecule index
+    and node key in `topology`. The format of start nodes
+    is equivalent to that for annotating the residue and
+    is described in detail in the function
+    :meth:`polyply.src.annotate_ligands.annotate_molecules.parse_residue_spec`.
 
+    Parameters:
+    -----------
+    topology: :class:`polyply.src.topology.Topology`
+    start_nodes: list[str]
+        a list of residue-specs
+
+    Returns:
+    --------
+    dict
+        a dict of molecule_idx as key and node key as value
+    """
+    start_dict = {mol_idx: None for mol_idx in range(len(topology.molecules))}
+    for start in start_nodes:
+        res_spec = parse_residue_spec(start)
+        if 'mol_idx' in res_spec:
+            mol_idx = res_spec['mol_idx']
+            node = list(_find_nodes(topology.molecules[mol_idx], res_spec))[0]
+            start_dict[mol_idx] = node
+        else:
+            for idx, molecule in enumerate(topology.molecules):
+                if molecule.mol_name == res_spec['molname']:
+                    node = list(_find_nodes(molecule, res_spec))[0]
+                    start_dict[idx] = node
+    return start_dict
+
+def _check_molecules(molecules):
+    """
+    Helper method which raises an IOError
+    if any molecule in `molecules` is
+    disconnected.
+    """
     # check if molecules are all connected
-    for molecule in topology.molecules:
+    for molecule in molecules:
         if not nx.is_connected(molecule):
             msg = ('\n Molecule {} consistes of two disconnected parts. '
                    'Make sure all atoms/particles in a molecule are '
                    'connected by bonds, constraints or virual-sites')
             raise IOError(msg.format(molecule.name))
 
+def gen_coords(args):
+    # Read in the topology
+    # TODO Write Logger for all print statements
+    print("INFO - reading topology")
+    topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
+    print("INFO - processing topology")
+    topology.preprocess()
+    _check_molecules(topology.molecules)
+
+    if args.split:
+       print("INFO - splitting residues")
+       for molecule in topology.molecules:
+           molecule.split_residue(args.split)
+
     # read in coordinates if there are any
     if args.coordpath:
-        topology.add_positions_from_file(args.coordpath)
-    else:
-        for molecule in topology.molecules:
-            for node in molecule.nodes:
-                molecule.nodes[node]["build"] = True
+        print("INFO - loading coordinates")
+        topology.add_positions_from_file(args.coordpath, args.build_res)
+
+    # load in built file
+    if args.build:
+        print("INFO - reading build file")
+        with open(args.build) as build_file:
+            lines = build_file.readlines()
+            read_build_file(lines, topology.molecules)
+
+    # collect all starting points for the molecules
+    start_dict = find_starting_node_from_spec(topology, args.start)
+
+    # handle grid input
+    if args.grid:
+        print("INFO - loading grid")
+        args.grid = np.loadtxt(args.grid)
 
     # Build polymer structure
-    GenerateTemplates(max_opt=10).run_system(topology)
-    RandomWalk().run_system(topology)
-    Backmap().run_system(topology)
+    print("INFO - generating templates")
+    GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
+    print("INFO - annotating ligands")
+    AnnotateLigands(topology, args.ligands).run_system(topology)
+    print("INFO - starting system generation")
+    BuildSystem(topology,
+                start_dict=start_dict,
+                density=args.density,
+                max_force=args.max_force,
+                grid_spacing=args.grid_spacing,
+                maxiter=args.maxiter,
+                box=args.box,
+                step_fudge=args.step_fudge,
+                ignore=args.ignore,
+                grid=args.grid,
+                nrewind=args.nrewind).run_system(topology.molecules)
+
+    AnnotateLigands(topology, args.ligands).split_ligands()
+    print("INFO - backmapping")
+    Backmap(args.nproc, fudge_coords=args.bfudge).run_system(topology)
 
     # Write output
+    print("INFO - writing output")
+    command = ' '.join(sys.argv)
     system = topology.convert_to_vermouth_system()
     vermouth.gmx.gro.write_gro(system, args.outpath, precision=7,
-                               title='polyply structure', box=(10, 10, 10))
+                               title=command, box=topology.box)
     DeferredFileWriter().write()
