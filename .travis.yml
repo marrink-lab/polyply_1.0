@@ -75,6 +75,6 @@ jobs:
           user: __token__
           password:
               # travis encrypt --add deploy.password
-              secure: "vP6rUEbSrqYJmqcp37cH2YNfBik3nQHs0/jqop0m75wph95lumRQqp0xVlPoM4yBEHvfjcOqTeq9Ixz4lMmouYedcGu8nrjbWu/LzWWle55ETpVsQ4Sjld/Mui9GBIK802GHiIC0fTTf0f/u/MxrhE2l7vBGp3lCRn/9zIlHOiFZn+Iu+A5sQfuyUu8taY0xOzSobnn/1m7Ve11enm7TfQN0sK6EtJuK/zWSCuExoxe3DHAqglfOniHXyaCxTfGxrgwpSAbRH0Yo34Q4ko78ZBNuEFqHGiHg4oBJ74blLPDwfwyvTPZqnsbthE/kx/4GcuVx7Trod9jIvK+kzohijIMTXA8Ew1RwigCtLhvLFaJklOXmbZEZ6nM5RY8KRbE5neFeRH7VvN0GspLzkue3ZW7XIT6bcomu6MMqAc0FNi6Dl41iPC9KvcntpdFJgAXnJztGA75TnpxE0awxMAA80RneCi4oHIpg6bE3giQyxmAVZj21WxySUzKrYYjsk1NYVVtgV+YzJ3KmI5iTG0URe5GdeihZICBgBrwG56zdoD9SZcfFBM+PEcT8YhSvkif9E3F4BM8sxOYHRf7BiC89DGV4ZJa9skjQ4YMpO1G/aIdzvUBfTOuuKQ/IshI/KOzzokIsjIhRF4gr1Zfvog06RH4IbmDCXzdYYCAVeMLiDlE="
+              secure: "DYlpbijTZI3EeXlRmR38iIm0NDPNHPOkPoH8GJh2w9so1aucxck63iPQpOBZUZJ1OjXDn2hfxNB/1CfSyZ3fw56vq27dKS903kwCFz+KgojbN68z9+VmUsWPGvp5psM6b5xgjnHazlWe1aLpi2vwgohyOMmNImvPWYpOS/DKQkknRXzc+lYbd4pwHvd8wfuqc/ie0zRoxggsYZbOYP5KCnUiptxuzV/aeFEfIOXHouzWM1qbEglj8LLms0n28A6pnfzAqtzK5VMfeYZ/X8YziwZlvSAe3welDd5U29QN2yFSTbeOnobzPsa4fQk/XF6lukpQ8wV5Vk80Pq9xGm2Ghhx+gwoWhV46muBpMaRUMucR9oWMC7yjO5p9/46yBn1eu5dypXNMiwwptRFBsIcjNJkhJJSWoKzpXDVHN7bBs11sSjRrNuX4KE/lrnnW6OQ7MDimJ3fxXim+ArdW+mWVaGcnW1Z9a5SSlNzbVUvrcuONEGYDC3u2Q2zAuktfK+cx2A4/sU2eNNC7mBq71JpdYJEx0dyPMRIAJGDDUIVV+kZRwEyAxx5/QnL3e73JWxtQLyaaAh55095kYp9RCvmc8/gDsIY6Z1owR05pAed4jCBnT6oc4ABUAOdj5DOtSk3CdxzCX8bJMB2b6j6rC71IZOoc4vxhmnYeLd2Ker2GfQc="
           on:
               tags: true
