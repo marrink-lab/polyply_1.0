@@ -73,9 +73,8 @@ jobs:
       deploy:
           provider: pypi
           user: __token__
-          server: https://test.pypi.org/legacy/
           password:
               # travis encrypt --add deploy.password
-              secure: "awerGF26dxl08ZKcKif9yQJx0BHBpCG4PYjLpqBlEiM+CbrLNn5K/oTPolhb0q1Yee8tsE+KHbw89A8FLoMCVWO3quVBWK2rK7jaibnY17XBPlPlnPkaWNKg4BIJuXUSCe7aCGf07KlolPMxQ+z51rXpP59nQ2tOEaK7seUBuMzArh+BpYvqzjWkB5FpKmOwSqRRx8jg0j1wCxwO7P0OxtEGxBq47SBSCmaCm2iU2c9tw8HELY3XJUnbqwB/7AIYai0T0ExlyhszetBLHqI8lhY8Z0ThSDcElz0CVgO2eekz6cjMdXRa12NUEGOuRaThg+eZQgbpF8hvpwz2e6J40lrygbUdz1V54ercD38XPLDv6EkvmwTyCs+RbVnX0RMjkW50qYuydHzE+qkc1TaNqhYv8idDgYdcF3HgE32xxmOmxU8wLCt9cEfvT4hAT+TW0B0/0Jzj03h3lGSd4PlL5KOjZggqfxLgFgdbfS10TsygxQm0d/+/8m9Rck2AP/DVNqK2mZaONZUWWZCctkM5KuEKAtCyWBQVnNIJleEsNOe5JA3F0c3pFhi/43XpBg3w8UH1wMzDRRbxr+YJpTkXURh+V9XgfgcU1/xSsB5Qqk7FK8ca18JsdDEEjw7n4TfBso18bJD/SVC/XOt7zqZ+xnieFX6US8TJUChdWRuF2nM="
+              secure: "vP6rUEbSrqYJmqcp37cH2YNfBik3nQHs0/jqop0m75wph95lumRQqp0xVlPoM4yBEHvfjcOqTeq9Ixz4lMmouYedcGu8nrjbWu/LzWWle55ETpVsQ4Sjld/Mui9GBIK802GHiIC0fTTf0f/u/MxrhE2l7vBGp3lCRn/9zIlHOiFZn+Iu+A5sQfuyUu8taY0xOzSobnn/1m7Ve11enm7TfQN0sK6EtJuK/zWSCuExoxe3DHAqglfOniHXyaCxTfGxrgwpSAbRH0Yo34Q4ko78ZBNuEFqHGiHg4oBJ74blLPDwfwyvTPZqnsbthE/kx/4GcuVx7Trod9jIvK+kzohijIMTXA8Ew1RwigCtLhvLFaJklOXmbZEZ6nM5RY8KRbE5neFeRH7VvN0GspLzkue3ZW7XIT6bcomu6MMqAc0FNi6Dl41iPC9KvcntpdFJgAXnJztGA75TnpxE0awxMAA80RneCi4oHIpg6bE3giQyxmAVZj21WxySUzKrYYjsk1NYVVtgV+YzJ3KmI5iTG0URe5GdeihZICBgBrwG56zdoD9SZcfFBM+PEcT8YhSvkif9E3F4BM8sxOYHRf7BiC89DGV4ZJa9skjQ4YMpO1G/aIdzvUBfTOuuKQ/IshI/KOzzokIsjIhRF4gr1Zfvog06RH4IbmDCXzdYYCAVeMLiDlE="
           on:
               tags: true
