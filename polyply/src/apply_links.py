@@ -264,9 +264,9 @@ def _res_match(node1, node2):
 
 def _resnames_match(resnames, allowed_resnames):
     for resname in resnames:
-        if resname not in allowed_resnames:
-           return False
-    return True
+        if resname in allowed_resnames:
+           return True
+    return False
 
 def _get_link_resnames(link):
     """
@@ -393,10 +393,13 @@ class ApplyLinks(Processor):
         """
         molecule = meta_molecule.molecule
         force_field = meta_molecule.force_field
+        resnames = set(nx.get_node_attributes(molecule, "resname").values())
 
         for link in tqdm(force_field.links):
             link_resnames = _get_link_resnames(link)
             if not _resnames_match(resnames, link_resnames):
+                print(resnames)
+                print(link.nodes(data=True))
                 continue
             # we only use the order because each order needs to be
             # matching exactly 1 residue, which means their resname
