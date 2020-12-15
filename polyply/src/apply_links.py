@@ -262,6 +262,37 @@ def _res_match(node1, node2):
     ignore = [key for key in node2.keys() if key != "resname"]
     return attributes_match(node1, node2, ignore_keys=ignore)
 
+def _resnames_match(resnames, allowed_resnames):
+    for resname in resnames:
+        if resname not in allowed_resnames:
+           return False
+    return True
+
+def _get_link_resnames(link):
+    """
+    Get the resnames of a `link` directly from the node attributes
+    of the link atoms. It is not safe enough to just take the
+    link name, because it is often undefined or empty. Note that
+    a link name can also be a `vermouth.molecule.Choice` object.
+    Parameters
+    ----------
+    link: :class:`vermouth.molecule.Link`
+    Returns
+    ----------
+    set
+      all unique resnames of a molecule
+    """
+    res_names = list(nx.get_node_attributes(link, "resname").values())
+    out_resnames = set()
+
+    for name in res_names:
+        if isinstance(name, vermouth.molecule.Choice):
+            out_resnames.update(name.value)
+        else:
+            out_resnames.add(name)
+
+    return out_resnames
+
 class ApplyLinks(Processor):
     """
     This processor takes a a class:`polyply.src.MetaMolecule` and
@@ -315,6 +346,7 @@ class ApplyLinks(Processor):
         # look-up which atoms in the link correspond
         # to which atoms in the molecule this function
         # raises an MatchError if no atoms are found
+
         link_to_mol = match_link_and_residue_atoms(meta_molecule,
                                                    link,
                                                    link_to_resid)
@@ -363,6 +395,9 @@ class ApplyLinks(Processor):
         force_field = meta_molecule.force_field
 
         for link in tqdm(force_field.links):
+            link_resnames = _get_link_resnames(link)
+            if not _resnames_match(resnames, link_resnames):
+                continue
             # we only use the order because each order needs to be
             # matching exactly 1 residue, which means their resname
             # needs to match as well. However, resname can be a
