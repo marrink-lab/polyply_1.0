@@ -145,14 +145,17 @@ class TestPolyply:
        assert set(meta_mol.nodes) == set(nodes)
        assert set(meta_mol.edges) == set(edges)
 
-@pytest.mark.parametrize('split_pattern, expct_high_res, expct_low_res, edges', (
+@pytest.mark.parametrize('split_pattern, expct_high_res, expct_low_res, edges, resid_low, resid_high', (
     # split single residues of one type into two
     (
     ["B:B1-BB,BB1,BB2:B2-SC1,SC2"],
     {0: "A", 1: "A", 2: "A", 3: "A", 4: "B1", 5: "B1", 6: "B1", 7: "B2", 8: "B2",
      9: "A", 10: "A", 11: "A", 12: "A"},
     {0: "A", 1: "B1", 2: "B2", 3: "A"},
-    [(0, 1), (1, 3), (1, 2)]
+    [(0, 1), (1, 3), (1, 2)],
+    {0: 0, 1: 1, 2: 2, 3: 3},
+    {0: 0, 1: 0, 2: 0, 3: 0, 4: 1, 5: 1, 6: 1, 7: 2, 8: 2,
+     9: 3, 10: 3, 11: 3, 12: 3},
     ),
     # split two residues of one type into two
     (
@@ -160,7 +163,10 @@ class TestPolyply:
     {0: "A1", 1: "A1", 2: "A2", 3: "A2", 4: "B", 5: "B", 6: "B", 7: "B", 8: "B",
      9: "A1", 10: "A1", 11: "A2", 12: "A2"},
     {0: "A1", 1: "A2", 2: "B", 3: "A1", 4: "A2"},
-    [(0, 1), (0, 2), (2, 3), (3, 4)]
+    [(0, 1), (0, 2), (2, 3), (3, 4)],
+    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4},
+    {0: 0, 1: 0, 2: 1, 3: 1, 4: 2, 5: 2, 6: 2, 7: 2, 8: 2,
+     9: 3, 10: 3, 11: 4, 12: 4},
     ),
     # split all residues
     (
@@ -168,15 +174,30 @@ class TestPolyply:
     {0: "A1", 1: "A1", 2: "A2", 3: "A2", 4: "B1", 5: "B1", 6: "B1", 7: "B2", 8: "B2",
      9: "A1", 10: "A1", 11: "A2", 12: "A2"},
     {0: "A1", 1: "A2", 2: "B1", 3: "B2", 4: "A1", 5: "A2"},
-    [(0, 1), (0, 2), (2, 3), (2, 4), (4, 5)]
+    [(0, 1), (0, 2), (2, 3), (2, 4), (4, 5)],
+    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5},
+    {0: 0, 1: 0, 2: 1, 3: 1, 4: 2, 5: 2, 6: 2, 7: 3, 8: 3,
+     9: 4, 10: 4, 11: 5, 12: 5},
     ),
     ))
-def test_split_residue(example_meta_molecule, split_pattern, expct_high_res, expct_low_res, edges):
+def test_split_residue(example_meta_molecule,
+                       split_pattern,
+                       expct_high_res,
+                       expct_low_res,
+                       edges,
+                       resid_low,
+                       resid_high):
+
     example_meta_molecule.split_residue(split_pattern)
     new_resnames_high = nx.get_node_attributes(example_meta_molecule.molecule, "resname")
     assert new_resnames_high == expct_high_res
     new_resnames_low = nx.get_node_attributes(example_meta_molecule, "resname")
     assert new_resnames_low == expct_low_res
+    new_resid_low = nx.get_node_attributes(example_meta_molecule, "resid")
+    assert new_resid_low == resid_low
+    new_resid_high = nx.get_node_attributes(example_meta_molecule.molecule, "resid")
+    assert new_resid_high == resid_high
+
     for node_a, node_b in edges:
         assert example_meta_molecule.has_edge(node_a, node_b)
 
