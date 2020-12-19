@@ -43,10 +43,12 @@ def _branched_graph(resname, branching_f, n_levels):
     return graph
 
 
-def _random_replace_nodes_attribute(graph, residues, weights, attribute, seed=None):
+def _random_replace_nodes_attribute(graph, attribute_values,
+                                    weights, attribute,
+                                    nodes=[], seed=None):
     """
-    Randomly replace resname attribute of `graph`
-    based on the names in `residues` taking into
+    Randomly replace or set attribute of `graph`
+    based on the names in `attributes_values` taking into
     account `weights` provided.
 
     Parameters
@@ -57,15 +59,21 @@ def _random_replace_nodes_attribute(graph, residues, weights, attribute, seed=No
     attribute: str
         the attribute to be replaced
     seed: float
+    nodes: list
+        list of ellegible nodes
 
     Returns:
     --------
     `:class:networkx.Graph`
     """
+    if not nodes:
+        nodes = list(graph.nodes)
+
     random.seed(seed)
     for node in graph.nodes:
-        resname = random.choices(residues, weights=weights)
-        graph.nodes[node][attribute] = resname[0]
+        if node in nodes:
+            value = random.choices(attribute_values, weights=weights)
+            graph.nodes[node][attribute] = value[0]
 
     return graph
 
@@ -265,6 +273,32 @@ def _apply_termini_modifications(graph, modifications):
             if node in terminal_nodes:
                 graph.nodes[node]["resname"] = resname
 
+def _tag_nodes(graph, tags):
+    """
+    Find and label nodes as specified in a list of tags.
+    Tags is a list of strings with the following syntax
+    <seqID:tag_word:value1-probability,value2-probability>.
+
+    Parameters:
+    -----------
+    graph: nx.Graph
+    modifications: list[str]
+        list of tags
+    """
+    for tag in tags:
+        seq_ID, attr, attr_probs = tag.split(':')
+        attribute_values = []
+        weights = []
+
+        for attr_prob in attr_probs.split(','):
+            value, prob = attr_prob.split("-")
+            attribute_values.append(value)
+            weights.append(float(prob))
+
+        idx_nodes = find_atoms(graph, "seqid", int(seq_ID))
+        _random_replace_nodes_attribute(graph, attribute_values,
+                                        weights, attr,
+                                        nodes=idx_nodes)
 
 def gen_seq(args):
     """
@@ -287,6 +321,7 @@ def gen_seq(args):
     seq_graph = generate_seq_graph(args.seq, macros, args.connects)
 
     _apply_termini_modifications(seq_graph, args.modifications)
+    _tag_nodes(seq_graph, args.tags)
 
     g_json = json_graph.node_link_data(seq_graph)
     with open(args.outpath, "w") as file_handle:

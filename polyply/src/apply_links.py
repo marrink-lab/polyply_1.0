@@ -398,8 +398,6 @@ class ApplyLinks(Processor):
         for link in tqdm(force_field.links):
             link_resnames = _get_link_resnames(link)
             if not _resnames_match(resnames, link_resnames):
-                print(resnames)
-                print(link.nodes(data=True))
                 continue
             # we only use the order because each order needs to be
             # matching exactly 1 residue, which means their resname
@@ -419,6 +417,7 @@ class ApplyLinks(Processor):
                     try:
                         self.apply_link_between_residues(meta_molecule, link, link_node_to_resid)
                     except MatchError as error:
+                        print(error)
                         continue
 
         for inter_type in self.applied_links:
