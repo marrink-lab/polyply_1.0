@@ -69,7 +69,6 @@ def _interpret_residue_mapping(graph, resname, new_residues):
 
             for node in nodes:
                 atom_name_to_resname[node] = new_name
-
     return atom_name_to_resname
 
 class MetaMolecule(nx.Graph):
@@ -128,10 +127,18 @@ class MetaMolecule(nx.Graph):
         for node, resname in mapping.items():
             self.molecule.nodes[node]["resname"] = resname
             old_resid = self.molecule.nodes[node]["resid"]
-            self.molecule.nodes[node]["resid"] = old_resid + max_resid + 1
+            self.molecule.nodes[node]["resid"] = old_resid + max_resid
+            self.molecule.nodes[node]["build"] = True
 
         # make a new residue graph and overwrite the old one
         new_meta_graph = make_residue_graph(self.molecule, attrs=('resid', 'resname'))
+
+        # we need to do some bookkeeping for the resids
+        for idx, node in enumerate(new_meta_graph.nodes):
+            new_meta_graph.nodes[node]["resid"] = idx
+            for atom in new_meta_graph.nodes[node]["graph"]:
+                self.molecule.nodes[atom]["resid"] = idx
+
         self.clear()
         self.add_nodes_from(new_meta_graph.nodes(data=True))
         self.add_edges_from(new_meta_graph.edges)
