@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import multiprocessing
+import itertools
 import numpy as np
 import scipy.optimize
 import networkx as nx
@@ -25,7 +26,7 @@ mapping to lower resolution coordinates for
 a meta molecule.
 """
 
-def find_edges(molecule, attr, value):
+def find_edges(molecule, nodes, attr, value):
     """
     Find all edges of a `vermouth.molecule.Molecule` that have the
     attribute `attr` with the corresponding value of `value`. Note
@@ -34,7 +35,7 @@ def find_edges(molecule, attr, value):
 
     Parameters
     ----------
-    molecule: :class:vermouth.molecule.Molecule
+    molecule: :meta_mol: !~~~~~~~~~~~
     attrs: tuple[str, str]
          tuple of the attributes used in matching
     values: tuple
@@ -45,18 +46,19 @@ def find_edges(molecule, attr, value):
     list
        list of edges found
     """
-    edges = []
-    for edge in molecule.edges:
-        node_a, node_b = edge
+    allowed_nodes = []
+    for node in nodes:
+        allowed_nodes += list(molecule.nodes[node]["graph"].nodes)
 
-        nodes = [molecule.nodes[node_a], molecule.nodes[node_b]]
+    edges = []
+    for node_a, node_b in itertools.combinations(allowed_nodes, r=2):
+        nodes = [molecule.molecule.nodes[node_a], molecule.molecule.nodes[node_b]]
         if all(node[at] == val for (node, at, val) in zip(nodes, attr, value)) or\
            all(node[at] == val for (node, at, val) in zip(reversed(nodes), attr, value)):
-            edges.append(edge)
+            edges.append((node_a, node_b))
 
     return edges
 
-#@profile
 def orient_template(meta_molecule, current_node, template, built_nodes):
     """
     Given a `template` and a `node` of a `meta_molecule` at lower resolution
@@ -90,7 +92,8 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
     edges = []
     for node in neighbours:
         resid = meta_molecule.nodes[node]["resid"]
-        edge = find_edges(meta_molecule.molecule,
+        edge = find_edges(meta_molecule,
+                          (node, current_node),
                           ("resid", "resid"),
                           (resid, current_resid))
         edges += edge
@@ -166,7 +169,7 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
 
     return template_rotated
 
-class Backmap():
+class Backmap(Processor):
     """
     This processor takes a a class:`polyply.src.MetaMolecule` and
     places coordinates form a higher resolution createing positions
@@ -216,13 +219,13 @@ class Backmap():
         self._place_init_coords(meta_molecule)
         return meta_molecule
 
-    def run_system(self, system):
-        """
-        Process `system`.
-        Parameters
-        ----------
-        system: vermouth.system.System
-            The system to process. Is modified in-place.
-        """
-        pool = multiprocessing.Pool(self.nproc)
-        system.molecules = pool.map(self.run_molecule, tqdm(system.molecules))
+   #def run_system(self, system):
+   #    """
+   #    Process `system`.
+   #    Parameters
+   #    ----------
+   #    system: vermouth.system.System
+   #        The system to process. Is modified in-place.
+   #    """
+   #    #pool = multiprocessing.Pool(self.nproc)
+   #    #system.molecules = pool.map(self.run_molecule, tqdm(system.molecules))
