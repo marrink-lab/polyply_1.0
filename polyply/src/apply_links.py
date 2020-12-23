@@ -417,7 +417,7 @@ class ApplyLinks(Processor):
                     try:
                         self.apply_link_between_residues(meta_molecule, link, link_node_to_resid)
                     except MatchError as error:
-                        print(error)
+                        #print(error)
                         continue
 
         for inter_type in self.applied_links:
