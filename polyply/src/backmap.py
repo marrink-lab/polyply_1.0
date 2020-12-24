@@ -25,7 +25,6 @@ Processor implementing a template based back
 mapping to lower resolution coordinates for
 a meta molecule.
 """
-
 def find_edges(molecule, nodes, attr, value):
     """
     Find all edges of a `vermouth.molecule.Molecule` that have the
@@ -47,15 +46,18 @@ def find_edges(molecule, nodes, attr, value):
        list of edges found
     """
     allowed_nodes = []
-    for node in nodes:
-        allowed_nodes += list(molecule.nodes[node]["graph"].nodes)
+    for res_node in nodes:
+        for node in molecule.nodes[res_node]["graph"].nodes:
+            deg = molecule.nodes[res_node]["graph"].degree(node)
+            if deg != molecule.molecule.degree(node):
+                allowed_nodes.append(node)
 
     edges = []
-    for node_a, node_b in itertools.combinations(allowed_nodes, r=2):
-        nodes = [molecule.molecule.nodes[node_a], molecule.molecule.nodes[node_b]]
-        if all(node[at] == val for (node, at, val) in zip(nodes, attr, value)) or\
-           all(node[at] == val for (node, at, val) in zip(reversed(nodes), attr, value)):
-            edges.append((node_a, node_b))
+    for nodes in itertools.combinations(allowed_nodes, r=2):
+        if all(molecule.molecule.nodes[node][at] == val for (node, at, val) in zip(nodes, attr, value)) or\
+           all(molecule.molecule.nodes[node][at] == val for (node, at, val) in zip(reversed(nodes), attr, value)):
+            if molecule.has_edge(nodes[0], nodes[1]):
+                edges.append(nodes)
 
     return edges
 
@@ -90,6 +92,7 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
 
     # 2. find connecting atoms at low-res level
     edges = []
+    ref_nodes = []
     for node in neighbours:
         resid = meta_molecule.nodes[node]["resid"]
         edge = find_edges(meta_molecule,
@@ -97,6 +100,7 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
                           ("resid", "resid"),
                           (resid, current_resid))
         edges += edge
+        [ref_nodes.append(node) for _ in edge]
 
     # 3. build coordinate system
     ref_coords = np.zeros((3, len(edges)))
@@ -128,7 +132,7 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
         # reference
         else:
             atom_name = meta_molecule.molecule.nodes[current_atom]["atomname"]
-            cg_node = find_atoms(meta_molecule, "resid", ref_resid)[0]
+            cg_node = ref_nodes[ndx] #find_atoms(meta_molecule, "resid", ref_resid)[0]
 
             # record the coordinates of the atom that is rotated
             opt_coords[:, ndx] = template[atom_name]
@@ -219,13 +223,13 @@ class Backmap(Processor):
         self._place_init_coords(meta_molecule)
         return meta_molecule
 
-   #def run_system(self, system):
-   #    """
-   #    Process `system`.
-   #    Parameters
-   #    ----------
-   #    system: vermouth.system.System
-   #        The system to process. Is modified in-place.
-   #    """
-   #    #pool = multiprocessing.Pool(self.nproc)
-   #    #system.molecules = pool.map(self.run_molecule, tqdm(system.molecules))
+  # def run_system(self, system):
+  #     """
+  #     Process `system`.
+  #     Parameters
+  #     ----------
+  #     system: vermouth.system.System
+  #         The system to process. Is modified in-place.
+  #     """
+  #     pool = multiprocessing.Pool(self.nproc)
+  #     system.molecules = pool.map(self.run_molecule, tqdm(system.molecules))
