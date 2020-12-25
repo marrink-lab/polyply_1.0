@@ -18,12 +18,31 @@ import numpy as np
 from numpy.linalg import norm
 import networkx as nx
 import vermouth
+from vermouth.graph_utils import make_residue_graph
 from polyply import MetaMolecule
 from polyply.src.backmap import Backmap
 
 def test_backmapping():
-    meta_molecule = MetaMolecule()
-    meta_molecule.add_edges_from([(0, 1), (1, 2)])
+    """
+    Integral test for the backmapping processor.
+    """
+    molecule = vermouth.molecule.Molecule()
+    molecule.add_edges_from([(1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7)])
+    nx.set_node_attributes(molecule, {
+        1: {"resname": "test", "resid": 1, "atomname": "A"},
+        2: {"resname": "test", "resid": 1, "atomname": "B"},
+        3: {"resname": "test", "resid": 1, "atomname": "C"},
+        4: {"resname": "test", "resid": 2, "atomname": "A"},
+        5: {"resname": "test", "resid": 2, "atomname": "B"},
+        6: {"resname": "test", "resid": 2, "atomname": "C"},
+        7: {"resname": "test", "resid": 3, "atomname": "C",
+            "position": np.array([4., 4., 4.])}
+        })
+
+    graph = make_residue_graph(molecule)
+    meta_molecule = MetaMolecule(graph)
+    meta_molecule.molecule = molecule
+
     nx.set_node_attributes(meta_molecule, {0: {"resname": "test",
                                                "position": np.array([0, 0, 0]),
                                                "resid": 1, "build": True},
@@ -37,19 +56,6 @@ def test_backmapping():
     meta_molecule.templates = {"test": {"B": np.array([0, 0, 0]),
                                         "A": np.array([0, 0, 0.5]),
                                         "C": np.array([0, 0.5, 0])}}
-    meta_molecule.molecule = vermouth.molecule.Molecule()
-    meta_molecule.molecule.add_edges_from(
-        [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7)])
-    nx.set_node_attributes(meta_molecule.molecule, {
-        1: {"resname": "test", "resid": 1, "atomname": "A"},
-        2: {"resname": "test", "resid": 1, "atomname": "B"},
-        3: {"resname": "test", "resid": 1, "atomname": "C"},
-        4: {"resname": "test", "resid": 2, "atomname": "A"},
-        5: {"resname": "test", "resid": 2, "atomname": "B"},
-        6: {"resname": "test", "resid": 2, "atomname": "C"},
-        7: {"resname": "test", "resid": 3, "atomname": "C",
-            "position": np.array([4., 4., 4.])}
-        })
 
     Backmap(nproc=1).run_molecule(meta_molecule)
     for node in meta_molecule.molecule.nodes:
