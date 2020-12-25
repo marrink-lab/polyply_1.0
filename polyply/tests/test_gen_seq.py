@@ -146,7 +146,8 @@ class Args:
                  connects=None,
                  lib=None,
                  modifications=[],
-                 inpath=None):
+                 inpath=None,
+                 tags=[]):
 
         self.name = name
         self.lib = lib
@@ -158,7 +159,7 @@ class Args:
         self.connects = connects
         self.inpath = inpath
         self.modifications = modifications
-
+        self.tags = []
 
 @pytest.mark.parametrize('_input, ref_file', (
     (dict(outpath=TEST_DATA + "/gen_seq/output/PPI.json",
