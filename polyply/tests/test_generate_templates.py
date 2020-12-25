@@ -94,15 +94,14 @@ class TestGenTemps:
           3 4 1 0.2 700
           """
           meta_mol = polyply.MetaMolecule()
-          meta_mol.nonbond_params = {frozenset(["P1", "P1"]): {"nb1": 0.47, "nb2":0.5}}
-          meta_mol.defaults = {"nbfunc": 2}
+          nonbond_params = {frozenset(["P1", "P1"]): {"nb1": 0.47, "nb2":0.5}}
 
           lines = textwrap.dedent(lines).splitlines()
           ff = vermouth.forcefield.ForceField(name='test_ff')
           polyply.src.polyply_parser.read_polyply(lines, ff)
           block = ff.blocks['GLY']
           coords = _expand_inital_coords(block)
-          vol = compute_volume(meta_mol, block, coords)
+          vol = compute_volume(meta_mol, block, coords, nonbond_params)
           assert vol > 0.
 
       @staticmethod

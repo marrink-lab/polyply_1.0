@@ -249,10 +249,10 @@ class TOPDirector(SectionLineParser):
                                        force_field=self.force_field,
                                        mol_name=mol_name)
                 new_mol.molecule = self.force_field.blocks[mol_name].to_molecule()
-                new_mol.atom_types = self.topology.atom_types
-                new_mol.defaults = self.topology.defaults
-                new_mol.nonbond_params = self.topology.nonbond_params
-                new_mol.defines = self.topology.defines
+                #new_mol.atom_types = self.topology.atom_types
+                #new_mol.defaults = self.topology.defaults
+                #new_mol.nonbond_params = self.topology.nonbond_params
+                #new_mol.defines = self.topology.defines
                 new_mol.mol_name = mol_name
 
                 self.topology.add_molecule(new_mol)

@@ -111,7 +111,7 @@ def _expand_inital_coords(block, bond=None, pos=None, fixed=None,
     # replace by kamada kwau
     return nx.kamada_kawai_layout(block, dim=3)
 
-def compute_volume(molecule, block, coords, treshold=1e-18):
+def compute_volume(molecule, block, coords, nonbond_params, treshold=1e-18):
     """
     Given a `block`, which is part of `molecule` and
     has the coordinates `coord` compute the radius
@@ -142,7 +142,7 @@ def compute_volume(molecule, block, coords, treshold=1e-18):
 
     for node, coord in coords.items():
         atom_key = block.nodes[node]["atype"]
-        rad = float(molecule.nonbond_params[frozenset([atom_key, atom_key])]["nb1"])
+        rad = float(nonbond_params[frozenset([atom_key, atom_key])]["nb1"])
         diff = coord - res_center_of_geometry
         if np.linalg.norm(diff) < treshold:
            continue
@@ -156,35 +156,6 @@ def compute_volume(molecule, block, coords, treshold=1e-18):
         radgyr = rad
 
     return radgyr
-
-def mol_vol_grid(molecule, block, coords, spacing=0.05):
-    # if molecule is only one block the radius is just
-    # the vdw radius
-    if len(coords) == 1:
-        node = list(coords.keys())[0]
-        atom_key = block.nodes[node]["atype"]
-        rad = float(molecule.nonbond_params[frozenset([atom_key, atom_key])]["nb1"])
-        return rad
-
-    # otherwise define grid
-    coord_arr = np.concatenate(list(coords.values()), axis=0).reshape(-1, 3)
-    x = np.arange(min(coord_arr[:, 0])-2, max(coord_arr[:, 0])+2, spacing)
-    y = np.arange(min(coord_arr[:, 1])-2, max(coord_arr[:, 1])+2., spacing)
-    z = np.arange(min(coord_arr[:, 2])-2, max(coord_arr[:, 2])+2., spacing)
-    x2, y2, z2 = np.meshgrid(x,y,z,indexing='ij')
-    all_grid = np.array([x2.flatten(),y2.flatten(),z2.flatten()]).T
-    grid_tree = scipy.spatial.cKDTree(all_grid)
-
-    # check how many voxels are occupied
-    occ_voxels=set()
-    for node, coord in coords.items():
-        atom_key = block.nodes[node]["atype"]
-        rad = float(molecule.nonbond_params[frozenset([atom_key, atom_key])]["nb1"])
-        occ_voxels.update(set(grid_tree.query_ball_point(coord, rad)))
-
-    grid_vol = len(occ_voxels) * spacing**3.
-    radius_mol = np.cbrt(grid_vol * 3/4. * 1/np.pi)
-    return radius_mol
 
 def map_from_CoG(coords):
     """
@@ -327,7 +298,7 @@ class GenerateTemplates(Processor):
                 self.resnames.append(resname)
 
                 block = extract_block(meta_molecule.molecule, resname,
-                                      meta_molecule.defines)
+                                      self.topology.defines)
                 opt_counter = 0
                 while True:
                     coords = _expand_inital_coords(block)
@@ -347,7 +318,7 @@ class GenerateTemplates(Processor):
 
                 #print("grid", mol_vol_grid(meta_molecule, block, coords))
                 #print("rg",  compute_volume(meta_molecule, block, coords))
-                self.volumes[resname] = compute_volume(meta_molecule, block, coords)
+                self.volumes[resname] = compute_volume(meta_molecule, block, coords, self.topology.nonbond_params)
                 coords = map_from_CoG(coords)
                 self.templates[resname] = coords
 
