@@ -17,6 +17,7 @@ Test graph related functions
 import pytest
 import networkx as nx
 import polyply
+from .example_fixtures import example_meta_molecule
 
 @pytest.mark.parametrize('source, max_length, min_length, expected',(
                         (4, 1, 1, [4, 1, 9, 10]),
@@ -48,4 +49,17 @@ def test_is_branched(edges, expected):
     graph = nx.Graph()
     graph.add_edges_from(edges)
     result = polyply.src.graph_utils.is_branched(graph)
+    assert result == expected
+
+@pytest.mark.parametrize('nodes, expected',(
+                        ((0, 1),
+                        [(1, 4)]),
+                        # central residue
+                        ((1, 2),
+                         [(6, 9)]),
+                        ))
+def test_find_connecting_edges(example_meta_molecule, nodes, expected):
+    result =  polyply.src.graph_utils.find_connecting_edges(example_meta_molecule,
+                                                            example_meta_molecule.molecule,
+                                                            nodes)
     assert result == expected
