@@ -116,7 +116,8 @@ class MacroString():
         """
         graph = _branched_graph("dum", self.bfact, self.levels)
         graph = _random_replace_nodes_attribute(graph, self.residues,
-                                                self.weights, "resname", seed)
+                                                self.weights, "resname",
+                                                seed=seed)
         return graph
 
 class MacroFile():
