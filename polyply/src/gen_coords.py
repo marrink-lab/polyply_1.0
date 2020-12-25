@@ -32,6 +32,8 @@ from .build_system import BuildSystem
 from .annotate_ligands import AnnotateLigands, parse_residue_spec, _find_nodes
 from .build_file_parser import read_build_file
 
+import tracemalloc
+
 def find_starting_node_from_spec(topology, start_nodes):
     """
     Given a definition of one or multiple nodes in
@@ -86,6 +88,7 @@ def gen_coords(args):
     # TODO Write Logger for all print statements
     times = {}
     print("INFO - reading topology")
+    tracemalloc.start()
     start = time.time()
     topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
     print("INFO - processing topology")
@@ -93,6 +96,14 @@ def gen_coords(args):
     _check_molecules(topology.molecules)
     stop = time.time()
     times["top reading"] = stop - start
+
+
+    snapshot = tracemalloc.take_snapshot()
+    top_stats = snapshot.statistics('lineno')
+
+    print("[ Top 10 ]")
+    for stat in top_stats[:10]:
+        print(stat)
 
     if args.split:
        print("INFO - splitting residues")
@@ -156,6 +167,7 @@ def gen_coords(args):
                                title=command, box=topology.box)
     DeferredFileWriter().write()
 
+    times["total"] = sum(list(times.values()))
     with open("log_file", "w") as _file:
         for processor, time in times.items():
             _file.write("{0:} {1:8.3f}\n".format(processor, time))
