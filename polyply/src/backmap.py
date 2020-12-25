@@ -20,46 +20,12 @@ from tqdm import tqdm
 from .processor import Processor
 from .generate_templates import find_atoms
 from .linalg_functions import rotate_xyz
+from .graph_utils import find_connecting_edges
 """
 Processor implementing a template based back
 mapping to lower resolution coordinates for
 a meta molecule.
 """
-def find_edges(molecule, nodes, attr, value):
-    """
-    Find all edges of a `vermouth.molecule.Molecule` that have the
-    attribute `attr` with the corresponding value of `value`. Note
-    that this function is not order specific. That means (1, 2) is
-    the same as (2, 1).
-
-    Parameters
-    ----------
-    molecule: :meta_mol: !~~~~~~~~~~~
-    attrs: tuple[str, str]
-         tuple of the attributes used in matching
-    values: tuple
-         corresponding values value
-
-    Returns
-    ----------
-    list
-       list of edges found
-    """
-    allowed_nodes = []
-    for res_node in nodes:
-        for node in molecule.nodes[res_node]["graph"].nodes:
-            deg = molecule.nodes[res_node]["graph"].degree(node)
-            if deg != molecule.molecule.degree(node):
-                allowed_nodes.append(node)
-
-    edges = []
-    for nodes in itertools.combinations(allowed_nodes, r=2):
-        if all(molecule.molecule.nodes[node][at] == val for (node, at, val) in zip(nodes, attr, value)) or\
-           all(molecule.molecule.nodes[node][at] == val for (node, at, val) in zip(reversed(nodes), attr, value)):
-            if molecule.has_edge(nodes[0], nodes[1]):
-                edges.append(nodes)
-
-    return edges
 
 def orient_template(meta_molecule, current_node, template, built_nodes):
     """
@@ -95,10 +61,9 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
     ref_nodes = []
     for node in neighbours:
         resid = meta_molecule.nodes[node]["resid"]
-        edge = find_edges(meta_molecule,
-                          (node, current_node),
-                          ("resid", "resid"),
-                          (resid, current_resid))
+        edge = find_connecting_edges(meta_molecule,
+                                     meta_molecule.molecule,
+                                    (node, current_node))
         edges += edge
         [ref_nodes.append(node) for _ in edge]
 
@@ -185,6 +150,7 @@ class Backmap(Processor):
         self.nproc = nproc
         self.fudge_coords = fudge_coords
 
+    #@profile
     def _place_init_coords(self, meta_molecule):
         """
         For each residue in a class:`polyply.src.MetaMolecule` the
@@ -203,16 +169,16 @@ class Backmap(Processor):
                 resname = meta_molecule.nodes[node]["resname"]
                 cg_coord = meta_molecule.nodes[node]["position"]
                 resid = meta_molecule.nodes[node]["resid"]
-                low_res_atoms = find_atoms(meta_molecule.molecule, "resid", resid)
+                high_res_atoms = meta_molecule.nodes[node]["graph"].nodes
                 template = orient_template(meta_molecule, node,
                                            meta_molecule.templates[resname],
                                            built_nodes)
 
-                for atom_low  in low_res_atoms:
-                    atomname = meta_molecule.molecule.nodes[atom_low]["atomname"]
+                for atom_high  in high_res_atoms:
+                    atomname = meta_molecule.molecule.nodes[atom_high]["atomname"]
                     vector = template[atomname]
                     new_coords = cg_coord + vector * self.fudge_coords
-                    meta_molecule.molecule.nodes[atom_low]["position"] = new_coords
+                    meta_molecule.molecule.nodes[atom_high]["position"] = new_coords
                 built_nodes.append(resid)
 
     def run_molecule(self, meta_molecule):
