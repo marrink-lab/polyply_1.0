@@ -17,6 +17,7 @@ import numpy as np
 import scipy.optimize
 import networkx as nx
 from tqdm import tqdm
+from polyply import jit
 from .processor import Processor
 from .generate_templates import find_atoms
 from .linalg_functions import rotate_xyz
@@ -26,7 +27,12 @@ Processor implementing a template based back
 mapping to lower resolution coordinates for
 a meta molecule.
 """
+def _norm_matrix(matrix):
+    norm = np.sum(np.sum(matrix * matrix, axis=0))
+    return norm
+norm_matrix = jit(_norm_matrix)
 
+#@profile
 def orient_template(meta_molecule, current_node, template, built_nodes):
     """
     Given a `template` and a `node` of a `meta_molecule` at lower resolution
@@ -110,17 +116,18 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
 
     # 4. optimize the distance between reference nodes and nodes to be placed
     # only using rotation of the complete template
+    #@profile
     def target_function(angles):
         rotated = rotate_xyz(opt_coords, angles[0], angles[1], angles[2])
         diff = rotated - ref_coords
-        score = np.sum(np.sum(diff*diff, axis=0))
+        score = norm_matrix(diff)
         return score
 
     # starting angles in degree
-    angles = np.array([10.0, -10.0, 5.0])
+    angles = np.deg2rad(np.array([10.0, -10.0, 5.0]))
     opt_results = scipy.optimize.minimize(target_function, angles, method='L-BFGS-B',
-                                          options={'ftol':0.000001, 'maxiter': 400})
-
+                                          options={'ftol':0.01, 'maxiter': 400})
+                                                         #0.000001
     # 5. write the template as array and rotate it corrsponding to the result above
     template_arr = np.zeros((3, len(template)))
     key_to_ndx = {}
@@ -145,12 +152,10 @@ class Backmap(Processor):
     for the lower resolution molecule associated with the MetaMolecule.
     """
 
-    def __init__(self, nproc, fudge_coords=0.4, *args, **kwargs):
+    def __init__(self, nproc=1, fudge_coords=0.4, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.nproc = nproc
         self.fudge_coords = fudge_coords
 
-    #@profile
     def _place_init_coords(self, meta_molecule):
         """
         For each residue in a class:`polyply.src.MetaMolecule` the
@@ -188,14 +193,3 @@ class Backmap(Processor):
         """
         self._place_init_coords(meta_molecule)
         return meta_molecule
-
-  # def run_system(self, system):
-  #     """
-  #     Process `system`.
-  #     Parameters
-  #     ----------
-  #     system: vermouth.system.System
-  #         The system to process. Is modified in-place.
-  #     """
-  #     pool = multiprocessing.Pool(self.nproc)
-  #     system.molecules = pool.map(self.run_molecule, tqdm(system.molecules))
