@@ -88,7 +88,6 @@ def gen_coords(args):
     # TODO Write Logger for all print statements
     times = {}
     print("INFO - reading topology")
-    tracemalloc.start()
     start = time.time()
     topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
     print("INFO - processing topology")
@@ -96,14 +95,6 @@ def gen_coords(args):
     _check_molecules(topology.molecules)
     stop = time.time()
     times["top reading"] = stop - start
-
-
-    snapshot = tracemalloc.take_snapshot()
-    top_stats = snapshot.statistics('lineno')
-
-    print("[ Top 10 ]")
-    for stat in top_stats[:10]:
-        print(stat)
 
     if args.split:
        print("INFO - splitting residues")
