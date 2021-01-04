@@ -15,7 +15,7 @@
 9     Na   1 DPPC  GL2 9  0.000    72 
 10    Na   1 DPPC  GL1 10 0.000    72 
 11    Qa   1 DPPC  PO4 11 -1.00    72 
-12    Q0   1 DPPC  NH3 12  1.000    72 
+12    Q0   1 DPPC  NC3 12  1.000    72 
 
 [bonds]
 ;  i  j 	funct 	length 	force.c.
