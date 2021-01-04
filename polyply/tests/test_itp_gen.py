@@ -122,4 +122,4 @@ class TestGenItp():
             print(key)
             for term in force_field.blocks[ref_name].interactions[key]:
                 print(term)
-                assert term in force_field.blocks[args.name].interactions[key]:
+                assert term in force_field.blocks[args.name].interactions[key]
