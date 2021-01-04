@@ -4,7 +4,17 @@ OHter 1
 1   SP2    1   OHter  OH  1  0.000  45
 
 [ link ]
-resname "DPPC|POPC|DOPC|DPPE|DOPE|PEO"
+resname "DPPC|POPC|DOPC|PEO"
+[ atoms ]
+NC3 {"replace": {"atype": "P5", "charge": 0.0}}
+[ bonds ]
+NC3    +COC    1   0.3220   7000    {"group": "lipid-PEG"}
+[ angles ]
+NC3      +COC      ++COC       2  135.00   50.0  {"group": "lipid-PEG", "version": 1}
+NC3      +COC      ++COC      10  135.00   75.0  {"group": "lipid-PEG", "version": 2}
+
+[ link ]
+resname "DPPE|POPE|DOPE|PEO"
 [ atoms ]
 NH3 {"replace": {"atype": "P5", "charge": 0.0}}
 [ bonds ]
