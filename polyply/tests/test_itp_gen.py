@@ -49,7 +49,20 @@ class TestGenItp():
          "-seq", "N1:1", "N2:1", "N1:1", "N2:1", "N3:1",
          "-name", "test",
          "-o", TEST_DATA + "/gen_itp/output/test_out.itp"],
-         TEST_DATA + "/gen_itp/ref/test_rev.itp")
+         TEST_DATA + "/gen_itp/ref/test_rev.itp"),
+        # checks combination of library with input file
+        # also checks library link DPPC-PEG
+        (["-lib", "martini2_polymers", "-f", TEST_DATA + "/gen_itp/input/DPPC.itp",
+         "-seq", "DPPC:1", "PEO:45", "OHter:1",
+         "-name", "PEL",
+         "-o", TEST_DATA + "/gen_itp/output/PEL_out.itp"],
+         TEST_DATA + "/gen_itp/ref/PEL.itp"),
+        # also checks library link DPPC-PEG
+        (["-lib", "martini2_polymers",
+         "-seq", "OHter:1", "PEO:26", "OHter:1",
+         "-name", "PEOM2",
+         "-o", TEST_DATA + "/gen_itp/output/PEOM2_out.itp"],
+         TEST_DATA + "/gen_itp/ref/PEOM2.itp")
         ))
     def test_gen_itp(args_in, ref_file):
         parser = argparse.ArgumentParser(
@@ -68,7 +81,7 @@ class TestGenItp():
                                 help='linear sequence')
         ff_group = parser.add_argument_group('Force field selection')
         ff_group.add_argument('-lib', dest='lib', required=False, type=str,
-                              help='force-fields to include from library')
+                              help='force-fields to include from library', nargs='*')
         ff_group.add_argument('-ff-dir', dest='extra_ff_dir', action='append',
                               type=Path, default=[],
                               help='Additional repository for custom force fields.')
