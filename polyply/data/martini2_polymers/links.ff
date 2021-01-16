@@ -47,3 +47,8 @@ resname "PEO|OHter"
 resname "PEO|PE"
 [ bonds ]
 COC  +CH2            1       0.45  7000  {"group": "PE-PEO"}
+
+[ link ]
+resname "PE|PEO"
+[ bonds ]
+CH2  +COC            1       0.45  7000  {"group": "PEO-PE"}
