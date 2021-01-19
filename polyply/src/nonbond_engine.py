@@ -168,6 +168,7 @@ class NonBondEngine():
                                                      balanced_tree=False,
                                                      compact_nodes=False)
             self.position_trees[tree_idx] = new_tree
+            del self.gndx_to_tree[gndx]
 
     def remove_molecule_positions(self, mol_idx, molecule):
         """
