@@ -157,14 +157,15 @@ class BuildSystem():
         # this should be done elsewhere
         topology.box = (self.box[0], self.box[1], self.box[2])
 
+    #@profile
     def _handle_random_walk(self, molecule, mol_idx, vector_sphere):
         step_count = 0
         while True:
             start_idx = np.random.randint(len(self.box_grid))
             start = self.box_grid[start_idx]
-
+            #copy_nb_matrix = self.nonbond_matrix.copy()
             processor = RandomWalk(mol_idx,
-                                   self.nonbond_matrix.copy(),
+                                   self.nonbond_matrix,
                                    start=start,
                                    maxdim=self.box,
                                    vector_sphere=vector_sphere,
@@ -176,9 +177,11 @@ class BuildSystem():
             if processor.success:
                 return True, processor.nonbond_matrix
             elif step_count == self.maxiter:
+                processor.nonbond_matrix.remove_molecule_positions(mol_idx, molecule)
                 return False, processor.nonbond_matrix
             else:
                 step_count += 1
+                self.nonbond_matrix.remove_molecule_positions(mol_idx, molecule)
 
     def _compose_system(self, molecules):
         """
