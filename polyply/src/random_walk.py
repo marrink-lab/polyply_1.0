@@ -260,7 +260,6 @@ class RandomWalk(Processor):
     through a random walk for all nodes which have
     build defined as true.
     """
-
     def __init__(self,
                  mol_idx,
                  nonbond_matrix,
