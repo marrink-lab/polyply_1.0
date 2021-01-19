@@ -68,7 +68,7 @@ def _random_replace_nodes_attribute(graph, attribute_values,
     """
     if not nodes:
         nodes = list(graph.nodes)
-
+    print(seed)
     random.seed(seed)
     for node in graph.nodes:
         if node in nodes:
@@ -274,7 +274,7 @@ def _apply_termini_modifications(graph, modifications):
             if node in terminal_nodes:
                 graph.nodes[node]["resname"] = resname
 
-def _tag_nodes(graph, tags):
+def _tag_nodes(graph, tags, seed=None):
     """
     Find and label nodes as specified in a list of tags.
     Tags is a list of strings with the following syntax
@@ -283,8 +283,10 @@ def _tag_nodes(graph, tags):
     Parameters:
     -----------
     graph: nx.Graph
-    modifications: list[str]
+    tags: list[str]
         list of tags
+    seed: float
+        random seed to be used in the selection
     """
     for tag in tags:
         seq_ID, attr, attr_probs = tag.split(':')
@@ -299,7 +301,7 @@ def _tag_nodes(graph, tags):
         idx_nodes = find_atoms(graph, "seqid", int(seq_ID))
         _random_replace_nodes_attribute(graph, attribute_values,
                                         weights, attr,
-                                        nodes=idx_nodes)
+                                        nodes=idx_nodes, seed=seed)
 
 def gen_seq(args):
     """
