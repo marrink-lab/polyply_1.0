@@ -1,0 +1,37 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: test package
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+       py_version: ["3.6", "3.7", "3.8", "3.6-dev", "3.7-dev", "3.8-dev"] 
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.py_version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.py_version }}
+    - name: Install dependencies
+      run: |
+        pip install --upgrade setuptools pip
+        pip install --upgrade .
+        pip install -r requirements.txt
+        
+    - name: Run pytest with codecoverage
+      run: |
+        coverage run --source=polyply $(which pytest) -vv polyply
+        coverage report --omit='*/bin/pytest'
+        codecov
