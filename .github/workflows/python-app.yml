@@ -35,3 +35,8 @@ jobs:
         coverage run --source=polyply $(which pytest) -vv polyply
         coverage report --omit='*/bin/pytest'
         codecov
+        
+    - name: Run pylint 
+      run: |
+         python run_pylint.py --disable=fixme --fail-under=8.0 polyply
+         python run_pylint.py --disable=fixme --fail-under=9.5 bin/polyply 
