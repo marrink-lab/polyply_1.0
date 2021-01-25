@@ -42,5 +42,5 @@ setup(
                   + package_files('polyply/tests/test_data'),},
     scripts=['bin/polyply'],
     pbr=True,
-    version=get_version("package/__init__.py")
+    version=get_version("polyply/__init__.py")
 )
