@@ -36,6 +36,20 @@ jobs:
         coverage report --omit='*/bin/pytest'
         codecov
         
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: |
+        pip install --upgrade setuptools pip
+        pip install --upgrade .
+        pip install -r requirements-tests.txt
     - name: Run pylint 
       run: |
          python run_pylint.py --disable=fixme --fail-under=8.0 polyply
