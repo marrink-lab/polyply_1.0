@@ -3,10 +3,7 @@
 name: Upload Python Package
 
 on:
-  push:
-    # only run when a new tag is pushed; and only when pushed to master
-    tags:
-      - '*'    
+  release:
     branches: [ master ]
 
 jobs:
@@ -38,7 +35,7 @@ jobs:
   
   
   deploy:
-
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
