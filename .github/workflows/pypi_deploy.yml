@@ -51,6 +51,7 @@ jobs:
         pip install
         build
         --user
+        pip install pbr
          
     - name: Build a binary wheel and a source tarball
       run: >-
