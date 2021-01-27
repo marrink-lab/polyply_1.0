@@ -15,6 +15,7 @@
 import networkx as nx
 import numpy as np
 import vermouth
+from vermouth.log_helpers import StyleAdapter, get_logger
 from .minimizer import optimize_geometry
 from .processor import Processor
 from .linalg_functions import (u_vect, center_of_geometry,
@@ -24,6 +25,8 @@ from .topology import replace_defined_interaction
 Processor generating coordinates for all residues of a meta_molecule
 matching those in the meta_molecule.molecule attribute.
 """
+
+LOGGER = StyleAdapter(get_logger(__name__))
 
 def find_atoms(molecule, attr, value):
     """
@@ -308,9 +311,9 @@ class GenerateTemplates(Processor):
                     if success:
                         break
                     elif opt_counter > self.max_opt:
-                        print("WARNING: Failed to optimize structure for block {}.".format(resname))
-                        print("         Proceeding with unoptimized coordinates.")
-                        print("         Usually this is OK, but check your final structure.")
+                        LOGGER.warning(("WARNING: Failed to optimize structure for block {}."
+                                        "Proceeding with unoptimized coordinates."
+                                        "Usually this is OK, but check your final structure.", resname))
                         break
                     else:
                         opt_counter += 1
