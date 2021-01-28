@@ -125,6 +125,12 @@ class NonBondEngine():
                                  boxsize=self.boxsize)
         return new_obj
 
+    def concatenate_trees(self):
+        self.defined_idxs = [list(np.where(self.positions[:, 0].reshape(-1) != np.inf)[0])]
+        self.position_trees = [scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs[-1]],
+                                                             boxsize=self.boxsize)]
+        self.gndx_to_tree = {idx: 0 for idx in self.defined_idxs[0]}
+
     def add_positions(self, point, mol_idx, node_key, start=True):
         """
         Add `point` with global index `gndx` to the position-matrix
@@ -207,6 +213,7 @@ class NonBondEngine():
         atype_b = self.atypes[gndx_b]
         return self.interaction_matrix[frozenset([atype_a, atype_b])]
 
+    #@profile
     def compute_force_point(self, point, mol_idx, node, exclude=[], potential="LJ"):
         """
         Compute the force on `node` of molecule `mol_idx` with coordinates

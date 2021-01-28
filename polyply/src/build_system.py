@@ -157,7 +157,6 @@ class BuildSystem():
         # this should be done elsewhere
         topology.box = (self.box[0], self.box[1], self.box[2])
 
-    #@profile
     def _handle_random_walk(self, molecule, mol_idx, vector_sphere):
         step_count = 0
         while True:
@@ -216,6 +215,7 @@ class BuildSystem():
                                                                    vector_sphere)
             if success:
                 self.nonbond_matrix = new_nonbond_matrix
+                self.nonbond_matrix.concatenate_trees()
                 mol_idx += 1
                 pbar.update(1)
 
