@@ -85,8 +85,8 @@ def main():
     parser_gen_itp.add_argument('-name', required=True, type=str, dest="name",
                                 help="name of the final molecule")
     parser_gen_itp.add_argument('-v', dest='verbosity', action='count',
-                             help='Enable debug logging output. Can be given '
-                                  'multiple times.', default=0)
+                                help='Enable debug logging output. Can be given '
+                                'multiple times.', default=0)
 
     file_group = parser_gen_itp.add_argument_group('Input and output options')
     file_group.add_argument('-lib', dest='lib', required=False, type=str,
@@ -111,8 +111,8 @@ def main():
                                    help="name of the final molecule")
 
     parser_gen_coords.add_argument('-v', dest='verbosity', action='count',
-                             help='Enable debug logging output. Can be given '
-                                  'multiple times.', default=0)
+                                   help='Enable debug logging output. Can be given '
+                                   'multiple times.', default=0)
 
     parser_gen_coords.add_argument('-np', required=False, type=int, dest="nproc",
                                    help="number of available processors", default=1)
@@ -193,8 +193,8 @@ def main():
     parser_gen_seq.add_argument('-name', required=True, type=str, dest="name",
                                 help="name of the final molecule")
     parser_gen_seq.add_argument('-v', dest='verbosity', action='count',
-                             help='Enable debug logging output. Can be given '
-                                  'multiple times.', default=0)
+                                help='Enable debug logging output. Can be given '
+                                'multiple times.', default=0)
 
     file_group = parser_gen_seq.add_argument_group('Input and output files')
     file_group.add_argument('-f', dest='inpath', required=False, type=Path,

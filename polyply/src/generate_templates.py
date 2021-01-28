@@ -311,7 +311,7 @@ class GenerateTemplates(Processor):
                     if success:
                         break
                     elif opt_counter > self.max_opt:
-                        LOGGER.warning(("WARNING: Failed to optimize structure for block {}."
+                        LOGGER.warning(("Failed to optimize structure for block {}."
                                         "Proceeding with unoptimized coordinates."
                                         "Usually this is OK, but check your final structure.", resname))
                         break
