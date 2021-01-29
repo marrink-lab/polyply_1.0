@@ -19,15 +19,41 @@ Perform the parsing and input redirect for the
 different subcommands. This is the main executable.
 """
 import os
+import logging
 import argparse
 from pathlib import Path
 import numpy as np
+from vermouth.log_helpers import (StyleAdapter, BipolarFormatter,
+                                  CountingHandler, TypeAdapter,
+                                  ignore_warnings_and_count,)
 import polyply
 from polyply import (gen_itp, gen_coords, gen_seq, DATA_PATH)
 from polyply.src.load_library import load_library
 
-VERSION = 'polyply version {}'.format(polyply.__version__)
+# Implement Logger
+LOGGER = TypeAdapter(logging.getLogger('polyply'))
+PRETTY_FORMATTER = logging.Formatter(fmt='{levelname:} - {type} - {message}',
+                                     style='{')
+DETAILED_FORMATTER = logging.Formatter(fmt='{levelname:} - {type} - {name} - {message}',
+                                       style='{')
+COUNTER = CountingHandler()
 
+# Control above what level message we want to count
+COUNTER.setLevel(logging.WARNING)
+
+CONSOLE_HANDLER = logging.StreamHandler()
+FORMATTER = BipolarFormatter(DETAILED_FORMATTER,
+                             PRETTY_FORMATTER,
+                             logging.DEBUG,
+                             logger=LOGGER)
+
+CONSOLE_HANDLER.setFormatter(FORMATTER)
+LOGGER.addHandler(CONSOLE_HANDLER)
+LOGGER.addHandler(COUNTER)
+
+LOGGER = StyleAdapter(LOGGER)
+
+VERSION = 'polyply version {}'.format(polyply.__version__)
 
 def main():
     """
@@ -58,6 +84,9 @@ def main():
 
     parser_gen_itp.add_argument('-name', required=True, type=str, dest="name",
                                 help="name of the final molecule")
+    parser_gen_itp.add_argument('-v', dest='verbosity', action='count',
+                                help='Enable debug logging output. Can be given '
+                                'multiple times.', default=0)
 
     file_group = parser_gen_itp.add_argument_group('Input and output options')
     file_group.add_argument('-lib', dest='lib', required=False, type=str,
@@ -80,6 +109,10 @@ def main():
 
     parser_gen_coords.add_argument('-name', required=True, type=str, dest="name",
                                    help="name of the final molecule")
+
+    parser_gen_coords.add_argument('-v', dest='verbosity', action='count',
+                                   help='Enable debug logging output. Can be given '
+                                   'multiple times.', default=0)
 
     parser_gen_coords.add_argument('-np', required=False, type=int, dest="nproc",
                                    help="number of available processors", default=1)
@@ -159,6 +192,9 @@ def main():
 
     parser_gen_seq.add_argument('-name', required=True, type=str, dest="name",
                                 help="name of the final molecule")
+    parser_gen_seq.add_argument('-v', dest='verbosity', action='count',
+                                help='Enable debug logging output. Can be given '
+                                'multiple times.', default=0)
 
     file_group = parser_gen_seq.add_argument_group('Input and output files')
     file_group.add_argument('-f', dest='inpath', required=False, type=Path,
@@ -205,6 +241,9 @@ def main():
     # ============================================================================
 
     args = parser.parse_args()
+
+    loglevels = {0: logging.INFO, 1: logging.DEBUG, 2: 5}
+    LOGGER.setLevel(loglevels[args.verbosity])
 
     if args.list_ff:
         libs = os.listdir(DATA_PATH)
