@@ -265,6 +265,11 @@ def _res_match(node1, node2):
     ignore = [key for key in node2.keys() if key != "resname"]
     return attributes_match(node1, node2, ignore_keys=ignore)
 
+def _linktype_match(edge_attrs1, edge_attrs2):
+    type1 = edge_attrs1.get("linktype", None)
+    type2 = edge_attrs2.get("linktype", None)
+    return type1 == type2
+
 class ApplyLinks(Processor):
     """
     This processor takes a a class:`polyply.src.MetaMolecule` and
@@ -374,7 +379,10 @@ class ApplyLinks(Processor):
             res_link = make_residue_graph(link, attrs=('order',))
             # however when finding the LCIS we do match against the residue
             # name and topology of the link
-            GM = nx.isomorphism.GraphMatcher(meta_molecule, res_link, node_match=_res_match)
+            GM = nx.isomorphism.GraphMatcher(meta_molecule,
+                                             res_link,
+                                             node_match=_res_match,
+                                             edge_match=_linktype_match)
             raw_matchs = GM.subgraph_isomorphisms_iter()
             for match in raw_matchs:
                 resids = match.keys()
