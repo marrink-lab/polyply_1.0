@@ -24,12 +24,15 @@ import networkx as nx
 from tqdm import tqdm
 import vermouth.forcefield
 from vermouth.file_writer import DeferredFileWriter
+from vermouth.log_helpers import StyleAdapter, get_logger
 from .generate_templates import GenerateTemplates
 from .backmap import Backmap
 from .topology import Topology
 from .build_system import BuildSystem
 from .annotate_ligands import AnnotateLigands, parse_residue_spec, _find_nodes
 from .build_file_parser import read_build_file
+
+LOGGER = StyleAdapter(get_logger(__name__))
 
 def find_starting_node_from_spec(topology, start_nodes):
     """
@@ -81,26 +84,26 @@ def _check_molecules(molecules):
 
 def gen_coords(args):
     # Read in the topology
-    # TODO Write Logger for all print statements
-    print("INFO - reading topology")
+    LOGGER.info("reading topology",  type="step")
     topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
-    print("INFO - processing topology")
+
+    LOGGER.info("processing topology",  type="step")
     topology.preprocess()
     _check_molecules(topology.molecules)
 
     if args.split:
-       print("INFO - splitting residues")
+       LOGGER.info("splitting residues",  type="step")
        for molecule in topology.molecules:
            molecule.split_residue(args.split)
 
     # read in coordinates if there are any
     if args.coordpath:
-        print("INFO - loading coordinates")
+        LOGGER.info("loading coordinates",  type="step")
         topology.add_positions_from_file(args.coordpath, args.build_res)
 
     # load in built file
     if args.build:
-        print("INFO - reading build file")
+        LOGGER.info("reading build file",  type="step")
         with open(args.build) as build_file:
             lines = build_file.readlines()
             read_build_file(lines, topology.molecules)
@@ -110,15 +113,15 @@ def gen_coords(args):
 
     # handle grid input
     if args.grid:
-        print("INFO - loading grid")
+        LOGGER.info("loading grid",  type="step")
         args.grid = np.loadtxt(args.grid)
 
     # Build polymer structure
-    print("INFO - generating templates")
+    LOGGER.info("generating templates",  type="step")
     GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
-    print("INFO - annotating ligands")
+    LOGGER.info("annotating ligands",  type="step")
     AnnotateLigands(topology, args.ligands).run_system(topology)
-    print("INFO - starting system generation")
+    LOGGER.info("generating system coordinates",  type="step")
     BuildSystem(topology,
                 start_dict=start_dict,
                 density=args.density,
@@ -131,10 +134,10 @@ def gen_coords(args):
                 grid=args.grid,
                 nrewind=args.nrewind).run_system(topology.molecules)
     AnnotateLigands(topology, args.ligands).split_ligands()
-    print("INFO - backmapping")
+    LOGGER.info("backmapping to target resolution",  type="step")
     Backmap(args.nproc, fudge_coords=args.bfudge).run_system(topology)
     # Write output
-    print("INFO - writing output")
+    LOGGER.info("writing output",  type="step")
     command = ' '.join(sys.argv)
     system = topology.convert_to_vermouth_system()
     vermouth.gmx.gro.write_gro(system, args.outpath, precision=7,
