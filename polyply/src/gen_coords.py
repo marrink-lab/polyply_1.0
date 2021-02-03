@@ -19,7 +19,6 @@ import sys
 from collections import defaultdict
 from functools import partial
 import multiprocessing
-#import time
 import numpy as np
 import networkx as nx
 from tqdm import tqdm
@@ -31,8 +30,6 @@ from .topology import Topology
 from .build_system import BuildSystem
 from .annotate_ligands import AnnotateLigands, parse_residue_spec, _find_nodes
 from .build_file_parser import read_build_file
-
-import tracemalloc
 
 def find_starting_node_from_spec(topology, start_nodes):
     """
@@ -83,18 +80,13 @@ def _check_molecules(molecules):
             raise IOError(msg.format(molecule.name))
 
 def gen_coords(args):
-    import time
     # Read in the topology
     # TODO Write Logger for all print statements
-    times = {}
     print("INFO - reading topology")
-    start = time.time()
     topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
     print("INFO - processing topology")
     topology.preprocess()
     _check_molecules(topology.molecules)
-    stop = time.time()
-    times["top reading"] = stop - start
 
     if args.split:
        print("INFO - splitting residues")
@@ -123,14 +115,10 @@ def gen_coords(args):
 
     # Build polymer structure
     print("INFO - generating templates")
-    start = time.time()
     GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
-    stop = time.time()
-    times["generic-cg"] = stop - start
     print("INFO - annotating ligands")
     AnnotateLigands(topology, args.ligands).run_system(topology)
     print("INFO - starting system generation")
-    start = time.time()
     BuildSystem(topology,
                 start_dict=start_dict,
                 density=args.density,
@@ -142,14 +130,9 @@ def gen_coords(args):
                 ignore=args.ignore,
                 grid=args.grid,
                 nrewind=args.nrewind).run_system(topology.molecules)
-    stop = time.time()
-    times["build_system"] = stop - start
     AnnotateLigands(topology, args.ligands).split_ligands()
     print("INFO - backmapping")
-    start = time.time()
     Backmap(args.nproc, fudge_coords=args.bfudge).run_system(topology)
-    stop = time.time()
-    times["backmapping"] = stop - start
     # Write output
     print("INFO - writing output")
     command = ' '.join(sys.argv)
@@ -157,8 +140,3 @@ def gen_coords(args):
     vermouth.gmx.gro.write_gro(system, args.outpath, precision=7,
                                title=command, box=topology.box)
     DeferredFileWriter().write()
-
-    times["total"] = sum(list(times.values()))
-    with open("log_file", "w") as _file:
-        for processor, time in times.items():
-            _file.write("{0:} {1:8.3f}\n".format(processor, time))
