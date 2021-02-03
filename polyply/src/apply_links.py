@@ -17,11 +17,14 @@ from itertools import combinations
 import networkx as nx
 from tqdm import tqdm
 import vermouth.molecule
+from vermouth.log_helpers import StyleAdapter, get_logger
 from vermouth.molecule import Interaction, attributes_match
 from vermouth.graph_utils import make_residue_graph
 from vermouth.processors.do_links import match_order
 from .processor import Processor
 from .graph_utils import neighborhood
+
+LOGGER = StyleAdapter(get_logger(__name__))
 
 class MatchError(Exception):
     """Raised we find no match between links and molecule"""
@@ -417,8 +420,7 @@ class ApplyLinks(Processor):
                     try:
                         self.apply_link_between_residues(meta_molecule, link, link_node_to_resid)
                     except MatchError as error:
-                        #print(error)
-                        continue
+                        LOGGER.debug(str(error), type='step')
 
         for inter_type in self.applied_links:
             for interaction in self.applied_links[inter_type].values():
