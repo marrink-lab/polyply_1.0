@@ -49,7 +49,7 @@ def test_dih():
     v2 = np.array([0.0, 0.0, 2.0])
     v3 = np.array([0.0, 2.0, 2.0])
     v4 = np.array([0.0,-2.0, 0.0])
-    assert math.isclose(_dih(v1,v2,v3,v4), 0.0)
+    assert math.isclose(_dih(v1, v2, v3, v4), 0.0)
 
 def test_geometrical_center():
    coords = np.array([[0.0, 0.0, 1.0],
@@ -72,6 +72,7 @@ def test_radius_of_gyration():
 
     rg = _radius_of_gyration(coords)
     assert math.isclose(rg, 1.0)
+
 @pytest.mark.parametrize('vectors, expected',(
                         # single column vector with floats
                         ([np.array([[2.5], [2.5], [2.5]])],
@@ -92,10 +93,7 @@ def test_matrix_multiplication(vectors, expected):
         matrix = np.array([[1., 2., 3.], [4., 5., 6.], [7., 8., 9.]])
         result = polyply.src.linalg_functions._matrix_multiplication(matrix, *vectors)
         assert result.shape == expected.shape
-        for row in range(0, expected.shape[0]):
-            for column in range(0, expected.shape[1]):
-                assert expected[row, column] == result[row, column]
-
+        assert np.allclose(expected, result)
 
 @pytest.mark.parametrize('vectors, angles, expected',(
                         # single vector rotation around x
@@ -122,6 +120,4 @@ def test_matrix_multiplication(vectors, expected):
 def test_rotation_matrix(vectors, angles, expected):
         result = polyply.src.linalg_functions._rotate_xyz(vectors, *np.deg2rad(angles))
         assert result.shape == expected.shape
-        for row in range(0, expected.shape[0]):
-            for column in range(0, expected.shape[1]):
-                assert np.isclose(expected[row, column], result[row, column])
+        assert np.allclose(expected, result)

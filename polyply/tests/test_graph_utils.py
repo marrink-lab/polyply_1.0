@@ -52,11 +52,9 @@ def test_is_branched(edges, expected):
     assert result == expected
 
 @pytest.mark.parametrize('nodes, expected',(
-                        ((0, 1),
-                        [(1, 4)]),
+                        ((0, 1), [(1, 4)]),
                         # central residue
-                        ((1, 2),
-                         [(6, 9)]),
+                        ((1, 2), [(6, 9)]),
                         ))
 def test_find_connecting_edges(example_meta_molecule, nodes, expected):
     result =  polyply.src.graph_utils.find_connecting_edges(example_meta_molecule,

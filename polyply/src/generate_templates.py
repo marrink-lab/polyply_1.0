@@ -319,8 +319,6 @@ class GenerateTemplates(Processor):
                     else:
                         opt_counter += 1
 
-                #print("grid", mol_vol_grid(meta_molecule, block, coords))
-                #print("rg",  compute_volume(meta_molecule, block, coords))
                 self.volumes[resname] = compute_volume(meta_molecule, block, coords, self.topology.nonbond_params)
                 coords = map_from_CoG(coords)
                 self.templates[resname] = coords

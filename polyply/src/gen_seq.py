@@ -54,7 +54,7 @@ def _random_replace_nodes_attribute(graph, attribute_values,
     Parameters
     ----------
     graph: `:class:networkx.Graph`
-    residues: list[str]
+    attribute_values: list[str]
     weights: list[float]
     attribute: str
         the attribute to be replaced
@@ -68,7 +68,7 @@ def _random_replace_nodes_attribute(graph, attribute_values,
     """
     if not nodes:
         nodes = list(graph.nodes)
-    print(seed)
+
     random.seed(seed)
     for node in graph.nodes:
         if node in nodes:

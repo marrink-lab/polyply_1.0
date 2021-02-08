@@ -32,7 +32,6 @@ def _norm_matrix(matrix):
     return norm
 norm_matrix = jit(_norm_matrix)
 
-#@profile
 def orient_template(meta_molecule, current_node, template, built_nodes):
     """
     Given a `template` and a `node` of a `meta_molecule` at lower resolution
@@ -69,9 +68,10 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
         resid = meta_molecule.nodes[node]["resid"]
         edge = find_connecting_edges(meta_molecule,
                                      meta_molecule.molecule,
-                                    (node, current_node))
+                                     (node, current_node))
         edges += edge
-        [ref_nodes.append(node) for _ in edge]
+        ref_nodes.extend([node]*len(edge))
+       # [ref_nodes.append(node) for _ in edge]
 
     # 3. build coordinate system
     ref_coords = np.zeros((3, len(edges)))
@@ -127,7 +127,7 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
     angles = np.deg2rad(np.array([10.0, -10.0, 5.0]))
     opt_results = scipy.optimize.minimize(target_function, angles, method='L-BFGS-B',
                                           options={'ftol':0.01, 'maxiter': 400})
-                                                         #0.000001
+
     # 5. write the template as array and rotate it corrsponding to the result above
     template_arr = np.zeros((3, len(template)))
     key_to_ndx = {}
@@ -152,7 +152,7 @@ class Backmap(Processor):
     for the lower resolution molecule associated with the MetaMolecule.
     """
 
-    def __init__(self, nproc=1, fudge_coords=0.4, *args, **kwargs):
+    def __init__(self, fudge_coords=0.4, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fudge_coords = fudge_coords
 
