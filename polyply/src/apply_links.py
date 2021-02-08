@@ -272,8 +272,8 @@ def _resnames_match(resnames, allowed_resnames):
 
     Parameters
     ----------
-    resnames: `abc.iteratable`
-    alllowed_resnames: `abc.iteratable`
+    resnames: `abc.iterable`
+    allowed_resnames: `abc.iterable`
     """
     for resname in resnames:
         if resname in allowed_resnames:
@@ -298,7 +298,7 @@ def _get_link_resnames(link):
     out_resnames = set()
 
     for name in res_names:
-        if isinstance(name, vermouth.molecule.Choice):
+        if isinstance(name, vermouth.molecule.LinkPredicate) and not isinstance(name.value, str):
             out_resnames.update(name.value)
         else:
             out_resnames.add(name)

@@ -49,7 +49,8 @@ def _random_replace_nodes_attribute(graph, attribute_values,
     """
     Randomly replace or set attribute of `graph`
     based on the names in `attributes_values` taking into
-    account `weights` provided.
+    account `weights` provided. If nodes are provided
+    they must be in graph.
 
     Parameters
     ----------
@@ -70,10 +71,9 @@ def _random_replace_nodes_attribute(graph, attribute_values,
         nodes = list(graph.nodes)
 
     random.seed(seed)
-    for node in graph.nodes:
-        if node in nodes:
-            value = random.choices(attribute_values, weights=weights)
-            graph.nodes[node][attribute] = value[0]
+    for node in nodes:
+        value = random.choices(attribute_values, weights=weights)
+        graph.nodes[node][attribute] = value[0]
 
     return graph
 

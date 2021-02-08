@@ -164,21 +164,33 @@ def _radius_of_gyration(points):
 radius_of_gyration = jit(_radius_of_gyration)
 
 def _matrix_multiplication(*args):
-    """
-    multiply n > 1 matrices after each other
-    """
-    matrix_a = args[0]
-    for matrix_b in args[1:]:
-        rows, other_dim = matrix_a.shape
-        columns = matrix_b.shape[1]
-        new_matrix = np.zeros((rows, columns))
-        for i in range(0, rows):
-            for j in range(0, columns):
-                for k in range(0, other_dim):
-                    new_matrix[i,j] += matrix_a[i,k] * matrix_b[k,j]
+   """
+   Implements matrix multiplicaiton of numpy ndarrays.
+   Basically the same as np.matmul but it can handle 1-D
+   column vectors. In addition together with numba a
+   modest speed-up is expected. See the following for
+   some testing https://stackoverflow.com/questions/36526708/\
+   comparing-python-numpy-numba-and-c-for-matrix-multiplication
+   Also note that the data type of the matrices needs to be
+   explicitly set and is assumed to be np.float64.
 
-        matrix_a = new_matrix
-    return new_matrix
+   Parameters
+   ----------
+   args: list[np.array]
+       a list of numpy ndarrays
+   """
+   matrix_a = args[0]
+   for matrix_b in args[1:]:
+       rows, other_dim = matrix_a.shape
+       columns = matrix_b.shape[1]
+       new_matrix = np.zeros((rows, columns))
+       for i in range(0, rows):
+           for j in range(0, columns):
+               for k in range(0, other_dim):
+                   new_matrix[i,j] += matrix_a[i,k] * matrix_b[k,j]
+
+       matrix_a = new_matrix
+   return new_matrix
 
 matrix_multiplication = jit(_matrix_multiplication)
 
