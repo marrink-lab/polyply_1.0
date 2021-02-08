@@ -71,7 +71,6 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
                                      (node, current_node))
         edges += edge
         ref_nodes.extend([node]*len(edge))
-       # [ref_nodes.append(node) for _ in edge]
 
     # 3. build coordinate system
     ref_coords = np.zeros((3, len(edges)))

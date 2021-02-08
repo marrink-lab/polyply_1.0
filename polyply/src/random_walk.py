@@ -287,8 +287,7 @@ class RandomWalk(Processor):
 
     def _rewind(self, current_step):
         nodes = [node for _, node in self.placed_nodes[-self.nrewind:-1]]
-        self.nonbond_matrix.remove_positions(self.mol_idx,
-                                             nodes)
+        self.nonbond_matrix.remove_positions(self.mol_idx, nodes)
         step_count = self.placed_nodes[-self.nrewind][0]
         self.placed_nodes = self.placed_nodes[:-self.nrewind]
         return step_count

@@ -174,12 +174,13 @@ class NonBondEngine():
         for node_key in node_keys:
             gndx = self.nodes_to_gndx[(mol_idx, node_key)]
             # guard against when a position is not defined
-            if gndx in self.gndx_to_tree:
-                self.positions[gndx] = np.array([np.inf, np.inf, np.inf])
-                tree_idx = self.gndx_to_tree[gndx]
-                self.defined_idxs[tree_idx].remove(gndx)
-                del self.gndx_to_tree[gndx]
-                tree_idxs.append(tree_idx)
+            if gndx not in self.gndx_to_tree:
+               continue
+            self.positions[gndx] = np.array([np.inf, np.inf, np.inf])
+            tree_idx = self.gndx_to_tree[gndx]
+            self.defined_idxs[tree_idx].remove(gndx)
+            del self.gndx_to_tree[gndx]
+            tree_idxs.append(tree_idx)
 
         for tree_idx in tree_idxs:
             new_tree = scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs[tree_idx]],
