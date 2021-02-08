@@ -1,0 +1,35 @@
+; polyply-itp
+
+[ moleculetype ]
+PEO_PE 1
+
+[ atoms ]
+ 1 EO  1 PEO COC  1 0.0 45.0
+ 2 C1  2 PE  CH2  2 0.0 45.0
+ 3 EO  3 PEO COC  3 0.0 45.0
+ 4 C1  4 PE  CH2  4 0.0 45.0
+ 5 EO  5 PEO COC  5 0.0 45.0
+ 6 EO  6 PEO COC  6 0.0 45.0
+ 7 C1  7 PE  CH2  7 0.0 45.0
+ 8 C1  8 PE  CH2  8 0.0 45.0
+ 9 EO  9 PEO COC  9 0.0 45.0
+10 C1 10 PE  CH2 10 0.0 45.0
+
+[ bonds ]
+ 5  6 1 0.322 7000
+ 7  8 1 0.46 2000
+
+; PE-PEO
+ 1  2 1 0.45 7000
+ 3  4 1 0.45 7000
+ 6  7 1 0.45 7000
+ 9 10 1 0.45 7000
+
+; PEO-PE
+ 2  3 1 0.45 7000
+ 4  5 1 0.45 7000
+ 8  9 1 0.45 7000
+
+[ exclusions ]
+ 7  8 
+

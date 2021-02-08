@@ -62,7 +62,12 @@ class TestGenItp():
          "-seq", "OHter:1", "PEO:26", "OHter:1",
          "-name", "PEOM2",
          "-o", TEST_DATA + "/gen_itp/output/PEOM2_out.itp"],
-         TEST_DATA + "/gen_itp/ref/PEOM2.itp")
+         TEST_DATA + "/gen_itp/ref/PEOM2.itp"),
+        (["-lib", "martini2_polymers",
+         "-seqf", TEST_DATA + "/gen_itp/input/PEO_PE.json",
+         "-name", "PEO_PE",
+         "-o", TEST_DATA + "/gen_itp/output/PEO_b_PE_out.itp"],
+         TEST_DATA + "/gen_itp/ref/PEO_PE_10.itp")
         ))
     def test_gen_itp(args_in, ref_file):
         parser = argparse.ArgumentParser(
