@@ -176,11 +176,11 @@ class BuildSystem():
             if processor.success:
                 return True, processor.nonbond_matrix
             elif step_count == self.maxiter:
-                processor.nonbond_matrix.remove_molecule_positions(mol_idx, molecule)
+                processor.nonbond_matrix.remove_positions(mol_idx, molecule.nodes)
                 return False, processor.nonbond_matrix
             else:
                 step_count += 1
-                self.nonbond_matrix.remove_molecule_positions(mol_idx, molecule)
+                self.nonbond_matrix.remove_positions(mol_idx, molecule.nodes)
 
     def _compose_system(self, molecules):
         """

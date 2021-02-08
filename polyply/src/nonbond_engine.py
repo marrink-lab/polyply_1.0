@@ -158,31 +158,35 @@ class NonBondEngine():
                                                     compact_nodes=False)
            self.position_trees[-1] = new_tree
 
-    def remove_positions(self, mol_idx, node_key):
+    def remove_positions(self, mol_idx, node_keys):
         """
         Remove `point` with global index `gndx` from the positions
         matrix and position-tree.
-        """
-        gndx = self.nodes_to_gndx[(mol_idx, node_key)]
-        self.positions[gndx] = np.array([np.inf, np.inf, np.inf])
 
-        if gndx in self.gndx_to_tree:
-            tree_idx = self.gndx_to_tree[gndx]
-            self.defined_idxs[tree_idx].remove(gndx)
+        Paramters
+        ---------
+        mol_idx: int
+            index of the molecule for which to remove_positions
+        node_keys: abc.iteratable
+            which nodes to remove
+        """
+        tree_idxs = []
+        for node_key in node_keys:
+            gndx = self.nodes_to_gndx[(mol_idx, node_key)]
+            # guard against when a position is not defined
+            if gndx in self.gndx_to_tree:
+                self.positions[gndx] = np.array([np.inf, np.inf, np.inf])
+                tree_idx = self.gndx_to_tree[gndx]
+                self.defined_idxs[tree_idx].remove(gndx)
+                del self.gndx_to_tree[gndx]
+                tree_idxs.append(tree_idx)
+
+        for tree_idx in tree_idxs:
             new_tree = scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs[tree_idx]],
                                                      boxsize=self.boxsize,
                                                      balanced_tree=False,
                                                      compact_nodes=False)
             self.position_trees[tree_idx] = new_tree
-            del self.gndx_to_tree[gndx]
-
-    def remove_molecule_positions(self, mol_idx, molecule):
-        """
-        Set all positions of the nodes in molecule
-        to infinity.
-        """
-        for node in molecule.nodes:
-            self.remove_positions(mol_idx, node)
 
     def update_positions_in_molecules(self, molecules):
         """
