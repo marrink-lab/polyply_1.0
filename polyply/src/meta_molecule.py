@@ -246,6 +246,7 @@ class MetaMolecule(nx.Graph):
         meta_mol.molecule = force_field.blocks[mol_name].to_molecule()
         return meta_mol
 
+    #TODO Add from_molecule method
     @classmethod
     def from_block(cls, force_field, mol_name):
         """

@@ -164,6 +164,9 @@ def _radius_of_gyration(points):
 radius_of_gyration = jit(_radius_of_gyration)
 
 def _matrix_multiplication(*args):
+    """
+    multiply n > 1 matrices after each other
+    """
     matrix_a = args[0]
     for matrix_b in args[1:]:
         rows, other_dim = matrix_a.shape

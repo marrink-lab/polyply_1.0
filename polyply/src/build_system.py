@@ -162,7 +162,7 @@ class BuildSystem():
         while True:
             start_idx = np.random.randint(len(self.box_grid))
             start = self.box_grid[start_idx]
-            #copy_nb_matrix = self.nonbond_matrix.copy()
+
             processor = RandomWalk(mol_idx,
                                    self.nonbond_matrix,
                                    start=start,

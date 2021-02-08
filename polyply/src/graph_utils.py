@@ -111,11 +111,14 @@ def find_connecting_edges(res_graph, molecule, nodes):
     list
        list of edges found
     """
-    # first find all nodes in the residue graph fragments,
-    # whose degree is unequal in thegraph, residues, weights, attribute residue graph fragment
-    # and molecule. This is an efficent way to filter which
-    # atoms are involved in a potential link, without having
-    # to check all edges for all atoms in a residue.
+    # First find all nodes in the residue graph fragments,
+    # whose degree is unequal to their degree in complete
+    # the molecule. This is an efficent way to filter which
+    # atoms are involved in a potential link, because it reduces
+    # the search space to only those atoms that have a dangling
+    # edge in the residue as compared to the complete molecule.
+    # Then sotre these nodes together with the residue they are
+    # found in.
     allowed_nodes = defaultdict(list)
     for res_node in nodes:
         for node in res_graph.nodes[res_node]["graph"].nodes:

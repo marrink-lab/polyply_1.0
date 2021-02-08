@@ -266,6 +266,15 @@ def _res_match(node1, node2):
     return attributes_match(node1, node2, ignore_keys=ignore)
 
 def _resnames_match(resnames, allowed_resnames):
+    """
+    Return true if one element in resnames matches
+    one element in allowed_resnames.
+
+    Parameters
+    ----------
+    resnames: `abc.iteratable`
+    alllowed_resnames: `abc.iteratable`
+    """
     for resname in resnames:
         if resname in allowed_resnames:
            return True
