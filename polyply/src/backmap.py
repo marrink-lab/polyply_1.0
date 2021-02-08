@@ -28,7 +28,7 @@ mapping to lower resolution coordinates for
 a meta molecule.
 """
 def _norm_matrix(matrix):
-    norm = np.sum(np.sum(matrix * matrix, axis=0))
+    norm = np.sum(matrix * matrix)
     return norm
 norm_matrix = jit(_norm_matrix)
 
