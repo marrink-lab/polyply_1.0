@@ -57,7 +57,7 @@ def test_backmapping():
                                         "A": np.array([0, 0, 0.5]),
                                         "C": np.array([0, 0.5, 0])}}
 
-    Backmap(nproc=1).run_molecule(meta_molecule)
+    Backmap().run_molecule(meta_molecule)
     for node in meta_molecule.molecule.nodes:
         assert "position" in meta_molecule.molecule.nodes[node]
     assert norm(meta_molecule.molecule.nodes[7]["position"] - np.array([4., 4., 4.])) == 0
