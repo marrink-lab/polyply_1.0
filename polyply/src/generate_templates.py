@@ -90,8 +90,8 @@ def find_interaction_involving(block, current_node, prev_node):
                 elif prev_node in interaction.atoms and inter_type.split("_")[0] == "virtual":
                     return True, interaction, inter_type
     else:
-        msg = ('Cannot build template for residue {}. No constraint, bond, virtual-site'
-               'linking atom {} and atom {}.')
+        msg = '''Cannot build template for residue {}. No constraint, bond, virtual-site
+                 linking atom {} and atom {}.'''
         raise IOError(msg.format(block.nodes[0]["resname"], prev_node, current_node))
 
 def _expand_inital_coords(block, bond=None, pos=None, fixed=None,
@@ -312,9 +312,9 @@ class GenerateTemplates(Processor):
                     if success:
                         break
                     elif opt_counter > self.max_opt:
-                        LOGGER.warning(("Failed to optimize structure for block {}."
-                                        "Proceeding with unoptimized coordinates."
-                                        "Usually this is OK, but check your final structure.", resname))
+                        LOGGER.warning("Failed to optimize structure for block {}.", resname)
+                        LOGGER.warning("Proceeding with unoptimized coordinates.")
+                        LOGGER.warning("Usually this is OK, but check your final structure.""")
                         break
                     else:
                         opt_counter += 1
