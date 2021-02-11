@@ -242,9 +242,6 @@ def main():
 
     args = parser.parse_args()
 
-    loglevels = {0: logging.INFO, 1: logging.DEBUG, 2: 5}
-    LOGGER.setLevel(loglevels[args.verbosity])
-
     if args.list_ff:
         libs = os.listdir(DATA_PATH)
         libs = [lib for lib in libs if not lib.startswith("__")]
@@ -264,6 +261,9 @@ def main():
 #        print('The following Links are known to force field {}:'.format(args.list_links))
 #        print(', '.join(known_force_fields[args.list_links]))
 #        parser.exit()
+
+    loglevels = {0: logging.INFO, 1: logging.DEBUG, 2: 5}
+    LOGGER.setLevel(loglevels[args.verbosity])
 
     args.func(args)
 
