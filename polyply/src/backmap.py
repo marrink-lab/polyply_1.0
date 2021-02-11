@@ -123,7 +123,7 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
         return score
 
     # starting angles in degree
-    angles = np.deg2rad(np.array([10.0, -10.0, 5.0]))
+    angles = np.random.uniform(low=0, high=2*np.pi, size=(3)) #np.deg2rad(np.aarray([10.0, -10.0, 5.0]))
     opt_results = scipy.optimize.minimize(target_function, angles, method='L-BFGS-B',
                                           options={'ftol':0.01, 'maxiter': 400})
 
