@@ -25,13 +25,13 @@ def _make_edges(force_field):
     for block in force_field.blocks.values():
         inter_types = list(block.interactions.keys())
         for inter_type in inter_types:
-            if inter_type not in ["pairs", "exclusions", "dihedrals"]:
+            if inter_type in ["bonds", "constraints" "angles"]:
                block.make_edges_from_interaction_type(type_=inter_type)
 
     for link in force_field.links:
         inter_types = list(link.interactions.keys())
         for inter_type in inter_types:
-            if inter_type not in ["pairs", "exclusions", "impropers", "dihedrals"]:
+            if inter_type not in ["bonds", "constraints", "angles"]:
                 link.make_edges_from_interaction_type(type_=inter_type)
 
 def _interpret_residue_mapping(graph, resname, new_residues):
