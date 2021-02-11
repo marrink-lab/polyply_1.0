@@ -126,6 +126,11 @@ class NonBondEngine():
         return new_obj
 
     def concatenate_trees(self):
+        """
+        Rebuild a single tree from all defined coordinates and remove all
+        other trees. This function enables you to condense the positions
+        saved over multiple trees into a single tree.
+        """
         self.defined_idxs = [list(np.where(self.positions[:, 0].reshape(-1) != np.inf)[0])]
         self.position_trees = [scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs[-1]],
                                                              boxsize=self.boxsize)]
@@ -218,7 +223,6 @@ class NonBondEngine():
         atype_b = self.atypes[gndx_b]
         return self.interaction_matrix[frozenset([atype_a, atype_b])]
 
-    #@profile
     def compute_force_point(self, point, mol_idx, node, exclude=[], potential="LJ"):
         """
         Compute the force on `node` of molecule `mol_idx` with coordinates
