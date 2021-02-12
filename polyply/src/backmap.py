@@ -122,7 +122,7 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
         score = norm_matrix(diff)
         return score
 
-    # chose random starting angles
+    # choose random starting angles
     angles = np.random.uniform(low=0, high=2*np.pi, size=(3))
     opt_results = scipy.optimize.minimize(target_function, angles, method='L-BFGS-B',
                                           options={'ftol':0.01, 'maxiter': 400})
