@@ -114,9 +114,6 @@ def main():
                                    help='Enable debug logging output. Can be given '
                                    'multiple times.', default=0)
 
-    parser_gen_coords.add_argument('-np', required=False, type=int, dest="nproc",
-                                   help="number of available processors", default=1)
-
     file_group = parser_gen_coords.add_argument_group('Input and output files')
     file_group.add_argument('-p', dest='toppath', required=False, type=Path,
                             help='topology file (.top)')
