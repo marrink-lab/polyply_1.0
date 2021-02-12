@@ -122,8 +122,8 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
         score = norm_matrix(diff)
         return score
 
-    # starting angles in degree
-    angles = np.random.uniform(low=0, high=2*np.pi, size=(3)) #np.deg2rad(np.aarray([10.0, -10.0, 5.0]))
+    # chose random starting angles
+    angles = np.random.uniform(low=0, high=2*np.pi, size=(3))
     opt_results = scipy.optimize.minimize(target_function, angles, method='L-BFGS-B',
                                           options={'ftol':0.01, 'maxiter': 400})
 
@@ -168,7 +168,6 @@ class Backmap(Processor):
         """
         built_nodes = []
         for node in meta_molecule.nodes:
-            #print(node)
             if  meta_molecule.nodes[node]["build"]:
                 resname = meta_molecule.nodes[node]["resname"]
                 cg_coord = meta_molecule.nodes[node]["position"]
