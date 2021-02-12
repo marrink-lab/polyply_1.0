@@ -12,51 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import multiprocessing
+import itertools
 import numpy as np
 import scipy.optimize
 import networkx as nx
 from tqdm import tqdm
+from polyply import jit
 from .processor import Processor
 from .generate_templates import find_atoms
 from .linalg_functions import rotate_xyz
+from .graph_utils import find_connecting_edges
 """
 Processor implementing a template based back
 mapping to lower resolution coordinates for
 a meta molecule.
 """
+def _norm_matrix(matrix):
+    norm = np.sum(matrix * matrix)
+    return norm
+norm_matrix = jit(_norm_matrix)
 
-def find_edges(molecule, attr, value):
-    """
-    Find all edges of a `vermouth.molecule.Molecule` that have the
-    attribute `attr` with the corresponding value of `value`. Note
-    that this function is not order specific. That means (1, 2) is
-    the same as (2, 1).
-
-    Parameters
-    ----------
-    molecule: :class:vermouth.molecule.Molecule
-    attrs: tuple[str, str]
-         tuple of the attributes used in matching
-    values: tuple
-         corresponding values value
-
-    Returns
-    ----------
-    list
-       list of edges found
-    """
-    edges = []
-    for edge in molecule.edges:
-        node_a, node_b = edge
-
-        nodes = [molecule.nodes[node_a], molecule.nodes[node_b]]
-        if all(node[at] == val for (node, at, val) in zip(nodes, attr, value)) or\
-           all(node[at] == val for (node, at, val) in zip(reversed(nodes), attr, value)):
-            edges.append(edge)
-
-    return edges
-
-#@profile
 def orient_template(meta_molecule, current_node, template, built_nodes):
     """
     Given a `template` and a `node` of a `meta_molecule` at lower resolution
@@ -88,12 +63,14 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
 
     # 2. find connecting atoms at low-res level
     edges = []
+    ref_nodes = []
     for node in neighbours:
         resid = meta_molecule.nodes[node]["resid"]
-        edge = find_edges(meta_molecule.molecule,
-                          ("resid", "resid"),
-                          (resid, current_resid))
+        edge = find_connecting_edges(meta_molecule,
+                                     meta_molecule.molecule,
+                                     (node, current_node))
         edges += edge
+        ref_nodes.extend([node]*len(edge))
 
     # 3. build coordinate system
     ref_coords = np.zeros((3, len(edges)))
@@ -125,7 +102,7 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
         # reference
         else:
             atom_name = meta_molecule.molecule.nodes[current_atom]["atomname"]
-            cg_node = find_atoms(meta_molecule, "resid", ref_resid)[0]
+            cg_node = ref_nodes[ndx] #find_atoms(meta_molecule, "resid", ref_resid)[0]
 
             # record the coordinates of the atom that is rotated
             opt_coords[:, ndx] = template[atom_name]
@@ -138,16 +115,17 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
 
     # 4. optimize the distance between reference nodes and nodes to be placed
     # only using rotation of the complete template
+    #@profile
     def target_function(angles):
         rotated = rotate_xyz(opt_coords, angles[0], angles[1], angles[2])
         diff = rotated - ref_coords
-        score = np.sum(np.sum(diff*diff, axis=0))
+        score = norm_matrix(diff)
         return score
 
-    # starting angles in degree
-    angles = np.array([10.0, -10.0, 5.0])
+    # choose random starting angles
+    angles = np.random.uniform(low=0, high=2*np.pi, size=(3))
     opt_results = scipy.optimize.minimize(target_function, angles, method='L-BFGS-B',
-                                          options={'ftol':0.000001, 'maxiter': 400})
+                                          options={'ftol':0.01, 'maxiter': 400})
 
     # 5. write the template as array and rotate it corrsponding to the result above
     template_arr = np.zeros((3, len(template)))
@@ -166,16 +144,15 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
 
     return template_rotated
 
-class Backmap():
+class Backmap(Processor):
     """
     This processor takes a a class:`polyply.src.MetaMolecule` and
     places coordinates form a higher resolution createing positions
     for the lower resolution molecule associated with the MetaMolecule.
     """
 
-    def __init__(self, nproc, fudge_coords=0.4, *args, **kwargs):
+    def __init__(self, fudge_coords=0.4, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.nproc = nproc
         self.fudge_coords = fudge_coords
 
     def _place_init_coords(self, meta_molecule):
@@ -191,21 +168,20 @@ class Backmap():
         """
         built_nodes = []
         for node in meta_molecule.nodes:
-            #print(node)
             if  meta_molecule.nodes[node]["build"]:
                 resname = meta_molecule.nodes[node]["resname"]
                 cg_coord = meta_molecule.nodes[node]["position"]
                 resid = meta_molecule.nodes[node]["resid"]
-                low_res_atoms = find_atoms(meta_molecule.molecule, "resid", resid)
+                high_res_atoms = meta_molecule.nodes[node]["graph"].nodes
                 template = orient_template(meta_molecule, node,
                                            meta_molecule.templates[resname],
                                            built_nodes)
 
-                for atom_low  in low_res_atoms:
-                    atomname = meta_molecule.molecule.nodes[atom_low]["atomname"]
+                for atom_high  in high_res_atoms:
+                    atomname = meta_molecule.molecule.nodes[atom_high]["atomname"]
                     vector = template[atomname]
                     new_coords = cg_coord + vector * self.fudge_coords
-                    meta_molecule.molecule.nodes[atom_low]["position"] = new_coords
+                    meta_molecule.molecule.nodes[atom_high]["position"] = new_coords
                 built_nodes.append(resid)
 
     def run_molecule(self, meta_molecule):
@@ -215,14 +191,3 @@ class Backmap():
         """
         self._place_init_coords(meta_molecule)
         return meta_molecule
-
-    def run_system(self, system):
-        """
-        Process `system`.
-        Parameters
-        ----------
-        system: vermouth.system.System
-            The system to process. Is modified in-place.
-        """
-        pool = multiprocessing.Pool(self.nproc)
-        system.molecules = pool.map(self.run_molecule, tqdm(system.molecules))

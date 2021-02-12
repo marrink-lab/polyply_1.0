@@ -25,13 +25,14 @@ def _make_edges(force_field):
     for block in force_field.blocks.values():
         inter_types = list(block.interactions.keys())
         for inter_type in inter_types:
-            if inter_type not in ["pairs", "exclusions"]:
+            if inter_type in ["bonds", "constraints" "angles"]:
                block.make_edges_from_interaction_type(type_=inter_type)
 
     for link in force_field.links:
         inter_types = list(link.interactions.keys())
         for inter_type in inter_types:
-            link.make_edges_from_interaction_type(type_=inter_type)
+            if inter_type in ["bonds", "constraints", "angles"]:
+                link.make_edges_from_interaction_type(type_=inter_type)
 
 def _interpret_residue_mapping(graph, resname, new_residues):
     """
@@ -245,6 +246,7 @@ class MetaMolecule(nx.Graph):
         meta_mol.molecule = force_field.blocks[mol_name].to_molecule()
         return meta_mol
 
+    #TODO Add from_molecule method
     @classmethod
     def from_block(cls, force_field, mol_name):
         """

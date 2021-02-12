@@ -151,7 +151,7 @@ def test_remove_positions(topology):
                                               box=np.array([10., 10., 10.]))
 
      # now we check if the 3rd is removed correctly
-     nb_engine.remove_positions(mol_idx=2, node_key=0)
+     nb_engine.remove_positions(mol_idx=2, node_keys=[0])
      assert all(nb_engine.get_point(2, 0) == np.array([np.inf, np.inf, np.inf]))
 
 def test_update_positions_in_molecules(topology):

@@ -244,15 +244,11 @@ class TOPDirector(SectionLineParser):
             block = self.force_field.blocks[mol_name]
             graph = MetaMolecule._block_graph_to_res_graph(block)
             for idx in tqdm(range(0, int(n_mol))):
-                graph_copy = copy.deepcopy(graph)
+                graph_copy = graph.copy(as_view=False)
                 new_mol = MetaMolecule(graph_copy,
                                        force_field=self.force_field,
                                        mol_name=mol_name)
                 new_mol.molecule = self.force_field.blocks[mol_name].to_molecule()
-                new_mol.atom_types = self.topology.atom_types
-                new_mol.defaults = self.topology.defaults
-                new_mol.nonbond_params = self.topology.nonbond_params
-                new_mol.defines = self.topology.defines
                 new_mol.mol_name = mol_name
 
                 self.topology.add_molecule(new_mol)
