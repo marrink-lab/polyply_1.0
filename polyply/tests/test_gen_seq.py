@@ -16,7 +16,7 @@ import networkx as nx
 from networkx.readwrite import json_graph
 import pytest
 from polyply import gen_seq, TEST_DATA
-from polyply.src.gen_seq import (_add_edges, _branched_graph,
+from polyply.src.gen_seq import (_add_edges, _branched_graph, _tag_nodes,
                                  MacroString, generate_seq_graph,
                                  _find_terminal_nodes, _apply_termini_modifications)
 
@@ -130,6 +130,42 @@ def test_annote_modifications():
                                                         2: "NH2", 3: "PPI",
                                                         4: "NH3", 5: "NH3"}
 
+#<seqID:tag_word:value1-probability,value2-probability>
+@pytest.mark.parametrize('tags, expected, seed',(
+                         # only one sequence, one value, prob=1
+                        [["1:chiral:R-1."],
+                         {0: "R", 1: "R", 2: "R"},
+                         None
+                        ],
+                         # two tags different seqID value prob=1
+                        [["1:chiral:R-1.", "2:chiral:S-1."],
+                         {0: "R", 1: "R", 2: "R", 3: "S", 4: "S", 5: "S"},
+                         None
+                        ],
+                        # randomly replace nodes in one sequence
+                        [["1:chiral:R-0.5,S-0.5", "2:chiral:Q-1."],
+                         {0: "S", 1: "R", 2: "S", 3: "Q", 4: "Q", 5: "Q"},
+                         23303
+                        ],
+                        # randomly replace nodes in both sequences
+                        [["1:chiral:R-0.5,S-0.5", "2:chiral:P-0.5,D-0.5"],
+                         {0: "S", 1: "R", 2: "S", 3: "D", 4: "P", 5: "D"},
+                         23303
+                        ]
+                        ))
+def test_tag_nodes(tags, expected, seed):
+    graph = nx.Graph()
+    graph.add_edges_from([(0, 1), (1, 2), (1, 3), (3, 4), (3, 5)])
+    nx.set_node_attributes(graph,
+                           {0: 1, 1: 1, 2: 1, 3: 2, 4: 2, 5: 2},
+                           "seqid"
+                          )
+    nx.set_node_attributes(graph,
+                           {0: "PPI", 1: "PPI", 2: "PPI", 3: "PPI", 4: "PPI", 5: "PPI"},
+                           "resname"
+                          )
+    _tag_nodes(graph, tags, seed)
+    assert nx.get_node_attributes(graph, "chiral") == expected
 
 class Args:
     """
@@ -146,7 +182,8 @@ class Args:
                  connects=None,
                  lib=None,
                  modifications=[],
-                 inpath=None):
+                 inpath=None,
+                 tags=[]):
 
         self.name = name
         self.lib = lib
@@ -158,7 +195,7 @@ class Args:
         self.connects = connects
         self.inpath = inpath
         self.modifications = modifications
-
+        self.tags = []
 
 @pytest.mark.parametrize('_input, ref_file', (
     (dict(outpath=TEST_DATA + "/gen_seq/output/PPI.json",

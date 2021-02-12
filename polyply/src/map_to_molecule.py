@@ -125,6 +125,12 @@ class MapToMolecule(Processor):
             for res_node in correspondence.values():
                 data = new_mol.nodes[res_node]
                 residue.add_node(res_node, **data)
+                for attribute, value in meta_molecule.nodes[node].items():
+                    # graph and seqID are specific attributes set by make residue
+                    # graph or the gen_seq tool, which we don't want to propagate.
+                    if attribute in ["graph", "seqID"]:
+                        continue
+                    residue.nodes[res_node][attribute] = value
 
             meta_molecule.nodes[node]["graph"] = residue
 

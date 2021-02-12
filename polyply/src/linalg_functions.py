@@ -163,7 +163,38 @@ def _radius_of_gyration(points):
     return RG
 radius_of_gyration = jit(_radius_of_gyration)
 
-def rotate_xyz(object_xyz, theta_x, theta_y, theta_z):
+def _matrix_multiplication(*args):
+   """
+   Implements matrix multiplicaiton of numpy ndarrays.
+   Basically the same as np.matmul but it can handle 1-D
+   column vectors. In addition together with numba a
+   modest speed-up is expected. See the following for
+   some testing https://stackoverflow.com/questions/36526708/\
+   comparing-python-numpy-numba-and-c-for-matrix-multiplication
+   Also note that the data type of the matrices needs to be
+   explicitly set and is assumed to be np.float64.
+
+   Parameters
+   ----------
+   args: list[np.array]
+       a list of numpy ndarrays
+   """
+   matrix_a = args[0]
+   for matrix_b in args[1:]:
+       rows, other_dim = matrix_a.shape
+       columns = matrix_b.shape[1]
+       new_matrix = np.zeros((rows, columns))
+       for i in range(0, rows):
+           for j in range(0, columns):
+               for k in range(0, other_dim):
+                   new_matrix[i,j] += matrix_a[i,k] * matrix_b[k,j]
+
+       matrix_a = new_matrix
+   return new_matrix
+
+matrix_multiplication = jit(_matrix_multiplication)
+
+def _rotate_xyz(object_xyz, theta_x, theta_y, theta_z):
     """
     Rotate `object_xyz` around angles `theta_x`, `theta_y`
     and `theta_z` around the x,y,z axis respectively and
@@ -180,6 +211,22 @@ def rotate_xyz(object_xyz, theta_x, theta_y, theta_z):
     thata_z: float
         angles in degrees
     """
-    rotation = Rotation.from_euler('xyz', [theta_x, theta_y, theta_z], degrees=True)
-    rotated_object = np.matmul(rotation.as_matrix(), object_xyz)
+    # convert all angles to degree
+    #theta_z, theta_y, theta_x = np.deg2rad(theta_z), np.deg2rad(theta_y), np.deg2rad(theta_x)
+    # compute rotatin matrix around z
+    sin_z = np.sin(theta_z)
+    cos_z = np.cos(theta_z)
+    rot_z = np.array([[cos_z, -1.0*sin_z, 0.0], [sin_z, cos_z , 0.0], [0.0, 0.0, 1.0]], dtype=np.float64)
+    # compute rotation matrix around y
+    cos_y = np.cos(theta_y)
+    sin_y = np.sin(theta_y)
+    rot_y = np.array([[cos_y, 0.0, sin_y], [0.0, 1.0, 0.0], [-sin_y, 0.0, cos_y]], dtype=np.float64)
+    # compute rotation matrix around x
+    cos_x = np.cos(theta_x)
+    sin_x = np.sin(theta_x)
+    rot_x = np.array([[1.0, 0.0, 0.0], [0.0, cos_x, -sin_x], [0.0, sin_x, cos_x]], dtype=np.float64)
+    # consecutively multiply all matrices and the object matrix
+    rotated_object = matrix_multiplication(rot_z, rot_y, rot_x, object_xyz)
     return rotated_object
+
+rotate_xyz = jit(_rotate_xyz)

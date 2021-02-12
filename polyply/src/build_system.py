@@ -164,7 +164,7 @@ class BuildSystem():
             start = self.box_grid[start_idx]
 
             processor = RandomWalk(mol_idx,
-                                   self.nonbond_matrix.copy(),
+                                   self.nonbond_matrix,
                                    start=start,
                                    maxdim=self.box,
                                    vector_sphere=vector_sphere,
@@ -176,9 +176,11 @@ class BuildSystem():
             if processor.success:
                 return True, processor.nonbond_matrix
             elif step_count == self.maxiter:
+                processor.nonbond_matrix.remove_positions(mol_idx, molecule.nodes)
                 return False, processor.nonbond_matrix
             else:
                 step_count += 1
+                self.nonbond_matrix.remove_positions(mol_idx, molecule.nodes)
 
     def _compose_system(self, molecules):
         """
@@ -213,6 +215,7 @@ class BuildSystem():
                                                                    vector_sphere)
             if success:
                 self.nonbond_matrix = new_nonbond_matrix
+                self.nonbond_matrix.concatenate_trees()
                 mol_idx += 1
                 pbar.update(1)
 
