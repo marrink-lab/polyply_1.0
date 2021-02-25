@@ -110,6 +110,9 @@ class NonBondEngine():
         self.position_trees = [scipy.spatial.ckdtree.cKDTree(positions[self.defined_idxs[-1]],
                                                              boxsize=boxsize)]
 
+        # given a global node index, in which tree is the position saved
+        self.gndx_to_tree = {idx: 0 for idx in self.defined_idxs[0]}
+
     def copy(self):
         """
         Return new instance and deep copy of the objects position attribute.
@@ -121,6 +124,17 @@ class NonBondEngine():
                                  cut_off=self.cut_off,
                                  boxsize=self.boxsize)
         return new_obj
+
+    def concatenate_trees(self):
+        """
+        Rebuild a single tree from all defined coordinates and remove all
+        other trees. This function enables you to condense the positions
+        saved over multiple trees into a single tree.
+        """
+        self.defined_idxs = [list(np.where(self.positions[:, 0].reshape(-1) != np.inf)[0])]
+        self.position_trees = [scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs[-1]],
+                                                             boxsize=self.boxsize)]
+        self.gndx_to_tree = {idx: 0 for idx in self.defined_idxs[0]}
 
     def add_positions(self, point, mol_idx, node_key, start=True):
         """
@@ -135,31 +149,50 @@ class NonBondEngine():
         # a single tree
         if start and self.position_trees[-1].n > 5000:
            self.defined_idxs.append([gndx])
+           self.gndx_to_tree[gndx] = len(self.position_trees)
            self.position_trees.append(scipy.spatial.ckdtree.cKDTree(point.reshape(1,3),
                                                                     boxsize=self.boxsize,
                                                                     balanced_tree=False,
                                                                     compact_nodes=False))
         else:
            self.defined_idxs[-1].append(gndx)
+           self.gndx_to_tree[gndx] = len(self.position_trees) - 1
            new_tree = scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs[-1]],
                                                     boxsize=self.boxsize,
                                                     balanced_tree=False,
                                                     compact_nodes=False)
            self.position_trees[-1] = new_tree
 
-    def remove_positions(self, mol_idx, node_key):
+    def remove_positions(self, mol_idx, node_keys):
         """
         Remove `point` with global index `gndx` from the positions
         matrix and position-tree.
+
+        Paramters
+        ---------
+        mol_idx: int
+            index of the molecule for which to remove_positions
+        node_keys: abc.iteratable
+            which nodes to remove
         """
-        gndx = self.nodes_to_gndx[(mol_idx, node_key)]
-        self.positions[gndx] = np.array([np.inf, np.inf, np.inf])
-        self.defined_idxs[-1].remove(gndx)
-        new_tree = scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs[-1]],
-                                                 boxsize=self.boxsize,
-                                                 balanced_tree=False,
-                                                 compact_nodes=False)
-        self.position_trees[-1] = new_tree
+        tree_idxs = []
+        for node_key in node_keys:
+            gndx = self.nodes_to_gndx[(mol_idx, node_key)]
+            # guard against when a position is not defined
+            if gndx not in self.gndx_to_tree:
+               continue
+            self.positions[gndx] = np.array([np.inf, np.inf, np.inf])
+            tree_idx = self.gndx_to_tree[gndx]
+            self.defined_idxs[tree_idx].remove(gndx)
+            del self.gndx_to_tree[gndx]
+            tree_idxs.append(tree_idx)
+
+        for tree_idx in tree_idxs:
+            new_tree = scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs[tree_idx]],
+                                                     boxsize=self.boxsize,
+                                                     balanced_tree=False,
+                                                     compact_nodes=False)
+            self.position_trees[tree_idx] = new_tree
 
     def update_positions_in_molecules(self, molecules):
         """

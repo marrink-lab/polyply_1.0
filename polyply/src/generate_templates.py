@@ -14,6 +14,7 @@
 
 import networkx as nx
 import numpy as np
+import scipy
 import vermouth
 from vermouth.log_helpers import StyleAdapter, get_logger
 from .minimizer import optimize_geometry
@@ -89,8 +90,8 @@ def find_interaction_involving(block, current_node, prev_node):
                 elif prev_node in interaction.atoms and inter_type.split("_")[0] == "virtual":
                     return True, interaction, inter_type
     else:
-        msg = ('Cannot build template for residue {}. No constraint, bond, virtual-site'
-               'linking atom {} and atom {}.')
+        msg = '''Cannot build template for residue {}. No constraint, bond, virtual-site
+                 linking atom {} and atom {}.'''
         raise IOError(msg.format(block.nodes[0]["resname"], prev_node, current_node))
 
 def _expand_inital_coords(block, bond=None, pos=None, fixed=None,
@@ -113,7 +114,7 @@ def _expand_inital_coords(block, bond=None, pos=None, fixed=None,
     # replace by kamada kwau
     return nx.kamada_kawai_layout(block, dim=3)
 
-def compute_volume(molecule, block, coords, treshold=1e-18):
+def compute_volume(molecule, block, coords, nonbond_params, treshold=1e-18):
     """
     Given a `block`, which is part of `molecule` and
     has the coordinates `coord` compute the radius
@@ -144,7 +145,7 @@ def compute_volume(molecule, block, coords, treshold=1e-18):
 
     for node, coord in coords.items():
         atom_key = block.nodes[node]["atype"]
-        rad = float(molecule.nonbond_params[frozenset([atom_key, atom_key])]["nb1"])
+        rad = float(nonbond_params[frozenset([atom_key, atom_key])]["nb1"])
         diff = coord - res_center_of_geometry
         if np.linalg.norm(diff) < treshold:
            continue
@@ -300,7 +301,7 @@ class GenerateTemplates(Processor):
                 self.resnames.append(resname)
 
                 block = extract_block(meta_molecule.molecule, resname,
-                                      meta_molecule.defines)
+                                      self.topology.defines)
                 opt_counter = 0
                 while True:
                     coords = _expand_inital_coords(block)
@@ -311,14 +312,14 @@ class GenerateTemplates(Processor):
                     if success:
                         break
                     elif opt_counter > self.max_opt:
-                        LOGGER.warning(("Failed to optimize structure for block {}."
-                                        "Proceeding with unoptimized coordinates."
-                                        "Usually this is OK, but check your final structure.", resname))
+                        LOGGER.warning("Failed to optimize structure for block {}.", resname)
+                        LOGGER.warning("Proceeding with unoptimized coordinates.")
+                        LOGGER.warning("Usually this is OK, but check your final structure.""")
                         break
                     else:
                         opt_counter += 1
 
-                self.volumes[resname] = compute_volume(meta_molecule, block, coords)
+                self.volumes[resname] = compute_volume(meta_molecule, block, coords, self.topology.nonbond_params)
                 coords = map_from_CoG(coords)
                 self.templates[resname] = coords
 
