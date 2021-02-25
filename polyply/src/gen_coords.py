@@ -133,11 +133,9 @@ def gen_coords(args):
                 ignore=args.ignore,
                 grid=args.grid,
                 nrewind=args.nrewind).run_system(topology.molecules)
-
     AnnotateLigands(topology, args.ligands).split_ligands()
     LOGGER.info("backmapping to target resolution",  type="step")
-    Backmap(args.nproc, fudge_coords=args.bfudge).run_system(topology)
-
+    Backmap(fudge_coords=args.bfudge).run_system(topology)
     # Write output
     LOGGER.info("writing output",  type="step")
     command = ' '.join(sys.argv)

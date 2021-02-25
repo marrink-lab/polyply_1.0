@@ -11,8 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+Collection of useful functions for performing operations based
+on graphs.
+"""
+from collections import defaultdict
 import networkx as nx
-import vermouth
 
 def neighborhood(graph, source, max_length, min_length=1):
     """
@@ -39,7 +43,7 @@ def neighborhood(graph, source, max_length, min_length=1):
        list of all nodes distance away from reference
     """
     paths = nx.single_source_shortest_path(G=graph, source=source, cutoff=max_length)
-    neighbours = [ node for node, path in paths.items() if min_length <= len(path)]
+    neighbours = [node for node, path in paths.items() if min_length <= len(path)]
     return neighbours
 
 def find_nodes_with_attributes(graph, **attrs):
@@ -78,7 +82,57 @@ def is_branched(graph):
     bool
        is branched
     """
-    for node, deg in graph.degree:
+    for _, deg in graph.degree:
         if deg > 2:
-           return True
+            return True
     return False
+
+def find_connecting_edges(res_graph, molecule, nodes):
+    """
+    Given a list of `nodes` referring to specific nodes in a
+    molecule residue graph (`res_graph`) find all edges in the
+    molecule graph, which connect the two residues. This function
+    avoids looping over all edges in the molecule graph, so it
+    scales well.
+
+    Parameters
+    ----------
+    res_graph: :class:`nx.Graph`
+        residue graph; must have the attribute "graph" and
+        "resid", where graph is the fragment the node describes
+        in the mol_graph
+    molecule: :class:`vermouth.molecule.Molecule`
+        vermouth molecule underlying the residue graph
+    nodes: (node_key, node_key)
+        tuple of node-keys specifing a residue in residue graph
+
+    Returns
+    ----------
+    list
+       list of edges found
+    """
+    # First find all nodes in the residue graph fragments,
+    # whose degree is unequal to their degree in complete
+    # the molecule. This is an efficent way to filter which
+    # atoms are involved in a potential link, because it reduces
+    # the search space to only those atoms that have a dangling
+    # edge in the residue as compared to the complete molecule.
+    # Then sotre these nodes together with the residue they are
+    # found in.
+    allowed_nodes = defaultdict(list)
+    for res_node in nodes:
+        for node in res_graph.nodes[res_node]["graph"].nodes:
+            deg = res_graph.nodes[res_node]["graph"].degree(node)
+            if deg != molecule.degree(node):
+                allowed_nodes[res_node].append(node)
+
+    # given all nodes, which potentially have a connecting edge
+    # we only need to check generate all possible edges and check
+    # if they exist
+    edges = []
+    for high_res_node_a in allowed_nodes[nodes[0]]:
+        for high_res_node_b in allowed_nodes[nodes[1]]:
+            if molecule.has_edge(high_res_node_a, high_res_node_b):
+                edges.append((high_res_node_a, high_res_node_b))
+
+    return edges

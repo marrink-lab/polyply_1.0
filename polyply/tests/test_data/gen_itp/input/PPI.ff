@@ -51,3 +51,8 @@ BB >BB 1 0.350 1250 {"group": "inner"}
 resname "N2|N3"
 [ bonds ]
 BB >BB 1 0.250 1250 {"group": "outer"}
+
+[ link ]
+resname "P4"
+[ bonds ]
+BB >BB 1 0.250 1250 {"group": "outer"}
