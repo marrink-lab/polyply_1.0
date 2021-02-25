@@ -15,6 +15,7 @@
 """
 High level API for the polyply itp generator
 """
+import sys
 from pathlib import Path
 import vermouth
 import vermouth.forcefield
@@ -47,8 +48,6 @@ def split_seq_string(sequence):
     return monomers
 
 def gen_itp(args):
-
-
     # Import of Itp and FF files
     force_field = load_library(args.name, args.lib, args.inpath)
 
@@ -74,7 +73,8 @@ def gen_itp(args):
     meta_molecule = MapToMolecule().run_molecule(meta_molecule)
     meta_molecule = ApplyLinks().run_molecule(meta_molecule)
 
+    command = ' '.join(sys.argv)
     with open(args.outpath, 'w') as outpath:
         vermouth.gmx.itp.write_molecule_itp(meta_molecule.molecule, outpath,
-                                            moltype=args.name, header=["polyply-itp"])
+                                            moltype=args.name, header=["polyply-itp", command])
     DeferredFileWriter().write()
