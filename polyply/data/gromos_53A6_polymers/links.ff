@@ -1,0 +1,34 @@
+[link]
+resname "Hter|P3HT"
+[ atoms ]
+; compensate for the 0.245 charge of the H being added
+CT5 {"replace": {"charge": -0.394}}
+[ bonds ]
+-HTe   CT5    2    0.1090  1.2300e+07 {"group": "connect"}
+[ pairs ]
+-HTe   CT2    1 
+-HTe   CT3    1 
+-HTe   HT4    1 
+[ angles ]
+-HTe  CT5  ST1     2     119.0      575.00
+-HTe  CT5  CT4     2     126.00     575.00
+[ dihedrals ]
+-HTe  ST1  CT4  CT5  2     0.0   167.42309
+
+
+[link]
+resname "P3HT|Hter"
+[ atoms ]
+; compensate for the 0.245 charge of the H being added
+CT2 {"replace": {"charge": -0.394}}
+[ bonds ]
+ CT2  +HTe     2    0.1090  1.2300e+07 {"group": "connect"}
+[ pairs ]
+ C09  +HTe     1 
+ H14  +HTe     1 
+ H15  +HTe     1 
+[ angles ]
+ ST1  CT2 +HTe     2     119.0      575.00
+ CT3  CT2 +HTe     2     126.00     575.00
+[ dihedrals ]
++HTe  ST1  CT3  CT2  2     0.0   167.42309
