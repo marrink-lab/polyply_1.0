@@ -173,9 +173,18 @@ class Backmap(Processor):
                 cg_coord = meta_molecule.nodes[node]["position"]
                 resid = meta_molecule.nodes[node]["resid"]
                 high_res_atoms = meta_molecule.nodes[node]["graph"].nodes
-                template = orient_template(meta_molecule, node,
-                                           meta_molecule.templates[resname],
-                                           built_nodes)
+
+                try:
+                    template = orient_template(meta_molecule, node,
+                                               meta_molecule.templates[resname],
+                                               built_nodes)
+                except KeyError as err:
+                    msg = ("Couldn't find atom {} of residue {} in the template coordinates. "
+                           "This usually means that you have two or more residues with the same name, "
+                           "but a different number of atoms. All residue names need to "
+                           "describe the same residue.")
+                    raise KeyError(msg.format(err, resname))
+
 
                 for atom_high  in high_res_atoms:
                     atomname = meta_molecule.molecule.nodes[atom_high]["atomname"]
