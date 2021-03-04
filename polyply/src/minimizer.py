@@ -77,8 +77,15 @@ def compute_dih(params, coords):
     -------
     float
     """
-    dih_angle = dih(coords[0], coords[1], coords[2], coords[3])
-    return (dih_angle - float(params[1]))**2.0
+    # only optimize imporper dihedrals
+    # we filter all non-imporpers out here because
+    # the itp file parser doesn't distinguish them
+    if params[0] == "2":
+        dih_angle = dih(coords[0], coords[1], coords[2], coords[3])
+        penalty = (dih_angle - float(params[1]))**2.0
+    else:
+        penalty = 0
+    return penalty
 
 def renew_vs(positions, block, atom_to_idx):
     """
