@@ -32,7 +32,7 @@ from vermouth.tests.helper_functions import find_in_path
 
 INTEGRATION_DATA = Path(TEST_DATA + '/library_tests')
 
-PATTERN = '{path}/{library}/{polymer}/'
+PATTERN = '{path}/{library}/{polymer}/polyply'
 
 POLYPLY = find_in_path(names=("polyply", ))
 
@@ -67,6 +67,7 @@ def assert_equal_blocks(block1, block2):
         new_interactions = block2.interactions.get(inter_type, [])
         new_terms = defaultdict(list)
         ref_terms = defaultdict(list)
+        assert len(interactions) == len(new_interactions)
         for inter in interactions:
             atoms = inter.atoms
             ref_terms[frozenset(atoms)].append(inter)
@@ -155,8 +156,12 @@ def _interaction_equal(interaction1, interaction2, inter_type):
     return False
 
 @pytest.mark.parametrize("library, polymer", [
-   # ['gromos2016H66', 'PEO'],
+     ['gromos2016H66', 'PP'],
      ['gromos2016H66', 'C12E4'],
+     ['gromos2016H66', 'PE'],
+     ['gromos2016H66', 'PVA'],
+     ['gromos2016H66', 'PMA'],
+     ['gromos2016H66', 'PS'],
    # ['martini3', 'PEO'],
    # ['martini3', 'PS'],
    # ['martini3', 'PEO_OHter'],
