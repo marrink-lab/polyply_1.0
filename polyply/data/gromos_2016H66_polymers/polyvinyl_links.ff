@@ -167,18 +167,18 @@ VC2 {"replace": {"atype": "CH1"}}
 VC2 +C1 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link"}
 
 [ link ]
-resname "CH3ter|PE|PP|PVC|PVA|PMMA|PMA|PS"
-[ atoms ]
-+VC1 {"replace": {"atype": "CH2"}}
-[ bonds ]
-+VC1 C1 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link"}
-
-[ link ]
 resname "CH3ter|PE"
 [ atoms ]
 VC2 {"replace": {"atype": "CH2"}}
 [ bonds ]
 VC2 +C1 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link"}
+
+[ link ]
+resname "CH3ter|PE|PP|PVC|PVA|PMMA|PMA|PS"
+[ atoms ]
++VC1 {"replace": {"atype": "CH2"}}
+[ bonds ]
++VC1 C1 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link"}
 
 [ link ]
 resname "CH3ter|PE|PP|PVC|PVA|PMMA|PMA|PS"
@@ -189,6 +189,11 @@ VC1 VC2 +C1 2  ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
 resname "CH3ter|PE|PP|PVC|PVA|PMMA|PMA|PS"
 [ angles ]
 C1 +VC1 +VC2 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
+
+[ link ]
+resname "CH3ter|PP|PVC|PVA|PMMA|PMA|PS"
+[ angles ]
+SC1 VC2 +C1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
 
 [ link ]
 resname "CH3ter|PE|PP|PVC|PVA|PMA|PS"
