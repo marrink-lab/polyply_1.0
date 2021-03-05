@@ -1,0 +1,11 @@
+[ moleculetype ]
+PEO 3
+[ atoms ]
+1 CH3 1 PEO EC1 1 0.29 14.0
+2 OE 1 PEO O1 2 -0.58 16.0
+3 CH3 1 PEO EC2 3 0.29 14.0
+[ bonds ]
+1 2 2 gb_18 {"comment":"CHn-OA,OE"}
+3 2 2 gb_18 {"comment":"CHn-OA,OE"}
+[ angles ]
+3 2 1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
