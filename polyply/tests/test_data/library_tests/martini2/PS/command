@@ -1,0 +1,1 @@
+polyply gen_itp -lib martini2_polymers -seq PS:5 -o PS.itp -name PS

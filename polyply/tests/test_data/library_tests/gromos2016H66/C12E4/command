@@ -1,0 +1,1 @@
+polyply gen_itp -lib gromos_2016H66_polymers -seq CH3ter:1 PE:5 PEO:4 OHter:1 -name C12E4 -o C12E4.itp
