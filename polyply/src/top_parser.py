@@ -382,6 +382,7 @@ class TOPDirector(SectionLineParser):
     @SectionLineParser.section_parser('moleculetype', 'SETTLE')
     @SectionLineParser.section_parser('moleculetype', 'distance_restraints')
     @SectionLineParser.section_parser('moleculetype', 'orientation_restraints')
+    @SectionLineParser.section_parser('moleculetype', 'dihedral_restraints')
     @SectionLineParser.section_parser('moleculetype', 'angle_restraints')
     @SectionLineParser.section_parser('moleculetype', 'angle_restraints_z')
     def _molecule(self, line, lineno=0):
