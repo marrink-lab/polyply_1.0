@@ -77,7 +77,12 @@ def compute_dih(params, coords):
     -------
     float
     """
-    # only optimize imporper dihedrals
+    # only optimize imporper dihedrals, because we don't
+    # treat multiplicity correctly; imporpers
+    # are needed for keeping conjugated systems falt;
+    # proper dihedrals will get adjusted in the energy
+    # minization
+
     # we filter all non-imporpers out here because
     # the itp file parser doesn't distinguish them
     if params[0] == "2":
