@@ -43,14 +43,15 @@ def _parse_edges_new(tokens, context, context_type, negate):
     Parse the edge directive and add edge-attributes when
     required.
     """
-    if negate and context_type != 'link':
-        raise IOError('The "non-edges" section is only valid in links.')
+    if negate:
+        raise IOError("Polyply does not support non-edges.")
 
     atoms = _get_atoms(tokens, natoms=2)
     prefixed_atoms = []
     for idx, atom in enumerate(atoms):
         prefixed_reference, attributes = _treat_atom_prefix(*atom)
-        [attributes.pop(key, None) for key in ["atomname", "order", "resname"]]
+        for key in ["atomname", "order", "resname"]:
+            attributes.pop(key, None)
         prefixed_atoms.append(prefixed_reference)
 
         if idx == 0 and attributes:
@@ -58,16 +59,13 @@ def _parse_edges_new(tokens, context, context_type, negate):
         else:
             edge_attributes = attributes
 
-    if negate:
-        raise IOError("Polyply does not support non-edges.")
-    else:
-        error_message = 'Atom with name {} not found for {} {}'
-        for prefixed_atom in prefixed_atoms:
-            atomname = prefixed_atom[0]
-            if atomname not in context and context_type == 'modification':
-                raise KeyError(error_message.format(atomname, context_type,
-                                                    context.name))
-        context.add_edge(prefixed_atoms[0], prefixed_atoms[1], **edge_attributes)
+    error_message = 'Atom with name {} not found for {} {}'
+    for prefixed_atom in prefixed_atoms:
+        atomname = prefixed_atom[0]
+        if atomname not in context and context_type == 'modification':
+            raise KeyError(error_message.format(atomname, context_type,
+                                                context.name))
+    context.add_edge(prefixed_atoms[0], prefixed_atoms[1], **edge_attributes)
 
 def read_ff(lines, force_field):
     director = PolyplyFFParser(force_field)
