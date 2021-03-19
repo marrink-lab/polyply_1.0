@@ -15,10 +15,12 @@
 """
 High level API for the polyply itp generator
 """
+import sys
 from pathlib import Path
 import vermouth
 import vermouth.forcefield
 from vermouth.file_writer import open, DeferredFileWriter
+from vermouth.citation_parser import citation_formatter
 import polyply
 import polyply.src.polyply_parser
 from polyply import (DATA_PATH, MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
@@ -75,6 +77,13 @@ def gen_itp(args):
     meta_molecule = ApplyLinks().run_molecule(meta_molecule)
 
     with open(args.outpath, 'w') as outpath:
+        header = [ ' '.join(sys.argv) + "\n" ]
+        header.append("Pleas cite the following papers:")
+        for citation in meta_molecule.molecule.citations:
+            cite_string =  citation_formatter(meta_molecule.molecule.force_field.citations[citation])
+            #LOGGER.info("Please cite: " + cite_string)
+            header.append(cite_string)
+
         vermouth.gmx.itp.write_molecule_itp(meta_molecule.molecule, outpath,
-                                            moltype=args.name, header=["polyply-itp"])
+                                            moltype=args.name, header=header)
     DeferredFileWriter().write()
