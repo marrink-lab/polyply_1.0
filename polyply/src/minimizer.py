@@ -62,11 +62,11 @@ def compute_angle(params, coords):
     angle_value = angle(coords[0], coords[1], coords[2])
     return (angle_value - float(params[1]))**2.0
 
-def compute_dih(params, coords):
+def compute_imporoper_dih(params, coords):
     """
-    Compute the dihedral angle between four points in `coords`
-    and then take the MSD with repsect to a reference
-    value provided in `params`.
+    Compute the improper dihedral angle of GROMACS type 2
+    between four points in `coords` and then take the MSD
+    with repsect to a reference value provided in `params`.
 
     Parameters
     -----------
@@ -77,12 +77,6 @@ def compute_dih(params, coords):
     -------
     float
     """
-    # only optimize imporper dihedrals, because we don't
-    # treat multiplicity correctly; imporpers
-    # are needed for keeping conjugated systems falt;
-    # proper dihedrals will get adjusted in the energy
-    # minization
-
     # we filter all non-imporpers out here because
     # the itp file parser doesn't distinguish them
     if params[0] == "2":
@@ -124,7 +118,13 @@ def renew_vs(positions, block, atom_to_idx):
 INTER_METHODS = {"bonds": compute_bond,
                  "constraints": compute_bond,
                  "angles": compute_angle,
-                 "dihedrals": compute_dih}
+                 "dihedrals": compute_imporper_dih}
+# Note that we only optimize improper dihedral angles
+# because they keep molecules flat, whereas proper
+# dihedral angles typically are fixed well in the
+# energy minimization. We could optimize proper
+# dihedral angles but then we'd also have to support
+# all different function types and their multipicity.
 
 def optimize_geometry(block, coords, inter_types=[]):
     """
