@@ -62,7 +62,7 @@ def compute_angle(params, coords):
     angle_value = angle(coords[0], coords[1], coords[2])
     return (angle_value - float(params[1]))**2.0
 
-def compute_imporoper_dih(params, coords):
+def compute_improper_dih(params, coords):
     """
     Compute the improper dihedral angle of GROMACS type 2
     between four points in `coords` and then take the MSD
@@ -118,7 +118,7 @@ def renew_vs(positions, block, atom_to_idx):
 INTER_METHODS = {"bonds": compute_bond,
                  "constraints": compute_bond,
                  "angles": compute_angle,
-                 "dihedrals": compute_imporper_dih}
+                 "dihedrals": compute_improper_dih}
 # Note that we only optimize improper dihedral angles
 # because they keep molecules flat, whereas proper
 # dihedral angles typically are fixed well in the
@@ -126,7 +126,10 @@ INTER_METHODS = {"bonds": compute_bond,
 # dihedral angles but then we'd also have to support
 # all different function types and their multipicity.
 
-def optimize_geometry(block, coords, inter_types=[]):
+def optimize_geometry(block, coords, inter_types=[], tolarance={"angles": 5,
+                                                                "dihedrals": 5,
+                                                                "bonds": 0.05,
+                                                                "constraints": 0.05}):
     """
     Take the definitions of a `block` and associated
     `coords` and optimize the geometry based on the
@@ -138,6 +141,9 @@ def optimize_geometry(block, coords, inter_types=[]):
     block:  :class:vermouth.molecule.Block
     coords: dict
         dictionary of coordinates in form atom_name:np.ndarray
+    tolarance: dict
+        dictionary of allowed tolarance in nm or degree per
+        interaction-type
 
     Returns
     -------
@@ -166,11 +172,19 @@ def optimize_geometry(block, coords, inter_types=[]):
         return energy
 
     opt_results = scipy.optimize.minimize(target_function, positions, method='L-BFGS-B',
-                                          options={'ftol':0.001, 'maxiter': 100})
-
+                                          options={'ftol': 0.001, 'maxiter': 100})
     positions = opt_results['x'].reshape((-1, 3))
     positions = renew_vs(positions, block, atom_to_idx)
     for node_key, idx in atom_to_idx.items():
         coords[node_key] = positions[idx]
 
-    return opt_results['success'], coords
+    max_fun = 0
+    for inter_type, tol in tolarance.items():
+        max_fun += tol**2. * len(block.interactions[inter_type])
+
+    if opt_results['success'] and opt_results['fun'] < max_fun:
+        success = True
+    else:
+        success = False
+
+    return success, coords
