@@ -97,10 +97,8 @@ def find_interaction_involving(block, current_node, prev_node):
 def _expand_inital_coords(block, bond=None, pos=None, fixed=None,
                           iterations=50, weight="weight", max_box=1.0):
     """
-    Given a `graph` generate initial random coordinates
-    in three dimensions and relax them using a Fruchterman
-    Reingold generic simulation aka spring_layout to relax
-    the coordinates topologically.
+    Given a `graph` generate initial coordinates in three dimensions
+    using the Kamada-Kawai algorithm.
 
     Parameters
     -----------
@@ -111,7 +109,6 @@ def _expand_inital_coords(block, bond=None, pos=None, fixed=None,
     dict
       dictonary of node index and position
     """
-    # replace by kamada kwau
     return nx.kamada_kawai_layout(block, dim=3)
 
 def compute_volume(molecule, block, coords, nonbond_params, treshold=1e-18):
