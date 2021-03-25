@@ -45,7 +45,6 @@ def _correspondence_to_residue(meta_molecule,
                                res_node):
     """
     """
-    print(meta_molecule.nodes[res_node])
     resid = meta_molecule.nodes[res_node]["resid"]
     residue = nx.Graph()
     for mol_node in correspondence.values():
@@ -107,11 +106,11 @@ class MapToMolecule(Processor):
         # restart nodes are match a block in the force-field but are themselves
         # only part of that block
         for fragment in nx.connected_components(restart_graph):
-            block_name = restart_attr[list(fragment.nodes())[0]]
-            if all([restart_attr[node] == block_name  for node in fragment.nodes]):
+            block_name = restart_attr[list(fragment)[0]]
+            if all([restart_attr[node] == block_name  for node in fragment]):
                 self.fragments.append(fragment)
                 block = self.force_field.blocks[block_name]
-                for node in fragment.nodes:
+                for node in fragment:
                     self.node_to_block[node] = block_name
                     self.node_to_fragment[node] = len(self.fragments) - 1
             else:
@@ -124,9 +123,10 @@ class MapToMolecule(Processor):
         molecule graph to include the block at residue level.
         """
         # get a defined order for looping over the resiude graph
-        node_keys = list(meta_molecule.nodes.keys())
-        node_keys.sort()
-
+        node_keys = list(meta_molecule.nodes())
+        resid_dict = nx.get_node_attributes(meta_molecule, "resid")
+        resids = [ resid_dict[node] for node in node_keys]
+        node_keys = [x for _, x in sorted(zip(resids, node_keys))]
         # get the first node and convert it to molecule
         start_node = node_keys[0]
         new_mol = self.force_field.blocks[self.node_to_block[start_node]].to_molecule()
@@ -135,8 +135,8 @@ class MapToMolecule(Processor):
         # multiresidue block
         if "from_itp" in meta_molecule.nodes[start_node]:
             # add all nodes of that fragment to added_fragment nodes
-            fragment_nodes = list(self.fragments[self.node_to_fragment[start_node]].nodes())
-            self.added_fragment_nodes += list(fragment_nodes)
+            fragment_nodes = list(self.fragments[self.node_to_fragment[start_node]])
+            self.added_fragment_nodes += fragment_nodes
 
             # extract the nodes of this paticular residue and store a
             # dummy correspndance
@@ -145,7 +145,7 @@ class MapToMolecule(Processor):
             residue = _correspondence_to_residue(meta_molecule,
                                                  new_mol,
                                                  correspondence,
-                                                 node)
+                                                 start_node)
             # add residue to meta_molecule node
             meta_molecule.nodes[start_node]["graph"] = residue
         else:
@@ -154,10 +154,9 @@ class MapToMolecule(Processor):
 
         # now we loop over the rest of the nodes
         for node in node_keys[1:]:
-
             # in this case the node belongs to a fragment which has been added
             # we only extract the residue belonging to this paticular node
-            if node in self.added_fragments:
+            if node in self.added_fragment_nodes:
                 fragment_id = self.node_to_fragment[node]
                 correspondence = self.multiblock_correspondence[fragment_id]
             # in this case we have to add the node from the block definitions
@@ -177,8 +176,8 @@ class MapToMolecule(Processor):
             # the correspondence as well as keep track of the nodes that are
             # part of that fragment
             if "from_itp" in meta_molecule.nodes[node] and node not in self.added_fragments:
-                fragment_nodes = list(self.fragments[self.node_to_fragment[start_node]].nodes())
-                self.added_fragment_nodes += list(fragment_nodes)
+                fragment_nodes = list(self.fragments[self.node_to_fragment[start_node]])
+                self.added_fragment_nodes += fragment_nodes
                 self.multiblock_correspondence.append(correspondence)
 
 
