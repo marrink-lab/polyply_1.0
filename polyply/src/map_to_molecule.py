@@ -44,6 +44,20 @@ def _correspondence_to_residue(meta_molecule,
                                correspondence,
                                res_node):
     """
+    Given a `meta_molecule` and the underlying higher resolution
+    `molecule` as well as a correspondence dict, describing how
+    a single node (res_node) in meta_molecule corresponds to a
+    fragment in molecule make a graph of that residue and propagate
+    all meta_molecule node attributes to that graph.
+
+    Parameters
+    ----------
+    meta_molecule: polyply.src.meta_molecule.MetaMolecule
+        The meta molecule to process.
+    molecule: vermouth.molecule.Molecule
+    correspondance: list
+    res_node: abc.hashable
+        the node in meta_molecule
     """
     resid = meta_molecule.nodes[res_node]["resid"]
     residue = nx.Graph()
@@ -65,9 +79,7 @@ class MapToMolecule(Processor):
     This processor takes a :class:`MetaMolecule` and generates a
     :class:`vermouth.molecule.Molecule`, which consists at this stage
     of disconnected blocks. These blocks can be connected using the
-    :class:`ConnectMolecule` processor. It can either run on a
-    single meta molecule or a system. The later is currently not
-    implemented.
+    :class:`ApplyLinks` processor.
     """
     def __init__(self, force_field):
         self.node_to_block = {}
@@ -80,11 +92,29 @@ class MapToMolecule(Processor):
 
     def match_nodes_to_blocks(self, meta_molecule):
         """
-        For all nodes in the meta_molecule match them either to a
-        block in the force_field or to a block that is a multi
-        residue molecule, in which case the node has the restart
-        attribute. There is a third option in which a resname matches
-        a block, which is itself a multiresidue block.
+        This function matches the nodes in the meta_molecule
+        to the blocks in the force-field. It does the essential
+        bookkeeping for three cases and populates the node_to_block,
+        and node_to_fragment dicts as well as the fragments attribute.
+        It distinguishes three cases:
+
+        1) the node corresponds to a single residue block; here
+           node_to_block entry is simply the resname of the block
+        2) the node has the from_itp attribute; in this case
+           the node is part of a multiresidue block in the FF,
+           all nodes corresponding to that block form a fragment.
+           All fragments are added to the fragments attribute, and
+           the nodes in those framgnets all have the entry node_to_block
+           set to the block. In addition it is recorded to which fragment
+           specifically the node belongs in the node_to_fragment dict.
+        3) the node corresponds to a multiresidue block; but unlike in
+           case to it represents multiple residues. ....
+
+         Parameters
+        ----------
+        meta_molecule: polyply.src.meta_molecule.MetaMolecule
+            The meta molecule to process.
+
         """
         regular_graph = nx.Graph()
         restart_graph = nx.Graph()
@@ -118,14 +148,26 @@ class MapToMolecule(Processor):
 
     def add_blocks(self, meta_molecule):
         """
-        Add disconnected blocks to :class:`vermouth.molecule.Molecue`
-        and if a multiresidue block is encountered expand the meta
-        molecule graph to include the block at residue level.
+        Add disconnected blocks to :class:`vermouth.molecule.Moleclue`
+        and set the graph attribute to meta_molecule matching the node
+        with the underlying fragment it represents at higher resolution.
+        Note that this function also takes care to properly add multi-
+        residue blocks (i.e. from an existing itp-file).
+
+        Parameters
+        ----------
+        meta_molecule: polyply.src.meta_molecule.MetaMolecule
+            The meta molecule to process.
+
+        Returns
+        -------
+        vermouth.molecule.Molecule
+            The disconnected fine-grained molecule.
         """
         # get a defined order for looping over the resiude graph
         node_keys = list(meta_molecule.nodes())
         resid_dict = nx.get_node_attributes(meta_molecule, "resid")
-        resids = [ resid_dict[node] for node in node_keys]
+        resids = [resid_dict[node] for node in node_keys]
         node_keys = [x for _, x in sorted(zip(resids, node_keys))]
         # get the first node and convert it to molecule
         start_node = node_keys[0]
@@ -185,15 +227,24 @@ class MapToMolecule(Processor):
 
     def run_molecule(self, meta_molecule):
         """
-        Process a single molecule. Must be implemented by subclasses.
+        Take a meta_molecule and generated a disconnected graph
+        of the higher resolution molecule by matching the resname
+        attribute to blocks in the force-field. This function
+        also takes care to correcly add parameters from an itp
+        file to fine-grained molecule. It also sets the 'graph'
+        attribute, which is the higher-resolution fragment that
+        the meta_molecule node represents.
+
         Parameters
         ----------
         molecule: polyply.src.meta_molecule.MetaMolecule
              The meta molecule to process.
+
         Returns
         -------
-        vermouth.molecule.Molecule
-            Either the provided molecule, or a brand new one.
+        molecule: polyply.src.meta_molecule.MetaMolecule
+            The meta molecule with attribute molecule that is the
+            fine grained molecule.
         """
         # in a first step we match the residue names to blocks
         # in the force-field. Residue names can also be part
