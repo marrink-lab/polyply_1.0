@@ -17,13 +17,17 @@ High level API for the polyply itp generator
 """
 import sys
 from pathlib import Path
+import networkx as nx
 import vermouth
 import vermouth.forcefield
 from vermouth.file_writer import open, DeferredFileWriter
+from vermouth.log_helpers import StyleAdapter, get_logger
 import polyply
 import polyply.src.polyply_parser
 from polyply import (DATA_PATH, MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
 from .load_library import load_library
+
+LOGGER = StyleAdapter(get_logger(__name__))
 
 def split_seq_string(sequence):
     """
@@ -70,8 +74,14 @@ def gen_itp(args):
          raise IOError("Cannot parse file with extension {}.".format(extension))
 
     # Do transformationa and apply link
-    meta_molecule = MapToMolecule().run_molecule(meta_molecule)
+    meta_molecule = MapToMolecule(force_field).run_molecule(meta_molecule)
     meta_molecule = ApplyLinks().run_molecule(meta_molecule)
+
+    # Raise warning if molecule is disconnected
+    if not nx.is_connected(meta_molecule.molecule):
+        for component in nx.connected_components(meta_molecule.molecule):
+            print(component)
+        LOGGER.warning("You molecule consists of disjoint parts. Perhaps a link was not applied correctly.")
 
     command = ' '.join(sys.argv)
     with open(args.outpath, 'w') as outpath:
