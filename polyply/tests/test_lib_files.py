@@ -44,11 +44,11 @@ def assert_equal_blocks(block1, block2):
     assert block1.name == block2.name
     assert block1.nrexcl == block2.nrexcl
     assert block1.force_field == block2.force_field  # Set to be equal
-    # Assert the order to be equal as well...
-    # assert list(block1.nodes) == list(block2.nodes)
-    # ... as the attributes
 
     for node in block1.nodes:
+        # for the simulation only these two attributes matter
+        # as we have 3rd party reference files we don't do more
+        # checks
         for attr in ["atype", "charge"]:
             assert block1.nodes[node][attr] == block2.nodes[node][attr]
 
@@ -63,27 +63,28 @@ def assert_equal_blocks(block1, block2):
     assert edges1 == edges2
 
     for inter_type in ["bonds", "angles", "constraints", "exclusions", "pairs", "dihedrals", "impropers"]:
-        interactions = block1.interactions.get(inter_type, [])
+        ref_interactions = block1.interactions.get(inter_type, [])
         new_interactions = block2.interactions.get(inter_type, [])
-        new_terms = defaultdict(list)
+        assert len(ref_interactions) == len(new_interactions)
+
         ref_terms = defaultdict(list)
-        assert len(interactions) == len(new_interactions)
-        for inter in interactions:
+        for inter in ref_interactions:
             atoms = inter.atoms
             ref_terms[frozenset(atoms)].append(inter)
-            for inter_new in new_interactions:
-                if set(atoms) == set(inter_new.atoms):
-                    new_terms[frozenset(atoms)].append(inter_new)
+
+        new_terms = defaultdict(list)
+        for inter_new in new_interactions:
+            atoms = inter_new.atoms
+            new_terms[frozenset(atoms)].append(inter_new)
 
         for atoms, ref_interactions in ref_terms.items():
             new_interactions = new_terms[atoms]
-            for inter in ref_interactions:
-                print("--------------------------------------")
-                print(inter)
-                print(new_interactions)
-                print("--------------------------------------")
-                assert sum([_interaction_equal(inter, inter_new, inter_type) for inter_new in new_interactions[:len(ref_interactions)]]) == 1
-
+            for ref_inter in ref_interactions:
+                for new_inter in new_terms[atoms]:
+                    if _interaction_equal(ref_inter, new_inter, inter_type):
+                        break
+                else:
+                    return False
 
 def compare_itp(filename1, filename2):
     """
@@ -137,21 +138,25 @@ def _interaction_equal(interaction1, interaction2, inter_type):
     p2 = list(map(str, interaction2.parameters))
     a1 = list(interaction1.atoms)
     a2 = list(interaction2.atoms)
+
+    if p1 != p2:
+        return False
+
     if inter_type in ["constraints", "bonds", "exclusions", "pairs"]:
         a1.sort()
         a2.sort()
-        return a1 == a2 and p1 == p2
+        return a1 == a2
 
     elif inter_type in ["impropers", "dihedrals"]:
-         if frozenset([a1[0], a1[1], a1[2]]) == frozenset([a2[0], a2[1], a2[2]]) and a1[3] == a2[3] and p1 == p2:
+         if frozenset([a1[0], a1[1], a1[2]]) == frozenset([a2[0], a2[1], a2[2]]) and a1[3] == a2[3]:
             return True
-         elif frozenset([a1[0], a1[1], a1[2]]) == frozenset([a2[3], a2[2], a2[1]]) and a1[3] == a2[0] and p1 == p2:
+         elif frozenset([a1[0], a1[1], a1[2]]) == frozenset([a2[1], a2[2], a2[3]]) and a1[3] == a2[0]:
             return True
-         elif frozenset([a1[1], a1[2], a1[3]]) == frozenset([a2[1], a2[2], a2[3]]) and a1[0] == a2[0] and p1 == p2:
+         elif frozenset([a1[1], a1[2], a1[3]]) == frozenset([a2[1], a2[2], a2[3]]) and a1[0] == a2[0]:
             return True
 
     elif inter_type in ["angles"]:
-        return a1[1] == a2[1] and frozenset([a1[0], a1[2]]) == frozenset([a2[0], a2[2]]) and p1 == p2
+        return a1[1] == a2[1] and frozenset([a1[0], a1[2]]) == frozenset([a2[0], a2[2]])
 
     return False
 
@@ -187,7 +192,6 @@ def test_integration_protein(tmp_path, monkeypatch, library, polymer):
     polymer: str
     """
     monkeypatch.chdir(tmp_path)
-
     data_path = Path(PATTERN.format(path=INTEGRATION_DATA, library=library, polymer=polymer))
 
     with open(str(data_path / 'command')) as cmd_file:
@@ -197,7 +201,7 @@ def test_integration_protein(tmp_path, monkeypatch, library, polymer):
     command = shlex.split(command)
     result = [sys.executable]
     for token in command:
-        if token.startswith('polyply'):  # Could be martinize2.py
+        if token.startswith('polyply'):
             result.append(str(POLYPLY))
         elif token.startswith('.'):
             result.append(str(data_path / token))
@@ -237,8 +241,4 @@ def test_integration_protein(tmp_path, monkeypatch, library, polymer):
         assert reference_file.is_file()
         ext = new_file.suffix.lower()
         if ext in COMPARERS:
-            with monkeypatch.context() as m:
-                # Compare Interactions such that rounding errors in the
-                # parameters are OK.
-                m.setattr(vermouth.molecule.Interaction, '__eq__', _interaction_equal)
-                COMPARERS[ext](str(reference_file), str(new_file))
+            COMPARERS[ext](str(reference_file), str(new_file))
