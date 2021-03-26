@@ -173,18 +173,25 @@ def optimize_geometry(block, coords, inter_types=[], tolarance={"angles": 5,
 
     opt_results = scipy.optimize.minimize(target_function, positions, method='L-BFGS-B',
                                           options={'ftol': 0.001, 'maxiter': 100})
+
+    # evaluate if optimization was successful
     positions = opt_results['x'].reshape((-1, 3))
     positions = renew_vs(positions, block, atom_to_idx)
+
     for node_key, idx in atom_to_idx.items():
         coords[node_key] = positions[idx]
 
-    max_fun = 0
-    for inter_type, tol in tolarance.items():
-        max_fun += tol**2. * len(block.interactions[inter_type])
+    for inter_type in inter_types:
+        interactions = block.interactions.get(inter_type, [])
+        for interaction in interactions:
+            atoms = interaction.atoms
+            params = interaction.parameters
+            atom_coords = [positions[atom_to_idx[name]]
+                           for name in atoms]
+            penalty = INTER_METHODS[inter_type](params, atom_coords)
+            if inter_type in ["bonds", "constraints"] and penalty > 10000*tolarance[inter_type]**2.:
+                return False, coords
+            elif penalty > 10000*tolarance[inter_type]**2.:
+                return False, coords
 
-    if opt_results['success'] and opt_results['fun'] < max_fun:
-        success = True
-    else:
-        success = False
-
-    return success, coords
+    return True, coords
