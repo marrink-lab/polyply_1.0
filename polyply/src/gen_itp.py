@@ -17,6 +17,7 @@ High level API for the polyply itp generator
 """
 import sys
 from pathlib import Path
+import networkx as nx
 import vermouth
 import vermouth.forcefield
 from vermouth.log_helpers import StyleAdapter, get_logger
@@ -83,6 +84,12 @@ def gen_itp(args):
     meta_molecule = MapToMolecule().run_molecule(meta_molecule)
     LOGGER.info("applying links between residues",  type="step")
     meta_molecule = ApplyLinks().run_molecule(meta_molecule)
+
+    # Raise warning if molecule is disconnected
+    if not nx.is_connected(meta_molecule.molecule):
+        n_components = len(list(nx.connected_components(meta_molecule.molecule)))
+        msg = "You molecule consists of { } disjoint parts. Perhaps links were not applied correctly."
+        LOGGER.warning(msg.format(n_components))
 
     with open(args.outpath, 'w') as outpath:
         header = [ ' '.join(sys.argv) + "\n" ]
