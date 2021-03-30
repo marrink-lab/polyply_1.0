@@ -1,0 +1,1 @@
+polyply gen_itp -lib gromos_2016H66_polymers -seqf ../MPA.json -name MPA -o MPA.itp

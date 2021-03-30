@@ -1,7 +1,7 @@
 ; polyply-itp
 
 [ moleculetype ]
-PMA 3
+MPA 3
 
 [ atoms ]
  1 CH3 1 CH3ter C1   1   0.0 14.0
@@ -110,14 +110,14 @@ PMA 3
 10 15 1
 16 21 1
 22 27 1
- 5  8 1 ; SC2
  6  8 1 ; SC3
-11 14 1 ; SC2
 12 14 1 ; SC3
-17 20 1 ; SC2
 18 20 1 ; SC3
-23 26 1 ; SC2
 24 26 1 ; SC3
+ 5  8 1 ; SC3
+11 14 1 ; SC3
+17 20 1 ; SC3
+23 26 1 ; SC3
  1  8 1 ; A
  1  4 1 ; C
 21 32 1 ; B
@@ -199,9 +199,5 @@ PMA 3
 28 29 30 27 2 gi_1 ; planar center
 
 ; link
- 9 10 14  8 2 gi_2 ; center S
-15 16 20 14 2 gi_2 ; center S
-21 22 26 20 2 gi_2 ; center S
- 3  4  8  2 2 gi_5 ; center R
 27 28 32 26 2 gi_5 ; center R
 

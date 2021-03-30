@@ -209,35 +209,4 @@ EC2 +VC1
 ;+EC2 +O1
 ;+O1 +EC1
 
-;
-; SIDE CHAIN LINKS AS in PMA sub PEO
-;
-[ link ]
-resname "PMA|PEO"
-[ atoms ]
-VC1  {"linktype": "BB"}
-VC2  {"linktype": "BB"}
-SC1  {"linktype": "BB"}
-SC2  {"linktype": "BB"}
-SC3  {"linktype": "BB"}
-SC4  {"replace": { "atype": "CH2" }, "linktype": "BB"}
->EC1 {"linktype": "SC"}
->O1  {"linktype": "SC"}
->EC2 {"linktype": "SC"}
-[ bonds ]
-SC4 >EC1 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link-PEO-PMA"}
-[ angles ]
-SC4 >EC1 >O1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link-PEO-PMA"}
-SC3 SC4 >EC1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link-PEO-PMA"}
-[ dihedrals ]
-SC3 SC4 >EC1 >O1 1 gd_34 {"comment":"X-SI,CHn-CHn-X", "group":"link-PEO-PMA"}
-;
-SC4 >EC1 >O1 >EC2 1 gd_42 {"comment":"CHn-CHn-OE-CHn", "version":"1" , "group":"link-PEO-PMA"}
-SC4 >EC1 >O1 >EC2 1 gd_43 {"comment":"CHn-CHn-OE-CHn", "version":"2" , "group":"link-PEO-PMA"}
-SC4 >EC1 >O1 >EC2 1 gd_44 {"comment":"CHn-CHn-OE-CHn", "version":"3" , "group":"link-PEO-PMA"}
-;
-SC1 SC3 SC4 >EC1 1 gd_34 {"comment":"X-SI,CHn-CHn-X", "group":"link-PEO-PMA"}
-[ pairs ]
-SC3 >O1 2
-SC4 >EC2 2
-SC1 >EC1 2
+

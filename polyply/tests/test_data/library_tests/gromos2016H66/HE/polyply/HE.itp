@@ -1,0 +1,32 @@
+[ moleculetype ]
+; Name            nrexcl
+HE               3
+
+[ atoms ]
+;   nr       type  resnr residue  atom   cgnr     charge       mass  typeB    chargeB      massB
+; residue   1 ETL rtp ETL  q  0.0
+  1    CH3      1    ETL     C2      2          0     15.035   ; qtot 0
+  2    CH2      1    ETL     C1      1       0.29     14.027
+  3     OA      1    ETL     O1      1       -0.7    15.9994
+  4      H      1    ETL     H1      1       0.41      1.008
+
+
+
+[ bonds ]
+;  ai    aj funct            c0            c1            c2            c3
+    4     3     2    gb_1
+    3     2     2    gb_18
+    2     1     2    gb_27
+
+[ pairs ]
+;  ai    aj funct            c0            c1            c2            c3
+    1     4     1 
+
+[ angles ]
+;  ai    aj    ak funct            c0            c1            c2            c3
+    1     2     3     2    ga_15
+    2     3     4     2    ga_12
+
+[ dihedrals ]
+;  ai    aj    ak    al funct            c0            c1            c2            c3            c4            c5
+    1     2     3     4     1    gd_23
