@@ -77,12 +77,6 @@ def gen_itp(args):
     meta_molecule = MapToMolecule(force_field).run_molecule(meta_molecule)
     meta_molecule = ApplyLinks().run_molecule(meta_molecule)
 
-    # Raise warning if molecule is disconnected
-    if not nx.is_connected(meta_molecule.molecule):
-        for component in nx.connected_components(meta_molecule.molecule):
-            print(component)
-        LOGGER.warning("You molecule consists of disjoint parts. Perhaps a link was not applied correctly.")
-
     command = ' '.join(sys.argv)
     with open(args.outpath, 'w') as outpath:
         vermouth.gmx.itp.write_molecule_itp(meta_molecule.molecule, outpath,
