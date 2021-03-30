@@ -16,11 +16,12 @@ import os
 import pathlib
 import vermouth
 from vermouth.gmx.rtp import read_rtp
+from vermouth.citation_parser import read_bib
 from polyply import DATA_PATH
 from .ff_parser_sub import read_ff
 from .polyply_parser import read_polyply
 
-FORCE_FIELD_PARSERS = {'rtp': read_rtp, 'ff': read_ff, 'itp': read_polyply}
+FORCE_FIELD_PARSERS = {'rtp': read_rtp, 'ff': read_ff, 'itp': read_polyply, 'bib': read_bib}
 
 
 def _resolve_lib_paths(lib_names, data_path):
