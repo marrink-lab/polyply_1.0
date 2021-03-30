@@ -89,7 +89,7 @@ def gen_itp(args):
     if not nx.is_connected(meta_molecule.molecule):
         n_components = len(list(nx.connected_components(meta_molecule.molecule)))
         msg = "You molecule consists of { } disjoint parts. Perhaps links were not applied correctly."
-        LOGGER.warning(msg.format(n_components))
+        LOGGER.warning(msg, n_components)
 
     with open(args.outpath, 'w') as outpath:
         header = [ ' '.join(sys.argv) + "\n" ]
