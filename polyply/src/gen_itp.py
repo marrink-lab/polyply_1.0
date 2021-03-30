@@ -15,14 +15,20 @@
 """
 High level API for the polyply itp generator
 """
+import sys
 from pathlib import Path
+import networkx as nx
 import vermouth
 import vermouth.forcefield
+from vermouth.log_helpers import StyleAdapter, get_logger
 from vermouth.file_writer import open, DeferredFileWriter
+from vermouth.citation_parser import citation_formatter
 import polyply
 import polyply.src.polyply_parser
 from polyply import (DATA_PATH, MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
 from .load_library import load_library
+
+LOGGER = StyleAdapter(get_logger(__name__))
 
 def split_seq_string(sequence):
     """
@@ -50,10 +56,12 @@ def gen_itp(args):
 
 
     # Import of Itp and FF files
+    LOGGER.info("reading input and library files",  type="step")
     force_field = load_library(args.name, args.lib, args.inpath)
 
     # Generate the MetaMolecule
     if args.seq:
+       LOGGER.info("reading sequence from command",  type="step")
        monomers = split_seq_string(args.seq)
        meta_molecule = MetaMolecule.from_monomer_seq_linear(monomers=monomers,
                                                             force_field=force_field,
@@ -61,6 +69,7 @@ def gen_itp(args):
     #ToDo
     # fix too broad except
     elif args.seq_file:
+       LOGGER.info("reading sequence from file",  type="step")
        extension = args.seq_file.suffix.casefold()[1:]
        try:
            parser = getattr(MetaMolecule, 'from_{}'.format(extension))
@@ -71,10 +80,25 @@ def gen_itp(args):
          raise IOError("Cannot parse file with extension {}.".format(extension))
 
     # Do transformationa and apply link
+    LOGGER.info("mapping sequence to molecule",  type="step")
     meta_molecule = MapToMolecule().run_molecule(meta_molecule)
+    LOGGER.info("applying links between residues",  type="step")
     meta_molecule = ApplyLinks().run_molecule(meta_molecule)
 
+    # Raise warning if molecule is disconnected
+    if not nx.is_connected(meta_molecule.molecule):
+        n_components = len(list(nx.connected_components(meta_molecule.molecule)))
+        msg = "You molecule consists of { } disjoint parts. Perhaps links were not applied correctly."
+        LOGGER.warning(msg, n_components)
+
     with open(args.outpath, 'w') as outpath:
+        header = [ ' '.join(sys.argv) + "\n" ]
+        header.append("Pleas cite the following papers:")
+        for citation in meta_molecule.molecule.citations:
+            cite_string =  citation_formatter(meta_molecule.molecule.force_field.citations[citation])
+            LOGGER.info("Please cite: " + cite_string)
+            header.append(cite_string)
+
         vermouth.gmx.itp.write_molecule_itp(meta_molecule.molecule, outpath,
-                                            moltype=args.name, header=["polyply-itp"])
+                                            moltype=args.name, header=header)
     DeferredFileWriter().write()

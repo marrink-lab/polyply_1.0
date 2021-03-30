@@ -283,7 +283,7 @@ def test_apply_link_to_residue(example_meta_molecule,
 
     for nodes, inter_idx in zip(expected_nodes, expected_inters):
         interaction = link_inters[inter_idx[0]][inter_idx[1]]
-        new_interactions = processor.applied_links[inter_type][nodes]
+        new_interactions = processor.applied_links[inter_type][nodes][0]
         assert new_interactions.atoms == tuple(nodes[:-1])
         assert new_interactions.parameters == interaction.parameters
         assert new_interactions.meta == interaction.meta
