@@ -104,7 +104,7 @@ class MapToMolecule(Processor):
            the node is part of a multiresidue block in the FF,
            all nodes corresponding to that block form a fragment.
            All fragments are added to the fragments attribute, and
-           the nodes in those framgnets all have the entry node_to_block
+           the nodes in those fragments all have the entry node_to_block
            set to the block. In addition it is recorded to which fragment
            specifically the node belongs in the node_to_fragment dict.
         3) the node corresponds to a multiresidue block; but unlike in
@@ -121,6 +121,8 @@ class MapToMolecule(Processor):
         restart_attr = nx.get_node_attributes(meta_molecule, "from_itp")
 
         # this breaks down when to proteins are directly linked
+        # because they would appear as one connected component
+        # and not two seperate components referring to two molecules
         # but that is an edge-case we can worry about later
         for idx, jdx in nx.dfs_edges(meta_molecule):
             # the two nodes are restart nodes
@@ -129,12 +131,12 @@ class MapToMolecule(Processor):
             else:
                 regular_graph.add_edge(idx, jdx)
 
-        # regular nodes have to mactch a block in the force-field by resname
+        # regular nodes have to match a block in the force-field by resname
         for node in regular_graph.nodes:
             self.node_to_block[node] = meta_molecule.nodes[node]["resname"]
 
-        # restart nodes are match a block in the force-field but are themselves
-        # only part of that block
+        # fragment nodes match parts of blocks, which describe molecules
+        # with more than one residue
         for fragment in nx.connected_components(restart_graph):
             block_name = restart_attr[list(fragment)[0]]
             if all([restart_attr[node] == block_name  for node in fragment]):
