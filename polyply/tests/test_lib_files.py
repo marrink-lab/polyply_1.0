@@ -65,6 +65,7 @@ def assert_equal_blocks(block1, block2):
     for inter_type in ["bonds", "angles", "constraints", "exclusions", "pairs", "dihedrals", "impropers"]:
         ref_interactions = block1.interactions.get(inter_type, [])
         new_interactions = block2.interactions.get(inter_type, [])
+        print(inter_type)
         assert len(ref_interactions) == len(new_interactions)
 
         ref_terms = defaultdict(list)
@@ -165,8 +166,11 @@ def _interaction_equal(interaction1, interaction2, inter_type):
      ['gromos2016H66', 'C12E4'],
      ['gromos2016H66', 'PE'],
      ['gromos2016H66', 'PVA'],
-     ['gromos2016H66', 'PMA'],
+     ['gromos2016H66', 'MPA'],
      ['gromos2016H66', 'PS'],
+     ['gromos2016H66', '2HP'],
+     ['gromos2016H66', 'HE'],
+     ['gromos2016H66', 'CHEX'],
    # ['martini3', 'PEO'],
    # ['martini3', 'PS'],
    # ['martini3', 'PEO_OHter'],

@@ -1,0 +1,39 @@
+[ moleculetype ]
+; Name            nrexcl
+2HP               3
+
+[ atoms ]
+;   nr       type  resnr residue  atom   cgnr     charge       mass  typeB    chargeB      massB
+; residue   1 2PL rtp 2PL  q  0.0
+  1       CH3      1    2PL     C1      1          0     15.035
+  2       CH1      1    2PL     C2      2       0.29     13.019
+  3       CH3      1    2PL     C3      3          0     15.035   ; qtot 0 
+  4        OA      1    2PL     O1      2       -0.7    15.9994
+  5         H      1    2PL     H1      2       0.41      1.008
+
+[ bonds ]
+;  ai    aj funct            c0            c1            c2            c3
+    1     2     2    gb_27
+    4     5     2    gb_1
+    4     2     2    gb_18
+    2     3     2    gb_27
+
+[ pairs ]
+;  ai    aj funct            c0            c1            c2            c3
+    1     5     1 
+    5     3     1 
+
+[ angles ]
+;  ai    aj    ak funct            c0            c1            c2            c3
+    5     4     2     2    ga_12
+    1     2     4     2    ga_15
+    1     2     3     2    ga_15
+    4     2     3     2    ga_15
+
+[ dihedrals ]
+;  ai    aj    ak    al funct            c0            c1            c2            c3            c4            c5
+    5     4     2     1     1    gd_23
+
+[ dihedrals ]
+;  ai    aj    ak    al funct            c0            c1            c2            c3
+    2     1     4     3     2    gi_2
