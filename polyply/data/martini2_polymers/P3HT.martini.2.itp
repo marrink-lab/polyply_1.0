@@ -63,3 +63,6 @@ P3HT               1
 [ virtual_sitesn ]
 ;  VS beads at the centre of mass of thiophenes
     4    2    1   2   3
+[ citation ]
+Martini2
+P3HT_M2
