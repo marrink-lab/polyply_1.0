@@ -1,19 +1,45 @@
+;-----------------------------------
+;       P3HT LINKS
+;-----------------------------------
+[link]
+resname "P3HT"
+[ bonds ]
+  CT2 +CT5    2   0.1430  9.2100e+06  {"group": "connection"}
+[ pairs ]
+  CT2 +HT4    1  {"group": "connection"}
+[ angles ]
+  CT3  CT2 +CT5    2    130.0      760.0   {"group": "connection"}
+  CT2 +CT5 +CT4    2    130.0      760.0   {"group": "connection"}
+  ST1  CT2 +CT5    2    120.0      780.0   {"group": "connection"}
+  CT2 +CT5 +ST1    2    120.0      780.0   {"group": "connection"}
+[ dihedrals ]
+; propers
+  ST1   CT2  +CT5  +ST1   1        0.0       1.80          1  {"group": "connection"} 
+  ST1   CT2  +CT5  +ST1   1        0.0      -9.50          2  {"group": "connection"}
+; impropers
+  CT2  +ST1  +CT4  +CT5   2        0.0   167.42309  {"group": "connection"}
+  CT2   CT3   ST1  +CT5   2        0.0   167.42309  {"group": "connection"}
+
+
+;-----------------------------------
+;       P3HT-TERMINI LINKS
+;-----------------------------------
 [link]
 resname "Hter|P3HT"
 [ atoms ]
 ; compensate for the 0.245 charge of the H being added
 CT5 {"replace": {"charge": -0.394}}
 [ bonds ]
--HTe   CT5    2    0.1090  1.2300e+07 {"group": "connect"}
+-H1    CT5    2    0.1090  1.2300e+07  {"comment":"H-CT5-link", "group": "termini"}
 [ pairs ]
--HTe   CT2    1 
--HTe   CT3    1 
--HTe   HT4    1 
+-H1    CT2    1  {"comment":"H-CT5-link", "group": "termini"}
+-H1    CT3    1  {"comment":"H-CT5-link", "group": "termini"}
+-H1    HT4    1  {"comment":"H-CT5-link", "group": "termini"}
 [ angles ]
--HTe  CT5  ST1     2     119.0      575.00
--HTe  CT5  CT4     2     126.00     575.00
-[ dihedrals ]
--HTe  ST1  CT4  CT5  2     0.0   167.42309
+-H1   CT5  ST1     2     119.0      575.0   {"comment":"H-CT5-link", "group": "termini"}
+-H1   CT5  CT4     2     126.0      575.0   {"comment":"H-CT5-link", "group": "termini"}
+[ dihedrals ]                               
+-H1   ST1  CT4  CT5  2     0.0   167.42309  {"comment":"H-CT5-link", "group": "termini"}
 
 
 [link]
@@ -22,13 +48,13 @@ resname "P3HT|Hter"
 ; compensate for the 0.245 charge of the H being added
 CT2 {"replace": {"charge": -0.394}}
 [ bonds ]
- CT2  +HTe     2    0.1090  1.2300e+07 {"group": "connect"}
+ CT2  +H1      2    0.1090  1.2300e+07  {"comment":"H-CT2-link", "group": "termini"}
 [ pairs ]
- C09  +HTe     1 
- H14  +HTe     1 
- H15  +HTe     1 
+ C09  +H1      1  {"comment":"H-CT2-link", "group": "termini"}
+ H14  +H1      1  {"comment":"H-CT2-link", "group": "termini"}
+ H15  +H1      1  {"comment":"H-CT2-link", "group": "termini"}
 [ angles ]
- ST1  CT2 +HTe     2     119.0      575.00
- CT3  CT2 +HTe     2     126.00     575.00
+ ST1  CT2 +H1      2     119.0      575.0   {"comment":"H-CT2-link", "group": "termini"}
+ CT3  CT2 +H1      2     126.0      575.0   {"comment":"H-CT2-link", "group": "termini"}
 [ dihedrals ]
-+HTe  ST1  CT3  CT2  2     0.0   167.42309
++H1   ST1  CT3  CT2  2     0.0   167.42309  {"comment":"H-CT2-link", "group": "termini"}
