@@ -17,7 +17,7 @@ from polyply.src.processor import Processor
 
 def tag_exclusions(node_to_block, force_field):
     """
-    Given the names of some `blocks` check if the
+    Given block names matching nodes check if the
     corresponding molecules in `force_field` have
     the same number of default exclusions. If not
     find the minimum number of exclusions and tag all
