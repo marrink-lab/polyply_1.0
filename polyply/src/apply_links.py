@@ -383,7 +383,7 @@ class ApplyLinks(Processor):
                 # that multiple versions are kept and not overwritten
                 interaction_key = tuple(new_interaction.atoms) +\
                                   tuple([new_interaction.meta.get("version",1)])
-                self.applied_links[inter_type][interaction_key] = new_interaction
+                self.applied_links[inter_type][interaction_key] = (new_interaction, link.citations)
         # now we already add the edges of this link
         # links can overwrite each other but the edges must be the same
         # this is safer than using the make_edge method because it accounts
@@ -444,8 +444,10 @@ class ApplyLinks(Processor):
                         LOGGER.debug(str(error), type='step')
 
         for inter_type in self.applied_links:
-            for interaction in self.applied_links[inter_type].values():
+            for interaction, citation in self.applied_links[inter_type].values():
                 meta_molecule.molecule.interactions[inter_type].append(interaction)
+                if citation:
+                    meta_molecule.molecule.citations.update(citation)
 
         for link in force_field.links:
             if link.molecule_meta.get('by_atom_id'):
