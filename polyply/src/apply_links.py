@@ -227,7 +227,8 @@ def match_link_and_residue_atoms(meta_molecule, link, link_to_resid):
         block = meta_molecule.nodes[meta_mol_key]["graph"]
         resid = block.nodes[list(block.nodes)[0]]["resid"]
         attrs = link.nodes[node]
-        #attrs.update({'resid': meta_mol_key + 1})
+        # relative resid has been asserted before so we can
+        # exclude it here
         ignore = ['order', 'charge_group', 'replace', 'resid']
         matchs = list(find_atoms(block, ignore=ignore, **attrs))
 
@@ -279,7 +280,7 @@ def _resnames_match(resnames, allowed_resnames):
     Parameters
     ----------
     resnames: `abc.iterable`
-3, 'CH2': 2    allowed_resnames: `abc.iterable`
+    allowed_resnames: `abc.iterable`
     """
     for resname in resnames:
         if resname in allowed_resnames:
@@ -412,7 +413,6 @@ class ApplyLinks(Processor):
         molecule = meta_molecule.molecule
         force_field = meta_molecule.force_field
         resnames = set(nx.get_node_attributes(molecule, "resname").values())
-        print(meta_molecule.nodes(data=True))
         for link in tqdm(force_field.links):
             link_resnames = _get_link_resnames(link)
             if not _resnames_match(resnames, link_resnames):
@@ -434,8 +434,6 @@ class ApplyLinks(Processor):
                 nodes = match.keys()
                 resids =[meta_molecule.nodes[node]["resid"] for node in nodes]
                 orders = [ res_link.nodes[match[node]]["order"] for node in nodes]
-                #print(match)
-                #print(resids, orders)
                 if _check_relative_order(resids, orders):
                     link_node_to_resid = _assign_link_resids(res_link, match)
                     try:
