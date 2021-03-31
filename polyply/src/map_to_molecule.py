@@ -17,12 +17,12 @@ from polyply.src.processor import Processor
 
 def tag_exclusions(node_to_block, force_field):
     """
-    Given block names matching nodes check if the
-    corresponding molecules in `force_field` have
-    the same number of default exclusions. If not
+    Given block names matching nodes in the meta_molecule
+    graph check if the corresponding blocks in `force_field`
+    all have the same number of default exclusions. If not
     find the minimum number of exclusions and tag all
     nodes with the original exclusion number. Then
-    change the exclusion number.
+    change the exclusion number to the lowest value.
 
     Note the tag is picked up by apply links where
     the excluions are generated.
@@ -220,10 +220,9 @@ class MapToMolecule(Processor):
             # the correspondence as well as keep track of the nodes that are
             # part of that fragment
             if "from_itp" in meta_molecule.nodes[node] and node not in self.added_fragments:
-                fragment_nodes = list(self.fragments[self.node_to_fragment[start_node]])
+                fragment_nodes = list(self.fragments[self.node_to_fragment[node]])
                 self.added_fragment_nodes += fragment_nodes
                 self.multiblock_correspondence.append(correspondence)
-
 
         return new_mol
 
@@ -254,6 +253,7 @@ class MapToMolecule(Processor):
         # a block which consists of multiple residues. This
         # gets entangled here
         self.match_nodes_to_blocks(meta_molecule)
+        print(self.fragments)
         # next we check if all exclusions are the same and if
         # not we adjust it such that the lowest exclusion number
         # is used. ApplyLinks then generates those appropiately
