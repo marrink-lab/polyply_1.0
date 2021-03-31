@@ -93,7 +93,7 @@ def gen_itp(args):
 
     with open(args.outpath, 'w') as outpath:
         header = [ ' '.join(sys.argv) + "\n" ]
-        header.append("Pleas cite the following papers:")
+        header.append("Please cite the following papers:")
         for citation in meta_molecule.molecule.citations:
             cite_string =  citation_formatter(meta_molecule.molecule.force_field.citations[citation])
             LOGGER.info("Please cite: " + cite_string)
