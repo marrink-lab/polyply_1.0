@@ -22,6 +22,18 @@ from .virtual_site_builder import construct_vs
 Processor and functions for optimizing the geomtry
 of vermoth molecules.
 """
+# we use weights in the minization procedure
+# to account for the fact that differences in
+# bond length are typically small owing to the
+# fact that the length unit is nm. Scaling them
+# by 10,000 also increases their weight over
+# angles, and dihedrals, which is wanted as
+# the bonds have to be very close to their
+# equilbrium value
+WEIGHTS = {"bonds": 10000.0,
+           "angles": 1.0,
+           "constraints": 10000.0,
+           "dihedrals": 1.0,}
 
 def compute_bond(params, coords):
     """
@@ -42,7 +54,7 @@ def compute_bond(params, coords):
     float
     """
     dist = np.linalg.norm(coords[0] - coords[1])
-    return 10000 *(dist - float(params[1]))**2.0
+    return WEIGHTS["bonds"] *(dist - float(params[1]))**2.0
 
 def compute_angle(params, coords):
     """
@@ -60,7 +72,7 @@ def compute_angle(params, coords):
     float
     """
     angle_value = angle(coords[0], coords[1], coords[2])
-    return (angle_value - float(params[1]))**2.0
+    return WEIGHTS["angles"] * (angle_value - float(params[1]))**2.0
 
 def compute_improper_dih(params, coords):
     """
@@ -81,7 +93,7 @@ def compute_improper_dih(params, coords):
     # the itp file parser doesn't distinguish them
     if params[0] == "2":
         dih_angle = dih(coords[0], coords[1], coords[2], coords[3])
-        penalty = (dih_angle - float(params[1]))**2.0
+        penalty = WEIGHTS["dihedrals"] * (dih_angle - float(params[1]))**2.0
     else:
         penalty = 0
     return penalty
@@ -126,7 +138,7 @@ INTER_METHODS = {"bonds": compute_bond,
 # dihedral angles but then we'd also have to support
 # all different function types and their multipicity.
 
-def optimize_geometry(block, coords, inter_types=[], tolarance={"angles": 5,
+def optimize_geometry(block, coords, inter_types=[], tolerance={"angles": 5,
                                                                 "dihedrals": 5,
                                                                 "bonds": 0.05,
                                                                 "constraints": 0.05}):
@@ -141,8 +153,8 @@ def optimize_geometry(block, coords, inter_types=[], tolarance={"angles": 5,
     block:  :class:vermouth.molecule.Block
     coords: dict
         dictionary of coordinates in form atom_name:np.ndarray
-    tolarance: dict
-        dictionary of allowed tolarance in nm or degree per
+    tolerance: dict
+        dictionary of allowed tolerance in nm or degree per
         interaction-type
 
     Returns
@@ -189,9 +201,7 @@ def optimize_geometry(block, coords, inter_types=[], tolarance={"angles": 5,
             atom_coords = [positions[atom_to_idx[name]]
                            for name in atoms]
             penalty = INTER_METHODS[inter_type](params, atom_coords)
-            if inter_type in ["bonds", "constraints"] and penalty > 10000*tolarance[inter_type]**2.:
-                return False, coords
-            elif penalty > 10000*tolarance[inter_type]**2.:
+            if penalty > WEIGHTS[inter_type]*tolerance[inter_type]**2.:
                 return False, coords
 
     return True, coords
