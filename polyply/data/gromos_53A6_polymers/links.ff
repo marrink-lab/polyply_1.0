@@ -14,8 +14,8 @@ resname "P3HT"
   CT2 +CT5 +ST1    2    120.0      780.0   {"group": "connection"}
 [ dihedrals ]
 ; propers
-  ST1   CT2  +CT5  +ST1   1        0.0       1.80          1  {"group": "connection"} 
-  ST1   CT2  +CT5  +ST1   1        0.0      -9.50          2  {"group": "connection"}
+  ST1   CT2  +CT5  +ST1   1        0.0       1.80          1  {"group": "connection", "version":"1"} 
+  ST1   CT2  +CT5  +ST1   1        0.0      -9.50          2  {"group": "connection", "version":"2"}
 ; impropers
   CT2  +ST1  +CT4  +CT5   2        0.0   167.42309  {"group": "connection"}
   CT2   CT3   ST1  +CT5   2        0.0   167.42309  {"group": "connection"}
