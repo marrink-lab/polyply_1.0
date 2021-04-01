@@ -253,7 +253,6 @@ class MapToMolecule(Processor):
         # a block which consists of multiple residues. This
         # gets entangled here
         self.match_nodes_to_blocks(meta_molecule)
-        print(self.fragments)
         # next we check if all exclusions are the same and if
         # not we adjust it such that the lowest exclusion number
         # is used. ApplyLinks then generates those appropiately

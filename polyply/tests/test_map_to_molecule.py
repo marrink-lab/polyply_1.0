@@ -253,8 +253,8 @@ from vermouth.molecule import Interaction
     ))
 def test_multiresidue_block(lines, monomers, bonds, edges, nnodes, from_itp):
     """
-    Test if a linear molecule of multiple residues is exanded,
-    correctly into a multi-block residue.
+    Test multiresidue blocks are correctly identified and parameters from
+    the blocks added at the correct place in the fine-grained molecule.
     """
     lines = textwrap.dedent(lines).splitlines()
     ff = vermouth.forcefield.ForceField(name='test_ff')
