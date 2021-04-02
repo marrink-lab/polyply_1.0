@@ -1,0 +1,17 @@
+{"directed": "False",
+ "multigraph": "False",
+ "graph": {},
+ "nodes": [{"resname": "GLC", "id": 0, "resid":1},
+           {"resname": "GLC", "id": 1, "resid":2},
+           {"resname": "GLC", "id": 2, "resid":3},
+           {"resname": "GLC", "id": 3, "resid":4},
+           {"resname": "GLC", "id": 4, "resid":5},
+           {"resname": "GLC", "id": 5, "resid":6},
+           {"resname": "GLC", "id": 6, "resid":7}],
+ "links":  [{"source": 0, "target": 1, "linktype": "a16"},
+            {"source": 1, "target": 2, "linktype": "a13"},
+            {"source": 1, "target": 3, "linktype": "a16"},
+            {"source": 3, "target": 4, "linktype": "a16"},
+            {"source": 4, "target": 5, "linktype": "a16"},
+            {"source": 4, "target": 6, "linktype": "a13"}]
+}
