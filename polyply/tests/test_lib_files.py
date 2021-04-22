@@ -80,7 +80,7 @@ def assert_equal_blocks(block1, block2):
         for atoms, ref_interactions in ref_terms.items():
             new_interactions = new_terms[atoms]
             for ref_inter in ref_interactions:
-                for new_inter in new_interactions[atoms]:
+                for new_inter in new_interactions:
                     if _interaction_equal(ref_inter, new_inter, inter_type):
                         break
                 else:
