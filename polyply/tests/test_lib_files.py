@@ -65,7 +65,6 @@ def assert_equal_blocks(block1, block2):
     for inter_type in ["bonds", "angles", "constraints", "exclusions", "pairs", "dihedrals", "impropers"]:
         ref_interactions = block1.interactions.get(inter_type, [])
         new_interactions = block2.interactions.get(inter_type, [])
-        print(inter_type)
         assert len(ref_interactions) == len(new_interactions)
 
         ref_terms = defaultdict(list)
@@ -81,7 +80,7 @@ def assert_equal_blocks(block1, block2):
         for atoms, ref_interactions in ref_terms.items():
             new_interactions = new_terms[atoms]
             for ref_inter in ref_interactions:
-                for new_inter in new_terms[atoms]:
+                for new_inter in new_interactions[atoms]:
                     if _interaction_equal(ref_inter, new_inter, inter_type):
                         break
                 else:
