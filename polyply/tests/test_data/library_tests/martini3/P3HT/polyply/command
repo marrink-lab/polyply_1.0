@@ -1,0 +1,1 @@
+polyply gen_itp -lib martini3 -seq P3HT:6 -o P3HT.itp -name P3HT
