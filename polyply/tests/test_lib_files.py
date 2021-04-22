@@ -168,12 +168,12 @@ def _interaction_equal(interaction1, interaction2, inter_type):
      ['2016H66', 'PVA'],
      ['2016H66', 'PMA'],
      ['2016H66', 'PS'],
-   # ['martini3', 'PEO'],
-   # ['martini3', 'PS'],
-   # ['martini3', 'PEO_OHter'],
-   # ['martini3', 'P3HT'],
-    ['martini2', 'PEO'],
-    ['martini2', 'PS'],
+     ['martini3', 'PEO'],
+     ['martini3', 'PS'],
+     #['martini3', 'PEO_OHter'],
+     ['martini3', 'P3HT'],
+     ['martini2', 'PEO'],
+     ['martini2', 'PS'],
   # -> martini2 PEGylated lipids
   # -> proteins?
   # -> m2 polymers
