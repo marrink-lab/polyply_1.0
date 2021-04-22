@@ -173,10 +173,9 @@ def _interaction_equal(interaction1, interaction2, inter_type):
      ['martini3', 'P3HT'],
      ['martini2', 'PEO'],
      ['martini2', 'PS'],
-  # -> martini2 PEGylated lipids
+     ['martini2', 'PEL'],
+     ['martini2', 'PEO_PE'],
   # -> proteins?
-  # -> m2 polymers
-  #  ['gromos56A3', 'P3HT'],
 ])
 def test_integration_protein(tmp_path, monkeypatch, library, polymer):
     """
