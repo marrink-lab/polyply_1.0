@@ -1,1 +1,1 @@
-polyply gen_itp -lib martini2_polymers -seq PEO:5 -o PEO.itp -name PEO
+polyply gen_itp -lib martini2 -seq PEO:5 -o PEO.itp -name PEO
