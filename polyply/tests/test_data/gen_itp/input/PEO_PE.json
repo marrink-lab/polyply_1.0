@@ -6,52 +6,62 @@
     {
       "resname": "PEO",
       "seqid": 0,
-      "id": 0
+      "id": 0,
+      "resid":1
     },
     {
       "resname": "PE",
       "seqid": 0,
-      "id": 1
+      "id": 1,
+      "resid":2
     },
     {
       "resname": "PEO",
       "seqid": 0,
+      "resid":3,
       "id": 2
     },
     {
       "resname": "PE",
       "seqid": 0,
+      "resid":4,
       "id": 3
     },
     {
       "resname": "PEO",
       "seqid": 0,
+      "resid":5,
       "id": 4
     },
     {
       "resname": "PEO",
       "seqid": 0,
+      "resid":6,
       "id": 5
     },
     {
       "resname": "PE",
       "seqid": 0,
+      "resid":7,
       "id": 6
     },
     {
       "resname": "PE",
       "seqid": 0,
+      "resid":8,
       "id": 7
     },
     {
       "resname": "PEO",
       "seqid": 0,
+      "resid":9,
       "id": 8
     },
     {
       "resname": "PE",
       "seqid": 0,
-      "id": 9
+      "id": 9,
+      "resid":10
     }
   ],
   "links": [

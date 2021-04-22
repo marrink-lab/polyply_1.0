@@ -48,3 +48,6 @@ PSS       3
 [ dihedrals ]
 ; ai aj ak al funct q0 cq
    1     2     3     5   2   180.0000e+00 1.673600e+02
+[ citation ]
+Martini2
+PSS_M2

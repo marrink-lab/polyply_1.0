@@ -67,7 +67,13 @@ class TestGenItp():
          "-seqf", TEST_DATA + "/gen_itp/input/PEO_PE.json",
          "-name", "PEO_PE",
          "-o", TEST_DATA + "/gen_itp/output/PEO_b_PE_out.itp"],
-         TEST_DATA + "/gen_itp/ref/PEO_PE_10.itp")
+         TEST_DATA + "/gen_itp/ref/PEO_PE_10.itp"),
+        # check if edge attributes are parsed and properly applied
+        (["-f", TEST_DATA+"/gen_itp/input/test_edge_attr.ff",
+         "-seqf", TEST_DATA + "/gen_itp/input/test_edge_attr.json",
+         "-name", "test",
+         "-o", TEST_DATA + "/gen_itp/output/test_edge_attr_out.itp"],
+         TEST_DATA + "/gen_itp/ref/test_edge_attr_ref.itp")
         ))
     def test_gen_itp(args_in, ref_file):
         parser = argparse.ArgumentParser(
