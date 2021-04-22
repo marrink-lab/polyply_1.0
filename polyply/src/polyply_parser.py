@@ -17,12 +17,27 @@ import numpy as np
 import networkx as nx
 import vermouth
 import vermouth.gmx
+from vermouth.parser_utils import SectionLineParser
 from vermouth.gmx.itp_read import ITPDirector
 
 class PolyplyParser(ITPDirector):
     '''
     Parser for polyply input format.
     '''
+    def __init__(self, force_field):
+        super().__init__(force_field)
+        self.citations = set()
+
+    @SectionLineParser.section_parser('moleculetype', 'citation')
+    def _parse_citation(self, line, lineno=0):
+        cite_keys = line.split()
+        self.current_block.citations.update(cite_keys)
+
+    @SectionLineParser.section_parser('citations')
+    def _pase_ff_citations(self, line, lineno=0):
+        # parses force-field wide citations
+        cite_keys = line.split()
+        self.citations.update(cite_keys)
 
     # overwritten to allow for dangling bonds
     def _treat_block_interaction_atoms(self, atoms, context, section):
@@ -110,6 +125,7 @@ class PolyplyParser(ITPDirector):
                        prev_atoms[:] = interaction.atoms
                        new_link = vermouth.molecule.Link()
                        new_link.interactions = defaultdict(list)
+                       new_link.citations = block.citations
                        new_link.name = res_name
                        links.append(new_link)
                    links[-1].interactions[key].append(interaction)
@@ -150,6 +166,7 @@ class PolyplyParser(ITPDirector):
         self.section = None
 
         for block in self.force_field.blocks.values():
+            block.citations.update(self.citations)
             if len(block.nodes) > 0:
                 n_atoms = len(block.nodes)
                 self._split_links_and_blocks(block)
