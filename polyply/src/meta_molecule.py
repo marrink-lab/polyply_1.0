@@ -229,7 +229,7 @@ class MetaMolecule(nx.Graph):
         for node in nodes:
             attrs = init_graph.nodes[node]
             if "resid" not in attrs:
-                LOGGER.warning("Node {} has no resid. Setting resid to {} + 1.".format(node, node))
+                LOGGER.warning("Node {} has no resid. Setting resid to {} + 1.", node, node)
                 try:
                     attrs["resid"] = node + 1
                 except TypeError:
