@@ -162,15 +162,12 @@ def _interaction_equal(interaction1, interaction2, inter_type):
     return False
 
 @pytest.mark.parametrize("library, polymer", [
-     ['gromos2016H66', 'PP'],
-     ['gromos2016H66', 'C12E4'],
-     ['gromos2016H66', 'PE'],
-     ['gromos2016H66', 'PVA'],
-     ['gromos2016H66', 'MPA'],
-     ['gromos2016H66', 'PS'],
-     ['gromos2016H66', '2HP'],
-     ['gromos2016H66', 'HE'],
-     ['gromos2016H66', 'CHEX'],
+     ['2016H66', 'PP'],
+     ['2016H66', 'C12E4'],
+     ['2016H66', 'PE'],
+     ['2016H66', 'PVA'],
+     ['2016H66', 'PMA'],
+     ['2016H66', 'PS'],
    # ['martini3', 'PEO'],
    # ['martini3', 'PS'],
    # ['martini3', 'PEO_OHter'],

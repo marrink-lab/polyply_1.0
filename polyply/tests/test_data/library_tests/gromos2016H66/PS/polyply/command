@@ -1,1 +1,0 @@
-polyply gen_itp -lib gromos_2016H66_polymers -seqf ../PS.json -name PS -o PS.itp
