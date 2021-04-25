@@ -4,10 +4,10 @@
 
 ## Functionality
 Polyply is a python suite designed to facilitate the generation of input files for simulating
-bio-macromolecules with GROMACS. It is possible to generate both itp and coordinates files for most
-(bio) macromolecules such as synthetic polymers or polysaccharides. It also facilitates
+(bio)macromolecules with GROMACS. It is possible to generate both itp and coordinates files for most
+(bio)macromolecules such as synthetic polymers or polysaccharides. It also facilitates
 manipulation of itp files and structures to extend or change already existing files. A library for
-some commonly used macro molecules using different force-fields (martini, gromos) is included.
+some commonly used macromolecules using different force-fields (martini, gromos) is included.
 In principle the program can be used with any type of force-field (FF).
 
 Make sure to always verify the results and give appropriate credit to the developers of the
@@ -29,19 +29,19 @@ The behavior of the pip command can vary depending of the specificity of your py
 [documentation on installing a python package][pipdoc] to learn more.
 
 ### Polymer Library
-Some macro molecules are implemented in our library for a range of different force-fields.
+Some macromolecules are implemented in our library for a range of different force-fields.
 To get a list of all libraries available run:
 ```
 polyply -list-lib
 ```
-To get a detailed list of all the individual macro molecules:
+To get a detailed list of all the individual macromolecules:
 ```
 polyply -list-blocks <Force Field Name>
 ```
 Note that while you can combine fragments from different libraries (e.g. the martini-3 polymer
 library with martini-3 proteins), we cannot guarantee that all the links are present to make a
 meaningful itp. All blocks within a library can safely be combined. For more information on how
-to implement links between different blocks see the wiki.
+to implement links between different blocks see the [wiki].
 
 ### Itp file generation
 To generate a linear polymer chain using parameters, provided in the library run:
@@ -49,8 +49,8 @@ To generate a linear polymer chain using parameters, provided in the library run
 polyply gen_itp -lib <library_name> -name <name> -seq <monomer:#number> -o <name_outfile + .itp>
 ```
 
-For more information on how to generate itp-files for more complex polymers or how
-to combine them with existing itp-files see the wiki pages.
+For more information on how to generate itp files for more complex polymers or how
+to combine them with existing itp files see the [wiki].
 
 ### Initial structure generation
 To generate an initial structure run:
@@ -59,11 +59,11 @@ polyply gen_coords -p <top> -o <name_outfile + .gro> -name <name of molecule> -d
 ```
 or:
 ```
-polyply gen_coords -p <top> -o <name_outfile + .gro> -name <name of molecule> -box <x, y, z>
+polyply gen_coords -p <top> -o <name_outfile + .gro> -name <name of molecule> -box <x> <y> <z>
 ```
 In order to append coordinates to an already existing coordinate file run:
 ```
-polyply gen_coords -p <top> -o <name_outfile + .gro> -name <name of molecule> -c <init_coords.gro> -box <x, y, z>
+polyply gen_coords -p <top> -o <name_outfile + .gro> -name <name of molecule> -c <init_coords.gro> -box <x> <y> <z>
 ```
 or
 ```
@@ -103,5 +103,6 @@ The full text of the license is available in the source repository.
 [github]: https://github.com/marrink-lab/polyply_1.0
 [bug reports]: https://github.com/marrink-lab/polyply_1.0/issues
 [pull requests]: https://github.com/marrink-lab/polyply_1.0/pulls
+[wiki]:https://github.com/marrink-lab/polyply_1.0/wiki
 [pypi_polyply]: https://pypi.org/project/polyply/
 [pipdoc]: https://packaging.python.org/tutorials/installing-packages/#installing-packages
