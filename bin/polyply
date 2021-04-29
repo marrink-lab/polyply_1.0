@@ -171,7 +171,7 @@ def main():
     random_walk_group.add_argument('-sf', dest='step_fudge', type=float,
                                    help='scale step length in random walk by fudge factor',
                                    default=1.0)
-    random_walk_group.add_argument('-mf', dest='max_force', type=float, default=2**5.0,
+    random_walk_group.add_argument('-mf', dest='max_force', type=float, default=5*10**4.0,
                                    help='max force to allow in residue placing (kJ /(mol*nm))')
     random_walk_group.add_argument('-nr', dest='nrewind', type=int, default=5,
                                    help=('number of residues to trace back '
