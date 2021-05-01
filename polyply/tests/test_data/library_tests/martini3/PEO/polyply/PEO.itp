@@ -12,17 +12,17 @@ PEO 1
 6 SN3r 6 PEO EC 6 0.0 45.0
 
 [ bonds ]
-1 2 1 0.36 7000 ; centeral-bond
-2 3 1 0.36 7000 ; centeral-bond
-3 4 1 0.36 7000 ; centeral-bond
-4 5 1 0.36 7000 ; centeral-bond
-5 6 1 0.36 7000 ; centeral-bond
+1 2 1 0.36 7000 ; central-bond
+2 3 1 0.36 7000 ; central-bond
+3 4 1 0.36 7000 ; central-bond
+4 5 1 0.36 7000 ; central-bond
+5 6 1 0.36 7000 ; central-bond
 
 [ angles ]
-1 2 3 2 123.00 80 ; centeral-angle
-2 3 4 2 123.00 80 ; centeral-angle
-3 4 5 2 123.00 80 ; centeral-angle
-4 5 6 2 123.00 80 ; centeral-angle
+1 2 3 2 123.00 80 ; central-angle
+2 3 4 2 123.00 80 ; central-angle
+3 4 5 2 123.00 80 ; central-angle
+4 5 6 2 123.00 80 ; central-angle
 
 [ dihedrals ]
 1 2 3 4 11 8 0.6570 -1.3278 -0.43661278 1.0808704 0.680055
