@@ -179,6 +179,55 @@ PMA 3
 4 6 1
 
 [ moleculetype ]
+HEA 3
+[ atoms ]
+1  CH3 1 HEA VC1 1  0.00 14.0
+2  CH2 1 HEA VC2 2  0.29 13.0
+3  C   1 HEA SC1 3  0.63 12.0
+4  O   1 HEA SC2 4 -0.55 16.0
+5  OE  1 HEA SC3 5 -0.37 16.0
+6  CH2 1 HEA SC4 6  0.00 15.0
+7  CH2 1 HEA C2  7  0.29 13.0
+8  OA  1 HEA O1  8 -0.70 16.0
+9  H   1 HEA H1  9  0.41 1.0
+[ bonds ]
+1 2 2 gb_27 {"comment":"C,CHn-CHn,C"}
+2 3 2 gb_27 {"comment":"C,CHn-CHn,C"}
+3 4 2 gb_5 {"comment":"O-C"}
+3 5 2 gb_13 {"comment":"C-OA,OE"}
+5 6 2 gb_18 {"comment":"CHn-OA,OE"}
+6 7 2 gb_27 {"comment":"C,CHn-CHn,C"}
+7 8 2 gb_18
+8 9 2 gb_1
+[ angles ]
+3 2 1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
+3 5 6 2 ga_22 {"comment":"C-OE-CHn"}
+4 3 2 2 ga_35 {"comment":"CHn-C-O ester/carboxylic-acid"}
+4 3 5 2 ga_31 {"comment":"O-C-OA,OE,CHn"}
+2 3 5 2 ga_16 {"comment":"CHn,C-C-OA,OE"}
+6 7 8 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
+7 8 9 2 ga_12
+5 6 7 2 ga_15  {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
+[ dihedrals ]
+1 2 3 4 1 gd_40 {"comment":"X-CHn-C,CR1-X"}
+2 3 5 6 1 gd_12 {"comment":"X-C-OE,OA-X, carboxylic"}
+6 7 8 9 1 gd_23
+3 5 6 7 1 gd_42 {"comment":"CHn-CHn-OE-CHn", "version":"1" , "group":"link", "edge": "false"}
+3 5 6 7 1 gd_43 {"comment":"CHn-CHn-OE-CHn", "version":"2" , "group":"link", "edge": "false"}
+3 5 6 7 1 gd_44 {"comment":"CHn-CHn-OE-CHn", "version":"3" , "group":"link", "edge": "false"}
+5 6 7 8 1 gd_34 {"comment":"X-SI,CHn-CHn-X", "group":"link", "edge": "false"}
+[ impropers ]
+3 4 5 2 2 gi_1 {"comment":"planar center"}
+[ pairs ]
+1 4 1
+1 5 1
+2 6 1
+4 6 1
+6 9 1
+3 7 1
+5 8 1
+
+[ moleculetype ]
 PMMA 3
 [ atoms ]
 1  CH3 1 PMMA VC1 1  0.00 14.0
