@@ -1,4 +1,6 @@
-; polyply-itp
+; /coarse/fabian/current-projects/polymer_itp_builder/vermouth_dev/venvv/bin/polyply gen_itp -lib martini3 -seq PS:6 -o test.itp -name PS
+
+; Please cite the following papers:
 
 [ moleculetype ]
 PS 3
@@ -42,7 +44,29 @@ PS 3
 16 17 1 0.27 8000
 20 21 1 0.27 8000
 
+#ifdef FLEXIBLE
+ 2  3 1 0.290 10000
+ 3  1 1 0.290 10000
+ 1  2 1 0.290 10000
+ 6  7 1 0.290 10000
+ 7  5 1 0.290 10000
+ 5  6 1 0.290 10000
+10 11 1 0.290 10000
+11  9 1 0.290 10000
+ 9 10 1 0.290 10000
+14 15 1 0.290 10000
+15 13 1 0.290 10000
+13 14 1 0.290 10000
+18 19 1 0.290 10000
+19 17 1 0.290 10000
+17 18 1 0.290 10000
+22 23 1 0.290 10000
+23 21 1 0.290 10000
+21 22 1 0.290 10000
+#endif
+
 [ constraints ]
+#ifndef FLEXIBLE
  2  3 1 0.290
  3  1 1 0.290
  1  2 1 0.290
@@ -61,6 +85,7 @@ PS 3
 22 23 1 0.290
 23 21 1 0.290
 21 22 1 0.290
+#endif
 
 [ angles ]
  4  1  2 1 136.000000 100.000000
