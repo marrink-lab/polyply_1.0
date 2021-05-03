@@ -1,0 +1,75 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "resname": "CH3ter",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 0
+    },
+    {
+      "resname": "PVA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 1
+    },
+    {
+      "resname": "PVA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 2
+    },
+    {
+      "resname": "PVA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 3
+    },
+    {
+      "resname": "PVA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 4
+    },
+    {
+      "resname": "PVA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 5
+    },
+    {
+      "resname": "CH3ter",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 6
+    }
+  ],
+  "links": [
+    {
+      "source": 0,
+      "target": 1
+    },
+    {
+      "source": 1,
+      "target": 2
+    },
+    {
+      "source": 2,
+      "target": 3
+    },
+    {
+      "source": 3,
+      "target": 4
+    },
+    {
+      "source": 4,
+      "target": 5
+    },
+    {
+      "source": 5,
+      "target": 6
+    }
+  ]
+}

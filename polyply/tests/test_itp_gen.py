@@ -50,24 +50,12 @@ class TestGenItp():
          "-name", "test",
          "-o", TEST_DATA + "/gen_itp/output/test_out.itp"],
          TEST_DATA + "/gen_itp/ref/test_rev.itp"),
-        # checks combination of library with input file
-        # also checks library link DPPC-PEG
-        (["-lib", "martini2_polymers", "-f", TEST_DATA + "/gen_itp/input/DPPC.itp",
-         "-seq", "DPPC:1", "PEO:45", "OHter:1",
-         "-name", "PEL",
-         "-o", TEST_DATA + "/gen_itp/output/PEL_out.itp"],
-         TEST_DATA + "/gen_itp/ref/PEL.itp"),
-        # also checks library link DPPC-PEG
-        (["-lib", "martini2_polymers",
-         "-seq", "OHter:1", "PEO:26", "OHter:1",
-         "-name", "PEOM2",
-         "-o", TEST_DATA + "/gen_itp/output/PEOM2_out.itp"],
-         TEST_DATA + "/gen_itp/ref/PEOM2.itp"),
-        (["-lib", "martini2_polymers",
-         "-seqf", TEST_DATA + "/gen_itp/input/PEO_PE.json",
-         "-name", "PEO_PE",
-         "-o", TEST_DATA + "/gen_itp/output/PEO_b_PE_out.itp"],
-         TEST_DATA + "/gen_itp/ref/PEO_PE_10.itp")
+        # check if edge attributes are parsed and properly applied
+        (["-f", TEST_DATA+"/gen_itp/input/test_edge_attr.ff",
+         "-seqf", TEST_DATA + "/gen_itp/input/test_edge_attr.json",
+         "-name", "test",
+         "-o", TEST_DATA + "/gen_itp/output/test_edge_attr_out.itp"],
+         TEST_DATA + "/gen_itp/ref/test_edge_attr_ref.itp")
         ))
     def test_gen_itp(args_in, ref_file):
         parser = argparse.ArgumentParser(
