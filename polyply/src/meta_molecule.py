@@ -16,10 +16,12 @@ import json
 import networkx as nx
 from networkx.readwrite import json_graph
 from vermouth.graph_utils import make_residue_graph
+from vermouth.log_helpers import StyleAdapter, get_logger
 from .polyply_parser import read_polyply
 from .graph_utils import find_nodes_with_attributes
 
 Monomer = namedtuple('Monomer', 'resname, n_blocks')
+LOGGER = StyleAdapter(get_logger(__name__))
 
 def _make_edges(force_field):
     for block in force_field.blocks.values():
@@ -226,9 +228,16 @@ class MetaMolecule(nx.Graph):
 
         for node in nodes:
             attrs = init_graph.nodes[node]
+            if "resid" not in attrs:
+                LOGGER.warning("Node {} has no resid. Setting resid to {} + 1.", node, node)
+                try:
+                    attrs["resid"] = node + 1
+                except TypeError:
+                    msg = "Couldn't add 1 to node. Either provide resids or use integers as node keys."
+                    raise IOError(msg)
             graph.add_node(node, **attrs)
 
-        graph.add_edges_from(init_graph.edges)
+        graph.add_edges_from(init_graph.edges(data=True))
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
         return meta_mol
 

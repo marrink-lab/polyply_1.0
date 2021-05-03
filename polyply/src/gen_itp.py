@@ -53,8 +53,6 @@ def split_seq_string(sequence):
     return monomers
 
 def gen_itp(args):
-
-
     # Import of Itp and FF files
     LOGGER.info("reading input and library files",  type="step")
     force_field = load_library(args.name, args.lib, args.inpath)
@@ -81,7 +79,7 @@ def gen_itp(args):
 
     # Do transformationa and apply link
     LOGGER.info("mapping sequence to molecule",  type="step")
-    meta_molecule = MapToMolecule().run_molecule(meta_molecule)
+    meta_molecule = MapToMolecule(force_field).run_molecule(meta_molecule)
     LOGGER.info("applying links between residues",  type="step")
     meta_molecule = ApplyLinks().run_molecule(meta_molecule)
 
@@ -93,7 +91,7 @@ def gen_itp(args):
 
     with open(args.outpath, 'w') as outpath:
         header = [ ' '.join(sys.argv) + "\n" ]
-        header.append("Pleas cite the following papers:")
+        header.append("Please cite the following papers:")
         for citation in meta_molecule.molecule.citations:
             cite_string =  citation_formatter(meta_molecule.molecule.force_field.citations[citation])
             LOGGER.info("Please cite: " + cite_string)
