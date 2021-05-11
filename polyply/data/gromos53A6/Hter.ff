@@ -1,0 +1,7 @@
+[ moleculetype ]
+; Name   nrexcl
+Hter    3
+;
+[ atoms ]
+;  nr  type  resnr  resid  atom  cgnr  charge    mass    total_charge
+    1    HC    1     Hter   H1     1    0.245    1.008 ;  0.245
