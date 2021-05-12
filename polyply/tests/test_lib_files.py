@@ -86,7 +86,6 @@ def assert_equal_blocks(block1, block2):
                         break
                 else:
                     assert False
-        assert True
 
 def compare_itp(filename1, filename2):
     """
