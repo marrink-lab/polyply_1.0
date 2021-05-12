@@ -38,7 +38,7 @@ EC  >EC     1   0.36   7000 {"comment": "centeral-bond"}
 [ link ]
 resname "PEO"
 [ dihedrals ]
-EC >EC >>EC >>>EC  11 8 0.6570 -1.3278 -0.43661278 1.0808704 0.680055
+EC >EC >>EC >>>EC  11 8 0.6570 -1.3278 -0.43661278 1.0808704 0.680055 {"ifndef": "TI"}
 
 [ link ]
 resname "PEO"
