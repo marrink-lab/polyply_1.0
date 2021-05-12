@@ -1,0 +1,104 @@
+; STANDARD MD INPUT OPTIONS FOR MARTINI 3.x
+; Updated 30 Jan 2017 by PCTS
+;
+; for use with GROMACS 5
+
+; TIMESTEP IN MARTINI 
+; Default timestep of 20 fs. 
+define                   = -DFLEXIBLE
+integrator               = steep
+dt                       = 0.02
+nsteps                   = 8000
+nstcomm                  = 100
+comm-grps		         = 
+
+nstxout                  = 0
+nstvout                  = 0
+nstfout                  = 0
+nstlog                   = 100
+nstenergy                = 100
+nstxout-compressed       = 100
+compressed-x-precision   = 100
+compressed-x-grps        = 
+energygrps               =
+
+; NEIGHBOURLIST and MARTINI 
+; To achieve faster simulations in combination with the Verlet-neighborlist
+; scheme, Martini can be simulated with a straight cutoff. In order to 
+; do so, the cutoff distance is reduced 1.1 nm. 
+; Neighborlist length should be optimized depending on your hardware setup:
+; updating ever 20 steps should be fine for classic systems, while updating
+; every 30-40 steps might be better for GPU based systems.
+; The Verlet neighborlist scheme will automatically choose a proper neighborlist
+; length, based on a energy drift tolerance.
+;
+; Coulomb interactions can alternatively be treated using a reaction-field,
+; giving slightly better properties.
+; Please realize that electrostVatic interactions in the Martini model are 
+; not considered to be very accurate to begin with, especially as the 
+; screening in the system is set to be uniform across the system with 
+; a screening constant of 15. WN hen using PME, please make sure your 
+; system properties are still reasonable.
+;
+; WN ith the polarizable water model, the relative electrostatic screening 
+; (epsilon_r) should have a value of 2.5, representative of a low-dielectric
+; apolar solvent. The polarizable water itself will perform the explicit screening
+; in aqueous environment. In this case, the use of PME is more realistic.
+
+
+cutoff-scheme            = Verlet
+nstlist                  = 20
+ns_type                  = grid
+pbc                      = xyz
+verlet-buffer-tolerance  = 0.005
+
+coulombtype              = cut-off 
+rcoulomb                 = 1.1
+epsilon_r                = 15	; 2.5 (with polarizable water)
+epsilon_rf               = 0
+vdw_type                 = cutoff  
+vdw-modifier             = Potential-shift-verlet
+rvdw                     = 1.1
+
+; MARTINI and TEMPERATURE/PRESSURE
+; normal temperature and pressure coupling schemes can be used. 
+; It is recommended to couple individual groups in your system separately.
+; Good temperature control can be achieved with the velocity rescale (V-rescale)
+; thermostat using a coupling constant of the order of 1 ps. Even better 
+; temperature control can be achieved by reducing the temperature coupling 
+; constant to 0.1 ps, although with such tight coupling (approaching 
+; the time step) one can no longer speak of a weak-coupling scheme.
+; WN e therefore recommend a coupling time constant of at least 0.5 ps.
+; The Berendsen thermostat is less suited since it does not give
+; a well described thermodynamic ensemble.
+; 
+; Pressure can be controlled with the Parrinello-Rahman barostat, 
+; with a coupling constant in the range 4-8 ps and typical compressibility 
+; in the order of 10e-4 - 10e-5 bar-1. Note that, for equilibration purposes, 
+; the Berendsen barostat probably gives better results, as the Parrinello-
+; Rahman is prone to oscillating behaviour. For bilayer systems the pressure 
+; coupling should be done semiisotropic.
+
+tcoupl                   = v-rescale 
+tc-grps                  = System 
+tau_t                    = 1.0  
+ref_t                    = 310
+Pcoupl                   = parrinello-rahman 
+Pcoupltype               = semiisotropic
+tau_p                    = 12.0   ;parrinello-rahman is more stable with larger tau-p, DdJ, 20130422
+compressibility          = 3e-4  3e-4
+ref_p                    = 1.0  1.0
+
+gen_vel                  = no
+gen_temp                 = 310
+gen_seed                 = 473529
+
+; MARTINI and CONSTRAINTS 
+; for ring systems and stiff bonds constraints are defined
+; which are best handled using Lincs. 
+
+constraints              = none 
+constraint_algorithm     = Lincs
+
+; WN ith Polarizable water:
+ lincs_warnangle          = 90
