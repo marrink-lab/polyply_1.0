@@ -85,7 +85,8 @@ def assert_equal_blocks(block1, block2):
                     if _interaction_equal(ref_inter, new_inter, inter_type):
                         break
                 else:
-                    return False
+                    assert False
+        assert True
 
 def compare_itp(filename1, filename2):
     """
@@ -140,7 +141,11 @@ def _interaction_equal(interaction1, interaction2, inter_type):
     a1 = list(interaction1.atoms)
     a2 = list(interaction2.atoms)
 
+
     if p1 != p2:
+        return False
+
+    if interaction1.meta != interaction2.meta:
         return False
 
     if inter_type in ["constraints", "bonds", "exclusions", "pairs"]:
