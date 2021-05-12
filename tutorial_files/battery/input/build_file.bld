@@ -1,0 +1,41 @@
+[ molecule ]
+; molname
+LI 0  18200
+[ rectangle ]
+; resname start stop  inside-out  x  y  z    a  b  c
+ LI      1     2      out       5  31.5  16.5    5.0  32.0 5.2
+;
+ LI      1     2      out       5  31.5  37.5    5.0  32.0 5.2
+;
+ LI      1     2      out       5  31.5  58.5    5.0  32.0 5.2
+; too keep things in the box
+ LI      1     2      in        5  31.5  31.5   4.5  30.5 30.5
+
+[ molecule ]
+; molname
+TFSI 18200 36400
+[ rectangle ]
+; resname start stop  inside-out  x  y  z    a  b  c
+ TFSI      1     2      out       5  30  16.5   5.0  32.0 5.2
+;
+ TFSI      1     2      out       5  30  37.5   5.0  32.0 5.2
+;
+ TFSI      1     2      out       5  30  58.5   5.0  32.0 5.2
+
+; too keep things in the box
+ TFSI      1     2      in        5  31.5  31.5   4.5  30.5 30.5
+
+[ molecule ]
+; molname
+ PS_PEO 36400 37900
+;PS_PEO 0 750
+[ rectangle ]
+; resname start stop  inside-out  x  y  z    a  b  c
+ PEO     63    225    out         5  31.5  16.5  5.0  31.5 4.0
+ PS      1     62     out         5  31.5  6.0   5.0  31.5 6.5
+;
+ PEO     63    225    out         5  31.5  37.5  5.0  31.5 4.0
+ PS      1     62     out         5  31.5  27.0  5.0  31.5 6.5
+;
+ PEO     63    225    out         5  31.5  58.5  5.0  31.5 4.0
+ PS      1     62     out         5  31.5  48.0  5.0  31.5 6.5

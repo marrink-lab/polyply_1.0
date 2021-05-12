@@ -1,0 +1,78 @@
+
+; RUN CONTROL PARAMETERS
+integrator               = md
+tinit                    = 0
+dt                       = 0.02
+nsteps                   = 2500000
+init-step                = 0
+simulation-part          = 1
+comm-mode                = Linear
+nstcomm                  = 100
+comm-grps                = 
+
+
+; OUTPUT CONTROL OPTIONS
+nstxout                  = 0
+nstvout                  = 0
+nstfout                  = 0
+nstlog                   = 5000
+nstcalcenergy            = 100
+nstenergy                = 5000
+nstxout-compressed       = 5000
+compressed-x-precision   = 100
+compressed-x-grps        = 
+energygrps               = 
+
+; NEIGHBORSEARCHING PARAMETERS
+cutoff-scheme            = Verlet
+nstlist                  = 20
+pbc                      = xyz
+periodic-molecules       = no
+verlet-buffer-tolerance  = 0.005
+rlist                    = 1
+
+; OPTIONS FOR ELECTROSTATICS AND VDW
+coulombtype              = reaction-field
+coulomb-modifier         = Potential-shift-Verlet
+rcoulomb-switch          = 0
+rcoulomb                 = 1.1
+epsilon_r                = 15
+epsilon_rf               = 0
+vdw_type                 = cutoff
+vdw-modifier             = Potential-shift-verlet
+rvdw-switch              = 0
+rvdw                     = 1.1
+DispCorr                 = No
+
+; OPTIONS FOR WEAK COUPLING ALGORITHMS
+; Temperature coupling  
+tcoupl                   = v-rescale
+nsttcouple               = -1
+nh-chain-length          = 10
+print-nose-hoover-chain-variables = no
+tc-grps                  = system
+; Time constant (ps) and reference temperature (K)
+tau_t                    = 1.0
+ref_t                    = 350
+; pressure coupling     
+Pcoupl                   = Berendsen
+Pcoupltype               = semiisotropic
+nstpcouple               = -1
+tau_p                    = 6
+compressibility          = 3e-4 0.0
+ref_p                    = 1.0 1.0
+refcoord-scaling         = No
+
+
+; GENERATE VELOCITIES FOR STARTUP RUN
+gen_vel                  = yes
+gen_temp                 = 350
+gen_seed                 = 473529
+
+; OPTIONS FOR BONDS    
+constraints              = none
+constraint_algorithm     = Lincs
+continuation             = no
+lincs-warnangle          = 30
+
+
