@@ -17,14 +17,14 @@ resname "PEO|OHter"
 [ bonds ]
 OH >EC 1 0.29 7000
 [ angles ]
-OH  >EC >>EC    2   127.00  110.0 {"comment": "centeral-angle", "version":"2"}
+OH  >EC >>EC    2   127.00  110.0 {"comment": "central-angle", "version":"2"}
 
 [ link ]
 resname "PEO|OHter"
 [ bonds ]
 >EC >>OH  1 0.29 7000
 [ angles ]
-EC >EC >>OH    2   127.00  110.0 {"comment": "centeral-angle", "version":"2"}
+EC >EC >>OH    2   127.00  110.0 {"comment": "central-angle", "version":"2"}
 
 [ link ]
 resname "PEO"
@@ -33,7 +33,7 @@ EC { }
 >EC { }
 [ bonds ]
 ; back bone bonds
-EC  >EC     1   0.36   7000 {"comment": "centeral-bond"}
+EC  >EC     1   0.36   7000 {"comment": "central-bond"}
 
 [ link ]
 resname "PEO"
@@ -43,4 +43,4 @@ EC >EC >>EC >>>EC  11 8 0.6570 -1.3278 -0.43661278 1.0808704 0.680055
 [ link ]
 resname "PEO"
 [ angles ]
-EC  >EC >>EC    2   123.00  80 {"comment": "centeral-angle", "version":"1"}
+EC  >EC >>EC    2   123.00  80 {"comment": "central-angle", "version":"1"}
