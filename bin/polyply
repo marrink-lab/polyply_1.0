@@ -74,7 +74,7 @@ def main():
     subparsers = parser.add_subparsers()
 
     # List of Subparsers for the different tools
-    parser_gen_itp = subparsers.add_parser('gen_itp')
+    parser_gen_itp = subparsers.add_parser('gen_params', aliases=['gen_itp'])
     parser_gen_coords = subparsers.add_parser('gen_coords')
     parser_gen_seq = subparsers.add_parser('gen_seq')
 
