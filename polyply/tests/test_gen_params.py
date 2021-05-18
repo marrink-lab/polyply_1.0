@@ -20,44 +20,44 @@ import networkx as nx
 import vermouth.forcefield
 import vermouth.molecule
 import vermouth.gmx.itp_read
-from polyply import gen_itp, TEST_DATA
+from polyply import gen_params, TEST_DATA
 
-class TestGenItp():
+class TestGenParams():
     @staticmethod
     @pytest.mark.parametrize('args_in, ref_file', (
-        (["-f", TEST_DATA + "/gen_itp/input/PEO.martini.3.itp"
+        (["-f", TEST_DATA + "/gen_params/input/PEO.martini.3.itp"
          ,"-seq", "PEO:10", "-name", "PEO", "-o",
-         TEST_DATA + "/gen_itp/output/PEO_out.itp"],
-         TEST_DATA + "/gen_itp/ref/PEO_10.itp"),
-        (["-f", TEST_DATA + "/gen_itp/input/PS.martini.2.itp",
-         "-seqf", TEST_DATA + "/gen_itp/input/PS.json",
+         TEST_DATA + "/gen_params/output/PEO_out.itp"],
+         TEST_DATA + "/gen_params/ref/PEO_10.itp"),
+        (["-f", TEST_DATA + "/gen_params/input/PS.martini.2.itp",
+         "-seqf", TEST_DATA + "/gen_params/input/PS.json",
          "-name", "PS",
-         "-o", TEST_DATA + "/gen_itp/output/PS_out.itp"]
+         "-o", TEST_DATA + "/gen_params/output/PS_out.itp"]
          ,
-         TEST_DATA + "/gen_itp/ref/PS_10.itp"),
-        (["-f", TEST_DATA + "/gen_itp/input/P3HT.martini.2.itp",
+         TEST_DATA + "/gen_params/ref/PS_10.itp"),
+        (["-f", TEST_DATA + "/gen_params/input/P3HT.martini.2.itp",
          "-seq", "P3HT:10",
          "-name", "P3HT",
-         "-o", TEST_DATA + "/gen_itp/output/P3HT_out.itp"],
-         TEST_DATA + "/gen_itp/ref/P3HT_10.itp"),
-        (["-f", TEST_DATA + "/gen_itp/input/PPI.ff",
-         "-seqf", TEST_DATA + "/gen_itp/input/PPI.json",
+         "-o", TEST_DATA + "/gen_params/output/P3HT_out.itp"],
+         TEST_DATA + "/gen_params/ref/P3HT_10.itp"),
+        (["-f", TEST_DATA + "/gen_params/input/PPI.ff",
+         "-seqf", TEST_DATA + "/gen_params/input/PPI.json",
          "-name", "PPI",
-         "-o", TEST_DATA + "/gen_itp/output/PPI_out.itp"],
-         TEST_DATA + "/gen_itp/ref/G3.itp"),
-        (["-f", TEST_DATA + "/gen_itp/input/test.ff",
+         "-o", TEST_DATA + "/gen_params/output/PPI_out.itp"],
+         TEST_DATA + "/gen_params/ref/G3.itp"),
+        (["-f", TEST_DATA + "/gen_params/input/test.ff",
          "-seq", "N1:1", "N2:1", "N1:1", "N2:1", "N3:1",
          "-name", "test",
-         "-o", TEST_DATA + "/gen_itp/output/test_out.itp"],
-         TEST_DATA + "/gen_itp/ref/test_rev.itp"),
+         "-o", TEST_DATA + "/gen_params/output/test_out.itp"],
+         TEST_DATA + "/gen_params/ref/test_rev.itp"),
         # check if edge attributes are parsed and properly applied
-        (["-f", TEST_DATA+"/gen_itp/input/test_edge_attr.ff",
-         "-seqf", TEST_DATA + "/gen_itp/input/test_edge_attr.json",
+        (["-f", TEST_DATA+"/gen_params/input/test_edge_attr.ff",
+         "-seqf", TEST_DATA + "/gen_params/input/test_edge_attr.json",
          "-name", "test",
-         "-o", TEST_DATA + "/gen_itp/output/test_edge_attr_out.itp"],
-         TEST_DATA + "/gen_itp/ref/test_edge_attr_ref.itp")
+         "-o", TEST_DATA + "/gen_params/output/test_edge_attr_out.itp"],
+         TEST_DATA + "/gen_params/ref/test_edge_attr_ref.itp")
         ))
-    def test_gen_itp(args_in, ref_file):
+    def test_gen_params(args_in, ref_file):
         parser = argparse.ArgumentParser(
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
@@ -88,7 +88,7 @@ class TestGenItp():
                               ' force field, and exit.')
 
         args = parser.parse_args(args_in)
-        gen_itp(args)
+        gen_params(args)
 
         force_field = vermouth.forcefield.ForceField(name='test_ff')
 

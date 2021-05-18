@@ -1,4 +1,6 @@
-; polyply-itp
+; /coarse/fabian/current-projects/polymer_itp_builder/vermouth_dev/venvv/bin/pytest test_gen_params.py
+
+; Please cite the following papers:
 
 [ moleculetype ]
 PPI 1
@@ -21,10 +23,10 @@ PPI 1
 
 [ bonds ]
 ; inner
+ 2  5 1 0.350 1250
  1  2 1 0.350 1250
  1  3 1 0.350 1250
  1  4 1 0.350 1250
- 2  5 1 0.350 1250
  2  6 1 0.350 1250
 
 ; outer
