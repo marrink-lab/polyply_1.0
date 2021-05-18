@@ -1,1 +1,1 @@
-polyply gen_itp -lib martini2 -f ../DPPC.itp -seq "DPPC:1" "PEO:45" "OHter:1" -name "PEL" -o PEL.itp
+polyply gen_params -lib martini2 -f ../DPPC.itp -seq "DPPC:1" "PEO:45" "OHter:1" -name "PEL" -o PEL.itp
