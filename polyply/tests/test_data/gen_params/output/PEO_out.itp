@@ -1,4 +1,6 @@
-; polyply-itp
+; /coarse/fabian/current-projects/polymer_itp_builder/vermouth_dev/venvv/bin/pytest test_gen_params.py
+
+; Please cite the following papers:
 
 [ moleculetype ]
 PEO 1
