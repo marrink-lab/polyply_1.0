@@ -1,1 +1,1 @@
-polyply gen_itp -lib 2016H66 -seqf ../PE.json -name PE -o PE.itp
+polyply gen_params -lib 2016H66 -seqf ../PE.json -name PE -o PE.itp
