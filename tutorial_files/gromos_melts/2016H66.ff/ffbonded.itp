@@ -1,0 +1,713 @@
+;
+; GROMACS topology file for 2016H66: bonded interactions
+; file: out_dir/2016h66_bonded.itp
+; converted from: src_dir/2016h66.ifp
+; PHH Thu Jun 30 11:12:08 CEST 2016
+;
+;TITLE
+; File          : 2016H66.ifp
+; Force field   : 2016H66 (condensed-phase simulations)
+; Reference     : B.A.C. Horta, P.T. Merz, P.F.J. Fuchs, J. Dolenc, S. Riniker & P.H. Hunenberger
+;                 A GROMOS-compatible force field for small organic molecules in the condensed 
+;                 phase: The 2016H66 parameter set; J. Chem. Theory. Comput. 2016
+; File content  : Interaction function parameters
+; Format        : GROMOS11
+; Initial file  : BACH/Rio+PHH/Zuerich, May 2016
+; Time stamp    : PHH, Sun May 29 09:54:41 CEST 2016
+; Remark        : The force field 2016H66 was calibrated and validated for 57 organic liquids 
+;                 + 5 nucleic acid bases (see mtb file "_orga", which also contains the solvent cyclohexane); 
+;                 biomolecular files are also provided as described in the Appendix of Suppl Mat A of 
+;                 the above reference (see also the headers of the individual mtb files); however
+;                 ************************************************************************************
+;                 ******    keep in mind that this biomolecular component has only undergone    ******
+;                 ******          preliminary tests and not yet a thorough validation!          ******
+;                 ************************************************************************************
+; Remark        : make_top must recognize negative dihedral-angle type codes in patches, 
+;                 which indicate that, if present, an existing dihedral angle with the given type 
+;                 code must be removed (used in HO2C, HO3C, HO4C, HO6C and C1OH patches for
+;                 carbohydrates to delete existing T2 or T6/T7 dihedrals assuming a OC instead of 
+;                 a OH); for this reason 
+;                 ************************************************************************************
+;                 ****** topologies must be built using a make_top version of June 2012 or later *****
+;                 ************************************************************************************
+; Remark        : There is no B force-field version for this set
+; Remark        : There are only files in the GROMOS11 format for this set
+; Modifications : [list below changes after May 2016 - with initials, location and date - and update time stamp]
+;END
+;
+;FORCEFIELD
+; 2016H66
+;END
+;
+;BONDSTRETCHTYPECODE
+;
+; --- The bond-stretching types of 2016H66 are identical to those of 53A6
+;     but their usage has been slightly modified for the oxygen 
+;     chemical functions according to the 53A6_OXY force field
+;     (Horta et al. J. Chem. Theory Comput. 2011, 7, 1016-1031);
+;     these slight differences of assignments between 53A6 and
+;     2016H66 are only apparent in the mtb files
+;
+;   NRBTY    NBTY
+;        52      52
+;       GROMOS bond-stretching parameters
+;
+;
+; Bond type code
+; Reference bond length
+; Harmonic bond-stretching force constant
+; Examples of usage in terms of non-bonded atom types
+;
+;       gb_#  B0[N]          CB[N]
+;
+#define gb_1  1.0000000e-01  1.5700000e+07
+; H  -  OA      750
+;
+#define gb_2  1.0000000e-01  1.8700000e+07
+; H  -  N (all) 895
+;
+#define gb_3  1.0900000e-01  1.2300000e+07
+; HC  -  C      700
+;
+#define gb_4  1.1200000e-01  3.7000000e+07
+; C - O (COin heme)  2220
+;
+#define gb_5  1.2300000e-01  1.6600000e+07
+; C  - O        1200
+;
+#define gb_6  1.2500000e-01  1.3400000e+07
+; C  - OM       1000
+;
+#define gb_7  1.3200000e-01  1.2000000e+07
+; CR1  -  NR (6-ring)   1000
+;
+#define gb_8  1.3300000e-01  8.8700000e+06
+; H  -  S       750
+;
+#define gb_9  1.3300000e-01  1.0600000e+07
+; C  -  NT, NL  900
+;
+#define gb_10  1.3300000e-01  1.1800000e+07
+; C, CR1  -  N, NR, CR1, C (peptide, 5-ring)       1000
+;
+#define gb_11  1.3400000e-01  1.0500000e+07
+; C  -  N, NZ, NE       900
+;
+#define gb_12  1.3400000e-01  1.1700000e+07
+; C  -  NR (no H) (6-ring)      1000
+;
+#define gb_13  1.3600000e-01  1.0200000e+07
+; C  -  OA, OE      900
+;
+#define gb_14  1.3800000e-01  1.1000000e+07
+; C  -  NR (heme)       1000
+;
+#define gb_15  1.3900000e-01  8.6600000e+06
+; CH2  -  C, CR1 (6-ring)       800
+;
+#define gb_16  1.3900000e-01  1.0800000e+07
+; C, CR1  -  CH2, C, CR1 (6-ring)       1000
+;
+#define gb_17  1.4000000e-01  8.5400000e+06
+; C, CR1, CH2  -  NR (6-ring)   800
+;
+#define gb_18  1.4300000e-01  8.1800000e+06
+; CHn  -  OA, OE    800
+;
+#define gb_19  1.4300000e-01  9.2100000e+06
+; CHn  -  OM    900
+;
+#define gb_20  1.4350000e-01  6.1000000e+06
+; CHn  -  OA (sugar)    600
+;
+#define gb_21  1.4700000e-01  8.7100000e+06
+; CHn  -  N, NT, NL, NZ, NE     900
+;
+#define gb_22  1.4800000e-01  5.7300000e+06
+; CHn  -  NR (5-ring)   600
+;
+#define gb_23  1.4800000e-01  7.6400000e+06
+; CHn  -   NR (6-ring)  800
+;
+#define gb_24  1.4800000e-01  8.6000000e+06
+; O, OM  -   P     900
+;
+#define gb_25  1.5000000e-01  8.3700000e+06
+; O  -  S       900
+;
+#define gb_26  1.5200000e-01  5.4300000e+06
+; CHn  -   CHn (sugar)  600
+;
+#define gb_27  1.5300000e-01  7.1500000e+06
+; C, CHn  -   C, CHn    800
+;
+#define gb_28  1.6100000e-01  4.8400000e+06
+; OA  -   P     600
+;
+#define gb_29  1.6300000e-01  4.7200000e+06
+; OA  -   SI    600
+;
+#define gb_30  1.7800000e-01  2.7200000e+06
+; FE  -  C (Heme)
+;
+#define gb_31  1.7800000e-01  5.9400000e+06
+; CH3  -   S    900
+;
+#define gb_32  1.8300000e-01  5.6200000e+06
+; CH2  -   S    900
+;
+#define gb_33  1.8700000e-01  3.5900000e+06
+; CH1  -   SI   600
+;
+#define gb_34  1.9800000e-01  6.4000000e+05
+; NR  -   FE    120
+;
+#define gb_35  2.0000000e-01  6.2800000e+05
+; NR (heme)  -  FE   120
+;
+#define gb_36  2.0400000e-01  5.0300000e+06
+; S  -   S      1000
+;
+#define gb_37  2.2100000e-01  5.4000000e+05
+; NR  -  FE     126
+;
+#define gb_38  1.0000000e-01  2.3200000e+07
+; HWat  -   OWat        1110
+;
+#define gb_39  1.1000000e-01  1.2100000e+07
+; HChl  -   CChl        700
+;
+#define gb_40  1.7580000e-01  8.1200000e+06
+; CChl  -   CLChl       1200
+;
+#define gb_41  1.5300000e-01  8.0400000e+06
+; ODmso  -   SDmso      900
+;
+#define gb_42  1.9379900e-01  4.9500000e+06
+; SDmso  -   CDmso      890
+;
+#define gb_43  1.7600000e-01  8.1000000e+06
+; CCl4  -   CLCl4       1200
+;
+#define gb_44  1.2650000e-01  1.3100000e+07
+; CUrea  -  OUrea       1000
+;
+#define gb_45  1.3500000e-01  1.0300000e+07
+; CUrea  -  NUrea       900
+;
+#define gb_46  1.6329900e-01  8.7100000e+06
+; HWat  -   HWat        1110
+;
+#define gb_47  2.3383900e-01  2.6800000e+06
+; HChl  -   CLChl        700
+;
+#define gb_48  2.9028300e-01  2.9800000e+06
+; CLChl -   CLChl       1200
+;
+#define gb_49  2.7938800e-01  2.3900000e+06
+; ODmso -   CDmso        890
+;
+#define gb_50  2.9118900e-01  2.1900000e+06
+; CDmso -   CDmso        890
+;
+#define gb_51  2.0770000e-01  3.9700000e+06
+; HMet  -   CMet         820
+;
+#define gb_52  2.8740700e-01  3.0400000e+06
+; CLCl4 -   CLCl4       1200
+;
+;END
+;
+;BONDANGLEBENDTYPECODE
+;
+; --- The bond-angle-bending types of 2016H66 are identical to those of 53A6
+;     but their usage has been slightly modified for the oxygen 
+;     chemical functions according to the 53A6_OXY force field
+;     (Horta et al. J. Chem. Theory Comput. 2011, 7, 1016-1031);
+;     these slight differences of assignments between 53A6 and
+;     2016H66 are only apparent in the mtb files
+;
+;   NRTTY    NTTY
+;        54      54
+;       GROMOS bond-angle bending parameters
+;
+;
+; Bond-angle type code
+; Reference bond angle
+; Cosine-harmonic bond-angle bending force constant
+; Example of usage in terms of non-bonded atom types
+;
+;
+;       ga_#  T0[N]          CT[N]
+;
+#define ga_1  9.0000000e+01  3.8000000e+02
+; NR(heme)  -  FE  -  C          90
+;
+#define ga_2  9.0000000e+01  4.2000000e+02
+; NR(heme)  -  FE  -  NR(heme)  100
+;
+#define ga_3  9.6000000e+01  4.0500000e+02
+; H  -  S  -  CH2       95
+;
+#define ga_4  1.0000000e+02  4.7500000e+02
+; CH2  -  S  -  CH3     110
+;
+#define ga_5  1.0300000e+02  4.2000000e+02
+; OA  -  P  -  OA       95
+;
+#define ga_6  1.0400000e+02  4.9000000e+02
+; CH2  -  S  -  S       110
+;
+#define ga_7  1.0800000e+02  4.6500000e+02
+; NR, C, CR1(5-ring)    100
+;
+#define ga_8  1.0950000e+02  2.8500000e+02
+; CHn  - CHn - CHn, NR(6-ring) (sugar)  60
+;
+#define ga_9  1.0950000e+02  3.2000000e+02
+; CHn, OA  - CHn  - OA, NR(ring) (sugar)        68
+;
+#define ga_10  1.0950000e+02  3.8000000e+02
+; H -  NL, NT  -  H, CHn  - OA  - CHn (sugar)    80
+;
+#define ga_11  1.0950000e+02  4.2500000e+02
+; H  -  NL  -  C, CHn          H  -  NT  -  CHn 90
+;
+#define ga_12  1.0950000e+02  4.5000000e+02
+; X  -  OA, SI  -  X    95
+;
+#define ga_13  1.0950000e+02  5.2000000e+02
+; CHn,C  -  CHn  -  C, CHn, OA, OM, N, NE       110
+;
+#define ga_14  1.0960000e+02  4.5000000e+02
+; OM  -  P  -  OA       95
+;
+#define ga_15  1.1100000e+02  5.3000000e+02
+; CHn  -  CHn  -  C, CHn, OA, OE, NR, NT, NL    110
+;
+#define ga_16  1.1300000e+02  5.4500000e+02
+; CHn  -  CH2  -  S   / CHn - C - OA, OE  110
+;
+#define ga_17  1.1500000e+02  5.0000000e+01
+; NR(heme)  -  FE  - NR 10
+;
+#define ga_18  1.1500000e+02  4.6000000e+02
+; H  -  N  -  CHn       90
+;
+#define ga_19  1.1500000e+02  6.1000000e+02
+; CHn, C  -  C  -  OA, N, NT, NL        120
+;
+#define ga_20  1.1600000e+02  4.6500000e+02
+; H  -  NE  -  CH2      90
+;
+#define ga_21  1.1600000e+02  6.2000000e+02
+; CH2  -  N  -  CH1   / CHn - C - CHn, HC  120
+;
+#define ga_22  1.1700000e+02  6.3500000e+02
+; CH3 -  N  -  C, CHn  - C  - OM / C - OE - CHn  120
+;
+#define ga_23  1.2000000e+02  3.9000000e+02
+; H  -  NT, NZ, NE  -  C        70
+;
+#define ga_24  1.2000000e+02  4.4500000e+02
+; H  -  NT, NZ  -  H    80
+;
+#define ga_25  1.2000000e+02  5.0500000e+02
+; H - N - CH3, H, HC - 6-ring / H - NT - CHn / HC - C - O 90
+;
+#define ga_26  1.2000000e+02  5.3000000e+02
+; P, SI  -  OA  -  CHn, P       95
+;
+#define ga_27  1.2000000e+02  5.6000000e+02
+; N, C, CR1 (6-ring, no H)      100
+;
+#define ga_28  1.2000000e+02  6.7000000e+02
+; NZ  -  C  -  NZ, NE   120
+;
+#define ga_29  1.2000000e+02  7.8000000e+02
+; OM  - P  -  OM        140
+;
+#define ga_30  1.2100000e+02  6.8500000e+02
+; O  -  C  -  CHn, C          CH3  -  N  -  CHn 120
+;
+#define ga_31  1.2200000e+02  7.0000000e+02
+; CH1, CH2  -  N  -  C / O - C - OA, OE, CHn 120
+;
+#define ga_32  1.2300000e+02  4.1500000e+02
+; H  - N  - C   70
+;
+#define ga_33  1.2400000e+02  7.3000000e+02
+; O  - C  - OA, N, NT, NL   C - NE - CH2        120
+;
+#define ga_34  1.2500000e+02  3.7500000e+02
+; FE  - NR  - CR1 (5-ring)      60
+;
+#define ga_35  1.2500000e+02  7.5000000e+02
+; CHn - C - O (carb. acids and esters)     120
+;
+#define ga_36  1.2600000e+02  5.7500000e+02
+; H, HC  - 5-ring       90
+;
+#define ga_37  1.2600000e+02  6.4000000e+02
+; X(noH)  - 5-ring      100
+;
+#define ga_38  1.2600000e+02  7.7000000e+02
+; OM  - C  - OM 120
+;
+#define ga_39  1.3200000e+02  7.6000000e+02
+; 5, 6 ring connnection 100
+;
+#define ga_40  1.5500000e+02  2.2150000e+03
+; SI  - OA  - SI        95
+;
+#define ga_41  1.8000000e+02  9.1350000e+04
+; Fe  -  C  -  O (heme) 57
+;
+#define ga_42  1.0950000e+02  4.3400000e+02
+; HWat  - OWat  - HWat  92
+;
+#define ga_43  1.0757000e+02  4.8400000e+02
+; HChl  - CChl  - CLChl 105
+;
+#define ga_44  1.1130000e+02  6.3200000e+02
+; CLChl  - CChl  - CLChl        131
+;
+#define ga_45  9.7400000e+01  4.6900000e+02
+; CDmso  - SDmso  - CDmso       110
+;
+#define ga_46  1.0675000e+02  5.0300000e+02
+; CDmso  - SDmso  -  ODmso      110
+;
+#define ga_47  1.0853000e+02  4.4300000e+02
+; HMet  - OMet  - CMet  95
+;
+#define ga_48  1.0950000e+02  6.1800000e+02
+; CLCl4  - CCl4  - CLCl4        131
+;
+#define ga_49  1.0760000e+02  5.0700000e+02
+; FTFE  -  CTFE  -  FTFE        100
+;
+#define ga_50  1.0950000e+02  4.4800000e+02
+; HTFE  -  OTFE  -  CHTFE        85
+;
+#define ga_51  1.1030000e+02  5.2400000e+02
+; OTFE  -  CHTFE  -  CTFE        97
+;
+#define ga_52  1.1140000e+02  5.3200000e+02
+; CHTFE  -  CTFE  -  FTFE        95
+;
+#define ga_53  1.1720000e+02  6.3600000e+02
+; NUrea  -  CUrea  -  NUrea     120
+;
+#define ga_54  1.2140000e+02  6.9000000e+02
+; OUrea  -  CUrea  -  NUrea     120
+;
+;END
+;
+;IMPDIHEDRALTYPECODE
+;
+; --- The improper-dihedral-distortion types of 2016H66 are identical to those of 54A7,
+;     (types 1-3 directly from 53A6 + two additional types introduced in 54A7)
+;
+;   NRQTY    NQTY
+;         5       5
+;       GROMOS improper (harmonic) dihedral angle parameters
+;
+; Improper-dihedral type code
+; Reference improper-dihedral angle
+; Harmonic improper-dihedral force constant (per rad^2 instead of per deg^2 in GROMACS)
+; Example of usage
+;
+;
+;       gi_#  Q0[N]          CQ[N]
+;
+#define gi_1  0.0000000e+00  1.6742312e+02
+; planar groups 40
+;
+#define gi_2  3.5264390e+01  3.3484625e+02
+; tetrahedral centres   80
+;
+#define gi_3  0.0000000e+00  6.6969250e+02
+; heme iron     160
+;
+#define gi_4  1.8000000e+02  1.6742312e+02
+; planar groups 40
+;
+#define gi_5 -3.5264390e+01  3.3484625e+02
+; tetrahedral centres   80
+;
+;END
+;
+;TORSDIHEDRALTYPECODE
+;
+; --- The dihedral-torsion types of 2016H66 include components from 53A6 (types 1-41),
+;     53A6_OXY+D (types 42-46; Fuchs et al. J. Chem. Theory Comput. 2012, 8, 3943-3963),
+;     56A6_CARBO (types 48-60; Hansen & Hunenberger, J. Comput. Chem. 2011, 32, 998-1032),
+;     and 56A6_CARBO-R (types 61-62; Plazinski et al., J. Comput. Chem. 2016, 37, 354-365).
+;     Note that 54A7 consisted of the 41 types of 53A6 + 4 additional 
+;     types for phi/psi peptide patches (numbered 42-45 in the 54A7 files); 
+;     these have been deleted. Instead, a new type (type 48) has been 
+;     added here in replacement, corresponding to a single phi peptide patch.
+;
+;   NRPTY    NPTY
+;        62      62
+;       GROMOS (trigonometric) dihedral torsional angle parameters
+;
+; Dihedral-angle type code
+; Phase shift
+; Dihedral-angle force constant
+; Multiplicity
+; Example of usage in terms of non-bonded atom types
+;
+;
+;       gid#  PD[N]          CP[N]          NP[N]
+;
+#define gd_1  1.8000000e+02  2.6700000e+00  1
+; CHn-CHn-CHn-OA (sugar)  0.6
+; (sugar: C4-C5-C6-O6, omega dihedral, specific to residue with syn C4,C5 like Gal, 1-fold term)
+;
+#define gd_2  1.8000000e+02  3.4100000e+00  1
+; OA-CHn-OA-CHn,H (beta sugar) 0.8
+; (sugar: O5-C1-O1-CX_next, glycosidic phi dihedral, for beta anomer, 1-fold term)
+;
+#define gd_3  1.8000000e+02  6.6600000e+00  1
+; OA-CHn-CHn-OA (sugar) 1.6
+; (sugar: O5-C5-C6-O6, omega-tilde dihedral, for residue with syn C4,C5 like Gal, 1-fold term)
+;
+#define gd_4  1.8000000e+02  5.8600000e+00  1
+; N-CHn-CHn-OA (lipid) 1.4
+;
+#define gd_5  1.8000000e+02  9.3500000e+00  1
+; OA-CHn-CHn-OA (sugar) 2.2
+; (sugar: O5-C5-C6-O6, omega-tilde dihedral, for residue with anti C4,C5 like Glc, 1-fold term)
+;
+#define gd_6  1.8000000e+02  9.4500000e+00  1
+; OA-CHn-OA-CHn,H (alpha sugar)  2.3
+; (sugar: O5-C1-O1-CX_next, glycosidic phi dihedral, for alpha anomer, 1-fold term)
+;
+#define gd_7  0.0000000e+00  2.7900000e+00  1
+; P-O5*-C5*-C4* (dna) 0.7
+;
+#define gd_8  0.0000000e+00  5.3500000e+00  1
+; O5*-C5*-C4*-O4* (dna) 1.3
+;
+#define gd_9  1.8000000e+02  1.5300000e+00  2
+; C1-C2-CAB-CBB (heme) 0.4
+;
+#define gd_10  1.8000000e+02  5.8600000e+00  2
+; -C-C- 1.4
+;
+#define gd_11  1.8000000e+02  7.1100000e+00  2
+; -C-OA,OE- (at ring) 1.7
+;
+#define gd_12  1.8000000e+02  1.6700000e+01  2
+; -C-OA,OE- (carboxyl) 4.0
+;
+#define gd_13  1.8000000e+02  2.4000000e+01  2
+; CHn-OE-C-CHn (ester lipid) 5.7
+;
+#define gd_14  1.8000000e+02  3.3500000e+01  2
+; -C-N,NT,NE,NZ,NR- 8.0
+;
+#define gd_15  1.8000000e+02  4.1800000e+01  2
+; -C-CR1- (6-ring) 10.0
+;
+#define gd_16  0.0000000e+00  0.0000000e+00  2
+; -CH1(sugar)-NR(base) 0.0
+;
+#define gd_17  0.0000000e+00  4.1800000e-01  2
+; O-CH1-CHn-no O 0.1
+;
+#define gd_18  0.0000000e+00  2.0900000e+00  2
+; O-CH1-CHn-O 0.5
+;
+#define gd_19  0.0000000e+00  3.1400000e+00  2
+; -OA-P- 0.75
+;
+#define gd_20  0.0000000e+00  5.0900000e+00  2
+; O-P-O- (dna, lipids) 1.2
+;
+#define gd_21  0.0000000e+00  1.6700000e+01  2
+; -S-S- 4.0
+;
+#define gd_22  0.0000000e+00  1.0500000e+00  3
+; -OA-P- 0.25
+;
+#define gd_23  0.0000000e+00  1.2600000e+00  3
+; -CHn-OA(no sugar)- 0.3
+;
+#define gd_24  0.0000000e+00  1.3000000e+00  3
+; HTFE-OTFE-CHTFE-CTFE 0.3
+;
+#define gd_25  0.0000000e+00  2.5300000e+00  3
+; O5*-C5*-C4*-O4* (dna) 0.6
+;
+#define gd_26  0.0000000e+00  2.9300000e+00  3
+; -CH2-S- 0.7
+;
+#define gd_27  0.0000000e+00  3.1900000e+00  3
+; O-P-O- (dna, lipids) 0.8
+;
+#define gd_28  0.0000000e+00  3.6500000e+00  3
+; OA-CHn-OA-CHn,H (alpha sugar) 0.9
+; (sugar: O5-C1-O1-CX_next, glycosidic phi dihedral, for alpha anomer, 3-fold term)
+;
+#define gd_29  0.0000000e+00  3.7700000e+00  3
+; -C,CHn,SI- 0.9
+;
+#define gd_30  0.0000000e+00  3.9000000e+00  3
+; CHn-CHn-OA-H (sugar) 0.9
+; (sugar: C(n-1)-Cn-On-Hn with n=2,3,4,6, chi dihedrals, including glycosidic psi dihedral)
+;
+#define gd_31  0.0000000e+00  4.1800000e+00  3
+; HC-C-S- 1.0
+;
+#define gd_32  0.0000000e+00  4.6900000e+00  3
+; AO-CHn-OA-CHn,H (beta sugar)
+; (sugar:  O5-C1-O1-CX_next, glycosidic phi dihedral, for beta anomer, 3-fold term)
+;
+#define gd_33  0.0000000e+00  5.4400000e+00  3
+; HC-C-C- 1.3
+;
+#define gd_34  0.0000000e+00  5.9200000e+00  3
+; -CHn,SI-CHn- 1.4
+;
+#define gd_35  0.0000000e+00  7.6900000e+00  3
+; OA-CHn-CHn-OA (sugar) 1.8
+; (sugar: O5-C5-C6-O6, omega-tilde dihedral, for residue with syn C4,C5 like Gal, 3-fold term)
+;
+#define gd_36  0.0000000e+00  8.6200000e+00  3
+; N-CHn-CHn-OA (lipid) 2.1
+;
+#define gd_37  0.0000000e+00  9.5000000e+00  3
+; OA-CHn-CHn-OA (sugar) 2.3
+; (sugar: O5-C5-C6-O6, omega-tilde dihedral, for residue with anti C4,C5 like Glc, 3-fold term)
+;
+#define gd_38  0.0000000e+00  0.0000000e+00  4
+; -NR-FE- 0.0
+;
+#define gd_39  1.8000000e+02  1.0000000e+00  6
+; -CHn-N,NE- 0.24
+;
+#define gd_40  0.0000000e+00  1.0000000e+00  6
+; -CHn-C,NR(ring), CR1- 0.24
+;
+#define gd_41  0.0000000e+00  3.7700000e+00  6
+; -CHn-NT- 0.9
+;
+; The next 6 entries are from 53A6_OXY+D; the D-index refers to 
+; Table 4 of Fuchs et al., J. Comput. Chem. 2012, 8, 3943-3963
+;
+#define gd_42  1.8000000e+02  9.3100000e-01  1
+; CHn-CHn-OE-CHn (D1 in OXY+D)  0.22
+;
+#define gd_43  0.0000000e+00  5.6900000e-01  2
+; CHn-CHn-OE-CHn (D2 in OXY+D)  0.136
+;
+#define gd_44  0.0000000e+00  4.6820000e+00  3
+; CHn-CHn-OE-CHn (D3 in OXY+D)  1.12
+;
+#define gd_45  1.8000000e+02  6.9420000e+00  1
+; OE-CHn-CHn-OE  (D4 in OXY+D)  1.66
+;
+#define gd_46  0.0000000e+00  3.3120000e+00  2
+; OE-CHn-CHn-OE  (D5 in OXY+D)  0.79
+;
+#define gd_47  0.0000000e+00  6.7870000e+00  3
+; OE-CHn-CHn-OE  (D6 in OXY+D)  1.62
+;
+; The next entry is specific to 2016H66; it corresponds to the phi patch for the protein backbone, 
+; see Appendix of Suppl Mat A of Horta et al. 2016 (the 2016H66 article)
+;      
+#define gd_48  0.0000000e+00  3.0000000e+00  3
+; -CHn-N,NE-     (phi-patch)  0.71
+;
+; The next 12 entries are from 56A6_CARBO; the T-index refers to 
+; to Table 6 of Hansen & Hunenberger, J. Comput. Chem. 2011, 32, 998-1032
+;
+; Type T1 is already listed above as type 34 
+; 34    5.920      0.0       3
+; T1 : 56A6_CARBO X-C-C-X; X not H (generic CC - unaltered from 53A6)
+;
+#define gd_49  0.0000000e+00  4.9000000e+00  3
+; T2: 56A6_CARBO X-C-O-X; X not H (generic CO)
+;
+#define gd_50  0.0000000e+00  2.4000000e+00  3
+; T3: 56A6_CARBO X-C-O-H (generic hydroxyl)
+;
+#define gd_51  1.8000000e+02  7.0000000e+00  1
+; T4: 56A6_CARBO Or-CH*r-O-X (exo-anomeric)
+;
+#define gd_52  1.8000000e+02  2.0000000e+00  1
+; T5: 56A6_CARBO CH*r-Or-CH*r-O (anomeric; for unfunctionalized O1)
+;
+#define gd_53  6.0000000e+01  2.5000000e+00  1
+; T6: 56A6_CARBO Xr-CH*r-O-CH* (exocyclic methoxyl)
+;
+#define gd_54 -6.0000000e+01  2.5000000e+00  1
+; T7: 56A6_CARBO Xr-CH*r-O-CH* (exocyclic methoxyl)
+;
+#define gd_55  6.0000000e+01  1.5000000e+00  1
+; T8: 56A6_CARBO Xr-CH*r-CH*-CH*' (exocyclic ethyl)
+;
+#define gd_56 -6.0000000e+01  1.5000000e+00  1
+; T9: 56A6_CARBO Xr-CH*r-CH*-CH*' (exocyclic ethyl)
+;
+#define gd_57  6.0000000e+01  1.0000000e+00  1
+; T10: 56A6_CARBO Xr-CH*r-CH*-O (exocyclic oxymethyl)
+;
+#define gd_58 -6.0000000e+01  1.0000000e+00  1
+; T11: 56A6_CARBO Xr-CH*r-CH*-O (exocyclic oxymethyl)
+;
+#define gd_59  1.8000000e+02  4.5000000e+00  1
+; T12: 56A6_CARBO Ox-X-X-Ox; not type T13 (oxygen-oxygen gauche)
+;
+#define gd_60  1.8000000e+02  1.0000000e+00  1
+; T13: 56A6_CARBO Ox-X-X-Or (oxygen-oxygen intracyclic)
+;
+; The next 2 entries are from 56A6_CARBO-R; the T5R-index refers to 
+; the variants of T5 introduced in the Section "Force-field parameters" 
+; of Plazinski et al., J. Comput. Chem. 2016, 37, 354-365
+;
+#define gd_61  1.8000000e+02  4.5000000e+00  1
+; T5R1: 56A6_CARBO-R CH*r-Or-CH*r-O (anomeric; for alkylated O1)
+;
+#define gd_62  1.8000000e+02  6.5000000e+00  1
+; T5R2: 56A6_CARBO-R CH*r-Or-CH*r-O (anomeric; for glycosylated O1)
+;
+;END
+;
+; GROMACS SPECIFIC MATERIAL
+;
+; get the constraint distances for dummy atom constructions
+; 
+; #include "ff_dum.itp"
+;
+[ constrainttypes ]
+; now the constraints for the rigid NH3 groups
+; MNH3    C    2   DC_MNC1
+; MNH3  CH1    2   DC_MNC2
+; MNH3  CH2    2   DC_MNC2
+; MNH3 MNH3    2   DC_MNMN
+; and the angle-constraints for OH and SH groups in proteins:
+;  CH2    H    2   DC_CO
+;  CH1    H    2   DC_CO
+;    C    H    2   DC_CO
+;    P    H    2   DC_PO
+;                                                                            
+; bond-, angle- and dihedraltypes for specbonds:
+[ bondtypes ]
+S      S       2    gb_36
+NR     FE      2    gb_34
+;
+[ angletypes ]
+CH1    CH2    S     2   ga_16
+CH2    S      S     2   ga_6
+CR1    NR    FE     2   ga_34
+NR     FE    NR     2   ga_17
+;
+[ dihedraltypes ]
+S      S      1   gd_21
+NR     FE     1   gd_38
+CH2    S      1   gd_26
+;
