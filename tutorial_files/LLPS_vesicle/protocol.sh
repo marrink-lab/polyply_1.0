@@ -37,8 +37,8 @@ done
 
 # now that we have all the input files we make a topology file
 cat >> system.top << END
-#include "../input/martini_v3.0.0.itp"
-#include "../input/martini_v3.0.0_ions_v1.itp"
+#include "../../martini_v3_parameters/martini_v3.0.0.itp"
+#include "../../martini_v3_parameters/martini_v3.0.0_ions_v1.itp"
 #include "../input/lipids.itp"
 #include "dextrans.itp"
 #include "PEO.itp"
