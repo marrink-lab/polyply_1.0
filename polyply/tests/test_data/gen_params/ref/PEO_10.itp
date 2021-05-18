@@ -1,0 +1,84 @@
+; Copyright 2020 University of Groningen
+;
+; Licensed under the Apache License, Version 2.0 (the "License");
+; you may not use this file except in compliance with the License.
+; You may obtain a copy of the License at
+;
+;    http://www.apache.org/licenses/LICENSE-2.0
+;
+; Unless required by applicable law or agreed to in writing, software
+; distributed under the License is distributed on an "AS IS" BASIS,
+; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+; See the License for the specific language governing permissions and
+; limitations under the License.
+
+
+[   moleculetype   ]
+PEOref 1
+[      atoms       ]
+1     SN1a  1     PEOref   EO  1 0.000    45    
+2     SN1a  2     PEOref   EO  2 0.000    45    
+3     SN1a  3     PEOref   EO  3 0.000    45    
+4     SN1a  4     PEOref   EO  4 0.000    45    
+5     SN1a  5     PEOref   EO  5 0.000    45    
+6     SN1a  6     PEOref   EO  6 0.000    45    
+7     SN1a  7     PEOref   EO  7 0.000    45    
+8     SN1a  8     PEOref   EO  8 0.000    45    
+9     SN1a  9     PEOref   EO  9 0.000    45    
+10    SN1a  10    PEOref   EO  10 0.000    45    
+[        bonds         ]
+1     2     1  0.37     7000    
+2     3     1  0.37     7000    
+3     4     1  0.37     7000    
+4     5     1  0.37     7000    
+5     6     1  0.37     7000    
+6     7     1  0.37     7000    
+7     8     1  0.37     7000    
+8     9     1  0.37     7000    
+9     10    1  0.37     7000    
+[        angles        ]
+1     2     3     10 135.00   75      
+1     2     3     2  135.00   50      
+2     3     4     10 135.00   75      
+2     3     4     2  135.00   50      
+3     4     5     10 135.00   75      
+3     4     5     2  135.00   50      
+4     5     6     10 135.00   75      
+4     5     6     2  135.00   50      
+5     6     7     10 135.00   75      
+5     6     7     2  135.00   50      
+6     7     8     10 135.00   75      
+6     7     8     2  135.00   50      
+7     8     9     10 135.00   75      
+7     8     9     2  135.00   50      
+8     9     10    10 135.00   75      
+8     9     10    2  135.00   50      
+[      dihedrals       ]
+1     2     3     4     1  0          0.12       4         
+1     2     3     4     1  0          0.18       2         
+1     2     3     4     1  0          0.33       3         
+1     2     3     4     1  180.00     1.96       1         
+2     3     4     5     1  0          0.12       4         
+2     3     4     5     1  0          0.18       2         
+2     3     4     5     1  0          0.33       3         
+2     3     4     5     1  180.00     1.96       1         
+3     4     5     6     1  0          0.12       4         
+3     4     5     6     1  0          0.18       2         
+3     4     5     6     1  0          0.33       3         
+3     4     5     6     1  180.00     1.96       1         
+4     5     6     7     1  0          0.12       4         
+4     5     6     7     1  0          0.18       2         
+4     5     6     7     1  0          0.33       3         
+4     5     6     7     1  180.00     1.96       1         
+5     6     7     8     1  0          0.12       4         
+5     6     7     8     1  0          0.18       2         
+5     6     7     8     1  0          0.33       3         
+5     6     7     8     1  180.00     1.96       1         
+6     7     8     9     1  0          0.12       4         
+6     7     8     9     1  0          0.18       2         
+6     7     8     9     1  0          0.33       3         
+6     7     8     9     1  180.00     1.96       1         
+7     8     9     10    1  0          0.12       4         
+7     8     9     10    1  0          0.18       2         
+7     8     9     10    1  0          0.33       3         
+7     8     9     10    1  180.00     1.96       1         
