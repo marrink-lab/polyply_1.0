@@ -14,7 +14,7 @@ polyply gen_itp -lib martini3 -seq PS:62 PEO:166 -o PS_PEO.itp -name PS_PEO
 #     the salt
 
 cat >> system.top << END
-#include "../input/martini_v3.0.0.itp"
+#include "../../martini_v3_parameters/martini_v3.0.0.itp"
 #include "../input/LiTFSI.itp"
 #include "PS_PEO.itp"
 
