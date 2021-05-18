@@ -65,6 +65,7 @@ def assert_equal_blocks(block1, block2):
     for inter_type in ["bonds", "angles", "constraints", "exclusions", "pairs", "dihedrals", "impropers"]:
         ref_interactions = block1.interactions.get(inter_type, [])
         new_interactions = block2.interactions.get(inter_type, [])
+        print(inter_type)
         assert len(ref_interactions) == len(new_interactions)
 
         ref_terms = defaultdict(list)
@@ -84,7 +85,7 @@ def assert_equal_blocks(block1, block2):
                     if _interaction_equal(ref_inter, new_inter, inter_type):
                         break
                 else:
-                    return False
+                    assert False
 
 def compare_itp(filename1, filename2):
     """
@@ -139,7 +140,11 @@ def _interaction_equal(interaction1, interaction2, inter_type):
     a1 = list(interaction1.atoms)
     a2 = list(interaction2.atoms)
 
+
     if p1 != p2:
+        return False
+
+    if interaction1.meta != interaction2.meta:
         return False
 
     if inter_type in ["constraints", "bonds", "exclusions", "pairs"]:
@@ -167,9 +172,11 @@ def _interaction_equal(interaction1, interaction2, inter_type):
      ['2016H66', 'PVA'],
      ['2016H66', 'PMA'],
      ['2016H66', 'PS'],
+     ['gromos53A6', 'P3HT'],
      ['martini3', 'PEO'],
      ['martini3', 'PS'],
-     #['martini3', 'PEO_OHter'],
+     ['martini3', 'PE'],
+     ['martini3', 'DEX'],
      ['martini3', 'P3HT'],
      ['martini2', 'PEO'],
      ['martini2', 'PS'],
