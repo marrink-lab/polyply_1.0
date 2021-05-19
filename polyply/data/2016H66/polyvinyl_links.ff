@@ -4,8 +4,8 @@
 [ link ]
 resname "PE"
 [ atoms ]
-+VC1 {"replace": {"atype": "CH2"}}
-VC2 {"replace": {"atype": "CH2"}}
++VC1 {"replace": {"atype": "CH2", "mass": "14"}}
+VC2 {"replace": {"atype": "CH2", "mass": "14"}}
 [ bonds ]
 +VC1 VC2 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link"}
 
