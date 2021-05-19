@@ -1,0 +1,76 @@
+;
+; 66 atom types of the GROMOS 2016H66 force field
+;
+O        15.9994 ;  1 carbonyl oxygen
+OM       15.9994 ;  2 oxygen bearing a negative charge (carboxylate)
+OA       15.9994 ;  3 oxygen bound to hydrogen (alcohol,carboxylic acid)
+OE       15.9994 ;  4 ether or ester oxygen
+OW       15.9994 ;  5 SPC or SPC/E water oxygen
+N        14.0067 ;  6 amide nitrogen
+NT       14.0067 ;  7 amine nitrogen
+NL       14.0067 ;  8 nitrogen bearing a positive charge (ammonium)
+NR       14.0067 ;  9 aromatic nitrogen
+NZ       14.0067 ; 10 primary guanidinium nitrogen
+NE       14.0067 ; 11 secondary guanidinium nitrogen
+C        12.0110 ; 12 sp2 bare carbon (carbonyl,isobutylene,benzene)
+CH0      12.0110 ; 13 non-ring sp3 bare carbon (neopentane)
+CH1      13.0190 ; 14 aliphatic non-ring united-atom CH group
+CH2      14.0270 ; 15 aliphatic non-ring united-atom CH2 group
+CH3      15.0350 ; 16 aliphatic non-ring united-atom CH3 group
+CH4      16.0430 ; 17 united-atom methane molecule
+CH2r     14.0270 ; 18 aliphatic united-atom CH2 group in ring (cyclohexane,hexopyranoses)
+CR1      13.0190 ; 19 united-atom aromatic CH group
+HC        1.0080 ; 20 hydrogen bound to carbon
+H         1.0080 ; 21 hydrogen bound to element other than carbon
+DUM       0.0000 ; 22 dummy atom
+S        32.0600 ; 23 sulfur
+CU1+     63.5460 ; 24 copper (charge +1)
+CU2+     63.5460 ; 25 copper (charge +2)
+FE       55.8470 ; 26 iron (heme group)
+ZN2+     65.3700 ; 27 zinc (charge +2)
+MG2+     24.3050 ; 28 magnesium (charge +2)
+CA2+     40.0800 ; 29 calcium (charge +2)
+P        30.9738 ; 30 phosphor or silicon
+AR       39.9480 ; 31 argon
+F        18.9984 ; 32 fluorine (non-ionic)
+CL       35.4530 ; 33 chlorine (non-ionic)
+BR       79.9040 ; 34 bromine (non-ionic)
+CMet     15.0350 ; 35 united-atom methyl group in methanol (solvent)
+OMet     15.9994 ; 36 oxygen in methanol (solvent)
+NA+      22.9898 ; 37 sodium (charge +1)
+CL-      35.4530 ; 38 chloride (charge -1)
+CChl     12.0110 ; 39 carbon in chloroform (solvent)
+CLChl    35.4530 ; 40 chloride in chloroform (solvent)
+HChl      1.0080 ; 41 hydrogen in chloroform (solvent)
+SDmso    32.0600 ; 42 sulphur in DMSO (solvent)
+CDmso    15.0350 ; 43 united-atom methyl group in DMSO (solvent)
+ODmso    15.9994 ; 44 oxygen in DMSO (solvent)
+CCl4     12.0110 ; 45 carbon in carbontetrachloride (solvent)
+CLCl4    35.4530 ; 46 chloride in carbontetrachloride (solvent)
+FTFE     18.9984 ; 47 fluorine in trifluoroethanol
+CTFE     12.0110 ; 48 carbon in trifluoroethanol
+CHTFE    14.0270 ; 49 united-atom CH2 group in trifluoroethanol
+OTFE     15.9994 ; 50 oxygen in trifluoroethanol
+CUrea    12.0110 ; 51 carbon in urea
+OUrea    15.9994 ; 52 oxygen in urea
+NUrea    14.0067 ; 53 nitrogen in urea
+CH3p     15.0350 ; 54 united-atom methyl group in choline
+LLI+      6.9410 ; 55 lithium (charge +1)
+LNA+     22.9898 ; 56 sodium (charge +1)
+LK+      39.0983 ; 57 potassium (charge +1)
+LRB+     85.4678 ; 58 rubidium (charge +1)
+LCS+    132.9055 ; 59 cesium (charge +1)
+LF-      18.9984 ; 60 fluoride (charge -1)
+LCL-     35.4530 ; 61 chloride (charge -1)
+LBR-     79.9040 ; 62 bromide (charge -1)
+LI-     126.9045 ; 63 iodide (charge -1)
+Or       15.9994 ; 64 oxygen in ring (hexopyranoses)
+CH0r     12.0110 ; 65 sp3 bare carbon in ring (hexopyranoses)
+CH1r     13.0190 ; 66 aliphatic united-atom CH1 group in ring (hexopyranoses)
+;
+; some additional types for GROMACS
+;
+SI       28.0800 ; 67  silicium
+MNH3      0.0000 ; 68  ???
+MW        0.0000 ; 69  ???
+;
