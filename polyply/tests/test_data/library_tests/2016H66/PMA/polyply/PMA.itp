@@ -1,41 +1,43 @@
-; polyply-itp
+; /coarse/fabian/current-projects/polymer_itp_builder/vermouth_dev/venvv/bin/polyply gen_params -lib 2016H66 -seqf PMA.json -name PMA -o PMA.itp
+
+; Please cite the following papers:
 
 [ moleculetype ]
 PMA 3
 
 [ atoms ]
- 1 CH3 1 CH3ter C1   1   0.0 14.0
- 2 CH2 2 PMA    VC1  2   0.0 14.0
- 3 CH1 2 PMA    VC2  3  0.29 13.0
- 4 C   2 PMA    SC1  4  0.63 12.0
- 5 O   2 PMA    SC2  5 -0.55 16.0
- 6 OE  2 PMA    SC3  6 -0.37 16.0
- 7 CH3 2 PMA    SC4  7   0.0 15.0
- 8 CH2 3 PMA    VC1  8   0.0 14.0
- 9 CH1 3 PMA    VC2  9  0.29 13.0
-10 C   3 PMA    SC1 10  0.63 12.0
-11 O   3 PMA    SC2 11 -0.55 16.0
-12 OE  3 PMA    SC3 12 -0.37 16.0
-13 CH3 3 PMA    SC4 13   0.0 15.0
-14 CH2 4 PMA    VC1 14   0.0 14.0
-15 CH1 4 PMA    VC2 15  0.29 13.0
-16 C   4 PMA    SC1 16  0.63 12.0
-17 O   4 PMA    SC2 17 -0.55 16.0
-18 OE  4 PMA    SC3 18 -0.37 16.0
-19 CH3 4 PMA    SC4 19   0.0 15.0
-20 CH2 5 PMA    VC1 20   0.0 14.0
-21 CH1 5 PMA    VC2 21  0.29 13.0
-22 C   5 PMA    SC1 22  0.63 12.0
-23 O   5 PMA    SC2 23 -0.55 16.0
-24 OE  5 PMA    SC3 24 -0.37 16.0
-25 CH3 5 PMA    SC4 25   0.0 15.0
-26 CH2 6 PMA    VC1 26   0.0 14.0
-27 CH1 6 PMA    VC2 27  0.29 13.0
-28 C   6 PMA    SC1 28  0.63 12.0
-29 O   6 PMA    SC2 29 -0.55 16.0
-30 OE  6 PMA    SC3 30 -0.37 16.0
-31 CH3 6 PMA    SC4 31   0.0 15.0
-32 CH3 7 CH3ter C1  32   0.0 14.0
+ 1 CH3 1 CH3ter C1   1   0.0  15.035
+ 2 CH2 2 PMA    VC1  2   0.0 14.0270
+ 3 CH1 2 PMA    VC2  3  0.29 13.0190
+ 4 C   2 PMA    SC1  4  0.63  12.011
+ 5 O   2 PMA    SC2  5 -0.55 15.9994
+ 6 OE  2 PMA    SC3  6 -0.37 15.9994
+ 7 CH3 2 PMA    SC4  7   0.0  15.035
+ 8 CH2 3 PMA    VC1  8   0.0 14.0270
+ 9 CH1 3 PMA    VC2  9  0.29 13.0190
+10 C   3 PMA    SC1 10  0.63  12.011
+11 O   3 PMA    SC2 11 -0.55 15.9994
+12 OE  3 PMA    SC3 12 -0.37 15.9994
+13 CH3 3 PMA    SC4 13   0.0  15.035
+14 CH2 4 PMA    VC1 14   0.0 14.0270
+15 CH1 4 PMA    VC2 15  0.29 13.0190
+16 C   4 PMA    SC1 16  0.63  12.011
+17 O   4 PMA    SC2 17 -0.55 15.9994
+18 OE  4 PMA    SC3 18 -0.37 15.9994
+19 CH3 4 PMA    SC4 19   0.0  15.035
+20 CH2 5 PMA    VC1 20   0.0 14.0270
+21 CH1 5 PMA    VC2 21  0.29 13.0190
+22 C   5 PMA    SC1 22  0.63  12.011
+23 O   5 PMA    SC2 23 -0.55 15.9994
+24 OE  5 PMA    SC3 24 -0.37 15.9994
+25 CH3 5 PMA    SC4 25   0.0  15.035
+26 CH2 6 PMA    VC1 26   0.0 14.0270
+27 CH1 6 PMA    VC2 27  0.29 13.0190
+28 C   6 PMA    SC1 28  0.63  12.011
+29 O   6 PMA    SC2 29 -0.55 15.9994
+30 OE  6 PMA    SC3 30 -0.37 15.9994
+31 CH3 6 PMA    SC4 31   0.0  15.035
+32 CH3 7 CH3ter C1  32   0.0  15.035
 
 [ bonds ]
  2  3 2 gb_27 ; C,CHn-CHn,C
@@ -110,14 +112,14 @@ PMA 3
 10 15 1
 16 21 1
 22 27 1
- 5  8 1 ; SC2
  6  8 1 ; SC3
-11 14 1 ; SC2
 12 14 1 ; SC3
-17 20 1 ; SC2
 18 20 1 ; SC3
-23 26 1 ; SC2
 24 26 1 ; SC3
+ 5  8 1 ; SC3
+11 14 1 ; SC3
+17 20 1 ; SC3
+23 26 1 ; SC3
  1  8 1 ; A
  1  4 1 ; C
 21 32 1 ; B

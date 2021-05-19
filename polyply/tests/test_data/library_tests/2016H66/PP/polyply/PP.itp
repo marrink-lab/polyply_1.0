@@ -1,26 +1,28 @@
-; polyply-itp
+; /coarse/fabian/current-projects/polymer_itp_builder/vermouth_dev/venvv/bin/polyply gen_params -lib 2016H66 -seqf PP.json -name PP -o PP.itp
+
+; Please cite the following papers:
 
 [ moleculetype ]
 PP 3
 
 [ atoms ]
- 1 CH3 1 CH3ter C1   1 0.0 14.0
- 2 CH2 2 PP     VC1  2 0.0 14.0
- 3 CH1 2 PP     VC2  3 0.0 13.0
- 4 CH3 2 PP     SC1  4 0.0 15.0
- 5 CH2 3 PP     VC1  5 0.0 14.0
- 6 CH1 3 PP     VC2  6 0.0 13.0
- 7 CH3 3 PP     SC1  7 0.0 15.0
- 8 CH2 4 PP     VC1  8 0.0 14.0
- 9 CH1 4 PP     VC2  9 0.0 13.0
-10 CH3 4 PP     SC1 10 0.0 15.0
-11 CH2 5 PP     VC1 11 0.0 14.0
-12 CH1 5 PP     VC2 12 0.0 13.0
-13 CH3 5 PP     SC1 13 0.0 15.0
-14 CH2 6 PP     VC1 14 0.0 14.0
-15 CH1 6 PP     VC2 15 0.0 13.0
-16 CH3 6 PP     SC1 16 0.0 15.0
-17 CH3 7 CH3ter C1  17 0.0 14.0
+ 1 CH3 1 CH3ter C1   1 0.0  15.035
+ 2 CH2 2 PP     VC1  2 0.0 14.0270
+ 3 CH1 2 PP     VC2  3 0.0 13.0190
+ 4 CH3 2 PP     SC1  4 0.0  15.035
+ 5 CH2 3 PP     VC1  5 0.0 14.0270
+ 6 CH1 3 PP     VC2  6 0.0 13.0190
+ 7 CH3 3 PP     SC1  7 0.0  15.035
+ 8 CH2 4 PP     VC1  8 0.0 14.0270
+ 9 CH1 4 PP     VC2  9 0.0 13.0190
+10 CH3 4 PP     SC1 10 0.0  15.035
+11 CH2 5 PP     VC1 11 0.0 14.0270
+12 CH1 5 PP     VC2 12 0.0 13.0190
+13 CH3 5 PP     SC1 13 0.0  15.035
+14 CH2 6 PP     VC1 14 0.0 14.0270
+15 CH1 6 PP     VC2 15 0.0 13.0190
+16 CH3 6 PP     SC1 16 0.0  15.035
+17 CH3 7 CH3ter C1  17 0.0  15.035
 
 [ bonds ]
  2  3 2 gb_27 ; C,CHn-CHn,C
@@ -85,7 +87,7 @@ PP 3
 14 12 13 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
 14 15 17 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
  1  2  3 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
-16 15 17 2 ga_15 ; added after checking
+16 15 17 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
 
 [ dihedrals ]
 ; link
