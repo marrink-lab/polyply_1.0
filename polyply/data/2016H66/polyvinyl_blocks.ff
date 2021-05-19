@@ -264,3 +264,43 @@ PMMA 3
 1 5 1
 2 6 1
 4 6 1
+
+[ moleculetype ]
+PAM 3
+[ atoms ]
+1  CH3 1 PAM VC1 1  0.00 14.0
+2  CH2 1 PAM VC2 2  0.00 13.0
+3  C   1 PAM SC1 3  0.54 12.0
+4  O   1 PAM SC2 4 -0.54 16.0
+5  N   1 PAM SC3 5 -0.76 16.0
+6  H   1 PAM SC4 6  0.38 15.0
+7  H   1 PAM SC5 7  0.38 15.0
+[ bonds ]
+1 2 2 gb_27 {"comment":"C,CHn-CHn,C"}
+2 3 2 gb_27 {"comment":"C,CHn-CHn,C"}
+3 4 2 gb_5 {"comment":"O-C"}
+3 5 2 gb_11 {"comment":"C-N,NZ,NE"}
+5 6 2 gb_2 {"comment":"N-H"}
+5 7 2 gb_2 {"comment":"N-H"}
+[ angles ]
+3 2 1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
+; amide
+4 3 2 2 ga_30 {"comment":"CHn-C-O"}
+2 3 5 2 ga_19 {"comment":"CHn,C-C-OA,N,NT,NL"}
+4 3 5 2 ga_33 {"comment":"O-C-OA,N,NT,NL"}
+3 5 6 2 ga_23 {"comment":"H-NT,NZ,NE-C"}
+3 5 7 2 ga_23 {"comment":"H-NT,NZ,NE-C"}
+7 5 6 2 ga_24 {"comment":"H-NT,NZ-H"}
+[ dihedrals ]
+1 2 3 4 1 gd_40 {"comment":"X-CHn-C,CR1-X"}
+2 3 5 6 1 gd_14 {"comment":"X-C-N,NT,NE,NZ,NR-X"}
+[ impropers ]
+3 4 5 2 2 gi_1 {"comment":"planar center"}
+5 3 6 7 2 gi_1 {"comment":"planar center"}
+[ pairs ]
+1 4 1
+1 5 1
+2 6 1
+4 6 1
+2 7 1
+4 7 1
