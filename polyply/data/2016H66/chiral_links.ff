@@ -16,6 +16,7 @@ VC2  SC1
 VC2 VC1
 VC2 +VC1
 
+
 ;-----------------------------------------------------------------------
 ; terminal links for polyvinyls
 ;-----------------------------------------------------------------------
@@ -23,7 +24,7 @@ VC2 +VC1
 [ link ]
 resname "PP|PS|PVA|PMA|CH3ter"
 [ impropers ]
-VC2 {"chiral": "S"} SC1 {"chiral": "S"} +C1 {"chiral": "S|R"} VC1 {"chiral": "S"} 2 gi_2 {"comment":"center R", "group":"link"}
+VC2 {"chiral": "S"} SC1 {"chiral": "S"} +C1 {"chiral": "S|R"} VC1 {"chiral": "S"} 2 gi_2 {"comment":"center S", "group":"link"}
 [ edges ]
 VC2  SC1
 VC2 VC1
@@ -41,7 +42,6 @@ VC2 +C1
 ;---------------------------------------------------------------------
 ;  for explicit subsituents
 ;---------------------------------------------------------------------
-
 
 [ link ]
 resname "PMMA"
@@ -74,6 +74,54 @@ VC2  SC1
 VC2 VC1
 VC2 +VC1
 VC2 SB1
+
+;---------------------------------------------------------------------
+;  for explicit subsituents ethers
+;---------------------------------------------------------------------
+[ link ]
+resname "PPO"
+[ atoms ]
+EC1 { }
+EC2 { }
+O1 { }
+SC1 { }
+-EC1 { }
+-EC2 { }
+-O1 { }
+-SC1 { }
+[ impropers ]
+EC1 {"chiral": "S"} -EC2 {"chiral": "S|R"} O1 {"chiral": "S"} SC1 {"chiral": "S"} 2 gi_2 {"comment":"center S", "group":"link", "ifdef": "eq_polyply"}
+[ edges ]
+EC1 SC1
+SC1 O1
+O1 EC2
+-EC2 EC1
+-EC2 -O1
+-O1 -EC1
+-SC1 -SC1
+
+[ link ]
+resname "PPO"
+[ atoms ]
+EC1 { }
+EC2 { }
+O1 { }
+SC1 { }
+-EC1 { }
+-EC2 { }
+-O1 { }
+-SC1 { }
+[ impropers ]
+EC1 {"chiral": "R"} -EC2 {"chiral": "S|R"} O1 {"chiral": "R"} SC1 {"chiral": "R"} 2 gi_2 {"comment":"center S", "group":"link", "ifdef": "eq_polyply"}
+[ edges ]
+EC1 SC1
+SC1 O1
+O1 EC2
+-EC2 EC1
+-EC2 -O1
+-O1 -EC1
+-SC1 -SC1
+
 
 ;---------------------------------------------------------------------
 ;  for explicit subsituents
