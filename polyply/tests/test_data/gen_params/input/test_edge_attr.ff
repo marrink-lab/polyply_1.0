@@ -1,0 +1,51 @@
+[ moleculetype ]
+; molname    nrexcl
+  GLC   3
+
+[ atoms ]
+; nr type resnr residue    atom cgnr charge mass
+  1  SP3   1   GLC    A    1    0
+  2  SP3   1   GLC    B    2    0
+  3  SP2   1   GLC    C    3    0
+[ constraints ]
+; i  j  funct length
+  1  2   1    0.336
+  1  3   1    0.311
+  2  3   1    0.405
+
+
+[ link ]
+; alpha 1->6
+resname "GLC"
+[ atoms ]
+A  { }
+B  { }
+C  {"replace": {"atype": "SP1"}}
+>A {"replace": {"atype": "TP3"}}
+>B { }
+>C { }
+
+[ bonds ]
+; i  j  funct  length  force constant
+  C  >A   1      0.37  6500 {"group": "a16", "edge": false}
+
+[ edges ]
+C  >A {"linktype": "a16"}
+
+[ link ]
+; alpha 1->3
+resname "GLC"
+[ atoms ]
+A  { }
+B  {"replace": {"atype": "SP2"}}
+C  { }
+>A {"replace": {"atype": "TP3"}}
+>B { }
+>C { }
+
+[ bonds ]
+; i  j  funct  length  force constant
+  B  >A   1      0.32  5500 {"group": "a13",  "edge": "false"}
+
+[ edges ]
+B  >A {"linktype": "a13"}

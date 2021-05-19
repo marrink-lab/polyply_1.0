@@ -1,0 +1,33 @@
+[ moleculetype ]
+TFSI 1
+[ atoms ]
+1  SX4e  1  TFSI  SC1  1   0.0
+2  SQ2n  1  TFSI  SQ1  1  -0.5
+3  SQ2n  1  TFSI  SQ2  1  -0.5
+4  SX4e  1  TFSI  SC2  1   0.0
+#ifndef FLEXIBLE
+[ constraints ]
+1 2  1  0.247
+2 3  1  0.277
+3 4  1  0.247
+#endif
+
+#ifdef FLEXIBLE
+[ bonds ]
+1 2  1  0.247  10000
+2 3  1  0.277  10000
+3 4  1  0.247  10000
+#endif
+
+[ angles ]
+1  2   3  1  127 200
+2  3   4  1  92  200
+[ dihedrals ]
+1   2   3  4  1 -125 15 2
+;[ dihedral_restraints ]
+;1  2  3  4 1  180 0.0 0.0006
+
+[ moleculetype ]
+LI 1
+[ atoms ]
+1  TQ5p  1  LI   TQ  1   1.0

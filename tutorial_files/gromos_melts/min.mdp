@@ -1,0 +1,120 @@
+;-------------------------------------------------------------------------------------------------------------------------------------------------
+; Author      : F. Grunewald
+; Last Edited : 15.11.2017
+; Force-Field : 2016H66
+; References  : [1] B.A.C. Horta, P.T. Merz, P.F.J. Fuchs, J. Dolenc, S. Riniker & P.H. Hünenberger. 
+;                   A GROMOS-compatible force field for small organic molecules in the condensed 
+;                   phase: The 2016H66 parameter set. J. Chem. Theory. Comput., 2016, 12, 3825−3850
+;-------------------------------------------------------------------------------------------------------------------------------------------------
+
+; VARIOUS PREPROCESSING OPTIONS
+; Preprocessor information: use cpp syntax.
+; e.g.: -I/home/joe/doe -I/home/mary/roe
+include                  = 
+; e.g.: -DPOSRES -DFLEXIBLE (note these variable names are case sensitive)
+define                   = -Deq_polyply
+
+
+; RUN CONTROL PARAMETERS
+; --------------------------------------------------------------------------------------------------------------------------------------------------
+integrator               = steep      ; for equilibriation this is good
+tinit                    = 0       ; default
+dt                       = 0.002   ; [1]
+nsteps                   = 8000 ; 8 ns of sampleing time
+init-step                = 0       ; default
+simulation-part          = 1       ; defualt
+comm-mode                = Linear  ; default
+nstcomm                  = 100     ; [1]
+comm-grps                = system  ; [1]
+
+; OUTPUT CONTROL OPTIONS
+; --------------------------------------------------------------------------------------------------------------------------------------------
+nstxout                  = 10000
+nstvout                  = 0
+nstfout                  = 0
+nstlog                   = 0
+nstcalcenergy            = 1000
+nstenergy                = 1000
+nstxout-compressed       = 0
+compressed-x-precision   = 0
+compressed-x-grps        = 
+energygrps               = 
+
+
+; NEIGHBORSEARCHING PARAMETERS
+; -------------------------------------------------------------------------------------------------------------------------------------------------
+cutoff-scheme            = verlet  ; should be faster at same accuracy
+nstlist                  = 5       ; [1]
+ns_type                  = grid    ; default
+pbc                      = xyz     ; [1]
+periodic-molecules       = no
+verlet-buffer-tolerance  = 1e-6    ; non-default but should improve accuracy
+rlist                    = 1.1     ; default
+
+
+; OPTIONS FOR ELECTROSTATICS AND VDW
+; -----------------------------------------------------------------------------------------------------------------------------------------------
+coulombtype              = Reaction-field         ; [1]
+coulomb-modifier         = Potential-shift-Verlet ; ??? 
+rcoulomb-switch          = 0
+rcoulomb                 = 1.4                    ; [1]
+epsilon-r                = 1                      ; relative eps. for the medium -> 
+epsilon-rf               = 2.30                   ; [1]
+vdw-type                 = cut-off
+vdw-modifier             = Potential-shift-Verlet
+rvdw-switch              = 0
+rvdw                     = 1.4                    ; [1]
+DispCorr                 = no 
+table-extension          = 1
+energygrp-table          = 
+fourierspacing           = 0.1
+fourier-nx               = 0
+fourier-ny               = 0
+fourier-nz               = 0
+pme_order                = 4
+ewald_rtol               = 1e-05
+ewald_rtol_lj            = 1e-03
+lj-pme-comb-rule         = geometric
+ewald_geometry           = 3d
+epsilon_surface          = 0
+
+
+; OPTIONS FOR WEAK COUPLING ALGORITHMS
+; ---------------------------------------------------------------------------------------------------------------------------------------------
+tcoupl                   = Berendsen            ; We equilibriate so this is good enough
+nsttcouple               = 5                    ; default
+nh-chain-length          = 10                   ; N/A
+print-nose-hoover-chain-variables = no          ; N/A
+tc-grps                  = system               ; For small molecules OK
+tau-t                    = 2                    ; default
+ref-t                    = 298.15               ; standard condition
+pcoupl                   = Berendsen               
+pcoupltype               = isotropic            ; We equilibriate so this is good enough
+nstpcouple               = 10
+tau-p                    = 1
+compressibility          = 9.62e-5              ; [1]
+ref-p                    = 1
+refcoord-scaling         = No
+
+; GENERATE VELOCITIES FOR STARTUP RUN
+; ---------------------------------------------------------------------------------------------------------------------------------------------
+gen-vel                  = yes         ; for free energy stuff we don't want this
+gen-temp                 = 298.15     ; N/A
+gen-seed                 = -1         ; N/A
+
+; OPTIONS FOR BONDS    
+; ---------------------------------------------------------------------------------------------------------------------------------------------
+constraints              = None  ; [1] water is done via shake
+; Type of constraint algorithm
+constraint-algorithm     = Lincs      ; default
+continuation             = no         ; default
+Shake-SOR                = no         ; default
+shake-tol                = 0.0001     ; default also same as in [1]
+lincs-order              = 4          ; default
+lincs-iter               = 1          ; default
+lincs-warnangle          = 90         ; default
+morse                    = no         ; default
+
+; Free energy variables
+;----------------------------------------------------------------------------------------------------------------------------------------------
+free-energy              = no  ; only for equilibriation
