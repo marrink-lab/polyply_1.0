@@ -4,16 +4,16 @@
 [ link ]
 resname "PE"
 [ atoms ]
-+VC1 {"replace": {"atype": "CH2", "mass": "14"}}
-VC2 {"replace": {"atype": "CH2", "mass": "14"}}
++VC1 {"replace": {"atype": "CH2", "mass": "14.0270"}}
+VC2 {"replace": {"atype": "CH2", "mass": "14.0270"}}
 [ bonds ]
 +VC1 VC2 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link"}
 
 [ link ]
 resname "PP|PVA|PS|PMA|PMMA|HEA|PAM"
 [ atoms ]
-+VC1 {"replace": {"atype": "CH2"}}
-VC2 {"replace": {"atype": "CH1"}}
++VC1 {"replace": {"atype": "CH2", "mass": "14.0270"}}
+VC2 {"replace": {"atype": "CH1", "mass": "13.0190"}}
 [ bonds ]
 +VC1 VC2 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link"}
 ;---------------------------
@@ -202,21 +202,21 @@ VC2 +VC1
 [ link ]
 resname "CH3ter|PP|PVA|PMMA|PS|PMA|HEA|PAM"
 [ atoms ]
-VC2 {"replace": {"atype": "CH1"}}
+VC2 {"replace": {"atype": "CH1", "mass":"13.0190"}}
 [ bonds ]
 VC2 +C1 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link"}
 
 [ link ]
 resname "CH3ter|PE"
 [ atoms ]
-VC2 {"replace": {"atype": "CH2"}}
+VC2 {"replace": {"atype": "CH2", "mass": "14.0270"}}
 [ bonds ]
 VC2 +C1 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link"}
 
 [ link ]
 resname "CH3ter|PE|PP|PVA|PMMA|PS|PMA|HEA|PAM"
 [ atoms ]
-+VC1 {"replace": {"atype": "CH2"}}
++VC1 {"replace": {"atype": "CH2", "mass": "14.0270"}}
 [ bonds ]
 +VC1 C1 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link"}
 
