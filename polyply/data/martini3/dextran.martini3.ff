@@ -4,9 +4,9 @@
 
 [ atoms ]
 ; nr type resnr residue    atom cgnr charge mass
-  1  SP3   1   DEX    A    1    0
-  2  SP3   1   DEX    B    2    0
-  3  SP2   1   DEX    C    3    0
+  1  SP3   1   DEX    A    1    0  54.0
+  2  SP3   1   DEX    B    2    0  54.0
+  3  SP2   1   DEX    C    3    0  54.0
 [ constraints ]
 ; i  j  funct length
   1  2   1    0.336 {"ifndef": "FLEXIBLE"}
