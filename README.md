@@ -1,6 +1,10 @@
 # polyply
 
 [![codecov](https://codecov.io/gh/marrink-lab/polyply_1.0/branch/master/graph/badge.svg)](https://codecov.io/gh/marrink-lab/polyply_1.0)
+[![PyPI version](https://badge.fury.io/py/polyply.svg)](https://badge.fury.io/py/polyply)
+![license](https://img.shields.io/github/license/marrink-lab/polyply_1.0)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/marrink-lab/polyply_1.0/Upload%20Python%20Package)
+[![arXiv](https://img.shields.io/badge/arXiv-2105.05890-b31b1b.svg)](https://arxiv.org/abs/2105.05890)
 
 ## Functionality
 Polyply is a python suite designed to facilitate the generation of input files and coordinates for simulating
