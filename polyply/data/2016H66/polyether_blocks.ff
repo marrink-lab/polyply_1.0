@@ -1,29 +1,11 @@
 [ moleculetype ]
 PEO 3
 [ atoms ]
-1 CH3 1 PEO EC1 1 0.29 15.0
-2 OE  1 PEO O1 2 -0.58 16.0
-3 CH3 1 PEO EC2 3 0.29 15.0
+1 CH3 1 PEO EC1 1 0.29 15.0350
+2 OE  1 PEO O1 2 -0.58 15.9994
+3 CH3 1 PEO EC2 3 0.29 15.0350
 [ bonds ]
 1 2 2 gb_18 {"comment":"CHn-OA,OE"}
 3 2 2 gb_18 {"comment":"CHn-OA,OE"}
 [ angles ]
 3 2 1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
-
-
-[ moleculetype ]
-PPO 3
-[ atoms ]
-1 CH2 1 PPO EC1 1  0.29 14.0
-2 OE  1 PPO O1  2 -0.58 16.0
-3 CH2 1 PPO EC2 3  0.29 14.0
-4 CH3 1 PPO SC1 4  0.00 15.0
-[ bonds ]
-1 2 2 gb_18 {"comment":"CHn-OA,OE"}
-3 2 2 gb_18 {"comment":"CHn-OA,OE"}
-4 1 2 gb_27 {"comment":"C,CHn-CHn,C"}
-[ angles ]
-3 2 1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
-4 1 2 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
-[ pairs ]
-4  3   1
