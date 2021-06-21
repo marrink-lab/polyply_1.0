@@ -126,14 +126,14 @@ EC1 SC1
 [ link ]
 resname "PEO|OHter"
 [ atoms ]
-EC2 {"replace": {"atype": "CH2", "mass": "14"}}
+EC2 {"replace": {"atype": "CH2", "mass": "14.0270"}}
 [ bonds ]
 +C1 EC2 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link-OHter"}
 
 [ link ]
 resname "PEO|OHter"
 [ atoms ]
-+EC1 {"replace": {"atype": "CH2", "mass":"14"}}
++EC1 {"replace": {"atype": "CH2", "mass":"14.0270"}}
 [ bonds ]
 C1 +EC1 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link-OHter"}
 
