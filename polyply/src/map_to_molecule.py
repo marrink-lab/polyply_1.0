@@ -120,6 +120,12 @@ class MapToMolecule(Processor):
         restart_graph = nx.Graph()
         restart_attr = nx.get_node_attributes(meta_molecule, "from_itp")
 
+        # in case we only have a single residue
+        # we assume the user is sane and that residue is not from
+        # an itp file
+        if len(meta_molecule.nodes) == 1:
+            regular_graph.add_nodes_from(meta_molecule.nodes)
+
         # this breaks down when to proteins are directly linked
         # because they would appear as one connected component
         # and not two seperate components referring to two molecules
