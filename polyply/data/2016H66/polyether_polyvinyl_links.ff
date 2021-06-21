@@ -4,8 +4,8 @@ resname "PEO|PE|PMA|PP|PVA|PS|HEA"
 [ atoms ]
 EC1 { }
 O1 { }
-EC2 {"replace":{"atype": "CH2"} }
-+VC1 {"replace":{"atype": "CH2"} }
+EC2 {"replace":{"atype": "CH2", "mass": "14.0270"} }
++VC1 {"replace":{"atype": "CH2", "mass": "14.0270"} }
 +VC2 { }
 [ bonds  ]
 EC2 +VC1 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link"}
@@ -31,8 +31,8 @@ EC2 +VC1
 resname "PEO|PE|PMA|PP|PVA|PS|HEA"
 [ atoms ]
 VC1 { }
-VC2 {"replace":{"atype": "CH2"}}
-+EC1 {"replace":{"atype": "CH2"} }
+VC2 {"replace":{"atype": "CH2", "mass": "14.0270"}}
++EC1 {"replace":{"atype": "CH2", "mass": "14.0270"} }
 +O1 { }
 +EC2 { }
 [ bonds ]
