@@ -15,7 +15,7 @@ import collections
 from vermouth.parser_utils import (
     SectionLineParser, _tokenize, _substitute_macros, _parse_macro
 )
-from vermouth.ffinput import FFDirector, _get_atoms, _treat_atom_prefix
+from vermouth.ffinput import FFDirector, _get_atoms, _treat_atom_prefix, _parse_edges
 
 class PolyplyFFParser(FFDirector):
     '''
@@ -24,12 +24,10 @@ class PolyplyFFParser(FFDirector):
     '''
     @SectionLineParser.section_parser('moleculetype', 'edges',
                                       negate=False, context_type='block')
-    @SectionLineParser.section_parser('moleculetype', 'non-edges',
+    @SectionLineParser.section_parser('moleculetype', 'non-_parse_edges(tokens, context, context_type, negate)edges',
                                       negate=True, context_type='block')
     @SectionLineParser.section_parser('link', 'edges',
                                       negate=False, context_type='link')
-    @SectionLineParser.section_parser('link', 'non-edges',
-                                      negate=True, context_type='link')
     @SectionLineParser.section_parser('modification', 'edges',
                                       negate=False, context_type='modification')
 
@@ -38,13 +36,21 @@ class PolyplyFFParser(FFDirector):
         tokens = collections.deque(_tokenize(line))
         _parse_edges_new(tokens, context, context_type, negate=negate)
 
+
+    @SectionLineParser.section_parser('link', 'non-edges',
+                                      negate=True, context_type='link')
+    def _non_edges(self, line, lineno, negate=False, context_type=''):
+        context = self.get_context(context_type)
+        tokens = collections.deque(_tokenize(line))
+        _parse_edges(tokens, context, context_type, negate)
+
 def _parse_edges_new(tokens, context, context_type, negate):
     """
     Parse the edge directive and add edge-attributes when
     required.
     """
     if negate:
-        raise IOError("Polyply does not support non-edges.")
+        raise IOError('The "non-edges" section is only valid in links.')
 
     atoms = _get_atoms(tokens, natoms=2)
     prefixed_atoms = []
@@ -64,7 +70,7 @@ def _parse_edges_new(tokens, context, context_type, negate):
         atomname = prefixed_atom[0]
         if atomname not in context and context_type == 'modification':
             raise KeyError(error_message.format(atomname, context_type,
-                                                context.name))
+                                            context.name))
     context.add_edge(prefixed_atoms[0], prefixed_atoms[1], **edge_attributes)
 
 def read_ff(lines, force_field):
