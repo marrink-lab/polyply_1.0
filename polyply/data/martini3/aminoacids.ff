@@ -560,6 +560,10 @@ TRP                1
 [ virtual_sitesn ]
 SC3 SC5 SC4 SC2 SC1 -- 2
 
+; prevents polyply warning about disconnected molecules
+[ edges ]
+SC3 SC5
+
 [exclusions]
 ; We do not want non-bounded interactions within the residue.
 BB SC1 SC2 SC3 SC4 SC5
