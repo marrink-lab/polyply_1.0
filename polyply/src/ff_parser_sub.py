@@ -24,7 +24,7 @@ class PolyplyFFParser(FFDirector):
     '''
     @SectionLineParser.section_parser('moleculetype', 'edges',
                                       negate=False, context_type='block')
-    @SectionLineParser.section_parser('moleculetype', 'non-_parse_edges(tokens, context, context_type, negate)edges',
+    @SectionLineParser.section_parser('moleculetype', 'non-edges',
                                       negate=True, context_type='block')
     @SectionLineParser.section_parser('link', 'edges',
                                       negate=False, context_type='link')
@@ -70,7 +70,7 @@ def _parse_edges_new(tokens, context, context_type, negate):
         atomname = prefixed_atom[0]
         if atomname not in context and context_type == 'modification':
             raise KeyError(error_message.format(atomname, context_type,
-                                            context.name))
+                                                context.name))
     context.add_edge(prefixed_atoms[0], prefixed_atoms[1], **edge_attributes)
 
 def read_ff(lines, force_field):
