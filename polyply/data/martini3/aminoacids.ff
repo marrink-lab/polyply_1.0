@@ -48,6 +48,11 @@ ALA                1
 ;  i     j   funct   length  
   BB   SC1    1       0.270
 
+[ bonds ]
+#meta {"group": "Side chain bonds", "ifdef": "FLEXIBLE"}   
+;  i     j   funct   length  
+BB   SC1    1       0.270  $stiff_fc
+
 ;;; CYSTEINE
 
 [ moleculetype ]
@@ -584,6 +589,29 @@ resname $protein_resnames
 SC1 BB +BB 2 100 25 {"version": 1}
 [ non-edges ]
 BB -BB
+
+[ link ]
+-BB { }
+BB { }
++BB { }
+[ angles ]
+; (Modified by Paulo)
+-BB BB +BB 10 127 25 {"group": "BBB angles"}
+[ patterns ]
+-BB BB {"resname": "PRO|HYP"} +BB 
+-BB {"resname": "PRO|HYP"} BB +BB 
+-BB  BB +BB {"resname": "PRO|HYP"}
+
+[ link ]
+resname $protein_resnames
+[ angles ]
+; (Modified by Paulo)
+-BB BB +BB 10 127 20 {"group": "BBB angles"}
+[ patterns ]
+-BB BB {"resname": $protein_resnames_non_pro} +BB 
+-BB {"resname": $protein_resnames_non_pro} BB +BB 
+-BB  BB +BB {"resname": $protein_resnames_non_pro}
+
 
 ;; Protein termini. These links should be applied last.
 [ link ]
