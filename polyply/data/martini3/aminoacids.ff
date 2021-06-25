@@ -635,7 +635,7 @@ BB +BB
 [ link ]
 resname $protein_resnames
 [ atoms ]
-BB {"replace": {"atype": "P6"}}
+BB {"replace": {"atype": "P6", "charge": 0}}
 [ non-edges ]
 BB +BB
 BB -BB
@@ -645,7 +645,7 @@ resname $protein_resnames
 [ molmeta ]
 neutral_termini true
 [ atoms ]
-BB {"replace": {"atype": "P5"}}
+BB {"replace": {"atype": "P5", "charge": 0}}
 [ non-edges ]
 BB -BB
 
@@ -654,7 +654,7 @@ resname $protein_resnames
 [ molmeta ]
 neutral_termini true
 [ atoms ]
-BB {"replace": {"atype": "P6"}}
+BB {"replace": {"atype": "P6", "charge": 0}}
 [ non-edges ]
 BB +BB
 
