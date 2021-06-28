@@ -20,7 +20,7 @@ import vermouth.molecule
 from vermouth.log_helpers import StyleAdapter, get_logger
 from vermouth.molecule import Interaction, attributes_match
 from vermouth.graph_utils import make_residue_graph
-from vermouth.processors.do_links import match_order
+from vermouth.processors.do_links import match_order, _is_valid_non_edges, _any_pattern_match
 from .processor import Processor
 from .graph_utils import neighborhood
 
@@ -370,6 +370,17 @@ class ApplyLinks(Processor):
                                                    link,
                                                    link_to_resid)
 
+        # check if the non-edge criteria are satisfied
+        if not _is_valid_non_edges(molecule, link, link_to_mol):
+            msg = "Found edge, which should not be there. Cannot apply link."
+            raise MatchError(msg)
+
+        # check if any of the patterns matches
+        any_pattern_match = _any_pattern_match(molecule, link.patterns, link_to_mol)
+        if link.patterns and (not any_pattern_match):
+            msg = "No pattern matches! Cannot apply link."
+            raise MatchError(msg)
+
         # if all atoms have a match the link applies and we first
         # replace any attributes from the link node section
         for node in link.nodes:
@@ -415,8 +426,9 @@ class ApplyLinks(Processor):
         resnames = set(nx.get_node_attributes(molecule, "resname").values())
         for link in tqdm(force_field.links):
             link_resnames = _get_link_resnames(link)
-            if not _resnames_match(resnames, link_resnames):
+            if not _resnames_match(resnames, link_resnames) or not attributes_match(molecule.meta, link.molecule_meta):
                 continue
+
             # we only use the order because each order needs to be
             # matching exactly 1 residue, which means their resname
             # needs to match as well. However, resname can be a
