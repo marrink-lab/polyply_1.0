@@ -226,6 +226,9 @@ HEA 3
 6 9 1
 3 7 1
 5 8 1
+;9 5 1 4.3755200e-04  1.0591530e-07 {"ifdef": "eq_polyply", "version": "2", "comment": "pairtype HC-O"}
+;9 4 1 4.3755200e-04  1.0591530e-07 {"ifdef": "eq_polyply", "version": "2", "comment": "pairtype HC-O"}
+
 
 [ moleculetype ]
 PMMA 3

@@ -1,5 +1,5 @@
 [ link ]
-resname "PP|PS|PVA|PMA|PAM"
+resname "PP|PS|PVA|PMA|PAM|HEA"
 [ impropers ]
 VC2 {"chiral": "S"} SC1 {"chiral": "S"} +VC1 {"chiral": "R|S"} VC1 {"chiral": "S"} 2 gi_2 {"comment":"center S", "group":"link"}
 [ edges ]
@@ -8,7 +8,7 @@ VC2 VC1
 VC2 +VC1
 
 [ link ]
-resname "PP|PS|PVA|PMA|PAM"
+resname "PP|PS|PVA|PMA|PAM|HEA"
 [ impropers ]
 VC2 {"chiral": "R"} SC1 {"chiral": "R"} +VC1 {"chiral": "S|R"} VC1 {"chiral": "R"} 2 gi_5 {"comment":"center R", "group":"link"}
 [ edges ]
@@ -22,7 +22,7 @@ VC2 +VC1
 ;-----------------------------------------------------------------------
 
 [ link ]
-resname "PAM|PP|PS|PVA|PMA|CH3ter"
+resname "HEA|PAM|PP|PS|PVA|PMA|CH3ter"
 [ impropers ]
 VC2 {"chiral": "S"} SC1 {"chiral": "S"} +C1 {"chiral": "S|R"} VC1 {"chiral": "S"} 2 gi_2 {"comment":"center S", "group":"link"}
 [ edges ]
@@ -31,7 +31,7 @@ VC2 VC1
 VC2 +C1
 
 [ link ]
-resname "PAM|PP|PS|PVA|PMA|CH3ter"
+resname "HEA|PAM|PP|PS|PVA|PMA|CH3ter"
 [ impropers ]
 VC2 {"chiral": "R"} SC1 {"chiral": "R"} +C1 {"chiral": "S|R"} VC1 {"chiral": "R"} 2 gi_5 {"comment":"center R", "group":"link"}
 [ edges ]
