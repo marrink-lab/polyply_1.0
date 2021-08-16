@@ -49,8 +49,10 @@ def assert_equal_blocks(block1, block2):
         # for the simulation only these two attributes matter
         # as we have 3rd party reference files we don't do more
         # checks
-        for attr in ["atype", "charge", 'mass']:
-            assert block1.nodes[node][attr] == block2.nodes[node][attr]
+        for attr in ["atype", "charge", "mass"]:
+            # if the reference itp has the attribute check it
+            if attr in block1.nodes[node]:
+                assert block1.nodes[node][attr] == block2.nodes[node][attr]
 
     edges1 = {frozenset(e[:2]): e[2] for e in block1.edges(data=True)}
     edges2 = {frozenset(e[:2]): e[2] for e in block2.edges(data=True)}
