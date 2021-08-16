@@ -22,15 +22,15 @@ VC2 {"replace": {"atype": "CH1", "mass": "13.0190"}}
 [ link ]
 resname "PE|PP|PVA|PS|PMMA|PMA|HEA|PAM"
 [ angles ]
-+VC1 VC2 VC1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link-A"}
++VC1 VC2 VC1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"+VC1 VC2 VC1"}
 [ link ]
 resname "PE|PP|PVA|PS|PMMA|PMA|HEA|PAM"
 [ angles ]
-VC2 +VC1 +VC2 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link-B"}
+VC2 +VC1 +VC2 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"VC2 +VC1 +VC2"}
 [ link ]
 resname "PE|PP|PVA|PS|PMMA|PMA|HEA|PAM"
 [ angles ]
-SB1 VC2 +VC1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
+SB1 VC2 +VC1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"SB1 VC2 +VC1"}
 ;---------------------------
 ;       VINYL-DIHEDRALS
 ;---------------------------
