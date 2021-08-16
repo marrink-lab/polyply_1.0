@@ -22,13 +22,13 @@ VC2 {"replace": {"atype": "CH1", "mass": "13.0190"}}
 [ link ]
 resname "PE|PP|PVA|PS|PMMA|PMA|HEA|PAM"
 [ angles ]
-+VC1 VC2 VC1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
++VC1 VC2 VC1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link-A"}
 [ link ]
-resname "PE|PP|PVA|PS|PMMA|PMA|PAM"
+resname "PE|PP|PVA|PS|PMMA|PMA|HEA|PAM"
 [ angles ]
-VC2 +VC1 +VC2 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
+VC2 +VC1 +VC2 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link-B"}
 [ link ]
-resname "PE|PP|PVA|PS|PMMA|PMA|PAM"
+resname "PE|PP|PVA|PS|PMMA|PMA|HEA|PAM"
 [ angles ]
 SB1 VC2 +VC1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
 ;---------------------------
@@ -39,7 +39,7 @@ resname "PE|PP|PVA|PS|PMA|PMMA|HEA|PAM"
 [ dihedrals ]
 VC1 VC2 +VC1 +VC2 1 gd_34 {"comment":"X-SI,CHn-CHn-X", "group":"link"}
 [ link ]
-resname "PE|PP|PVA|PS|PMA|PMMA|PAM"
+resname "PE|PP|PVA|PS|PMA|PMMA|HEA|PAM"
 [ dihedrals ]
 VC2 +VC1 +VC2 ++VC1 1 gd_34 {"comment":"X-SI,CHn-CHn-X", "group":"link"}
 ;---------------------------
