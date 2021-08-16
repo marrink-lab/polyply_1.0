@@ -10,8 +10,8 @@ P3HT               1
     2   TC5    1    P3HT     C2    2        0        36
     3   TC5    1    P3HT     C3    3        0        36
     4     U    1    P3HT     V4    4        0        0  
-    5   SC2    1    P3HT     C5    5        0        36
-    6   SC2    1    P3HT     C6    6        0        36
+    5   SC2    1    P3HT     C5    5        0        54
+    6   SC2    1    P3HT     C6    6        0        54
 ;
 [ bonds ]
 ;  atoms    funct  length       force_k
