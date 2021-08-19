@@ -49,7 +49,7 @@ def assert_equal_blocks(block1, block2):
         # for the simulation only these two attributes matter
         # as we have 3rd party reference files we don't do more
         # checks
-        for attr in ["atype", "charge", "mass"]:
+        for attr in ["atype", "charge"]:
             # if the reference itp has the attribute check it
             if attr in block1.nodes[node]:
                 assert block1.nodes[node][attr] == block2.nodes[node][attr]
@@ -64,7 +64,7 @@ def assert_equal_blocks(block1, block2):
 
     assert edges1 == edges2
 
-    for inter_type in ["bonds", "angles", "constraints", "exclusions", "pairs", "dihedrals", "impropers"]:
+    for inter_type in ["bonds", "angles", "constraints", "exclusions", "pairs", "impropers", "dihedrals"]:
         ref_interactions = block1.interactions.get(inter_type, [])
         new_interactions = block2.interactions.get(inter_type, [])
         print(inter_type)
@@ -83,6 +83,7 @@ def assert_equal_blocks(block1, block2):
         for atoms, ref_interactions in ref_terms.items():
             new_interactions = new_terms[atoms]
             for ref_inter in ref_interactions:
+                print(ref_inter)
                 for new_inter in new_interactions:
                     if _interaction_equal(ref_inter, new_inter, inter_type):
                         break
@@ -157,6 +158,9 @@ def _interaction_equal(interaction1, interaction2, inter_type):
     elif inter_type in ["impropers", "dihedrals"]:
         if a1 == a2:
             return True
+        a1.reverse()
+        if a1 == a2:
+            return True
         else:
             print(a1, a2)
 
@@ -166,23 +170,24 @@ def _interaction_equal(interaction1, interaction2, inter_type):
     return False
 
 @pytest.mark.parametrize("library, polymer", [
-     ['2016H66', 'PP'],
-     ['2016H66', 'C12E4'],
-     ['2016H66', 'PE'],
-     ['2016H66', 'PVA'],
-     ['2016H66', 'PMA'],
-     ['2016H66', 'PS'],
-     ['gromos53A6', 'P3HT'],
-     ['martini3', 'PROT'],
-     ['martini3', 'PEO'],
-     ['martini3', 'PS'],
-     ['martini3', 'PE'],
-     ['martini3', 'DEX'],
-     ['martini3', 'P3HT'],
-     ['martini2', 'PEO'],
-     ['martini2', 'PS'],
-     ['martini2', 'PEL'],
-     ['martini2', 'PEO_PE'],
+   # ['2016H66', 'PP'],
+   # ['2016H66', 'C12E4'],
+   # ['2016H66', 'PE'],
+   # ['2016H66', 'PVA'],
+   # ['2016H66', 'PMA'],
+   # ['2016H66', 'PS'],
+   # ['gromos53A6', 'P3HT'],
+   # ['martini3', 'PROT'],
+   # ['martini3', 'PEO'],
+   # ['martini3', 'PS'],
+   # ['martini3', 'PE'],
+   # ['martini3', 'DEX'],
+   # ['martini3', 'P3HT'],
+   # ['martini2', 'PEO'],
+   # ['martini2', 'PS'],
+   # ['martini2', 'PEL'],
+   # ['martini2', 'PEO_PE'],
+     ['amber14sb_parmbsc1', 'DNA'],
   # -> proteins?
 ])
 def test_integration_protein(tmp_path, monkeypatch, library, polymer):
