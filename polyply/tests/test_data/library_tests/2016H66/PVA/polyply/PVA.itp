@@ -1,31 +1,33 @@
-; polyply-itp
+; /coarse/fabian/current-projects/polymer_itp_builder/vermouth_dev/venvv/bin/polyply gen_params -lib 2016H66 -seqf PVA.json -name PVA -o PVA.itp
+
+; Please cite the following papers:
 
 [ moleculetype ]
 PVA 3
 
 [ atoms ]
- 1 CH3 1 CH3ter C1   1  0.0 14.0
- 2 CH2 2 PVA    VC1  2  0.0 14.0
- 3 CH1 2 PVA    VC2  3 0.29 13.0
- 4 OA  2 PVA    SC1  4 -0.7 16.0
- 5 H   2 PVA    SC2  5 0.41  1.0
- 6 CH2 3 PVA    VC1  6  0.0 14.0
- 7 CH1 3 PVA    VC2  7 0.29 13.0
- 8 OA  3 PVA    SC1  8 -0.7 16.0
- 9 H   3 PVA    SC2  9 0.41  1.0
-10 CH2 4 PVA    VC1 10  0.0 14.0
-11 CH1 4 PVA    VC2 11 0.29 13.0
-12 OA  4 PVA    SC1 12 -0.7 16.0
-13 H   4 PVA    SC2 13 0.41  1.0
-14 CH2 5 PVA    VC1 14  0.0 14.0
-15 CH1 5 PVA    VC2 15 0.29 13.0
-16 OA  5 PVA    SC1 16 -0.7 16.0
-17 H   5 PVA    SC2 17 0.41  1.0
-18 CH2 6 PVA    VC1 18  0.0 14.0
-19 CH1 6 PVA    VC2 19 0.29 13.0
-20 OA  6 PVA    SC1 20 -0.7 16.0
-21 H   6 PVA    SC2 21 0.41  1.0
-22 CH3 7 CH3ter C1  22  0.0 14.0
+ 1 CH3 1 CH3ter C1   1  0.0  15.035
+ 2 CH2 2 PVA    VC1  2  0.0 14.0270
+ 3 CH1 2 PVA    VC2  3 0.29 13.0190
+ 4 OA  2 PVA    SC1  4 -0.7 15.9994
+ 5 H   2 PVA    SC2  5 0.41   1.008
+ 6 CH2 3 PVA    VC1  6  0.0 14.0270
+ 7 CH1 3 PVA    VC2  7 0.29 13.0190
+ 8 OA  3 PVA    SC1  8 -0.7 15.9994
+ 9 H   3 PVA    SC2  9 0.41   1.008
+10 CH2 4 PVA    VC1 10  0.0 14.0270
+11 CH1 4 PVA    VC2 11 0.29 13.0190
+12 OA  4 PVA    SC1 12 -0.7 15.9994
+13 H   4 PVA    SC2 13 0.41   1.008
+14 CH2 5 PVA    VC1 14  0.0 14.0270
+15 CH1 5 PVA    VC2 15 0.29 13.0190
+16 OA  5 PVA    SC1 16 -0.7 15.9994
+17 H   5 PVA    SC2 17 0.41   1.008
+18 CH2 6 PVA    VC1 18  0.0 14.0270
+19 CH1 6 PVA    VC2 19 0.29 13.0190
+20 OA  6 PVA    SC1 20 -0.7 15.9994
+21 H   6 PVA    SC2 21 0.41   1.008
+22 CH3 7 CH3ter C1  22  0.0  15.035
 
 [ bonds ]
  2  3 2 gb_27 ; C,CHn-CHn,C
@@ -132,4 +134,5 @@ PVA 3
  7  8 10  6 2 gi_2 ; center S
 11 12 14 10 2 gi_5 ; center R
 15 16 18 14 2 gi_5 ; center R
-19 18 20 22 2 gi_2 ; center S
+19 20 22 18 2 gi_2 ; center S
+

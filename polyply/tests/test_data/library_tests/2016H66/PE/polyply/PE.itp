@@ -1,21 +1,23 @@
-; polyply-itp
+; /coarse/fabian/current-projects/polymer_itp_builder/vermouth_dev/venvv/bin/polyply gen_params -lib 2016H66 -seqf PE.json -name PE -o PE.itp
+
+; Please cite the following papers:
 
 [ moleculetype ]
 PE 3
 
 [ atoms ]
- 1 CH3 1 CH3ter C1  1 0.0 14.0
- 2 CH2 2 PE     VC1 2 0.0 14.0
- 3 CH2 2 PE     VC2 2 0.0 14.0
- 4 CH2 3 PE     VC1 3 0.0 14.0
- 5 CH2 3 PE     VC2 3 0.0 14.0
- 6 CH2 4 PE     VC1 4 0.0 14.0
- 7 CH2 4 PE     VC2 4 0.0 14.0
- 8 CH2 5 PE     VC1 5 0.0 14.0
- 9 CH2 5 PE     VC2 5 0.0 14.0
-10 CH2 6 PE     VC1 6 0.0 14.0
-11 CH2 6 PE     VC2 6 0.0 14.0
-12 CH3 7 CH3ter C1  7 0.0 14.0
+ 1 CH3 1 CH3ter C1  1 0.0  15.035
+ 2 CH2 2 PE     VC1 2 0.0 14.0270
+ 3 CH2 2 PE     VC2 2 0.0 14.0270
+ 4 CH2 3 PE     VC1 3 0.0 14.0270
+ 5 CH2 3 PE     VC2 3 0.0 14.0270
+ 6 CH2 4 PE     VC1 4 0.0 14.0270
+ 7 CH2 4 PE     VC2 4 0.0 14.0270
+ 8 CH2 5 PE     VC1 5 0.0 14.0270
+ 9 CH2 5 PE     VC2 5 0.0 14.0270
+10 CH2 6 PE     VC1 6 0.0 14.0270
+11 CH2 6 PE     VC2 6 0.0 14.0270
+12 CH3 7 CH3ter C1  7 0.0  15.035
 
 [ bonds ]
  2  3 2 gb_27 ; C,CHn-CHn,C
