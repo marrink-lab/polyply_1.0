@@ -1,11 +1,11 @@
 [ link ]
 ; ether -> vinyl
-resname "PEO|PE|PMA|PP|PVA|PS"
+resname "PEO|PE|PMA|PP|PVA|PS|HEA"
 [ atoms ]
 EC1 { }
 O1 { }
-EC2 {"replace":{"atype": "CH2"} }
-+VC1 {"replace":{"atype": "CH2"} }
+EC2 {"replace":{"atype": "CH2", "mass": "14.0270"} }
++VC1 {"replace":{"atype": "CH2", "mass": "14.0270"} }
 +VC2 { }
 [ bonds  ]
 EC2 +VC1 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link"}
@@ -28,11 +28,11 @@ EC2 +VC1
 
 [ link ]
 ; vinyl -> ether
-resname "PEO|PE|PMA|PP|PVA|PS"
+resname "PEO|PE|PMA|PP|PVA|PS|HEA"
 [ atoms ]
 VC1 { }
-VC2 {"replace":{"atype": "CH2"}}
-+EC1 {"replace":{"atype": "CH2"} }
+VC2 {"replace":{"atype": "CH2", "mass": "14.0270"}}
++EC1 {"replace":{"atype": "CH2", "mass": "14.0270"} }
 +O1 { }
 +EC2 { }
 [ bonds ]
@@ -56,7 +56,7 @@ VC2 +EC1
 
 [ link ]
 ; side chain substiuent vinyl -> ether
-resname "PEO|PMA|PP|PVA|PS"
+resname "PEO|PMA|PP|PVA|PS|HEA"
 [ atoms ]
 VC1 { }
 VC2 { }
@@ -77,7 +77,7 @@ VC2 +EC1
 
 [ link ]
 ; side chain substiuent ether -> vinyl
-resname "PEO|PMA|PP|PVA|PS"
+resname "PEO|PMA|PP|PVA|PS|HEA"
 [ atoms ]
 EC1 { }
 O1 { }
@@ -95,7 +95,7 @@ EC2 +VC1
 +VC2 +SC3
 
 [ link ]
-resname "PEO|PE|PMA|PP|PVA|PS"
+resname "PEO|PE|PMA|PP|PVA|PS|HEA"
 ; vinyl -> vinyl -> ether
 [ atoms ]
 VC1 { }
@@ -117,7 +117,7 @@ VC2 +VC1
 ++O1 ++EC2
 
 [ link ]
-resname "PEO|PE|PMA|PP|PVA|PS"
+resname "PEO|PE|PMA|PP|PVA|PS|HEA"
 ; ether  -> vinyl -> vinyl
 [ atoms ]
 EC1  { }
@@ -140,7 +140,7 @@ EC2 +VC1
 ++VC1 ++VC2
 
 [ link ]
-resname "PEO|PE|PMA|PP|PVA|PS"
+resname "PEO|PE|PMA|PP|PVA|PS|HEA"
 ; ether -> vinyl -> ether
 [ atoms ]
 EC1 { }
