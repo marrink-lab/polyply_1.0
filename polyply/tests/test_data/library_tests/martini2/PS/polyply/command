@@ -1,0 +1,1 @@
+polyply gen_params -lib martini2 -seq PS:5 -o PS.itp -name PS

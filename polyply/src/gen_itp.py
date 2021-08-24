@@ -52,7 +52,7 @@ def split_seq_string(sequence):
         monomers.append(Monomer(resname=resname, n_blocks=n_blocks))
     return monomers
 
-def gen_itp(args):
+def gen_params(args):
     # Import of Itp and FF files
     LOGGER.info("reading input and library files",  type="step")
     force_field = load_library(args.name, args.lib, args.inpath)
@@ -86,8 +86,8 @@ def gen_itp(args):
     # Raise warning if molecule is disconnected
     if not nx.is_connected(meta_molecule.molecule):
         n_components = len(list(nx.connected_components(meta_molecule.molecule)))
-        msg = "You molecule consists of { } disjoint parts. Perhaps links were not applied correctly."
-        LOGGER.warning(msg, n_components)
+        msg = "You molecule consists of {:d} disjoint parts. Perhaps links were not applied correctly."
+        LOGGER.warning(msg, (n_components))
 
     with open(args.outpath, 'w') as outpath:
         header = [ ' '.join(sys.argv) + "\n" ]
@@ -100,3 +100,6 @@ def gen_itp(args):
         vermouth.gmx.itp.write_molecule_itp(meta_molecule.molecule, outpath,
                                             moltype=args.name, header=header)
     DeferredFileWriter().write()
+
+# ducktape for renaming the itp tool
+gen_itp = gen_params

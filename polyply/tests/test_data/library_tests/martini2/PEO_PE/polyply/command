@@ -1,0 +1,1 @@
+polyply gen_params -lib martini2 -seqf ../PEO_PE.json -name "PEO_PE" -o PEO_PE.itp

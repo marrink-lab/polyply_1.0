@@ -1,0 +1,112 @@
+[ link ]
+resname "PP|PS|PVA|PMA|PAM|HEA"
+[ impropers ]
+VC2 {"chiral": "S"} SC1 {"chiral": "S"} +VC1 {"chiral": "R|S"} VC1 {"chiral": "S"} 2 gi_2 {"comment":"center S", "group":"link"}
+[ edges ]
+VC2  SC1
+VC2 VC1
+VC2 +VC1
+
+[ link ]
+resname "PP|PS|PVA|PMA|PAM|HEA"
+[ impropers ]
+VC2 {"chiral": "R"} SC1 {"chiral": "R"} +VC1 {"chiral": "S|R"} VC1 {"chiral": "R"} 2 gi_5 {"comment":"center R", "group":"link"}
+[ edges ]
+VC2  SC1
+VC2 VC1
+VC2 +VC1
+
+
+;-----------------------------------------------------------------------
+; terminal links for polyvinyls
+;-----------------------------------------------------------------------
+
+[ link ]
+resname "HEA|PAM|PP|PS|PVA|PMA|CH3ter"
+[ impropers ]
+VC2 {"chiral": "S"} SC1 {"chiral": "S"} +C1 {"chiral": "S|R"} VC1 {"chiral": "S"} 2 gi_2 {"comment":"center S", "group":"link"}
+[ edges ]
+VC2  SC1
+VC2 VC1
+VC2 +C1
+
+[ link ]
+resname "HEA|PAM|PP|PS|PVA|PMA|CH3ter"
+[ impropers ]
+VC2 {"chiral": "R"} SC1 {"chiral": "R"} +C1 {"chiral": "S|R"} VC1 {"chiral": "R"} 2 gi_5 {"comment":"center R", "group":"link"}
+[ edges ]
+VC2  SC1
+VC2 VC1
+VC2 +C1
+
+;---------------------------------------------------------------------
+;  for explicit subsituents
+;---------------------------------------------------------------------
+
+[ link ]
+resname "PMMA"
+[ atoms ]
+VC1 { }
+VC2 { }
+SC1 { }
+SB1 { }
++VC1 { }
+[ impropers ]
+VC2 {"chiral": "S"} SC1 {"chiral": "S"} +VC1 {"chiral": "R|S"} VC1 {"chiral": "S"} 2 gi_2 {"comment":"center S", "group":"link", "ifdef": "eq_polyply"}
+[ edges ]
+VC2  SC1
+VC2 VC1
+VC2 +VC1
+VC2 SB1
+
+[ link ]
+resname "PMMA"
+[ atoms ]
+VC1 { }
+VC2 { }
+SC1 { }
+SB1 { }
++VC1 { }
+[ impropers ]
+VC2 {"chiral": "R"} SC1 {"chiral": "R"} +VC1 {"chiral": "S|R"} VC1 {"chiral": "R"} 2 gi_5 {"comment":"center R", "group":"link", "ifdef": "eq_polyply"}
+[ edges ]
+VC2  SC1
+VC2 VC1
+VC2 +VC1
+VC2 SB1
+
+;---------------------------------------------------------------------
+;  for explicit subsituents
+;---------------------------------------------------------------------
+
+[ link ]
+resname "PMMA|CH3ter"
+[ atoms ]
+VC1 { }
+VC2 { }
+SC1 { }
+SB1 { }
++C1 { }
+[ impropers ]
+VC2 {"chiral": "S"} SC1 {"chiral": "S"} +C1 {"chiral": "S|R"} VC1 {"chiral": "S"} 2 gi_2 {"comment":"center R", "group":"link", "ifdef": "eq_polyply"}
+[ edges ]
+VC2  SC1
+VC2 VC1
+VC2 +C1
+VC2 SB1
+
+[ link ]
+resname "PMMA|CH3ter"
+[ atoms ]
+VC1 { }
+VC2 { }
+SC1 { }
+SB1 { }
++C1 { }
+[ impropers ]
+VC2 {"chiral": "R"} SC1 {"chiral": "R"} +C1 {"chiral": "S|R"} VC1 {"chiral": "R"} 2 gi_5 {"comment":"center R", "group":"link", "ifdef": "eq_polyply"}
+[ edges ]
+VC2  SC1
+VC2 VC1
+VC2 +C1
+VC2 SB1
