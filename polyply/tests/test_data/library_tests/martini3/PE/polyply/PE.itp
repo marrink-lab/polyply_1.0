@@ -1,0 +1,45 @@
+[ moleculetype ]
+PE   1
+
+[ atoms ]
+1 C1  1  C20  R1   1  0.0   72.0
+2 C1  1  C20  R2   2  0.0   72.0
+3 C1  1  C20  R3   3  0.0   72.0
+4 C1  1  C20  R4   4  0.0   72.0
+5 C1  1  C20  R5   5  0.0   72.0
+
+[ bonds ]
+; using named bondtypes from martini_v3.0_ffbonded.itp
+ 1 2  1 0.475   2100.0 ; bond parameters tuned to respresent 
+ 2 3  1 0.46    2100.0 ; the distribution shape (also mean and witdth)
+ 3 4  1 0.46    2100.0 ;  ->  k - softer than previously
+ 4 5  1 0.475   2100.0 ;  ->  the dangling ends of the alkane chains are a bit longer on average
+
+#ifndef TI
+[ angles ]
+; using named angletypes from martini_v3.0_ffbonded.itp
+ 1 2 3  1 170.0  12.5
+ 2 3 4  1 170.0  12.5
+ 3 4 5  1 170.0  12.5
+
+[ dihedrals ]
+; after comparing with AA distributions (single alkane in water simulations)
+; the chains have a preference to bend into one direction
+; this can be represented by a coupled-bend-torsion dihedral, i.e. type 11
+; which prevent numerical instabilities occuring when the particles are close to colinear
+;
+; using named angletypes from martini_v3.0_ffbonded.itp
+; i j k l  type    k    a0   a1  a2  a3  a4
+  1 2 3 4     11    7.0 -0.2 -1.0 0.0 0.0 0.0 
+  2 3 4 5     11    7.0 -0.2 -1.0 0.0 0.0 0.0 
+#endif
+
+#ifdef TI
+; use the angles without CBT dihedral coupling
+[ angles ]
+; using named angletypes from martini_v3.0_ffbonded.itp
+; i j k         funct   angle   force.c.
+  1 2 3    2       180.0   20.0
+  2 3 4    2       180.0   20.0
+  3 4 5    2       180.0   20.0
+#endif

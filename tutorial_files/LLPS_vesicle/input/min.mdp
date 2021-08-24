@@ -1,0 +1,48 @@
+define = -DFLEXIBLE
+; RUN CONTROL PARAMETERS
+integrator               = steep
+tinit                    =0
+dt                       = 0.02
+nsteps                   = 10000
+
+; ENERGY MINIMIZATION OPTIONS
+emtol                    = 0.1
+emstep                   = 0.001
+niter                    = 30
+fcstep                   = 0
+nstcgsteep               = 1000
+nbfgscorr                = 10
+
+
+; OUTPUT CONTROL OPTIONS
+nstxout                  = 0
+nstvout                  = 0
+nstfout                  = 0
+nstlog                   = 100
+nstcalcenergy            = 100
+nstenergy                = 100
+nstxout-compressed       = 100
+compressed-x-precision   = 100
+compressed-x-grps        = 
+energygrps               = 
+
+; NEIGHBORSEARCHING PARAMETERS
+cutoff-scheme            = Verlet
+nstlist                  = 20
+pbc                      = xyz
+periodic-molecules       = no
+verlet-buffer-tolerance  = 0.005
+rlist                    = 1
+
+; OPTIONS FOR ELECTROSTATICS AND VDW
+coulombtype              = cut-off
+coulomb-modifier         = Potential-shift-Verlet
+rcoulomb-switch          = 0
+rcoulomb                 = 1.1
+epsilon_r                = 15
+epsilon_rf               = 0
+vdw_type                 = cutoff
+vdw-modifier             = Potential-shift-verlet
+rvdw-switch              = 0
+rvdw                     = 1.1
+

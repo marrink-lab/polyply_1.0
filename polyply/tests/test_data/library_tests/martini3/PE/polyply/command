@@ -1,0 +1,1 @@
+polyply gen_itp -lib martini3 -seq PE:5 -o PE.itp -name PE
