@@ -37,11 +37,12 @@ class TOPDirector(SectionLineParser):
                  'pairtypes': [0, 1],
                  'exclusions': [slice(None, None)],
                  'virtual_sitesn': [0, slice(2, None)],
+                 'virtual_sites1': [0],
                  'virtual_sites2': [0, 1, 2, 3],
                  'virtual_sites3': [0, 1, 2, 3],
-                 'pairs_nb': [0, 1],
-                 'SETTLE': [0],
                  'virtual_sites4': [slice(0, 5)],
+                 'pairs_nb': [0, 1],
+                 'settles': [0],
                  'distance_restraints':  [0, 1],
                  'dihedral_restraints':  [slice(0, 4)],
                  'orientation_restraints': [0, 1],
@@ -254,7 +255,6 @@ class TOPDirector(SectionLineParser):
                 self.topology.add_molecule(new_mol)
                 self.topology.mol_idx_by_name[mol_name].append(total_count)
                 total_count += 1
-
         super().finalize()
 
     def _new_itp(self):
@@ -332,7 +332,7 @@ class TOPDirector(SectionLineParser):
             raise OSError(msg.format(line))
 
         self.topology.atom_types[atom_name] = atom_type_line
-        
+
     @SectionLineParser.section_parser('nonbond_params')
     def _nonbond_params(self, line, lineno=0):
         """
@@ -379,7 +379,7 @@ class TOPDirector(SectionLineParser):
     @SectionLineParser.section_parser('moleculetype', 'virtual_sitesn')
     @SectionLineParser.section_parser('moleculetype', 'position_restraints')
     @SectionLineParser.section_parser('moleculetype', 'pairs_nb')
-    @SectionLineParser.section_parser('moleculetype', 'SETTLE')
+    @SectionLineParser.section_parser('moleculetype', 'settles')
     @SectionLineParser.section_parser('moleculetype', 'distance_restraints')
     @SectionLineParser.section_parser('moleculetype', 'orientation_restraints')
     @SectionLineParser.section_parser('moleculetype', 'dihedral_restraints')
