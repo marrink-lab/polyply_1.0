@@ -266,6 +266,12 @@ class Topology(System):
                         elif inter_type == "dihedrals" and\
                              (atoms[3], "X", "X", atoms[0]) in self.types[inter_type]:
                             new_params, meta = self.types[inter_type][(atoms[3], "X", "X", atoms[0])]
+                        elif inter_type == "dihedrals" and\
+                             ("X", "X", atoms[2], atoms[3]) in self.types[inter_type]:
+                            new_params, meta = self.types[inter_type][("X", "X", atoms[2], atoms[3])]
+                        elif inter_type == "dihedrals" and\
+                             ("X", atoms[1], atoms[2], atoms[3]) in self.types[inter_type]:
+                            new_params, meta = self.types[inter_type][("X", atoms[1], atoms[2], atoms[3])]
                         else:
                             msg=("In section {} interaction of atoms {} has no corresponding bonded"
                                  "type.")
