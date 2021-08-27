@@ -243,7 +243,7 @@ class TOPDirector(SectionLineParser):
         for mol_name, n_mol in self.molecules:
             block = self.force_field.blocks[mol_name]
             graph = MetaMolecule._block_graph_to_res_graph(block)
-            for idx in tqdm(range(0, int(n_mol))):
+            for idx in range(0, int(n_mol)):
                 graph_copy = graph.copy(as_view=False)
                 new_mol = MetaMolecule(graph_copy,
                                        force_field=self.force_field,

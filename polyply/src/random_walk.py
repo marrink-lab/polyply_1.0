@@ -301,6 +301,27 @@ class RandomWalk(Processor):
                                                              potential="LJ")
         return norm(force_vect) > self.max_force
 
+
+    def checks_milestones(self,
+                          current_node,
+                          current_position,
+                          step_length,
+                          fudge=0.7):
+
+        if 'restraint' in self.molecule.nodes[current_node]:
+            for restraint in self.molecule.nodes[current_node]['restraint']:
+                graph_distance, ref_pos, distance = restraint
+                print(current_node, graph_distance)
+                if ref_pos[0] == 'node':
+                    ref_pos = self.nonbond_matrix.get_point(self.mol_idx, ref_pos[1])
+                else:
+                    ref_pos = ref_pos[1]
+
+                current_distance = self.nonbond_matrix.pbc_min_dist(current_position, ref_pos) - distance
+                if current_distance > graph_distance * step_length * fudge:
+                    return False
+        return True
+
     def update_positions(self, vector_bundle, current_node, prev_node):
         """
         Take an array of unit vectors `vector_bundle` and generate the coordinates
@@ -327,8 +348,8 @@ class RandomWalk(Processor):
         while True:
 
             new_point, index = _take_step(vector_bundle, step_length, last_point, self.maxdim)
-
             if fulfill_geometrical_constraints(new_point, self.molecule.nodes[current_node])\
+                and self.checks_milestones(current_node, new_point, step_length)\
                 and is_restricted(new_point, last_point, self.molecule.nodes[current_node])\
                 and not self._is_overlap(new_point, current_node):
 
@@ -375,7 +396,7 @@ class RandomWalk(Processor):
 
         vector_bundle = self.vector_sphere.copy()
         count = 0
-        path = list(nx.bfs_edges(meta_molecule, source=first_node))
+        path = list(nx.dfs_edges(meta_molecule, source=first_node))
         step_count = 0
 
         while step_count < len(path):

@@ -13,6 +13,7 @@
 # limitations under the License.
 from collections import defaultdict
 import numpy as np
+import networkx as nx
 from vermouth.parser_utils import SectionLineParser
 
 class BuildDirector(SectionLineParser):
@@ -26,6 +27,8 @@ class BuildDirector(SectionLineParser):
         self.build_options = defaultdict(list)
         self.current_molname = None
         self.rw_options = dict()
+        self.distance_restraints = defaultdict(dict)
+        self.position_restraints = defaultdict(dict)
 
     @SectionLineParser.section_parser('molecule')
     def _molecule(self, line, lineno=0):
@@ -60,6 +63,7 @@ class BuildDirector(SectionLineParser):
         for idx in self.current_molidxs:
             self.build_options[(self.current_molname, idx)].append(geometry_def)
 
+    # -> these should be named direction restraints
     @SectionLineParser.section_parser('molecule', 'rw_restriction')
     def _rw_restriction(self, line, lineno=0):
         """
@@ -73,6 +77,27 @@ class BuildDirector(SectionLineParser):
                                        float(tokens[6])]}
         for idx in self.current_molidxs:
             self.rw_options[(self.current_molname, idx)] = geometry_def
+
+    @SectionLineParser.section_parser('molecule', 'distance_restraints')
+    def _distance_restraints(self, line, lineno=0):
+        """
+        Node distance restraints.
+        """
+        tokens = line.split()
+        for idx in self.current_molidxs:
+            self.distance_restraints[(self.current_molname, idx)][(int(tokens[0]), int(tokens[1]))] = float(tokens[2])
+
+    @SectionLineParser.section_parser('molecule', 'position_restraints')
+    def _position_restraints(self, line, lineno=0):
+        """
+        Node distance restraints.
+        """
+        tokens = line.split()
+        target_node = tokens[0]
+        ref_position = np.array(list(map(float, tokens[0:2])))
+
+        for idx in self.current_molidxs:
+            self.position_restraints[(self.current_molname, idx)][target_node] = ref_position
 
     @SectionLineParser.section_parser('molecule', 'chiral')
     def _chiral(self, line, lineno=0):
@@ -103,6 +128,29 @@ class BuildDirector(SectionLineParser):
             if (molecule.mol_name, mol_idx)  in self.rw_options:
                 self._tag_nodes(molecule, "rw_options",
                                 self.rw_options[(molecule.mol_name, mol_idx)])
+
+            # TODO 
+            # filter impossible combinations
+            # -> distance larger than graph distance
+            # -> 
+
+            # convert distance restraints into position restraints
+            if (molecule.mol_name, mol_idx) in self.distance_restraints:
+                for ref_node, target_node in self.distance_restraints[(molecule.mol_name, mol_idx)]:
+                    distance = self.distance_restraints[(molecule.mol_name, mol_idx)][(ref_node, target_node)]
+                    for node in molecule.molecule.nodes:
+
+                        if node == target_node:
+                            graph_distance = 1.0
+                        else:
+                            graph_distance = nx.algorithms.shortest_path_length(molecule.molecule,
+                                                                                source=node,
+                                                                                target=target_node)
+                        ref_pos = ('node', ref_node)
+                        if 'restraint' in molecule.nodes[node]:
+                            molecule.nodes[node]['restraint'].append((graph_distance, ref_pos, distance))
+                        else:
+                            molecule.nodes[node]['restraint'] = [(graph_distance, ref_pos, distance)]
 
         super().finalize
 
