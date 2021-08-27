@@ -54,7 +54,6 @@ LOGGER.addHandler(COUNTER)
 LOGGER = StyleAdapter(LOGGER)
 
 VERSION = 'polyply version {}'.format(polyply.__version__)
-
 def main():
     """
     Parses commandline arguments and call relevant sub_programs.

@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import itertools
-import multiprocessing
 import numpy as np
 import scipy.spatial
 from polyply import jit
@@ -148,20 +147,20 @@ class NonBondEngine():
         # point to the old tree and profit from faster calculation of distances within
         # a single tree
         if start and self.position_trees[-1].n > 5000:
-           self.defined_idxs.append([gndx])
-           self.gndx_to_tree[gndx] = len(self.position_trees)
-           self.position_trees.append(scipy.spatial.ckdtree.cKDTree(point.reshape(1,3),
-                                                                    boxsize=self.boxsize,
-                                                                    balanced_tree=False,
-                                                                    compact_nodes=False))
+            self.defined_idxs.append([gndx])
+            self.gndx_to_tree[gndx] = len(self.position_trees)
+            self.position_trees.append(scipy.spatial.ckdtree.cKDTree(point.reshape(1,3),
+                                                                     boxsize=self.boxsize,
+                                                                     balanced_tree=False,
+                                                                     compact_nodes=False))
         else:
-           self.defined_idxs[-1].append(gndx)
-           self.gndx_to_tree[gndx] = len(self.position_trees) - 1
-           new_tree = scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs[-1]],
-                                                    boxsize=self.boxsize,
-                                                    balanced_tree=False,
-                                                    compact_nodes=False)
-           self.position_trees[-1] = new_tree
+            self.defined_idxs[-1].append(gndx)
+            self.gndx_to_tree[gndx] = len(self.position_trees) - 1
+            new_tree = scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs[-1]],
+                                                     boxsize=self.boxsize,
+                                                     balanced_tree=False,
+                                                     compact_nodes=False)
+            self.position_trees[-1] = new_tree
 
     def remove_positions(self, mol_idx, node_keys):
         """
@@ -180,7 +179,7 @@ class NonBondEngine():
             gndx = self.nodes_to_gndx[(mol_idx, node_key)]
             # guard against when a position is not defined
             if gndx not in self.gndx_to_tree:
-               continue
+                continue
             self.positions[gndx] = np.array([np.inf, np.inf, np.inf])
             tree_idx = self.gndx_to_tree[gndx]
             self.defined_idxs[tree_idx].remove(gndx)
@@ -193,6 +192,27 @@ class NonBondEngine():
                                                      balanced_tree=False,
                                                      compact_nodes=False)
             self.position_trees[tree_idx] = new_tree
+
+    def pbc_min_dist(self, pos_a, pos_b):
+        """
+        Given two nodes and a rectangular box compute
+        the distance according to minimum image convention.
+
+        Parameters
+        -----------
+        pos_a: np.ndarray(3, 1)
+        pos_b: np.ndarray(3, 1)
+        box:    np.ndarray(3, 1)
+
+        Returns:
+        --------
+        float
+            the minimum distance
+        """
+        box = self.boxsize
+        min_dist = np.min(np.vstack(((pos_a - pos_b) % box, (pos_b - pos_a) % box)), axis=0)
+        dist = np.linalg.norm(min_dist)
+        return dist
 
     def update_positions_in_molecules(self, molecules):
         """
@@ -254,7 +274,7 @@ class NonBondEngine():
             dist_mat = ref_tree.sparse_distance_matrix(pos_tree, self.cut_off)
 
             if any(np.array(list(dist_mat.values())) < 0.1):
-               return np.inf
+                return np.inf
 
             gndx = self.nodes_to_gndx[(mol_idx, node)]
             current_atype = self.atypes[gndx]
