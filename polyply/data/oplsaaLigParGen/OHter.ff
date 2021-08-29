@@ -1,0 +1,31 @@
+; 
+;;;;;; HYDROXYMETHYL TERMINI for PEO
+; 
+[ moleculetype ]
+; Name               nrexcl
+OHter                 3
+[ atoms ]
+;   nr       type  resnr residue  atom   cgnr     charge       mass  
+     1   opls_803      1   OHter  OA1      1    -0.6887    15.9990
+     2   opls_800      1   OHter  C2       2     0.1070    12.0110
+     3   opls_802      1   OHter  HA3      3     0.4173     1.0080
+     4   opls_802      1   OHter  H4       4     0.0822     1.0080
+     5   opls_802      1   OHter  H5       5     0.0822     1.0080
+[ bonds ]
+;  ai    aj  funct       c0      c1
+    2     1     1      0.1410 267776.000
+    3     1     1      0.0945 462750.400
+    4     2     1      0.1090 284512.000
+    5     2     1      0.1090 284512.000
+[ angles ]
+;  ai    aj    ak funct            c0            c1            c2            c3 
+    2     1     3     1    108.500    460.240
+    1     2     4     1    109.500    292.880
+    1     2     5     1    109.500    292.880
+    4     2     5     1    107.800    276.144
+[ dihedrals ]
+    5    2    1    3        3       0.736   2.209   0.000  -2.946  -0.000   0.000
+    4    2    1    3        3       0.736   2.209   0.000  -2.946  -0.000   0.000
+[ pairs ]
+     3     4    1
+     3     5    1
