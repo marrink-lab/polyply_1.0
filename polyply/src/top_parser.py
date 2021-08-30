@@ -373,6 +373,7 @@ class TOPDirector(SectionLineParser):
     @SectionLineParser.section_parser('moleculetype', 'constraints')
     @SectionLineParser.section_parser('moleculetype', 'pairs')
     @SectionLineParser.section_parser('moleculetype', 'exclusions')
+    @SectionLineParser.section_parser('moleculetype', 'virtual_sites1')
     @SectionLineParser.section_parser('moleculetype', 'virtual_sites2')
     @SectionLineParser.section_parser('moleculetype', 'virtual_sites3')
     @SectionLineParser.section_parser('moleculetype', 'virtual_sites4')
