@@ -136,3 +136,17 @@ def find_connecting_edges(res_graph, molecule, nodes):
                 edges.append((high_res_node_a, high_res_node_b))
 
     return edges
+
+def _compute_path_length_cartesian(molecule, mol_idx, path, nonbond_matrix):
+    """
+    Computes the maximum length a graph path based on the super-CG model
+    step length. This is equivalent to the contour length of the super
+    CG model.
+    """
+    path_length = 0
+    for node_from, node_to in path:
+        path_length += step_fudge * nonbond_matrix.get_interaction(mol_idx,
+                                                                   mol_idx,
+                                                                   node_from,
+                                                                   node_to)[0]
+    return path_length
