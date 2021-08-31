@@ -16,6 +16,40 @@ import numpy as np
 import networkx as nx
 from vermouth.parser_utils import SectionLineParser
 
+def prop_WCM_ee(ee_dist, max_path_length, presistence):
+    """
+    worm like chain model distribution of the end to end distance.
+    """
+    alpha = 3*max_path_length/(4*presistence)
+    C = (np.pi**3/2. * np.exp(-alpha)*alpha**(-3/2.)*(1 + 3/(alpha) + (15/4)/alpha**2.))**-1. 
+    A = 4*np.pi*ee_dist**2.*C
+    B = max_path_length,*(1-(max_path_length/ee_dist)**2.)**9/2.
+    D = -3*max_path_length,
+    E = 4*presistence*(1-(max_path_length/ee_dist)**2.)
+
+    return A/B * np.exp(D/E)
+
+DISTRIBUTIONS = {"WCM": prop_WCM_ee, }
+
+def apply_node_distance_restraints(molecule, ref_node, target_node, distance):
+    """
+    Apply restraints to nodes.
+    """
+    for node in molecule.molecule.nodes:
+        if node == target_node:
+            graph_distance = 1.0
+        else:
+            graph_distance = nx.algorithms.shortest_path_length(molecule.molecule,
+                                                                source=node,
+                                                                target=target_node)
+        ref_pos = ('node', ref_node)
+        if 'restraint' in molecule.nodes[node]:
+            molecule.nodes[node]['restraint'].append((graph_distance, ref_pos, distance))
+        else:
+            molecule.nodes[node]['restraint'] = [(graph_distance, ref_pos, distance)]
+
+    return molecule
+
 class BuildDirector(SectionLineParser):
 
     COMMENT_CHAR = ';'
@@ -99,6 +133,41 @@ class BuildDirector(SectionLineParser):
         for idx in self.current_molidxs:
             self.position_restraints[(self.current_molname, idx)][target_node] = ref_position
 
+    @SectionLineParser.section_parser('molecule', 'presistence_length')
+    def _presistence_length(self, line, lineno=0):
+        """
+        Generate a distribution of end-to-end distance restraints based on a set
+        presistence length.
+        """
+        tokens = line.split()
+        model = tokens.pop()
+        lp = float(tokens.pop())
+        start, stop = list(map(int, tokens))
+        # we just need one molecule of the bunch
+        molecule = self.molecules[self.current_molidxs[0]]
+
+        # compute the shortest path between the ends in graph space
+        end_to_end_path = nx.algorithms.shortest_path(molecule,
+                                                      source=start,
+                                                      target=stop)
+        # compute the length of that path in cartesian space
+        max_path_length = _compute_path_length_cartesian(molecule, end_to_end_path)
+
+        # define reange of end-to-end distances
+        # increment is the average step length
+        incrm = max_path_length / len(end_to_end_path)
+        ee_distances = np.arange(incrm, max_path_length, incrm)
+
+        # generate the distribution and sample it
+        probabilities = DISTRIBUTIONS[model](ee_distances, max_path_length, lp)
+        ee_samples = np.random.choice(ee_distances,
+                                      p=probabilities/np.sum(probabilities),
+                                      size=len(self.current_molidxs))
+
+        for dist, idx in zip(ee_samples, self.current_molidxs):
+            self.position_restraints[(self.current_molname, idx)][(start, stop)] = dist
+
+
     @SectionLineParser.section_parser('molecule', 'chiral')
     def _chiral(self, line, lineno=0):
         """
@@ -121,6 +190,7 @@ class BuildDirector(SectionLineParser):
         if that molecule is mentioned in the build file by name.
         """
         for mol_idx, molecule in enumerate(self.molecules):
+
             if (molecule.mol_name, mol_idx) in self.build_options:
                 for option in self.build_options[(molecule.mol_name, mol_idx)]:
                     self._tag_nodes(molecule, "restraints", option)
@@ -129,28 +199,10 @@ class BuildDirector(SectionLineParser):
                 self._tag_nodes(molecule, "rw_options",
                                 self.rw_options[(molecule.mol_name, mol_idx)])
 
-            # TODO 
-            # filter impossible combinations
-            # -> distance larger than graph distance
-            # -> 
-
-            # convert distance restraints into position restraints
             if (molecule.mol_name, mol_idx) in self.distance_restraints:
                 for ref_node, target_node in self.distance_restraints[(molecule.mol_name, mol_idx)]:
                     distance = self.distance_restraints[(molecule.mol_name, mol_idx)][(ref_node, target_node)]
-                    for node in molecule.molecule.nodes:
-
-                        if node == target_node:
-                            graph_distance = 1.0
-                        else:
-                            graph_distance = nx.algorithms.shortest_path_length(molecule.molecule,
-                                                                                source=node,
-                                                                                target=target_node)
-                        ref_pos = ('node', ref_node)
-                        if 'restraint' in molecule.nodes[node]:
-                            molecule.nodes[node]['restraint'].append((graph_distance, ref_pos, distance))
-                        else:
-                            molecule.nodes[node]['restraint'] = [(graph_distance, ref_pos, distance)]
+                    molecule = apply_node_distance_restraints(molecule, ref_node, target_node, distance)
 
         super().finalize
 
