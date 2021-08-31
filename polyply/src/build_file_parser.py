@@ -11,25 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 import numpy as np
 import networkx as nx
 from vermouth.parser_utils import SectionLineParser
-
-def prop_WCM_ee(ee_dist, max_path_length, presistence):
-    """
-    worm like chain model distribution of the end to end distance.
-    """
-    alpha = 3*max_path_length/(4*presistence)
-    C = (np.pi**3/2. * np.exp(-alpha)*alpha**(-3/2.)*(1 + 3/(alpha) + (15/4)/alpha**2.))**-1. 
-    A = 4*np.pi*ee_dist**2.*C
-    B = max_path_length,*(1-(max_path_length/ee_dist)**2.)**9/2.
-    D = -3*max_path_length,
-    E = 4*presistence*(1-(max_path_length/ee_dist)**2.)
-
-    return A/B * np.exp(D/E)
-
-DISTRIBUTIONS = {"WCM": prop_WCM_ee, }
 
 def apply_node_distance_restraints(molecule, ref_node, target_node, distance):
     """
@@ -54,8 +39,9 @@ class BuildDirector(SectionLineParser):
 
     COMMENT_CHAR = ';'
 
-    def __init__(self, molecules):
+    def __init__(self, molecules, topology):
         super().__init__()
+        self.topology = topology
         self.molecules = molecules
         self.current_molidxs = []
         self.build_options = defaultdict(list)
@@ -63,6 +49,7 @@ class BuildDirector(SectionLineParser):
         self.rw_options = dict()
         self.distance_restraints = defaultdict(dict)
         self.position_restraints = defaultdict(dict)
+        self.presistence_length = {}
 
     @SectionLineParser.section_parser('molecule')
     def _molecule(self, line, lineno=0):
@@ -143,30 +130,9 @@ class BuildDirector(SectionLineParser):
         model = tokens.pop()
         lp = float(tokens.pop())
         start, stop = list(map(int, tokens))
-        # we just need one molecule of the bunch
-        molecule = self.molecules[self.current_molidxs[0]]
-
-        # compute the shortest path between the ends in graph space
-        end_to_end_path = nx.algorithms.shortest_path(molecule,
-                                                      source=start,
-                                                      target=stop)
-        # compute the length of that path in cartesian space
-        max_path_length = _compute_path_length_cartesian(molecule, end_to_end_path)
-
-        # define reange of end-to-end distances
-        # increment is the average step length
-        incrm = max_path_length / len(end_to_end_path)
-        ee_distances = np.arange(incrm, max_path_length, incrm)
-
-        # generate the distribution and sample it
-        probabilities = DISTRIBUTIONS[model](ee_distances, max_path_length, lp)
-        ee_samples = np.random.choice(ee_distances,
-                                      p=probabilities/np.sum(probabilities),
-                                      size=len(self.current_molidxs))
-
-        for dist, idx in zip(ee_samples, self.current_molidxs):
-            self.position_restraints[(self.current_molname, idx)][(start, stop)] = dist
-
+        Presistence_specs = namedtuple("presist", ["model", "lp", "start", "stop", "mol_idxs"])
+        specs = Presistence_specs(*[model, lp, start, stop, self.current_molidxs])
+        self.topology.presistances.append(specs)
 
     @SectionLineParser.section_parser('molecule', 'chiral')
     def _chiral(self, line, lineno=0):
@@ -204,6 +170,10 @@ class BuildDirector(SectionLineParser):
                     distance = self.distance_restraints[(molecule.mol_name, mol_idx)][(ref_node, target_node)]
                     molecule = apply_node_distance_restraints(molecule, ref_node, target_node, distance)
 
+            if (molecule.mol_name, mol_idx) in self.presistence_length:
+                specs = self.presistence_length[(molecule.mol_name, mol_idx)]
+                molecule.meta.update({"presistence_length": specs})
+
         super().finalize
 
     @staticmethod
@@ -233,7 +203,7 @@ class BuildDirector(SectionLineParser):
         geometry_def["parameters"] = parameters
         return geometry_def
 
-def read_build_file(lines, molecules):
+def read_build_file(lines, molecules, topology):
     """
     Parses `lines` of itp format and adds the
     molecule as a block to `force_field`.
@@ -244,5 +214,5 @@ def read_build_file(lines, molecules):
         list of lines of an itp file
     force_field: :class:`vermouth.forcefield.ForceField`
     """
-    director = BuildDirector(molecules)
+    director = BuildDirector(molecules, topology)
     return list(director.parse(iter(lines)))
