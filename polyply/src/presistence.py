@@ -16,28 +16,28 @@ import networkx as nx
 from .graph_utils import _compute_path_length_cartesian
 from .build_file_parser import apply_node_distance_restraints
 
-def worm_like_chain_model(ee_dist, max_path_length, presistence):
+def worm_like_chain_model(h, L, _lambda):
     """
     worm like chain model distribution of the end to end distance.
     """
-    alpha = 3*max_path_length/(4*presistence)
+    alpha = 3*L/(4*_lambda)
     C = (np.pi**3/2. * np.exp(-alpha)*alpha**(-3/2.)*(1 + 3/(alpha) + (15/4)/alpha**2.))**-1. 
-    A = 4*np.pi*ee_dist**2.*C
-    B = max_path_length,*(1-(max_path_length/ee_dist)**2.)**9/2.
-    D = -3*max_path_length,
-    E = 4*presistence*(1-(max_path_length/ee_dist)**2.)
-
+    A = 4*np.pi*h**2.*C
+    B = L*(1-(h/L)**2.)**9/2.
+    D = -3*L
+    E = 4*_lambda*(1-(h/L)**2.)
+    
     return A/B * np.exp(D/E)
+
 
 DISTRIBUTIONS = {"WCM": worm_like_chain_model, }
 
 def generate_end_end_distances(molecule, specs, nonbond_matrix):
-    # to start we just need one molecule
-    specs = molecule.mol_meta["presistence_length"]
     # compute the shortest path between the ends in graph space
     end_to_end_path = nx.algorithms.shortest_path(molecule,
                                                   source=specs.start,
                                                   target=specs.stop)
+    end_to_end_path = list(zip(end_to_end_path[:-1], end_to_end_path[1:]))
     # compute the length of that path in cartesian space
     mol_idx = specs.mol_idxs[0]
     max_path_length = _compute_path_length_cartesian(molecule,

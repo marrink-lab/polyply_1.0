@@ -106,7 +106,7 @@ def gen_coords(args):
         LOGGER.info("reading build file",  type="step")
         with open(args.build) as build_file:
             lines = build_file.readlines()
-            read_build_file(lines, topology.molecules)
+            read_build_file(lines, topology.molecules, topology)
 
     # collect all starting points for the molecules
     start_dict = find_starting_node_from_spec(topology, args.start)
