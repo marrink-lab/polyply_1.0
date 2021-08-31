@@ -58,7 +58,9 @@ def test_base_parser_geometry(tokens, _type, expected):
     {"resname": "PEO", "start": 0, "stop": 10, "parameters": [np.array([4.0, 4.0, 1.0]), 25.0]})
    ))
 def test_base_parser_geometry(line, expected):
-    processor = polyply.src.build_file_parser.BuildDirector([])
+    ff = vermouth.forcefield.ForceField(name='test_ff')
+    top = Topology(ff)
+    processor = polyply.src.build_file_parser.BuildDirector([], top)
     processor.current_molidxs = [1]
     processor.current_molname = "PEO"
     processor._rw_restriction(line)
@@ -181,8 +183,10 @@ def test_system():
 def test_parser(test_system, lines, tagged_mols, tagged_nodes):
    lines = textwrap.dedent(lines).splitlines()
    ff = vermouth.forcefield.ForceField(name='test_ff')
+   top = Topology(ff)
    polyply.src.build_file_parser.read_build_file(lines,
-                                                 test_system.molecules)
+                                                 test_system.molecules,
+                                                 top)
    for idx, mol in enumerate(test_system.molecules):
        for node in mol.nodes:
            if "restraints" in mol.nodes[node]:
