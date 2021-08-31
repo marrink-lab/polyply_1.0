@@ -127,12 +127,12 @@ class BuildDirector(SectionLineParser):
         presistence length.
         """
         tokens = line.split()
-        model = tokens.pop()
-        lp = float(tokens.pop())
+        model = tokens.pop(0)
+        lp = float(tokens.pop(0))
         start, stop = list(map(int, tokens))
         Presistence_specs = namedtuple("presist", ["model", "lp", "start", "stop", "mol_idxs"])
         specs = Presistence_specs(*[model, lp, start, stop, self.current_molidxs])
-        self.topology.presistances.append(specs)
+        self.topology.presistences.append(specs)
 
     @SectionLineParser.section_parser('molecule', 'chiral')
     def _chiral(self, line, lineno=0):

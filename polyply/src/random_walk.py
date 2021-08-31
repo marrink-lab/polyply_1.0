@@ -311,7 +311,6 @@ class RandomWalk(Processor):
         if 'restraint' in self.molecule.nodes[current_node]:
             for restraint in self.molecule.nodes[current_node]['restraint']:
                 graph_distance, ref_pos, distance = restraint
-                print(current_node, graph_distance)
                 if ref_pos[0] == 'node':
                     ref_pos = self.nonbond_matrix.get_point(self.mol_idx, ref_pos[1])
                 else:

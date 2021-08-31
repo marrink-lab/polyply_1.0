@@ -145,8 +145,8 @@ def _compute_path_length_cartesian(molecule, mol_idx, path, nonbond_matrix):
     """
     path_length = 0
     for node_from, node_to in path:
-        path_length += step_fudge * nonbond_matrix.get_interaction(mol_idx,
-                                                                   mol_idx,
-                                                                   node_from,
-                                                                   node_to)[0]
+        path_length += nonbond_matrix.get_interaction(mol_idx,
+                                                      mol_idx,
+                                                      node_from,
+                                                      node_to)[0]
     return path_length
