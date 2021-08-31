@@ -84,7 +84,6 @@ class BuildDirector(SectionLineParser):
         for idx in self.current_molidxs:
             self.build_options[(self.current_molname, idx)].append(geometry_def)
 
-    # -> these should be named direction restraints
     @SectionLineParser.section_parser('molecule', 'rw_restriction')
     def _rw_restriction(self, line, lineno=0):
         """
@@ -134,22 +133,6 @@ class BuildDirector(SectionLineParser):
         specs = Presistence_specs(*[model, lp, start, stop, self.current_molidxs])
         self.topology.presistences.append(specs)
 
-    @SectionLineParser.section_parser('molecule', 'chiral')
-    def _chiral(self, line, lineno=0):
-        """
-        Parses the lines in the '[chiral]'
-        directive and stores it.
-        """
-        pass
-
-    @SectionLineParser.section_parser('molecule', 'isomer')
-    def _isomer(self, line, lineno=0):
-        """
-        Parses the lines in the '[isomer]'
-        directive and stores it.
-        """
-        pass
-
     def finalize(self, lineno=0):
         """
         Tag each molecule node with the chirality and build options
@@ -169,10 +152,6 @@ class BuildDirector(SectionLineParser):
                 for ref_node, target_node in self.distance_restraints[(molecule.mol_name, mol_idx)]:
                     distance = self.distance_restraints[(molecule.mol_name, mol_idx)][(ref_node, target_node)]
                     molecule = apply_node_distance_restraints(molecule, ref_node, target_node, distance)
-
-            if (molecule.mol_name, mol_idx) in self.presistence_length:
-                specs = self.presistence_length[(molecule.mol_name, mol_idx)]
-                molecule.meta.update({"presistence_length": specs})
 
         super().finalize
 
