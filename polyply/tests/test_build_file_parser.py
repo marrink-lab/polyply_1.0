@@ -17,6 +17,7 @@ Test that build files are properly read.
 import textwrap
 import pytest
 import numpy as np
+import networkx as nx
 import vermouth.forcefield
 import vermouth.molecule
 import polyply
@@ -64,7 +65,7 @@ def test_base_parser_geometry(line, expected):
     processor.current_molidxs = [1]
     processor.current_molname = "PEO"
     processor._rw_restriction(line)
-    result =  processor.rw_options[("PEO", 1)]
+    result =  processor.rw_options[("PEO", 1)] 
     assert result.keys() == expected.keys()
     for key in processor.rw_options[("PEO", 1)]:
         if key != "parameters":
@@ -72,6 +73,33 @@ def test_base_parser_geometry(line, expected):
         else:
             assert all(result[key][0] == expected[key][0])
             assert result[key][1] == expected[key][1]
+
+@pytest.mark.parametrize('line, parser, attribute, key, expected', (
+   # simple example
+   ("5 12.0 6.0 7.0 3.0",
+    "_position_restraints",
+    "position_restraints",
+    5,
+    (np.array([12.0, 6.0, 7.0]), 3.0)),
+   ("5 25 3.0",
+    "_distance_restraints",
+    "distance_restraints",
+    (5, 25),
+    3.0),
+   ))
+def test_distance_position_restraints(line, parser, attribute, key, expected):
+    ff = vermouth.forcefield.ForceField(name='test_ff')
+    top = Topology(ff)
+    processor = polyply.src.build_file_parser.BuildDirector([], top)
+    processor.current_molidxs = [1]
+    processor.current_molname = "PEO"
+    getattr(processor, parser)(line)
+    result =  getattr(processor, attribute)[("PEO", 1)]
+    if attribute == "distance_restraints":
+        assert result[key] == expected
+    else:
+        assert all(result[key][0] == expected[0])
+        assert result[key][1] == result[key][1]
 
 @pytest.fixture
 def test_molecule():
@@ -114,6 +142,89 @@ def test_tag_nodes(test_molecule, _type, option, expected):
     for node in test_molecule.nodes:
         if "restraints" in test_molecule.nodes[node]:
            assert node in expected
+
+@pytest.mark.parametrize('restraints, expected', (
+   # grpah dist, ref_pos, distance
+   # try single distance restraint
+   ([{"ref_node": 0, "target_node": 4, "distance": 5.0}],
+    {0: [[4, ('node', 0), 5.0]],
+     1: [[3, ('node', 0), 5.0]],
+     2: [[2, ('node', 0), 5.0]],
+     3: [[1, ('node', 0), 5.0]],
+     4: [[1, ('node', 0), 5.0]],
+     5: [[1, ('node', 0), 5.0]],
+     6: [[2, ('node', 0), 5.0]],
+     7: [[3, ('node', 0), 5.0]],
+     8: [[4, ('node', 0), 5.0]],}
+   ),
+   # try single position restraint
+   ([{"ref_pos": np.array([1., 2., 3.]), "target_node": 4, "distance": 5.0}],
+    {0: [[4, ('pos', np.array([1., 2., 3.])), 5.0]],
+     1: [[3, ('pos', np.array([1., 2., 3.])), 5.0]],
+     2: [[2, ('pos', np.array([1., 2., 3.])), 5.0]],
+     3: [[1, ('pos', np.array([1., 2., 3.])), 5.0]],
+     4: [[1, ('pos', np.array([1., 2., 3.])), 5.0]],
+     5: [[1, ('pos', np.array([1., 2., 3.])), 5.0]],
+     6: [[2, ('pos', np.array([1., 2., 3.])), 5.0]],
+     7: [[3, ('pos', np.array([1., 2., 3.])), 5.0]],
+     8: [[4, ('pos', np.array([1., 2., 3.])), 5.0]],}
+   ),
+   # try double distance restraint
+   ([{"ref_node": 0, "target_node": 4, "distance": 5.0},
+     {"ref_node": 2, "target_node": 6, "distance": 3.0}],
+    {0: [[4, ('node', 0), 5.0], [6, ('node', 2), 3.0]],
+     1: [[3, ('node', 0), 5.0], [5, ('node', 2), 3.0]],
+     2: [[2, ('node', 0), 5.0], [4, ('node', 2), 3.0]],
+     3: [[1, ('node', 0), 5.0], [3, ('node', 2), 3.0]],
+     4: [[1, ('node', 0), 5.0], [2, ('node', 2), 3.0]],
+     5: [[1, ('node', 0), 5.0], [1, ('node', 2), 3.0]],
+     6: [[2, ('node', 0), 5.0], [1, ('node', 2), 3.0]],
+     7: [[3, ('node', 0), 5.0], [1, ('node', 2), 3.0]],
+     8: [[4, ('node', 0), 5.0], [2, ('node', 2), 3.0]],}
+   ),
+   # try position distance restraint
+   ([{"ref_pos": np.array([1., 2., 3.]), "target_node": 4, "distance": 5.0},
+     {"ref_pos": np.array([4., 3., 5.]), "target_node": 6, "distance": 3.0}],
+    {0: [[4, ('pos', np.array([1., 2., 3.])), 5.0], [6, ('pos', np.array([4., 3., 5.])), 3.0]],
+     1: [[3, ('pos', np.array([1., 2., 3.])), 5.0], [5, ('pos', np.array([4., 3., 5.])), 3.0]],
+     2: [[2, ('pos', np.array([1., 2., 3.])), 5.0], [4, ('pos', np.array([4., 3., 5.])), 3.0]],
+     3: [[1, ('pos', np.array([1., 2., 3.])), 5.0], [3, ('pos', np.array([4., 3., 5.])), 3.0]],
+     4: [[1, ('pos', np.array([1., 2., 3.])), 5.0], [2, ('pos', np.array([4., 3., 5.])), 3.0]],
+     5: [[1, ('pos', np.array([1., 2., 3.])), 5.0], [1, ('pos', np.array([4., 3., 5.])), 3.0]],
+     6: [[2, ('pos', np.array([1., 2., 3.])), 5.0], [1, ('pos', np.array([4., 3., 5.])), 3.0]],
+     7: [[3, ('pos', np.array([1., 2., 3.])), 5.0], [1, ('pos', np.array([4., 3., 5.])), 3.0]],
+     8: [[4, ('pos', np.array([1., 2., 3.])), 5.0], [2, ('pos', np.array([4., 3., 5.])), 3.0]],}
+    ),
+   # try distance and position restraint
+   ([{"ref_pos": np.array([1., 2., 3.]), "target_node": 4, "distance": 5.0},
+     {"ref_node": 2, "target_node": 6, "distance": 3.0}],
+    {0: [[4, ('pos', np.array([1., 2., 3.])), 5.0], [6, ('node', 2), 3.0]],
+     1: [[3, ('pos', np.array([1., 2., 3.])), 5.0], [5, ('node', 2), 3.0]],
+     2: [[2, ('pos', np.array([1., 2., 3.])), 5.0], [4, ('node', 2), 3.0]],
+     3: [[1, ('pos', np.array([1., 2., 3.])), 5.0], [3, ('node', 2), 3.0]],
+     4: [[1, ('pos', np.array([1., 2., 3.])), 5.0], [2, ('node', 2), 3.0]],
+     5: [[1, ('pos', np.array([1., 2., 3.])), 5.0], [1, ('node', 2), 3.0]],
+     6: [[2, ('pos', np.array([1., 2., 3.])), 5.0], [1, ('node', 2), 3.0]],
+     7: [[3, ('pos', np.array([1., 2., 3.])), 5.0], [1, ('node', 2), 3.0]],
+     8: [[4, ('pos', np.array([1., 2., 3.])), 5.0], [2, ('node', 2), 3.0]],}
+   )
+   ))
+def test_apply_pos_dis_restraints(test_molecule, restraints, expected):
+    print(test_molecule.nodes)
+    for restraint in restraints:
+        test_molecule = polyply.src.build_file_parser.apply_node_distance_restraints(test_molecule,
+                                                                                     **restraint)
+    attr_list = nx.get_node_attributes(test_molecule, "restraint")
+    for node, restr_list in attr_list.items():
+        ref_list = expected[node]
+        for ref_restr, new_restr in zip(ref_list, restr_list):
+            print(new_restr)
+            assert ref_restr[0] == new_restr[0]
+            assert ref_restr[2] == new_restr[2]
+            if ref_restr[1][0] == 'pos':
+                assert all(ref_restr[1][1] == new_restr[1][1])
+            else:
+                assert ref_restr[1][1] == new_restr[1][1]
 
 @pytest.fixture()
 def test_system():
@@ -193,3 +304,46 @@ def test_parser(test_system, lines, tagged_mols, tagged_nodes):
                assert node in tagged_nodes
                assert idx in tagged_mols
 
+@staticmethod
+@pytest.mark.parametrize('lines, expected', (
+   # basic test
+   ("""
+   [ molecule ]
+   ; name from to
+   AA    0  2
+   ;
+   [ presistence_length ]
+   ; model  lp start stop
+     WCM   4.0  0    8
+   """,
+   [["WCM", 4.0, 0, 8, np.array([0, 1])]]),
+   # test two batches are recognized
+   ("""
+   [ molecule ]
+   ; name from to
+   AA    0  2
+   ;
+   [ presistence_length ]
+   ; model  lp start stop
+   WCM   4.0  0    8
+   [ molecule ]
+   ; name from to
+   BB 2  4
+   [ presistence_length ]
+   WCM   2.0   0  8
+   """,
+   [["WCM", 4.0, 0, 8, np.array([0, 1])],
+    ["WCM", 2.0, 0, 8, np.array([2, 3])]]
+   )))
+def test_presistence_parsers(test_system, lines, expected):
+   lines = textwrap.dedent(lines).splitlines()
+   ff = vermouth.forcefield.ForceField(name='test_ff')
+   top = Topology(ff)
+   polyply.src.build_file_parser.read_build_file(lines,
+                                                 test_system.molecules,
+                                                 top)
+   for ref, new in zip(expected, top.presistences):
+        print(ref, new)
+        for info_ref, info_new in zip(ref[:-1], new[:-1]):
+            assert info_ref == info_new
+        assert all(ref[-1] == new[-1])
