@@ -203,7 +203,6 @@ def test_presistence(topology, specs, seed, expected):
         for mol_idx in batch.mol_idxs:
             mol = molecules[mol_idx]
             for node in mol.nodes:
-                print(mol.nodes[node]["restraint"])
                 assert math.isclose(mol.nodes[node]["restraint"][-1][-1],
                                     expected[mol_count],
                                     abs_tol=10e-3)
