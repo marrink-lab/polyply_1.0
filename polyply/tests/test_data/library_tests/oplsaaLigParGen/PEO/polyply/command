@@ -1,0 +1,1 @@
+polyply gen_itp -lib oplsaaLigParGen -name PEO -seq OHter:1 PEO:10 OHter:1 -o PEO.itp
