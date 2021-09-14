@@ -310,15 +310,23 @@ class RandomWalk(Processor):
 
         if 'restraint' in self.molecule.nodes[current_node]:
             for restraint in self.molecule.nodes[current_node]['restraint']:
-                graph_distance, ref_pos, distance = restraint
+                graph_distance, max_path, ref_pos, distance = restraint
                 if ref_pos[0] == 'node':
                     ref_pos = self.nonbond_matrix.get_point(self.mol_idx, ref_pos[1])
                 else:
                     ref_pos = ref_pos[1]
 
-                current_distance = self.nonbond_matrix.pbc_min_dist(current_position, ref_pos) - distance
-                if current_distance > graph_distance * step_length * fudge:
+                current_distance = self.nonbond_matrix.pbc_min_dist(current_position, ref_pos)
+
+
+                if current_distance > graph_distance * step_length  + distance:
                     return False
+
+                print(current_node, max_path, graph_distance)
+                print(current_distance, distance/max_path * (max_path-graph_distance))
+                if  current_distance < distance/max_path * (max_path-graph_distance):
+                    return False
+
         return True
 
     def update_positions(self, vector_bundle, current_node, prev_node):
@@ -397,7 +405,6 @@ class RandomWalk(Processor):
         count = 0
         path = list(nx.dfs_edges(meta_molecule, source=first_node))
         step_count = 0
-
         while step_count < len(path):
             prev_node, current_node = path[step_count]
 

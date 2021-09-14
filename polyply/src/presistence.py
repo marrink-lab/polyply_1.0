@@ -132,7 +132,6 @@ def sample_end_to_end_distances(molecules, topology, nonbond_matrix, seed=None):
                                                   specs,
                                                   nonbond_matrix,
                                                   seed=seed)
-        print(distribution)
         # for each molecule in the batch assign one end-to-end
         # distance restraint from the distribution.
         for mol_idx, dist in zip(specs.mol_idxs, distribution):

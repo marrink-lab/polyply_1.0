@@ -120,7 +120,8 @@ def gen_coords(args):
     LOGGER.info("generating templates",  type="step")
     GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
     LOGGER.info("annotating ligands",  type="step")
-    AnnotateLigands(topology, args.ligands).run_system(topology)
+    annotate_processor = AnnotateLigands(topology, args.ligands)
+    annotate_processor.run_system(topology)
     LOGGER.info("generating system coordinates",  type="step")
     BuildSystem(topology,
                 start_dict=start_dict,
@@ -133,7 +134,7 @@ def gen_coords(args):
                 ignore=args.ignore,
                 grid=args.grid,
                 nrewind=args.nrewind).run_system(topology.molecules)
-    AnnotateLigands(topology, args.ligands).split_ligands()
+    annotate_processor.split_ligands()
     LOGGER.info("backmapping to target resolution",  type="step")
     Backmap(fudge_coords=args.bfudge).run_system(topology)
     # Write output
