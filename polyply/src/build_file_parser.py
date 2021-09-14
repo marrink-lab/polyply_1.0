@@ -48,6 +48,9 @@ def apply_node_distance_restraints(molecule, target_node, distance, ref_node=Non
     molecule: :class:`vermouth.molecule.Molecule`
         the molecule with the restraint attributes
     """
+    max_path = nx.algorithms.shortest_path_length(molecule,
+                                                  source=ref_node,
+                                                  target=target_node)
     for node in molecule.nodes:
         if node == target_node:
             graph_distance = 1.0
@@ -60,10 +63,12 @@ def apply_node_distance_restraints(molecule, target_node, distance, ref_node=Non
         else:
             ref = ('pos', ref_pos)
 
+
+
         if 'restraint' in molecule.nodes[node]:
-            molecule.nodes[node]['restraint'].append((graph_distance, ref, distance))
+            molecule.nodes[node]['restraint'].append((graph_distance, max_path, ref, distance))
         else:
-            molecule.nodes[node]['restraint'] = [(graph_distance, ref, distance)]
+            molecule.nodes[node]['restraint'] = [(graph_distance, max_path, ref, distance)]
 
     return molecule
 
@@ -185,6 +190,7 @@ class BuildDirector(SectionLineParser):
             if (molecule.mol_name, mol_idx) in self.distance_restraints:
                 for ref_node, target_node in self.distance_restraints[(molecule.mol_name, mol_idx)]:
                     distance = self.distance_restraints[(molecule.mol_name, mol_idx)][(ref_node, target_node)]
+                    print(distance)
                     molecule = apply_node_distance_restraints(molecule, target_node, distance, ref_node=ref_node)
 
             if (molecule.mol_name, mol_idx) in self.position_restraints:
