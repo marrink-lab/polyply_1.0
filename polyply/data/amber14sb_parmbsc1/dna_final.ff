@@ -34,6 +34,10 @@ DA5 3
 28   HC   1  DA5   H2'1     28   0.07180
 29   HC   1  DA5   H2'2     29   0.07180
 30   OS   1  DA5   O3'      30  -0.52320
+[ impropers ]
+C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C1'"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C3'"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center O4'"}
 [ bonds ]
 H5T O5'  1
 O5' C5'  1 
@@ -327,6 +331,11 @@ DA   3
  30   HC  1   DA   H2'1    30   0.07180    
  31   HC  1   DA   H2'2    31   0.07180    
  32   OS  1   DA    O3'    32  -0.52320    
+[ impropers ]
+C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C1'"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C3'"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center O4'"}
+
 [ bonds ]
 P O1P 1
 P O2P 1
@@ -627,6 +636,10 @@ DA3 3
  31   HC   1 DA3  H2'2   31   0.07180
  32   OH   1 DA3   O3'   32  -0.65490
  33   HO   1 DA3   H3T   33   0.43960
+[ impropers ]
+C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C1'"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C3'"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center O4'"}
 [ bonds ]
 P O1P 1
 P O2P 1
@@ -931,6 +944,10 @@ DT5 3
  28  HC  1  DT5  H2'1  28    0.07180
  29  HC  1  DT5  H2'2  29    0.07180
  30  OS  1  DT5   O3'  30   -0.52320
+[ impropers ]
+C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTC1'"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTC3'"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTO4'"}
 [ bonds ]
 H5T O5' 1
 O5' C5' 1
@@ -1220,6 +1237,10 @@ DT 3
  30  HC  1 DT  H2'1  30   0.07180
  31  HC  1 DT  H2'2  31   0.07180
  32  OS  1 DT   O3'  32  -0.52320
+[ impropers ]
+C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTC1'"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTC3'"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTO4'"}
 [ bonds ]
 P O1P 1
 P O2P 1
@@ -1519,6 +1540,10 @@ DT3 3
 31 HC 1 DT3 H2'2 31
 32 OH 1 DT3 O3' 32
 33 HO 1 DT3 H3T 33
+[ impropers ]
+C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTC1'"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTC3'"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTO4'"}
 [ bonds ]
 P O1P 1
 P O2P 1
@@ -1824,6 +1849,10 @@ DG5 3
  29  HC 1  DG5  H2'1     29     0.07180
  30  HC 1  DG5  H2'2     30     0.07180
  31  OS 1  DG5   O3'     31    -0.52320
+[ impropers ]
+C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC1'"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC3'"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGO4'"}
 [ bonds ]
 H5T O5' 1
 O5' C5' 1
@@ -2126,6 +2155,10 @@ DG 3
  31  HC 1  DG   H2'1     31     0.07180
  32  HC 1  DG   H2'2     32     0.07180
  33  OS 1  DG    O3'     33    -0.52320
+[ impropers ]
+C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC1'"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC3'"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGO4'"}
 [ bonds ]
 P O1P 1
 P O2P 1
@@ -2438,6 +2471,10 @@ DG3 3
  32  HC 1  DG3   H2'2   32     0.07180
  33  OH 1  DG3    O3'   33    -0.65490
  34  HO 1  DG3    H3T   34     0.43960
+[ impropers ]
+C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC1'"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC3'"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGO4'"}
 [ bonds ]
 P O1P 1
 P O2P 1
@@ -2752,6 +2789,10 @@ DC5 3
  26  HC 1  DC5  H2'1  26    0.07180    
  27  HC 1  DC5  H2'2  27    0.07180    
  28  OS 1  DC5   O3'  28   -0.52320    
+[ impropers ]
+C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC1'"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC3'"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCO4'"}
 [ bonds ]
 H5T O5' 1
 O5' C5' 1
@@ -3020,6 +3061,10 @@ DC 3
  28  HC 1  DC   H2'1   28    0.07180
  29  HC 1  DC   H2'2   29    0.07180
  30  OS 1  DC    O3'   30   -0.52320
+[ impropers ]
+C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC1'"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC3'"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCO4'"}
 [ bonds ]
 P O1P 1
 P O2P 1
@@ -3299,6 +3344,10 @@ DC3 3
  29  HC 1  DC3  H2'2   29     0.07180
  30  OH 1  DC3   O3'   30    -0.65490
  31  HO 1  DC3   H3T   31     0.43960
+[ impropers ]
+C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC1'"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC3'"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCO4'"}
 [ bonds ]
 P O1P 1
 P O2P 1
@@ -3555,25 +3604,25 @@ H2'2 C2' H2'1 1
 [ link ]
 resname $base_pairs
 [ bonds ]
--O3'     P  1
+<O3'     P  1
 [ angles ]
-P  -O3'  -C3'   1
-O1P  P   -O3'   1
-O2P  P   -O3'   1
-O5'  P   -O3'   1
+P  <O3'  <C3'   1
+O1P  P   <O3'   1
+O2P  P   <O3'   1
+O5'  P   <O3'   1
 [ dihedrals ]
-P   -O3'   -C3'  -C4'   9  {"group": "link"}
-O1P  P     -O3'  -C3'   9  {"group": "link"}
-O2P  P     -O3'  -C3'   9  {"group": "link"}
-O5'  P     -O3'  -C3'   9  {"group": "link"}
-P   -O3'   -C3'  -C2'   9  {"group": "link"}
-C5'  O5'     P   -O3'   9  {"group": "link"}
-P   -O3'   -C3'  -H3'   9  {"group": "link"}
+P   <O3'   <C3'  <C4'   9  {"group": "link"}
+O1P  P     <O3'  <C3'   9  {"group": "link"}
+O2P  P     <O3'  <C3'   9  {"group": "link"}
+O5'  P     <O3'  <C3'   9  {"group": "link"}
+P   <O3'   <C3'  <C2'   9  {"group": "link"}
+C5'  O5'     P   <O3'   9  {"group": "link"}
+P   <O3'   <C3'  <H3'   9  {"group": "link"}
 [ pairs ]
-P     -C4' 1
-O1P   -C3' 1
-O2P   -C3' 1
-O5'   -C3' 1
-P     -C2' 1
-C5'   -O3' 1
-P     -H3' 1
+P     <C4' 1
+O1P   <C3' 1
+O2P   <C3' 1
+O5'   <C3' 1
+P     <C2' 1
+C5'   <O3' 1
+P     <H3' 1
