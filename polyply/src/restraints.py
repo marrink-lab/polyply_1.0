@@ -60,49 +60,8 @@ def set_distance_restraint(molecule, target_node, ref_node, distance, avg_step_l
         avg_needed_step_length = distance / graph_distances_target[ref_node]
         lower_bound = avg_needed_step_length * graph_distances_ref[node]
 
-        current_restraints = molecule.nodes[node].get('restraint', [])
-        molecule.nodes[node]['restraint'] = current_restraints + [(ref_node, upper_bound, lower_bound)]
-
-    return None
-
-def set_position_restraint(molecule, target_node, ref_pos, distance, avg_step_length):
-    """
-    Given that a target_node is supposed to be restrained to a reference coordinate at a given
-    distance, this function computes for each node in the molecule an upper bound references
-    distance that this node needs to have in relation to the reference coordinate. This
-    distance is stored in the 'position_restraint' attribute of the node. This information
-    is picked up by the `:func:polyply.src.random_walk.checks_milstones` function, which
-    then checks that the boundary condition is met by a step in the random_walk.
-
-    The upper_bound is defined as the graph distance of a given node from the target_node
-    times the average step_length plus the cartesian distance at which the nodes are
-    restrained.
-
-    Parameters
-    ----------
-    molecule: :class:`vermouth.molecule.Molecule`
-    target_node: collections.abc.hashable
-        node key of the node that is supposed to be at a
-        distance from ref_node
-    ref_pos: np.ndarray(1,3)
-        reference position
-    distance: float
-        the cartesian distance between nodes in nm
-    nonbond_matrix: `polyply.src.nonbond_matrix.NonBondMatrix`
-    """
-    graph_distances_target = nx.single_source_shortest_path_length(molecule,
-                                                                   source=target_node,
-                                                                   cutoff=None)
-    for node in molecule.nodes:
-        if node == target_node:
-            graph_distance = 1.0
-        else:
-            graph_distance = graph_distances_target[node]
-
-        bound = graph_distance * avg_step_length + distance
-
-        current_restraints = molecule.nodes[node].get('restraint', [])
-        molecule.nodes[node]['position_restraint'] = current_restraints + [ref_pos, bound]
+        current_restraints = molecule.nodes[node].get('distance_restraints', [])
+        molecule.nodes[node]['distance_restraints'] = current_restraints + [(ref_node, upper_bound, lower_bound)]
 
     return None
 
@@ -123,17 +82,5 @@ def set_restraints(molecules, nonbond_matrix):
 
                 distance = distance_restraints[(ref_node, target_node)]
                 set_distance_restraint(mol, target_node, ref_node, distance, avg_step_length)
-
-        if "position_restraints" in mol.meta:
-            position_restraints = mol.meta["position_restraints"]
-            for ref_node, target_node in position_restraints:
-                avg_step_length = compute_avg_step_length(mol,
-                                                          mol_idx,
-                                                          target_node,
-                                                          nonbond_matrix,
-                                                          stop_node=ref_node)
-
-                distance = position_restraints[(ref_node, target_node)]
-                set_position_restraint(mol, target_node, ref_node, distance, avg_step_length)
 
     return None

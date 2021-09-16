@@ -24,6 +24,7 @@ from .random_walk import RandomWalk
 from .linalg_functions import norm_sphere
 from .nonbond_engine import NonBondEngine
 from .persistence import sample_end_to_end_distances
+from .restraints import set_restraints
 
 def _compute_box_size(topology, density):
     """
