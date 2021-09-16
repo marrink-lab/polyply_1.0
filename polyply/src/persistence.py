@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import numpy as np
-from .graph_utils import compute_avg_step_length, set_distance_restraint
+from .graph_utils import compute_avg_step_length
+from .restraints import set_distance_restraint
 
 def worm_like_chain_model(h, L, _lambda):
     """
@@ -48,7 +49,7 @@ def worm_like_chain_model(h, L, _lambda):
 
 DISTRIBUTIONS = {"WCM": worm_like_chain_model, }
 
-def generate_end_end_distances(specs, avg_step_length, seed=None):
+def generate_end_end_distances(specs, avg_step_length, max_path_length, seed=None):
     """
     Subsample a distribution of end-to-end distances given a
     persistence length, residue graph, and theoretical model.
@@ -110,15 +111,15 @@ def sample_end_to_end_distances(molecules, topology, nonbond_matrix, seed=None):
     for specs in topology.persistences:
         molecule = molecules[specs.mol_idxs[0]]
         # compute the average step length end-to-end
-        avg_step_length = compute_avg_step_length(molecule,
-                                                  specs.mol_idxs[0],
-                                                  specs.start,
-                                                  nonbond_matrix,
-                                                  stop=None)
-
+        avg_step_length, max_length = compute_avg_step_length(molecule,
+                                                              specs.mol_idxs[0],
+                                                              specs.start,
+                                                              nonbond_matrix,
+                                                              stop=specs.stop)
         # generate a distribution of end-to-end distances
-        distribution = generate_end_end_distances(molecule,
-                                                  specs,
+        distribution = generate_end_end_distances(specs,
+                                                  avg_step_length,
+                                                  max_length,
                                                   seed=seed)
 
         # for each molecule in the batch assign one end-to-end
@@ -126,7 +127,7 @@ def sample_end_to_end_distances(molecules, topology, nonbond_matrix, seed=None):
         for mol_idx, dist in zip(specs.mol_idxs, distribution):
             set_distance_restraint(molecules[mol_idx],
                                    specs.stop,
-                                   dist,
                                    specs.start,
+                                   dist,
                                    avg_step_length)
     return molecules

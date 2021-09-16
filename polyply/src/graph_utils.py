@@ -171,4 +171,4 @@ def compute_avg_step_length(molecule, mol_idx, start, nonbond_matrix, stop=None)
     # define range of end-to-end distances
     # increment is the average step length
     avg_step_length = max_path_length / len(end_to_end_path)
-    return avg_step_length
+    return avg_step_length, max_path_length
