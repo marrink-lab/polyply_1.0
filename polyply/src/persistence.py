@@ -19,7 +19,7 @@ from .build_file_parser import apply_node_distance_restraints
 def worm_like_chain_model(h, L, _lambda):
     """
     Probability to find an end-to-end distance h given a contour length
-    L and presistence length _lambda according to the Worm-Like-Chain
+    L and persistence length _lambda according to the Worm-Like-Chain
     model. The equation was published in: "Lee, H. and Pastor, R.W., 2011.
     Coarse-grained model for PEGylated lipids: effect of PEGylation on the
     size and shape of self-assembled structures. The Journal of Physical
@@ -32,7 +32,7 @@ def worm_like_chain_model(h, L, _lambda):
     L: float
         the contour length
     _lambda: float
-        the presistence length
+        the persistence length
 
     Returns
     -------
@@ -53,13 +53,13 @@ DISTRIBUTIONS = {"WCM": worm_like_chain_model, }
 def generate_end_end_distances(molecule, specs, nonbond_matrix, seed=None):
     """
     Subsample a distribution of end-to-end distances given a
-    presistence length, residue graph, and theoretical model.
+    persistence length, residue graph, and theoretical model.
 
     Parameters
     ----------
     molecule: `class:nx.Graph`
     specs: `tuple`
-        named tuple with attributes model, lp (i.e. presistence length),
+        named tuple with attributes model, lp (i.e. persistence length),
         start, stop node indices, which define the ends and mol_idxs
         which are the indices of the batch of molecules.
     nonbond_matrix: `:class:polyply.src.nb_engine.NonBondMatrix`
@@ -102,8 +102,8 @@ def sample_end_to_end_distances(molecules, topology, nonbond_matrix, seed=None):
     """
     Apply distance restraints to the ends of molecules given a distribution
     of end-to-end distances generated from a given theoreical model. The
-    topology attribute presistences contains a list of batches of molecules
-    for which a presistence length has been given. This function generates
+    topology attribute persistences contains a list of batches of molecules
+    for which a persistence length has been given. This function generates
     the corresponding restraints taking into account the actual path
     lengths as defined by the volumes in the super-CG model.
 
@@ -125,7 +125,7 @@ def sample_end_to_end_distances(molecules, topology, nonbond_matrix, seed=None):
         list of updated molecules
     """
     # loop over all batches of molecules
-    for specs in topology.presistences:
+    for specs in topology.persistences:
         molecule = molecules[specs.mol_idxs[0]]
         # generate a distribution of end-to-end distances
         distribution = generate_end_end_distances(molecule,
