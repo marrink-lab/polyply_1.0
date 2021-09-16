@@ -99,7 +99,7 @@ class BuildDirector(SectionLineParser):
         """
         tokens = line.split()
         node = int(tokens[0])
-        ref_position = np.array(list(map(float, tokens[1:4])))
+        ref_position = np.array(tokens[1:4], dtype=float)
         dist = float(tokens[4])
 
         for idx in self.current_molidxs:
@@ -134,15 +134,10 @@ class BuildDirector(SectionLineParser):
                                 self.rw_options[(molecule.mol_name, mol_idx)])
 
             if (molecule.mol_name, mol_idx) in self.distance_restraints:
-                for ref_node, target_node in self.distance_restraints[(molecule.mol_name, mol_idx)]:
-                    distance = self.distance_restraints[(molecule.mol_name, mol_idx)][(ref_node, target_node)]
-                    molecule = apply_node_distance_restraints(molecule, target_node, distance, ref_node=ref_node)
+                molecule.meta["distance_restraints"] = self.distance_restraints[(molecule.mol_name, mol_idx)]
 
             if (molecule.mol_name, mol_idx) in self.position_restraints:
-                for target_node in self.position_restraints[(molecule.mol_name, mol_idx)]:
-                    distance, ref_pos = self.position_restraints[(molecule.mol_name, mol_idx)][target_node]
-                    molecule = apply_node_distance_restraints(molecule, target_node, distance, ref_pos=ref_pos)
-
+                molecule.meta["position_restraints"] = self.position_restraints[(molecule.mol_name, mol_idx)]
 
         super().finalize
 

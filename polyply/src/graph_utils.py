@@ -137,7 +137,7 @@ def find_connecting_edges(res_graph, molecule, nodes):
 
     return edges
 
-def _compute_path_length_cartesian(molecule, mol_idx, path, nonbond_matrix):
+def _compute_path_length_cartesian(mol_idx, path, nonbond_matrix):
     """
     Computes the maximum length a graph path based on the super-CG model
     step length. This is equivalent to the contour length of the super
@@ -150,3 +150,25 @@ def _compute_path_length_cartesian(molecule, mol_idx, path, nonbond_matrix):
                                                       node_from,
                                                       node_to)[0]
     return path_length
+
+def compute_avg_step_length(molecule, mol_idx, start, nonbond_matrix, stop=None):
+    """
+    Computes an average step length on a path.
+    """
+    # compute the shortest path between the ends in graph space
+    if stop:
+        end_to_end_path = nx.algorithms.shortest_path(molecule,
+                                                      source=start,
+                                                      target=stop)
+        end_to_end_path = list(zip(end_to_end_path[:-1], end_to_end_path[1:]))
+    else:
+        end_to_end_path = list(nx.dfs_edges(molecule, source=start))
+
+    # compute the length of that path in cartesian space
+    max_path_length = _compute_path_length_cartesian(mol_idx,
+                                                     end_to_end_path,
+                                                     nonbond_matrix)
+    # define range of end-to-end distances
+    # increment is the average step length
+    avg_step_length = max_path_length / len(end_to_end_path)
+    return avg_step_length

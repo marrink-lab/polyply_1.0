@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import networkx as nx
+from .graph_utils import compute_avg_step_length
 
 def set_distance_restraint(molecule, target_node, ref_node, distance, avg_step_length):
     """
@@ -39,8 +40,7 @@ def set_distance_restraint(molecule, target_node, ref_node, distance, avg_step_l
         node key if this is a distance restraint
     distance: float
         the cartesian distance between nodes in nm
-    avg_step_length: float
-        the average step length in nm
+    nonbond_matrix: `polyply.src.nonbond_matrix.NonBondMatrix`
     """
     graph_distances_target = nx.single_source_shortest_path_length(molecule,
                                                                    source=target_node,
@@ -88,8 +88,7 @@ def set_position_restraint(molecule, target_node, ref_pos, distance, avg_step_le
         reference position
     distance: float
         the cartesian distance between nodes in nm
-    avg_step_length: float
-        the average step length in nm
+    nonbond_matrix: `polyply.src.nonbond_matrix.NonBondMatrix`
     """
     graph_distances_target = nx.single_source_shortest_path_length(molecule,
                                                                    source=target_node,
@@ -104,5 +103,37 @@ def set_position_restraint(molecule, target_node, ref_pos, distance, avg_step_le
 
         current_restraints = molecule.nodes[node].get('restraint', [])
         molecule.nodes[node]['position_restraint'] = current_restraints + [ref_pos, bound]
+
+    return None
+
+def set_restraints(molecules, nonbond_matrix):
+    """
+    Set position and/or distance restraints for all molecules.
+    """
+    for mol_idx, mol in enumerate(molecules):
+
+        if "distance_restraints" in mol.meta:
+            distance_restraints = mol.meta["distance_restraints"]
+            for ref_node, target_node in distance_restraints:
+                avg_step_length = compute_avg_step_length(mol,
+                                                          mol_idx,
+                                                          target_node,
+                                                          nonbond_matrix,
+                                                          stop_node=ref_node)
+
+                distance = distance_restraints[(ref_node, target_node)]
+                set_distance_restraint(mol, target_node, ref_node, distance, avg_step_length)
+
+        if "position_restraints" in mol.meta:
+            position_restraints = mol.meta["position_restraints"]
+            for ref_node, target_node in position_restraints:
+                avg_step_length = compute_avg_step_length(mol,
+                                                          mol_idx,
+                                                          target_node,
+                                                          nonbond_matrix,
+                                                          stop_node=ref_node)
+
+                distance = position_restraints[(ref_node, target_node)]
+                set_position_restraint(mol, target_node, ref_node, distance, avg_step_length)
 
     return None
