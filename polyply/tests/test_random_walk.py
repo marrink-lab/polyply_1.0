@@ -189,29 +189,9 @@ def test_is_overlap(nonbond_matrix, molecule, new_point, result):
     assert proccessor._is_overlap(new_point, 7, nrexcl=1) == result
 
 @pytest.mark.parametrize('new_point, restraint, result', (
-    # position restraint true; node on top of point
-    (np.array([1., 1., 2.96]),
-    (1, ('pos', np.array([1., 1., 2.96])), 0.0),
-     True
-    ),
-    # position restraint true; node distance from point
-    (np.array([1., 1., 2.96]),
-    (7, ('pos', np.array([1., 1., 2.96])), 2.59),
-     True
-    ),
-    # position restraint flase; node on top of point
-    (np.array([1., 2., 2.96]),
-    (1, ('pos', np.array([1., 1., 2.96])), 0.0),
-     False
-    ),
-    # position restraint flase; node distance from point
-    (np.array([1., 1., 10.]),
-    (7, ('pos', np.array([1., 1., 2.96])), 0.59),
-     False
-    ),
     #distance restraint true
     (np.array([1., 1., 2.96]),
-    (7, ('node', 0), 2.59),
+    (7, , ),
      True
     ),
     #distance restraint false
@@ -219,11 +199,14 @@ def test_is_overlap(nonbond_matrix, molecule, new_point, result):
     (7, ('node', 0), 0.0),
      False
     ),
+    # two restraints true
+
+    # two restraints false
 ))
 def test_checks_milestone(nonbond_matrix, molecule, new_point, restraint, result):
     nb_matrix = add_positions(nonbond_matrix, 6)
     proccessor = RandomWalk(mol_idx=0, nonbond_matrix=nb_matrix)
-    molecule.nodes[7]["restraint"] = [restraint]
+    molecule.nodes[7]["distance_restraint"] = [restraint]
     proccessor.molecule = molecule
     # node 4 is already placed and hence is skipped over
     assert proccessor.checks_milestones(7, new_point, 0.47) == result
