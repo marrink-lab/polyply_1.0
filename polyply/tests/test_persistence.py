@@ -18,13 +18,14 @@ import pytest
 import textwrap
 import math
 import numpy as np
+import networkx as nx
 from vermouth.forcefield import ForceField
 import polyply
 from polyply.src.topology import Topology
 from polyply.src.top_parser import read_topology
 from polyply.src.nonbond_engine import NonBondEngine
 from polyply.src.build_file_parser import Presistence_specs
-from polyply.src.presistence import sample_end_to_end_distances
+from polyply.src.persistence import sample_end_to_end_distances
 
 
 @pytest.fixture
@@ -147,29 +148,33 @@ def topology():
 
 #Presistence_specs = namedtuple("presist", ["model", "lp", "start", "stop", "mol_idxs"])
 
-@pytest.mark.parametrize('specs, seed, expected', (
+@pytest.mark.parametrize('specs, seed, avg_step, expected', (
    # single restraint
    (
     [Presistence_specs(model="WCM", lp=1.5, start=0, stop=21, mol_idxs=list(range(0, 10)))],
     63594,
+    [0.6533],
     [5.88, 4.57333333, 5.88, 7.84, 7.84, 9.14666667, 7.84, 3.26666667, 5.22666667, 6.53333333],
    ),
    # single restraint different random seed
    (
     [Presistence_specs(model="WCM", lp=1.5, start=0, stop=21, mol_idxs=list(range(0, 10)))],
     23893,
+    [0.6533],
     [6.53333333, 4.57333333, 9.14666667, 10.45333333, 6.53333333, 7.84, 7.84, 8.49333333, 7.84, 7.84],
    ),
    # smaller range; note parser requires consecutive mol_idxs
    (
     [Presistence_specs(model="WCM", lp=1.5, start=0, stop=21, mol_idxs=list(range(0, 5)))],
     63594,
+    [0.6533],
     [5.88, 4.57333333, 5.88, 7.84, 7.84],
    ),
    # test second group of molecules with mixed residues
    (
     [Presistence_specs(model="WCM", lp=1.5, start=0, stop=21, mol_idxs=list(range(10, 15)))],
     63594,
+    [0.4995],
     [5.4947619, 4.49571429, 5.4947619, 6.49380952, 6.49380952],
    ),
    # test two groups of the same molecule
@@ -177,6 +182,7 @@ def topology():
     [Presistence_specs(model="WCM", lp=1.5, start=0, stop=21, mol_idxs=list(range(0, 5))),
      Presistence_specs(model="WCM", lp=1.5, start=0, stop=21, mol_idxs=list(range(5, 10))),],
     63594,
+    [0.6533, 0.6533],
     [5.88, 4.57333333, 5.88, 7.84, 7.84, 5.88, 4.57333333, 5.88, 7.84, 7.84],
    ),
    # test three groups of the molecules two are the same one different
@@ -185,11 +191,12 @@ def topology():
      Presistence_specs(model="WCM", lp=3.0, start=0, stop=21, mol_idxs=list(range(5, 10))),
      Presistence_specs(model="WCM", lp=1.5, start=0, stop=21, mol_idxs=list(range(10, 15))),],
     63594,
-    [5.88, 4.573, 5.88, 7.84, 7.84, 9.1467, 8.4933, 9.146, 10.4533, 10.4533, 
+    [0.6533, 0.6533, 0.4995],
+    [5.88, 4.573, 5.88, 7.84, 7.84, 9.1467, 8.4933, 9.146, 10.4533, 10.4533,
      5.498, 4.4957, 5.4947,  6.4938, 6.4938]
    )))
-def test_presistence(topology, specs, seed, expected):
-    topology.presistences = specs
+def test_persistence(topology, specs, seed, avg_step, expected):
+    topology.persistences = specs
     nb_engine =  NonBondEngine.from_topology(topology.molecules,
                                              topology,
                                              box=np.array([10., 10., 10.]))
@@ -199,11 +206,22 @@ def test_presistence(topology, specs, seed, expected):
                                             nb_engine,
                                             seed=seed)
     mol_count = 0
-    for batch in specs:
+    for batch_count, batch in enumerate(specs):
         for mol_idx in batch.mol_idxs:
             mol = molecules[mol_idx]
+            mol_copy = nx.Graph()
+            mol_copy.add_edges_from(mol.edges)
+            distance = expected[mol_count]
+            avg_step_length = avg_step[batch_count]
+            polyply.src.restraints.set_distance_restraint(mol_copy,
+                                                          batch.stop,
+                                                          batch.start,
+                                                          distance,
+                                                          avg_step_length)
             for node in mol.nodes:
-                assert math.isclose(mol.nodes[node]["restraint"][-1][-1],
-                                    expected[mol_count],
-                                    abs_tol=10e-3)
+                restr = mol.nodes[node]["distance_restraints"]
+                ref_restr = mol_copy.nodes[node]["distance_restraints"]
+                for new, ref in zip(restr, ref_restr):
+                   assert pytest.approx(new, ref)
             mol_count += 1
+        batch_count += 1

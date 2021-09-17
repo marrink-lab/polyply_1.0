@@ -305,26 +305,18 @@ class RandomWalk(Processor):
     def checks_milestones(self,
                           current_node,
                           current_position,
-                          step_length,
                           fudge=0.7):
 
-        if 'restraint' in self.molecule.nodes[current_node]:
-            for restraint in self.molecule.nodes[current_node]['restraint']:
-                graph_distance, max_path, ref_pos, distance = restraint
-                if ref_pos[0] == 'node':
-                    ref_pos = self.nonbond_matrix.get_point(self.mol_idx, ref_pos[1])
-                else:
-                    ref_pos = ref_pos[1]
-
+        if 'distance_restraints' in self.molecule.nodes[current_node]:
+            for restraint in self.molecule.nodes[current_node]['distance_restraints']:
+                ref_node, upper_bound, lower_bound = restraint
+                ref_pos = self.nonbond_matrix.get_point(self.mol_idx, ref_node)
                 current_distance = self.nonbond_matrix.pbc_min_dist(current_position, ref_pos)
 
-
-                if current_distance > graph_distance * step_length  + distance:
+                if current_distance > upper_bound:
                     return False
 
-                print(current_node, max_path, graph_distance)
-                print(current_distance, distance/max_path * (max_path-graph_distance))
-                if  current_distance < distance/max_path * (max_path-graph_distance):
+                if current_distance < lower_bound:
                     return False
 
         return True

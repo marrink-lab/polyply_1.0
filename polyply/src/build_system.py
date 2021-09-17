@@ -23,7 +23,8 @@ from tqdm import tqdm
 from .random_walk import RandomWalk
 from .linalg_functions import norm_sphere
 from .nonbond_engine import NonBondEngine
-from .presistence import sample_end_to_end_distances
+from .persistence import sample_end_to_end_distances
+from .restraints import set_restraints
 
 def _compute_box_size(topology, density):
     """
@@ -233,7 +234,9 @@ class BuildSystem():
         # generate the nonbonded matrix wrapping all information about molecular
         # interactions
         self.nonbond_matrix = NonBondEngine.from_topology(self.molecules, self.topology, self.box)
-        # apply sampling of presistence length
-        self.molecules = sample_end_to_end_distances(self.molecules, self.topology, self.nonbond_matrix)
+        # apply sampling of persistence length
+        sample_end_to_end_distances(self.molecules, self.topology, self.nonbond_matrix)
+        # set any other distance and/or position restraints
+        set_restraints(self.topology, self.nonbond_matrix)
         self._compose_system(self.molecules)
         return molecules

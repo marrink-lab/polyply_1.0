@@ -12,14 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import numpy as np
-import networkx as nx
-from .graph_utils import _compute_path_length_cartesian
-from .build_file_parser import apply_node_distance_restraints
+from .graph_utils import compute_avg_step_length
+from .restraints import set_distance_restraint
 
 def worm_like_chain_model(h, L, _lambda):
     """
     Probability to find an end-to-end distance h given a contour length
-    L and presistence length _lambda according to the Worm-Like-Chain
+    L and persistence length _lambda according to the Worm-Like-Chain
     model. The equation was published in: "Lee, H. and Pastor, R.W., 2011.
     Coarse-grained model for PEGylated lipids: effect of PEGylation on the
     size and shape of self-assembled structures. The Journal of Physical
@@ -32,7 +31,7 @@ def worm_like_chain_model(h, L, _lambda):
     L: float
         the contour length
     _lambda: float
-        the presistence length
+        the persistence length
 
     Returns
     -------
@@ -50,16 +49,15 @@ def worm_like_chain_model(h, L, _lambda):
 
 DISTRIBUTIONS = {"WCM": worm_like_chain_model, }
 
-def generate_end_end_distances(molecule, specs, nonbond_matrix, seed=None):
+def generate_end_end_distances(specs, avg_step_length, max_path_length, seed=None):
     """
     Subsample a distribution of end-to-end distances given a
-    presistence length, residue graph, and theoretical model.
+    persistence length, residue graph, and theoretical model.
 
     Parameters
     ----------
-    molecule: `class:nx.Graph`
     specs: `tuple`
-        named tuple with attributes model, lp (i.e. presistence length),
+        named tuple with attributes model, lp (i.e. persistence length),
         start, stop node indices, which define the ends and mol_idxs
         which are the indices of the batch of molecules.
     nonbond_matrix: `:class:polyply.src.nb_engine.NonBondMatrix`
@@ -71,22 +69,7 @@ def generate_end_end_distances(molecule, specs, nonbond_matrix, seed=None):
     np.ndarray
         an array of end-to-end distances with shape (1, len(mol_idxs))
     """
-    # compute the shortest path between the ends in graph space
-    end_to_end_path = nx.algorithms.shortest_path(molecule,
-                                                  source=specs.start,
-                                                  target=specs.stop)
-    end_to_end_path = list(zip(end_to_end_path[:-1], end_to_end_path[1:]))
-    # compute the length of that path in cartesian space
-    mol_idx = specs.mol_idxs[0]
-    max_path_length = _compute_path_length_cartesian(molecule,
-                                                     mol_idx,
-                                                     end_to_end_path,
-                                                     nonbond_matrix)
-    # define range of end-to-end distances
-    # increment is the average step length
-    incrm = max_path_length / len(end_to_end_path)
-    ee_distances = np.arange(incrm, max_path_length, incrm)
-    np.random.seed(seed)
+    ee_distances = np.arange(avg_step_length, max_path_length, avg_step_length)
     # generate the distribution and sample it
     probabilities = DISTRIBUTIONS[specs.model](ee_distances, max_path_length, specs.lp)
     #TODO
@@ -102,8 +85,8 @@ def sample_end_to_end_distances(molecules, topology, nonbond_matrix, seed=None):
     """
     Apply distance restraints to the ends of molecules given a distribution
     of end-to-end distances generated from a given theoreical model. The
-    topology attribute presistences contains a list of batches of molecules
-    for which a presistence length has been given. This function generates
+    topology attribute persistences contains a list of batches of molecules
+    for which a persistence length has been given. This function generates
     the corresponding restraints taking into account the actual path
     lengths as defined by the volumes in the super-CG model.
 
@@ -125,18 +108,26 @@ def sample_end_to_end_distances(molecules, topology, nonbond_matrix, seed=None):
         list of updated molecules
     """
     # loop over all batches of molecules
-    for specs in topology.presistences:
+    for specs in topology.persistences:
         molecule = molecules[specs.mol_idxs[0]]
+        # compute the average step length end-to-end
+        avg_step_length, max_length = compute_avg_step_length(molecule,
+                                                              specs.mol_idxs[0],
+                                                              specs.start,
+                                                              nonbond_matrix,
+                                                              stop=specs.stop)
         # generate a distribution of end-to-end distances
-        distribution = generate_end_end_distances(molecule,
-                                                  specs,
-                                                  nonbond_matrix,
+        distribution = generate_end_end_distances(specs,
+                                                  avg_step_length,
+                                                  max_length,
                                                   seed=seed)
+
         # for each molecule in the batch assign one end-to-end
         # distance restraint from the distribution.
         for mol_idx, dist in zip(specs.mol_idxs, distribution):
-            apply_node_distance_restraints(molecules[mol_idx],
-                                           specs.stop,
-                                           dist,
-                                           ref_node=specs.start)
+            set_distance_restraint(molecules[mol_idx],
+                                   specs.stop,
+                                   specs.start,
+                                   dist,
+                                   avg_step_length)
     return molecules

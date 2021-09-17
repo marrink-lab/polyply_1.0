@@ -18,60 +18,6 @@ from vermouth.parser_utils import SectionLineParser
 
 Presistence_specs = namedtuple("presist", ["model", "lp", "start", "stop", "mol_idxs"])
 
-def apply_node_distance_restraints(molecule, target_node, distance, ref_node=None, ref_pos=None):
-    """
-    Given two nodes that have to be restraint to each other at a given distance
-    or a node that has to be restraint to a position at a given distance, this
-    function computes for each node in the graph the graph distance to the target
-    node and sets the 'restraint' attribute.
-
-    This attribute contains the graph distance to the target node, the distance of
-    the restraint and in case of position restraints a reference position and in
-    case of distance restraints a node key. This information is picked up by the
-    `:func:polyply.src.random_walk.checks_milstones` function, which then checks
-    that each node that is placed is at most the graph distance times an average
-    step_length times a fudge factor from the reference node position or the
-    reference position given.
-
-    Parameters
-    ----------
-    molecule: :class:`vermouth.molecule.Molecule`
-    target_node: abc.hashable
-    distance: float
-    ref_node: abc.hashable
-        node key if this is a distance restraint
-    ref_pos: np.ndarray(3)
-        reference position if this is a position restraint
-
-    Returns
-    -------
-    molecule: :class:`vermouth.molecule.Molecule`
-        the molecule with the restraint attributes
-    """
-    max_path = nx.algorithms.shortest_path_length(molecule,
-                                                  source=ref_node,
-                                                  target=target_node)
-    for node in molecule.nodes:
-        if node == target_node:
-            graph_distance = 1.0
-        else:
-            graph_distance = nx.algorithms.shortest_path_length(molecule,
-                                                                source=node,
-                                                                target=target_node)
-        if isinstance(ref_node, int):
-            ref = ('node', ref_node)
-        else:
-            ref = ('pos', ref_pos)
-
-
-
-        if 'restraint' in molecule.nodes[node]:
-            molecule.nodes[node]['restraint'].append((graph_distance, max_path, ref, distance))
-        else:
-            molecule.nodes[node]['restraint'] = [(graph_distance, max_path, ref, distance)]
-
-    return molecule
-
 class BuildDirector(SectionLineParser):
 
     COMMENT_CHAR = ';'
@@ -84,9 +30,7 @@ class BuildDirector(SectionLineParser):
         self.build_options = defaultdict(list)
         self.current_molname = None
         self.rw_options = dict()
-        self.distance_restraints = defaultdict(dict)
-        self.position_restraints = defaultdict(dict)
-        self.presistence_length = {}
+        self.persistence_length = {}
 
     @SectionLineParser.section_parser('molecule')
     def _molecule(self, line, lineno=0):
@@ -144,7 +88,7 @@ class BuildDirector(SectionLineParser):
         nodes = tuple(map(int, tokens[:2]))
         dist = float(tokens[2])
         for idx in self.current_molidxs:
-            self.distance_restraints[(self.current_molname, idx)][nodes] = dist
+            self.topology.distance_restraints[(self.current_molname, idx)][nodes] = dist
 
     @SectionLineParser.section_parser('molecule', 'position_restraints')
     def _position_restraints(self, line, lineno=0):
@@ -153,24 +97,24 @@ class BuildDirector(SectionLineParser):
         """
         tokens = line.split()
         node = int(tokens[0])
-        ref_position = np.array(list(map(float, tokens[1:4])))
+        ref_position = np.array(tokens[1:4], dtype=float)
         dist = float(tokens[4])
 
         for idx in self.current_molidxs:
-            self.position_restraints[(self.current_molname, idx)][node] = (ref_position, dist)
+            self.topology.position_restraints[(self.current_molname, idx)][node] = (ref_position, dist)
 
-    @SectionLineParser.section_parser('molecule', 'presistence_length')
-    def _presistence_length(self, line, lineno=0):
+    @SectionLineParser.section_parser('molecule', 'persistence_length')
+    def _persistence_length(self, line, lineno=0):
         """
         Generate a distribution of end-to-end distance restraints based on a set
-        presistence length.
+        persistence length.
         """
         tokens = line.split()
         model = tokens.pop(0)
         lp = float(tokens.pop(0))
         start, stop = list(map(int, tokens))
         specs = Presistence_specs(*[model, lp, start, stop, self.current_molidxs])
-        self.topology.presistences.append(specs)
+        self.topology.persistences.append(specs)
 
     def finalize(self, lineno=0):
         """
@@ -187,6 +131,7 @@ class BuildDirector(SectionLineParser):
                 self._tag_nodes(molecule, "rw_options",
                                 self.rw_options[(molecule.mol_name, mol_idx)])
 
+<<<<<<< HEAD
             if (molecule.mol_name, mol_idx) in self.distance_restraints:
                 for ref_node, target_node in self.distance_restraints[(molecule.mol_name, mol_idx)]:
                     distance = self.distance_restraints[(molecule.mol_name, mol_idx)][(ref_node, target_node)]
@@ -199,6 +144,8 @@ class BuildDirector(SectionLineParser):
                     molecule = apply_node_distance_restraints(molecule, target_node, distance, ref_pos=ref_pos)
 
 
+=======
+>>>>>>> milestoneing
         super().finalize
 
     @staticmethod
