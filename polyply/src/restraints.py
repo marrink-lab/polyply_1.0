@@ -65,22 +65,21 @@ def set_distance_restraint(molecule, target_node, ref_node, distance, avg_step_l
 
     return None
 
-def set_restraints(molecules, nonbond_matrix):
+def set_restraints(topology, nonbond_matrix):
     """
     Set position and/or distance restraints for all molecules.
     """
-    for mol_idx, mol in enumerate(molecules):
+    for mol_name, mol_idx in topology.distance_restraints:
+        distance_restraints = topology.distance_restraints[(mol_name, mol_idx)]
+        mol = topology.molecules[mol_idx]
+        for ref_node, target_node in distance_restraints:
+            avg_step_length = compute_avg_step_length(mol,
+                                                      mol_idx,
+                                                      target_node,
+                                                      nonbond_matrix,
+                                                      stop_node=ref_node)
 
-        if "distance_restraints" in mol.meta:
-            distance_restraints = mol.meta["distance_restraints"]
-            for ref_node, target_node in distance_restraints:
-                avg_step_length = compute_avg_step_length(mol,
-                                                          mol_idx,
-                                                          target_node,
-                                                          nonbond_matrix,
-                                                          stop_node=ref_node)
-
-                distance = distance_restraints[(ref_node, target_node)]
-                set_distance_restraint(mol, target_node, ref_node, distance, avg_step_length)
+            distance = distance_restraints[(ref_node, target_node)]
+            set_distance_restraint(mol, target_node, ref_node, distance, avg_step_length)
 
     return None

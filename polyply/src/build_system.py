@@ -237,6 +237,6 @@ class BuildSystem():
         # apply sampling of persistence length
         sample_end_to_end_distances(self.molecules, self.topology, self.nonbond_matrix)
         # set any other distance and/or position restraints
-        set_restraints(self.molecules, self.nonbond_matrix)
+        set_restraints(self.topology, self.nonbond_matrix)
         self._compose_system(self.molecules)
         return molecules
