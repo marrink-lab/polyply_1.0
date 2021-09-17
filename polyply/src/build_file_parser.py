@@ -30,8 +30,6 @@ class BuildDirector(SectionLineParser):
         self.build_options = defaultdict(list)
         self.current_molname = None
         self.rw_options = dict()
-        self.distance_restraints = defaultdict(dict)
-        self.position_restraints = defaultdict(dict)
         self.persistence_length = {}
 
     @SectionLineParser.section_parser('molecule')
@@ -90,7 +88,7 @@ class BuildDirector(SectionLineParser):
         nodes = tuple(map(int, tokens[:2]))
         dist = float(tokens[2])
         for idx in self.current_molidxs:
-            self.distance_restraints[(self.current_molname, idx)][nodes] = dist
+            self.topology.distance_restraints[(self.current_molname, idx)][nodes] = dist
 
     @SectionLineParser.section_parser('molecule', 'position_restraints')
     def _position_restraints(self, line, lineno=0):
@@ -103,7 +101,7 @@ class BuildDirector(SectionLineParser):
         dist = float(tokens[4])
 
         for idx in self.current_molidxs:
-            self.position_restraints[(self.current_molname, idx)][node] = (ref_position, dist)
+            self.topology.position_restraints[(self.current_molname, idx)][node] = (ref_position, dist)
 
     @SectionLineParser.section_parser('molecule', 'persistence_length')
     def _persistence_length(self, line, lineno=0):
@@ -132,12 +130,6 @@ class BuildDirector(SectionLineParser):
             if (molecule.mol_name, mol_idx)  in self.rw_options:
                 self._tag_nodes(molecule, "rw_options",
                                 self.rw_options[(molecule.mol_name, mol_idx)])
-
-            if (molecule.mol_name, mol_idx) in self.distance_restraints:
-                molecule.meta["distance_restraints"] = self.distance_restraints[(molecule.mol_name, mol_idx)]
-
-            if (molecule.mol_name, mol_idx) in self.position_restraints:
-                molecule.meta["position_restraints"] = self.position_restraints[(molecule.mol_name, mol_idx)]
 
         super().finalize
 

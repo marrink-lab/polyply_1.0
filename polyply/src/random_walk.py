@@ -310,8 +310,8 @@ class RandomWalk(Processor):
         if 'distance_restraints' in self.molecule.nodes[current_node]:
             for restraint in self.molecule.nodes[current_node]['distance_restraints']:
                 ref_node, upper_bound, lower_bound = restraint
-                current_distance = self.nonbond_matrix.pbc_min_dist(current_position, ref_node)
-
+                ref_pos = self.nonbond_matrix.get_point(self.mol_idx, ref_node)
+                current_distance = self.nonbond_matrix.pbc_min_dist(current_position, ref_pos)
                 if current_distance > upper_bound:
                     return False
 

@@ -94,7 +94,7 @@ def test_distance_position_restraints(line, parser, attribute, key, expected):
     processor.current_molidxs = [1]
     processor.current_molname = "PEO"
     getattr(processor, parser)(line)
-    result =  getattr(processor, attribute)[("PEO", 1)]
+    result =  getattr(top, attribute)[("PEO", 1)]
     if attribute == "distance_restraints":
         assert result[key] == expected
     else:
