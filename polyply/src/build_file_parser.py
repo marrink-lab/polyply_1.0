@@ -131,21 +131,6 @@ class BuildDirector(SectionLineParser):
                 self._tag_nodes(molecule, "rw_options",
                                 self.rw_options[(molecule.mol_name, mol_idx)])
 
-<<<<<<< HEAD
-            if (molecule.mol_name, mol_idx) in self.distance_restraints:
-                for ref_node, target_node in self.distance_restraints[(molecule.mol_name, mol_idx)]:
-                    distance = self.distance_restraints[(molecule.mol_name, mol_idx)][(ref_node, target_node)]
-                    print(distance)
-                    molecule = apply_node_distance_restraints(molecule, target_node, distance, ref_node=ref_node)
-
-            if (molecule.mol_name, mol_idx) in self.position_restraints:
-                for target_node in self.position_restraints[(molecule.mol_name, mol_idx)]:
-                    distance, ref_pos = self.position_restraints[(molecule.mol_name, mol_idx)][target_node]
-                    molecule = apply_node_distance_restraints(molecule, target_node, distance, ref_pos=ref_pos)
-
-
-=======
->>>>>>> milestoneing
         super().finalize
 
     @staticmethod

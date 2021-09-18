@@ -81,7 +81,7 @@ def generate_end_end_distances(specs, avg_step_length, max_path_length, seed=Non
                                   size=len(specs.mol_idxs))
     return ee_samples
 
-def sample_end_to_end_distances(molecules, topology, nonbond_matrix, seed=None):
+def sample_end_to_end_distances(topology, nonbond_matrix, seed=None):
     """
     Apply distance restraints to the ends of molecules given a distribution
     of end-to-end distances generated from a given theoreical model. The
@@ -109,7 +109,7 @@ def sample_end_to_end_distances(molecules, topology, nonbond_matrix, seed=None):
     """
     # loop over all batches of molecules
     for specs in topology.persistences:
-        molecule = molecules[specs.mol_idxs[0]]
+        molecule = topology.molecules[specs.mol_idxs[0]]
         # compute the average step length end-to-end
         avg_step_length, max_length = compute_avg_step_length(molecule,
                                                               specs.mol_idxs[0],
@@ -121,13 +121,15 @@ def sample_end_to_end_distances(molecules, topology, nonbond_matrix, seed=None):
                                                   avg_step_length,
                                                   max_length,
                                                   seed=seed)
-
+        print(distribution)
         # for each molecule in the batch assign one end-to-end
         # distance restraint from the distribution.
         for mol_idx, dist in zip(specs.mol_idxs, distribution):
-            set_distance_restraint(molecules[mol_idx],
+            set_distance_restraint(topology.molecules[mol_idx],
                                    specs.stop,
                                    specs.start,
                                    dist,
                                    avg_step_length)
-    return molecules
+ #       print("------------presis---------------------------------")  
+ #       print(molecule.nodes(data=True))
+#    return molecules

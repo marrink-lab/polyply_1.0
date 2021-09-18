@@ -34,6 +34,12 @@ from .build_file_parser import read_build_file
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
+def reset_molecules(topology):
+    for mol in topology.molecules:
+        for node in mol.nodes:
+            if "position" in mol.nodes[node] and  mol.nodes[node]["build"]:
+                del mol.nodes[node]["position"]
+
 def find_starting_node_from_spec(topology, start_nodes):
     """
     Given a definition of one or multiple nodes in
@@ -123,24 +129,27 @@ def gen_coords(args):
     annotate_processor = AnnotateLigands(topology, args.ligands)
     annotate_processor.run_system(topology)
     LOGGER.info("generating system coordinates",  type="step")
-    BuildSystem(topology,
-                start_dict=start_dict,
-                density=args.density,
-                max_force=args.max_force,
-                grid_spacing=args.grid_spacing,
-                maxiter=args.maxiter,
-                box=args.box,
-                step_fudge=args.step_fudge,
-                ignore=args.ignore,
-                grid=args.grid,
-                nrewind=args.nrewind).run_system(topology.molecules)
-    annotate_processor.split_ligands()
-    LOGGER.info("backmapping to target resolution",  type="step")
-    Backmap(fudge_coords=args.bfudge).run_system(topology)
-    # Write output
-    LOGGER.info("writing output",  type="step")
-    command = ' '.join(sys.argv)
-    system = topology.convert_to_vermouth_system()
-    vermouth.gmx.gro.write_gro(system, args.outpath, precision=7,
-                               title=command, box=topology.box)
-    DeferredFileWriter().write()
+    for i in range(0, 5):
+        LOGGER.info("Replica "+str(i),  type="step")
+        BuildSystem(topology,
+                    start_dict=start_dict,
+                    density=args.density,
+                    max_force=args.max_force,
+                    grid_spacing=args.grid_spacing,
+                    maxiter=args.maxiter,
+                    box=args.box,
+                    step_fudge=args.step_fudge,
+                    ignore=args.ignore,
+                    grid=args.grid,
+                    nrewind=args.nrewind).run_system(topology.molecules)
+        annotate_processor.split_ligands()
+        LOGGER.info("backmapping to target resolution",  type="step")
+        Backmap(fudge_coords=args.bfudge).run_system(topology)
+        # Write output
+        LOGGER.info("writing output",  type="step")
+        command = ' '.join(sys.argv)
+        system = topology.convert_to_vermouth_system()
+        vermouth.gmx.gro.write_gro(system, str(i)+".gro", precision=7,
+                                   title=command, box=topology.box)
+        DeferredFileWriter().write()
+        reset_molecules(topology)

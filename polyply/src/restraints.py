@@ -42,6 +42,7 @@ def set_distance_restraint(molecule, target_node, ref_node, distance, avg_step_l
         the cartesian distance between nodes in nm
     nonbond_matrix: `polyply.src.nonbond_matrix.NonBondMatrix`
     """
+    #print(distance, target_node, ref_node)
     graph_distances_target = nx.single_source_shortest_path_length(molecule,
                                                                    source=target_node,
                                                                    cutoff=None)
@@ -73,11 +74,11 @@ def set_restraints(topology, nonbond_matrix):
         distance_restraints = topology.distance_restraints[(mol_name, mol_idx)]
         mol = topology.molecules[mol_idx]
         for ref_node, target_node in distance_restraints:
-            avg_step_length = compute_avg_step_length(mol,
+            avg_step_length, total = compute_avg_step_length(mol,
                                                       mol_idx,
                                                       target_node,
                                                       nonbond_matrix,
-                                                      stop_node=ref_node)
+                                                      stop=ref_node)
 
             distance = distance_restraints[(ref_node, target_node)]
             set_distance_restraint(mol, target_node, ref_node, distance, avg_step_length)
