@@ -235,8 +235,8 @@ class BuildSystem():
         # interactions
         self.nonbond_matrix = NonBondEngine.from_topology(self.molecules, self.topology, self.box)
         # apply sampling of persistence length
-        sample_end_to_end_distances(self.molecules, self.topology, self.nonbond_matrix)
+        sample_end_to_end_distances(self.topology, self.nonbond_matrix)
         # set any other distance and/or position restraints
         set_restraints(self.topology, self.nonbond_matrix)
-        self._compose_system(self.molecules)
+        self._compose_system(self.topology.molecules)
         return molecules
