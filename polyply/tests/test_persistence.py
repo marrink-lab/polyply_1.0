@@ -199,16 +199,13 @@ def test_persistence(topology, specs, seed, avg_step, expected):
     topology.persistences = specs
     nb_engine =  NonBondEngine.from_topology(topology.molecules,
                                              topology,
-                                             box=np.array([10., 10., 10.]))
+                                             box=np.array([15., 15., 15.]))
 
-    molecules = sample_end_to_end_distances(topology.molecules,
-                                            topology,
-                                            nb_engine,
-                                            seed=seed)
+    sample_end_to_end_distances(topology, nb_engine, seed=seed)
     mol_count = 0
     for batch_count, batch in enumerate(specs):
         for mol_idx in batch.mol_idxs:
-            mol = molecules[mol_idx]
+            mol = topology.molecules[mol_idx]
             mol_copy = nx.Graph()
             mol_copy.add_edges_from(mol.edges)
             distance = expected[mol_count]
@@ -225,3 +222,14 @@ def test_persistence(topology, specs, seed, avg_step, expected):
                    assert pytest.approx(new, ref)
             mol_count += 1
         batch_count += 1
+
+def test_error(topology):
+    specs = [Presistence_specs(model="WCM", lp=1.5, start=0, stop=21, mol_idxs=list(range(0, 10)))]
+    seed = 63594
+    avg_step = 0.6533
+    topology.persistences = specs
+    nb_engine = NonBondEngine.from_topology(topology.molecules,
+                                            topology,
+                                            box=np.array([1., 1., 1.]))
+    with pytest.raises(IOError):
+        sample_end_to_end_distances(topology, nb_engine, seed=seed)
