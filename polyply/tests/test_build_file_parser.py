@@ -65,7 +65,7 @@ def test_base_parser_geometry(line, expected):
     processor.current_molidxs = [1]
     processor.current_molname = "PEO"
     processor._rw_restriction(line)
-    result =  processor.rw_options[("PEO", 1)] 
+    result =  processor.rw_options[("PEO", 1)]
     assert result.keys() == expected.keys()
     for key in processor.rw_options[("PEO", 1)]:
         if key != "parameters":
