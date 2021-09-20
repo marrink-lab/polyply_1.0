@@ -49,7 +49,7 @@ def worm_like_chain_model(h, L, _lambda):
 
 DISTRIBUTIONS = {"WCM": worm_like_chain_model, }
 
-def generate_end_end_distances(specs, avg_step_length, max_path_length, seed=None):
+def generate_end_end_distances(specs, avg_step_length, max_path_length, box, limit_prob=1e-5., seed=None):
     """
     Subsample a distribution of end-to-end distances given a
     persistence length, residue graph, and theoretical model.
@@ -72,6 +72,23 @@ def generate_end_end_distances(specs, avg_step_length, max_path_length, seed=Non
     ee_distances = np.arange(avg_step_length, max_path_length, avg_step_length)
     # generate the distribution and sample it
     probabilities = DISTRIBUTIONS[specs.model](ee_distances, max_path_length, specs.lp)
+    # filter the end-to-end distances
+    ee_distances = ee_distances[probabilities > limit_prob]
+    probabilities = probabilities[probabilities > limit_prob]
+    # raise warning if the smallest box vector is smaller than the largest end-to-end
+    # distance
+    if max(ee_distance) > np.sqrt(3*min(box)**2):
+        msg = ("Sampling the end-to-end distance distribution yielded end-to-end distances\n"
+               "that are larger than the box diagonal. This will not work. Please increase the\n"
+               "box to be at least {:3.8F} nm.")
+        raise IOError(msg.format(max(ee_distance)))
+
+    if max(ee_distances) > min(box):
+        msg = ("Your smallest box vector {:3.8F} is smaller than the largest end-to-end distance {3.8F}.\n"
+               "This can lead to artifically oriented chains. You might want to increase the\n"
+               "boxsize to be at least {:3.8F}")
+        LOGGER.warning(msg, min(box), max(ee_distances), min(box))
+
     #TODO
     #replace choice by https://numpy.org/doc/stable/reference/random/generated/
     #                          numpy.random.Generator.choice.html#numpy.random.Generator.choice
@@ -81,7 +98,7 @@ def generate_end_end_distances(specs, avg_step_length, max_path_length, seed=Non
                                   size=len(specs.mol_idxs))
     return ee_samples
 
-def sample_end_to_end_distances(molecules, topology, nonbond_matrix, seed=None):
+def sample_end_to_end_distances(topology, nonbond_matrix, seed=None):
     """
     Apply distance restraints to the ends of molecules given a distribution
     of end-to-end distances generated from a given theoreical model. The
@@ -92,8 +109,6 @@ def sample_end_to_end_distances(molecules, topology, nonbond_matrix, seed=None):
 
     Parameters
     ----------
-    molecules: list[`:class:nx.Graph`]
-        the molecules as graphs
     topology: `class:polyply.src.topology.Topology`
         the topology of the system
     nonbond_matrix: `:class:polyply.src.nb_engine.NonBondMatrix`
@@ -109,7 +124,7 @@ def sample_end_to_end_distances(molecules, topology, nonbond_matrix, seed=None):
     """
     # loop over all batches of molecules
     for specs in topology.persistences:
-        molecule = molecules[specs.mol_idxs[0]]
+        molecule = topology.molecules[specs.mol_idxs[0]]
         # compute the average step length end-to-end
         avg_step_length, max_length = compute_avg_step_length(molecule,
                                                               specs.mol_idxs[0],
@@ -120,12 +135,13 @@ def sample_end_to_end_distances(molecules, topology, nonbond_matrix, seed=None):
         distribution = generate_end_end_distances(specs,
                                                   avg_step_length,
                                                   max_length,
+                                                  box=nonbond_matrix.boxsize,
                                                   seed=seed)
 
         # for each molecule in the batch assign one end-to-end
         # distance restraint from the distribution.
         for mol_idx, dist in zip(specs.mol_idxs, distribution):
-            set_distance_restraint(molecules[mol_idx],
+            set_distance_restraint(topology.molecules[mol_idx],
                                    specs.stop,
                                    specs.start,
                                    dist,
