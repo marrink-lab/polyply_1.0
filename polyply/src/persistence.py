@@ -39,7 +39,7 @@ def worm_like_chain_model(h, L, _lambda):
         probability to find the end-to-end distance
     """
     alpha = 3*L/(4*_lambda)
-    C = (np.pi**3/2. * np.exp(-alpha)*alpha**(-3/2.)*(1 + 3/(alpha) + (15/4)/alpha**2.))**-1. 
+    C = (np.pi**3/2. * np.exp(-alpha)*alpha**(-3/2.)*(1 + 3/(alpha) + (15/4)/alpha**2.))**-1.
     A = 4*np.pi*h**2.*C
     B = L*(1-(h/L)**2.)**9/2.
     D = -3*L

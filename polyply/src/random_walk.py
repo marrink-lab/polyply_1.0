@@ -302,10 +302,7 @@ class RandomWalk(Processor):
         return norm(force_vect) > self.max_force
 
 
-    def checks_milestones(self,
-                          current_node,
-                          current_position,
-                          fudge=0.7):
+    def checks_milestones(self, current_node, current_position, fudge=0.7):
 
         if 'distance_restraints' in self.molecule.nodes[current_node]:
             for restraint in self.molecule.nodes[current_node]['distance_restraints']:
