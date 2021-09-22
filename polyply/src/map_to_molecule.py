@@ -86,7 +86,6 @@ class MapToMolecule(Processor):
         self.node_to_fragment = {}
         self.fragments = []
         self.multiblock_correspondence = []
-        self.added_fragments = []
         self.added_fragment_nodes = []
         self.force_field = force_field
 
@@ -225,7 +224,7 @@ class MapToMolecule(Processor):
             # in this case we just added a new multiblock residue so we store
             # the correspondence as well as keep track of the nodes that are
             # part of that fragment
-            if "from_itp" in meta_molecule.nodes[node] and node not in self.added_fragments:
+            if "from_itp" in meta_molecule.nodes[node] and node not in self.added_fragment_nodes:
                 fragment_nodes = list(self.fragments[self.node_to_fragment[node]])
                 self.added_fragment_nodes += fragment_nodes
                 self.multiblock_correspondence.append(correspondence)
