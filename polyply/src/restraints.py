@@ -20,11 +20,11 @@ def set_distance_restraint(molecule, target_node, ref_node, distance, avg_step_l
     distance, this function computes for each node in the molecule an upper and lower
     bound references distance that this node needs to have in relation to the target node.
     Those two distances are stored in the 'restraint' attribute of the node.  This information
-    is picked up by the `:func:polyply.src.random_walk.checks_milstones` function, which
+    is picked up by the `:func:polyply.src.random_walk.checks_milestones` function, which
     then checks that each bound is met by a step in the random_walk.
 
     The upper_bound is defined as the graph distance of a given node from the target_node
-    times the average step_length plus the cartesian distance at which the nodes are
+    times the avg_step_length plus the cartesian distance at which the node is
     restrained.
 
     The lower_bound is defined as the average step-length multiplied by the distance of the
@@ -40,7 +40,8 @@ def set_distance_restraint(molecule, target_node, ref_node, distance, avg_step_l
         node key if this is a distance restraint
     distance: float
         the cartesian distance between nodes in nm
-    nonbond_matrix: `polyply.src.nonbond_matrix.NonBondMatrix`
+    avg_step_length: float
+        average step length (nm)
     """
     graph_distances_target = nx.single_source_shortest_path_length(molecule,
                                                                    source=target_node,
@@ -66,6 +67,12 @@ def set_distance_restraint(molecule, target_node, ref_node, distance, avg_step_l
 def set_restraints(topology, nonbond_matrix):
     """
     Set position and/or distance restraints for all molecules.
+
+    topology: `:class:polyply.src.topology.nonbond_matrix`
+        the topology of the system
+    nonbond_matrix: `:class:polyply.src.NonBondEngine`
+        the nonbond matrix which stores all the pairwise interaction
+        parameters and positions
     """
     for mol_name, mol_idx in topology.distance_restraints:
         distance_restraints = topology.distance_restraints[(mol_name, mol_idx)]

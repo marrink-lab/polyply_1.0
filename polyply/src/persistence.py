@@ -63,7 +63,15 @@ def generate_end_end_distances(specs, avg_step_length, max_path_length, box, lim
         named tuple with attributes model, lp (i.e. persistence length),
         start, stop node indices, which define the ends and mol_idxs
         which are the indices of the batch of molecules.
-    nonbond_matrix: `:class:polyply.src.nb_engine.NonBondMatrix`
+    avg_step_length: float
+        average step length (nm)
+    max_path_length: float
+        total length of the path (nm)
+    box: np.ndarray
+        box vectors
+    limit_prob: float
+        the lowest probability after which to truncate end-to-end distance
+        distribution
     seed: int
         random seed for subsampling distribution
 
