@@ -12,8 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import numpy as np
+from vermouth.log_helpers import StyleAdapter, get_logger
 from .graph_utils import compute_avg_step_length
 from .restraints import set_distance_restraint
+
+LOGGER = StyleAdapter(get_logger(__name__))
 
 def worm_like_chain_model(h, L, _lambda):
     """
@@ -49,7 +52,7 @@ def worm_like_chain_model(h, L, _lambda):
 
 DISTRIBUTIONS = {"WCM": worm_like_chain_model, }
 
-def generate_end_end_distances(specs, avg_step_length, max_path_length, box, limit_prob=1e-5., seed=None):
+def generate_end_end_distances(specs, avg_step_length, max_path_length, box, limit_prob=1e-5, seed=None):
     """
     Subsample a distribution of end-to-end distances given a
     persistence length, residue graph, and theoretical model.
@@ -77,16 +80,16 @@ def generate_end_end_distances(specs, avg_step_length, max_path_length, box, lim
     probabilities = probabilities[probabilities > limit_prob]
     # raise warning if the smallest box vector is smaller than the largest end-to-end
     # distance
-    if max(ee_distance) > np.sqrt(3*min(box)**2):
+    if max(ee_distances) > np.sqrt(3*min(box)**2):
         msg = ("Sampling the end-to-end distance distribution yielded end-to-end distances\n"
                "that are larger than the box diagonal. This will not work. Please increase the\n"
-               "box to be at least {:3.8F} nm.")
-        raise IOError(msg.format(max(ee_distance)))
+               "box to be at least {} nm.")
+        raise IOError(msg.format(max(ee_distances)))
 
     if max(ee_distances) > min(box):
-        msg = ("Your smallest box vector {:3.8F} is smaller than the largest end-to-end distance {3.8F}.\n"
+        msg = ("Your smallest box vector {} is smaller than the largest end-to-end distance {}.\n"
                "This can lead to artifically oriented chains. You might want to increase the\n"
-               "boxsize to be at least {:3.8F}")
+               "boxsize to be at least {}")
         LOGGER.warning(msg, min(box), max(ee_distances), min(box))
 
     #TODO
@@ -146,4 +149,3 @@ def sample_end_to_end_distances(topology, nonbond_matrix, seed=None):
                                    specs.start,
                                    dist,
                                    avg_step_length)
-    return molecules
