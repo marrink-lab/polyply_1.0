@@ -13,13 +13,15 @@
 # limitations under the License.
 from collections import defaultdict, namedtuple
 import numpy as np
-import networkx as nx
 from vermouth.parser_utils import SectionLineParser
 
-Persistence_specs = namedtuple("persistence", ["model", "lp", "start", "stop", "mol_idxs"])
+PersistenceSpecs = namedtuple("persistence", ["model", "lp", "start", "stop", "mol_idxs"])
 
 class BuildDirector(SectionLineParser):
-
+    """
+    Parser for the build file which dictates additional information
+    about how to generate the system in the random-walk.
+    """
     COMMENT_CHAR = ';'
 
     def __init__(self, molecules, topology):
@@ -74,7 +76,7 @@ class BuildDirector(SectionLineParser):
         geometry_def = {"resname": tokens[0],
                         "start": int(tokens[1]),
                         "stop":  int(tokens[2]),
-                        "parameters": [np.array([float(tokens[3]), float(tokens[4]), float(tokens[5])]),
+                        "parameters": [np.array(tokens[3:6], dytpe=float),
                                        float(tokens[6])]}
         for idx in self.current_molidxs:
             self.rw_options[(self.current_molname, idx)] = geometry_def
@@ -101,7 +103,8 @@ class BuildDirector(SectionLineParser):
         dist = float(tokens[4])
 
         for idx in self.current_molidxs:
-            self.topology.position_restraints[(self.current_molname, idx)][node] = (ref_position, dist)
+            self.topology.position_restraints[(self.current_molname, idx)][node] = (ref_position,
+                                                                                    dist)
 
     @SectionLineParser.section_parser('molecule', 'persistence_length')
     def _persistence_length(self, line, lineno=0):
@@ -111,9 +114,9 @@ class BuildDirector(SectionLineParser):
         """
         tokens = line.split()
         model = tokens.pop(0)
-        lp = float(tokens.pop(0))
+        persistence_length = float(tokens.pop(0))
         start, stop = list(map(int, tokens))
-        specs = Persistence_specs(*[model, lp, start, stop, self.current_molidxs])
+        specs = PersistenceSpecs(*[model, persistence_length, start, stop, self.current_molidxs])
         self.topology.persistences.append(specs)
 
     def finalize(self, lineno=0):
