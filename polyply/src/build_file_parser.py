@@ -16,7 +16,7 @@ import numpy as np
 import networkx as nx
 from vermouth.parser_utils import SectionLineParser
 
-Presistence_specs = namedtuple("presist", ["model", "lp", "start", "stop", "mol_idxs"])
+Persistence_specs = namedtuple("persistence", ["model", "lp", "start", "stop", "mol_idxs"])
 
 class BuildDirector(SectionLineParser):
 
@@ -113,7 +113,7 @@ class BuildDirector(SectionLineParser):
         model = tokens.pop(0)
         lp = float(tokens.pop(0))
         start, stop = list(map(int, tokens))
-        specs = Presistence_specs(*[model, lp, start, stop, self.current_molidxs])
+        specs = Persistence_specs(*[model, lp, start, stop, self.current_molidxs])
         self.topology.persistences.append(specs)
 
     def finalize(self, lineno=0):
