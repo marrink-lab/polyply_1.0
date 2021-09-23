@@ -131,14 +131,16 @@ class BuildSystem():
         self.box_grid = grid
         self.box = box
         self.start_dict = start_dict
+        self.molecules = []
+        self.nonbond_matrix = None
 
         # first we check if **kwargs are actually in random-walk
         valid_kwargs = inspect.getfullargspec(RandomWalk).args
         for kwarg in kwargs:
             if kwarg not in valid_kwargs:
-               msg = ("Keyword argument {} is not valid for the "
-                      "RandomWalk processor class. ")
-               raise TypeError(msg.format(kwarg))
+                msg = ("Keyword argument {} is not valid for the "
+                       "RandomWalk processor class. ")
+                raise TypeError(msg.format(kwarg))
         self.rwargs = kwargs
 
         # set the box if a box is given

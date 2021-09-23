@@ -18,7 +18,7 @@ from .restraints import set_distance_restraint
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
-def worm_like_chain_model(h, L, _lambda):
+def worm_like_chain_model(ee_dist, r_max, persistence_length):
     """
     Probability to find an end-to-end distance h given a contour length
     L and persistence length _lambda according to the Worm-Like-Chain
@@ -29,9 +29,9 @@ def worm_like_chain_model(h, L, _lambda):
 
     Parameters
     ----------
-    h: float
+    ee_dist: float
         the end-to-end distance
-    L: float
+    r_max: float
         the contour length
     _lambda: float
         the persistence length
@@ -41,18 +41,25 @@ def worm_like_chain_model(h, L, _lambda):
     float
         probability to find the end-to-end distance
     """
-    alpha = 3*L/(4*_lambda)
-    C = (np.pi**3/2. * np.exp(-alpha)*alpha**(-3/2.)*(1 + 3/(alpha) + (15/4)/alpha**2.))**-1.
-    A = 4*np.pi*h**2.*C
-    B = L*(1-(h/L)**2.)**9/2.
-    D = -3*L
-    E = 4*_lambda*(1-(h/L)**2.)
-    return A/B * np.exp(D/E)
+    alpha = 3*r_max/(4* persistence_length)
+    factor_1 = (np.pi**3/2. * np.exp(-alpha)*alpha**(-3/2.)*(1 + 3/(alpha) + (15/4)/alpha**2.))**-1.
+    nominator = 4*np.pi*ee_dist**2.* factor_1
+
+    denominator = r_max*(1-(ee_dist/r_max)**2.)**9/2.
+    nominator_exp = -3*r_max
+    denominator_exp = 4* persistence_length*(1-(ee_dist/r_max)**2.)
+
+    return nominator/denominator * np.exp(nominator_exp/denominator_exp)
 
 
 DISTRIBUTIONS = {"WCM": worm_like_chain_model, }
 
-def generate_end_end_distances(specs, avg_step_length, max_path_length, box, limit_prob=1e-5, seed=None):
+def generate_end_end_distances(specs,
+                               avg_step_length,
+                               max_path_length,
+                               box,
+                               limit_prob=1e-5,
+                               seed=None):
     """
     Subsample a distribution of end-to-end distances given a
     persistence length, residue graph, and theoretical model.
