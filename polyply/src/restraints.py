@@ -14,7 +14,7 @@
 import networkx as nx
 from .graph_utils import compute_avg_step_length
 
-def set_distance_restraint(molecule, target_node, ref_node, distance, avg_step_length):
+def set_distance_restraint(molecule, target_node, ref_node, distance, avg_step_length, path):
     """
     Given that a target_node is supposed to be restrained to a reference node at a given
     distance, this function computes for each node in the molecule an upper and lower
@@ -50,9 +50,11 @@ def set_distance_restraint(molecule, target_node, ref_node, distance, avg_step_l
     graph_distances_ref = nx.single_source_shortest_path_length(molecule,
                                                                 source=ref_node,
                                                                 cutoff=None)
-    for node in molecule.nodes:
+    for node in path:
         if node == target_node:
             graph_distance = 1.0
+        elif node == ref_node:
+            continue
         else:
             graph_distance = graph_distances_target[node]
 
@@ -86,5 +88,9 @@ def set_restraints(topology, nonbond_matrix):
                                                          nonbond_matrix,
                                                          stop=ref_node)
 
+            path = nx.algorithms.shortest_path(mol,
+                                               source=target_node,
+                                               target=ref_node)
+
             distance = distance_restraints[(ref_node, target_node)]
-            set_distance_restraint(mol, target_node, ref_node, distance, avg_step_length)
+            set_distance_restraint(mol, target_node, ref_node, distance, avg_step_length, path)
