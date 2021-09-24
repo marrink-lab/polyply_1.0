@@ -209,6 +209,9 @@ class NonBondEngine():
         float
             the minimum distance
         """
+        if all(pos_a == np.inf) or all(pos_b == np.inf):
+            return np.nan
+
         box = self.boxsize
         min_dist = np.min(np.vstack(((pos_a - pos_b) % box, (pos_b - pos_a) % box)), axis=0)
         dist = np.linalg.norm(min_dist)
