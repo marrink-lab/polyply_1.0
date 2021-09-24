@@ -26,11 +26,7 @@ from polyply.tests.test_build_file_parser import test_molecule
      1: [(4, 1.97, 1.125)],
      2: [(4, 2.44, 0.75)],
      3: [(4, 2.91, 0.375)],
-     4: [(4, 3.38, 0.0)],
-     5: [(4, 3.85, 0.375)],
-     6: [(4, 4.32, 0.75)],
-     7: [(4, 4.79, 1.125)],
-     8: [(4, 5.26, 1.5)],}
+     4: [(4, 3.38, 0.0)],}
    ),
    (4, 0, 1.5, 0.47,
     {0: [(0, 3.38, 0.375)],
@@ -38,19 +34,21 @@ from polyply.tests.test_build_file_parser import test_molecule
      2: [(0, 2.34, 1.5)],
      3: [(0, 1.97, 4.5)],
      4: [(0, 1.97, 6.0)],
-     5: [(0, 1.97, 7.5)],
-     6: [(0, 2.44, 4.5)],
-     7: [(0, 2.91, 3.5)],
-     8: [(0, 3.38, 3.0)],}
+    }
    ),
    ))
 def test_set_distance_restraint(test_molecule, target_node, ref_node, distance, avg_step_length, expected):
+
+    path = nx.algorithms.shortest_path(test_molecule,
+                                       source=target_node,
+                                       target=ref_node)
 
     polyply.src.restraints.set_distance_restraint(test_molecule,
                                                   target_node,
                                                   ref_node,
                                                   distance,
-                                                  avg_step_length)
+                                                  avg_step_length,
+                                                  path)
 
     attr_list = nx.get_node_attributes(test_molecule, "restraint")
     for node, restr_list in attr_list.items():
