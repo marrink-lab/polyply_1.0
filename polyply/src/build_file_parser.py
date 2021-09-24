@@ -76,7 +76,7 @@ class BuildDirector(SectionLineParser):
         geometry_def = {"resname": tokens[0],
                         "start": int(tokens[1]),
                         "stop":  int(tokens[2]),
-                        "parameters": [np.array(tokens[3:6], dytpe=float),
+                        "parameters": [np.array(tokens[3:6], dtype=float),
                                        float(tokens[6])]}
         for idx in self.current_molidxs:
             self.rw_options[(self.current_molname, idx)] = geometry_def
