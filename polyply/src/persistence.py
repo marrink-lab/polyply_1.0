@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import numpy as np
+import networkx as nx
 from vermouth.log_helpers import StyleAdapter, get_logger
 from .graph_utils import compute_avg_step_length
 from .restraints import set_distance_restraint
@@ -159,8 +160,14 @@ def sample_end_to_end_distances(topology, nonbond_matrix, seed=None):
         # for each molecule in the batch assign one end-to-end
         # distance restraint from the distribution.
         for mol_idx, dist in zip(specs.mol_idxs, distribution):
+
+            path = nx.algorithms.shortest_path(topology.molecules[mol_idx],
+                                               source=specs.stop,
+                                               target=specs.start)
+
             set_distance_restraint(topology.molecules[mol_idx],
                                    specs.stop,
                                    specs.start,
                                    dist,
-                                   avg_step_length)
+                                   avg_step_length,
+                                   path)
