@@ -1,6 +1,9 @@
 [ macros ]
 base_pairs "DA5|DA|DA3|DC5|DC|DC3|DT5|DT|DT3|DG5|DG|DG3"
 
+[ citations ]
+parmbsc1
+
 [ moleculetype ]
 DA5 3
 [ atoms ]
