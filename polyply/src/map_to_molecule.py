@@ -74,11 +74,11 @@ def _correspondence_to_residue(meta_molecule,
 
     return residue
 
-multiblock_error = ("Block {} seems to represent more than a single residue,\n"
-                    "but within the residue graph only a single corresponding node\n"
-                    "was found. If you have blocks representing multiresidues\n"
-                    "provide the full residue graph and label all nodes that\n"
-                    "corresponding to multiresidues with the \"from_itp\" label.")
+MultiblockError = ("Block {} seems to represent more than a single residue,\n"
+                   "but within the residue graph only a single corresponding node\n"
+                   "was found. If you have blocks representing multiresidues\n"
+                   "provide the full residue graph and label all nodes that\n"
+                   "corresponding to multiresidues with the \"from_itp\" label.")
 
 
 class MapToMolecule(Processor):
@@ -151,7 +151,6 @@ class MapToMolecule(Processor):
             block_name = restart_attr[list(fragment)[0]]
             if all([restart_attr[node] == block_name  for node in fragment]):
                 self.fragments.append(fragment)
-                block = self.force_field.blocks[block_name]
                 for node in fragment:
                     self.node_to_block[node] = block_name
                     self.node_to_fragment[node] = len(self.fragments) - 1
@@ -207,7 +206,7 @@ class MapToMolecule(Processor):
             # have to be already in the meta_molecule and they have to be
             # labelled as from_itp. If not we raise an error
             if len(set(nx.get_node_attributes(new_mol, "resid").values())) > 1:
-                raise IOError(multiblock_error.format(meta_molecule.nodes[start_node]["resname"]))
+                raise IOError(MultiblockError.format(meta_molecule.nodes[start_node]["resname"]))
 
             # we store the block together with the residue node
             meta_molecule.nodes[start_node]["graph"] = new_mol.copy()
@@ -228,7 +227,7 @@ class MapToMolecule(Processor):
                 if "from_itp" not in meta_molecule.nodes[node] and \
                 len(set(nx.get_node_attributes(block, "resid").values())) > 1:
 
-                    raise IOError(multiblock_error.format(self.node_to_block[node]))
+                    raise IOError(MultiblockError.format(self.node_to_block[node]))
 
                 correspondence = new_mol.merge_molecule(block)
 
