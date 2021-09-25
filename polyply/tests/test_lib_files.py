@@ -187,7 +187,7 @@ def _interaction_equal(interaction1, interaction2, inter_type):
     ['martini2', 'PS'],
     ['martini2', 'PEL'],
     ['martini2', 'PEO_PE'],
-    ['amber14sb_parmbsc1', 'DNA'],
+    ['parmbsc1', 'DNA'],
   # -> proteins?
 ])
 def test_integration_protein(tmp_path, monkeypatch, library, polymer):
