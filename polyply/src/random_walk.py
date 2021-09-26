@@ -20,6 +20,7 @@ from .processor import Processor
 from .linalg_functions import norm_sphere
 from .linalg_functions import _vector_angle_degrees
 from .graph_utils import neighborhood
+from .meta_molecule import _find_starting_node
 """
 Processor implementing a random-walk to generate
 coordinates for a meta-molecule.
