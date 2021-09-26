@@ -92,20 +92,6 @@ class BuildDirector(SectionLineParser):
         for idx in self.current_molidxs:
             self.topology.distance_restraints[(self.current_molname, idx)][nodes] = dist
 
-    @SectionLineParser.section_parser('molecule', 'position_restraints')
-    def _position_restraints(self, line, lineno=0):
-        """
-        Node position restraints.
-        """
-        tokens = line.split()
-        node = int(tokens[0])
-        ref_position = np.array(tokens[1:4], dtype=float)
-        dist = float(tokens[4])
-
-        for idx in self.current_molidxs:
-            self.topology.position_restraints[(self.current_molname, idx)][node] = (ref_position,
-                                                                                    dist)
-
     @SectionLineParser.section_parser('molecule', 'persistence_length')
     def _persistence_length(self, line, lineno=0):
         """
