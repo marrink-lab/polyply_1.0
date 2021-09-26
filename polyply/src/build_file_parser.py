@@ -89,8 +89,14 @@ class BuildDirector(SectionLineParser):
         tokens = line.split()
         nodes = tuple(map(int, tokens[:2]))
         dist = float(tokens[2])
+        # parse tolerance if given
+        if len(tokens) == 4:
+            tol = float(tokens[3])
+        else:
+            tol = 0.0
+
         for idx in self.current_molidxs:
-            self.topology.distance_restraints[(self.current_molname, idx)][nodes] = dist
+            self.topology.distance_restraints[(self.current_molname, idx)][nodes] = (dist, tol)
 
     @SectionLineParser.section_parser('molecule', 'persistence_length')
     def _persistence_length(self, line, lineno=0):
