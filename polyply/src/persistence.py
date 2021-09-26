@@ -162,7 +162,7 @@ def sample_end_to_end_distances(topology, nonbond_matrix, seed=None):
         for mol_idx, dist in zip(specs.mol_idxs, distribution):
             # we set the bfs root here to enforce that start
             # is placed before stop
-            topology.molecules[mol_idx].bfs_root = specs.start
+            topology.molecules[mol_idx].root = specs.start
             set_distance_restraint(topology.molecules[mol_idx],
                                    specs.stop,
                                    specs.start,
