@@ -61,6 +61,7 @@ def find_starting_node_from_spec(topology, start_nodes):
             mol_idx = res_spec['mol_idx']
             node = list(_find_nodes(topology.molecules[mol_idx], res_spec))[0]
             start_dict[mol_idx] = node
+            topology.molecules[mol_idx].bfs_root = node
         else:
             for idx, molecule in enumerate(topology.molecules):
                 if molecule.mol_name == res_spec['molname']:

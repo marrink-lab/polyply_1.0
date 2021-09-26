@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import networkx as nx
-from .graph_utils import compute_avg_step_length
+from .graph_utils import compute_avg_step_length, get_all_predecessors
 
-def set_distance_restraint(molecule, target_node, ref_node, distance, avg_step_length, path):
+def set_distance_restraint(molecule, target_node, ref_node, distance, avg_step_length):
     """
     Given that a target_node is supposed to be restrained to a reference node at a given
     distance, this function computes for each node in the molecule an upper and lower
@@ -43,30 +43,36 @@ def set_distance_restraint(molecule, target_node, ref_node, distance, avg_step_l
     avg_step_length: float
         average step length (nm)
     """
-    graph_distances_target = nx.single_source_shortest_path_length(molecule,
-                                                                   source=target_node,
-                                                                   cutoff=None)
+    # if the target node is a predecssor to the ref node the order
+    # needs to be reveresed because the target node will be placed
+    # before the ref node
+    # we get the path lying between target and reference node
+    try:
+        path = get_all_predecessors(molecule.bfs_tree, node=target_node, start_node=ref_node)
+    except IndexError:
+        ref_node, target_node = target_node, ref_node
+        path = get_all_predecessors(molecule.bfs_tree, node=target_node, start_node=ref_node)
 
-    graph_distances_ref = nx.single_source_shortest_path_length(molecule,
-                                                                source=ref_node,
-                                                                cutoff=None)
+    # graph distances can be computed from the path positions
+    graph_distances_ref = {node: path.index(node) for node in path}
+    graph_distances_target = {node: len(path) - 1 - graph_distances_ref[node] for node in path}
+
     for node in path:
-        if node == target_node:
-            graph_distance = 1.0
-        elif node == ref_node:
-            continue
-        else:
-            graph_distance = graph_distances_target[node]
+       if node == target_node:
+           graph_distance = 1.0
+       elif node == ref_node:
+           continue
+       else:
+           graph_distance = graph_distances_target[node]
 
-        upper_bound = graph_distance * avg_step_length + distance
+       upper_bound = graph_distance * avg_step_length + distance
+       avg_needed_step_length = distance / graph_distances_target[ref_node]
+       lower_bound = avg_needed_step_length * graph_distances_ref[node]
 
-        avg_needed_step_length = distance / graph_distances_target[ref_node]
-        lower_bound = avg_needed_step_length * graph_distances_ref[node]
-
-        current_restraints = molecule.nodes[node].get('distance_restraints', [])
-        molecule.nodes[node]['distance_restraints'] = current_restraints + [(ref_node,
-                                                                             upper_bound,
-                                                                             lower_bound)]
+       current_restraints = molecule.nodes[node].get('distance_restraints', [])
+       molecule.nodes[node]['distance_restraints'] = current_restraints + [(ref_node,
+                                                                            upper_bound,
+                                                                            lower_bound)]
 
 def set_restraints(topology, nonbond_matrix):
     """
@@ -81,16 +87,17 @@ def set_restraints(topology, nonbond_matrix):
     for mol_name, mol_idx in topology.distance_restraints:
         distance_restraints = topology.distance_restraints[(mol_name, mol_idx)]
         mol = topology.molecules[mol_idx]
+
+        if len(set(dict(nx.degree(g)).values())) > 1:
+            raise IOError("Distance restraints currently can only be applied to linear molecules.")
+
         for ref_node, target_node in distance_restraints:
+
             avg_step_length, _ = compute_avg_step_length(mol,
                                                          mol_idx,
                                                          target_node,
                                                          nonbond_matrix,
                                                          stop=ref_node)
 
-            path = nx.algorithms.shortest_path(mol,
-                                               source=target_node,
-                                               target=ref_node)
-
             distance = distance_restraints[(ref_node, target_node)]
-            set_distance_restraint(mol, target_node, ref_node, distance, avg_step_length, path)
+            set_distance_restraint(mol, target_node, ref_node, distance, avg_step_length)

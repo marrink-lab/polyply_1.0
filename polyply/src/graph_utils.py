@@ -172,3 +172,23 @@ def compute_avg_step_length(molecule, mol_idx, start, nonbond_matrix, stop=None)
     # increment is the average step length
     avg_step_length = max_path_length / len(end_to_end_path)
     return avg_step_length, max_path_length
+
+def get_all_predecessors(graph, node, start_node=0):
+    """
+    Find all predecessor nodes of node in graph, given the
+    start_node.
+
+    Parameters
+    ----------
+    graph: nx.DiGraph
+    node: abc.hashable
+    start_node: abc.hashable
+    """
+    predecessors = [node]
+    while True:
+        pre_node = list(graph.predecessors(predecessors[-1]))[0]
+        predecessors.append(pre_node)
+        if pre_node == start_node:
+            break
+    predecessors.reverse()
+    return predecessors
