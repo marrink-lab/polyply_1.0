@@ -129,6 +129,9 @@ def main():
     topology_group.add_argument('-ign', dest='ignore', type=str,
                                 help='molecules to ignore when building structure',
                                 default=[], nargs='+')
+    topology_group.add_argument('-cycles', dest='cycles', type=str,
+                                help='molecule names of cyclic molecules',
+                                default=[], nargs='+')
     topology_group.add_argument('-split', dest='split', nargs='+', type=str, default=[],
                                 help=('split single residue into more residues. The syntax is '
                                       '<resname>:<new_resname>-<atom1>,<atom2><etc>:<new_resname> '

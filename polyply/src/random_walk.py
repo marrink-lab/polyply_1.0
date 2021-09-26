@@ -376,7 +376,7 @@ class RandomWalk(Processor):
         else:
             first_node = self.start_node
 
-        meta_molecule.bfs_root = first_node
+        meta_molecule.root = first_node
 
         if "position" not in meta_molecule.nodes[first_node]:
             constrained = fulfill_geometrical_constraints(self.start,
@@ -394,7 +394,7 @@ class RandomWalk(Processor):
 
         vector_bundle = self.vector_sphere.copy()
         count = 0
-        path = list(meta_molecule.bfs_tree.edges)
+        path = list(meta_molecule.search_tree.edges)
         step_count = 0
 
         while step_count < len(path):
