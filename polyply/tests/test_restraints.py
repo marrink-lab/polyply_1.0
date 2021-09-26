@@ -21,39 +21,35 @@ import polyply
 from polyply.tests.test_build_file_parser import test_molecule
 
 @pytest.mark.parametrize('target_node, ref_node, distance, avg_step_length, expected',(
+    # test simple revers
    (0, 4, 1.5, 0.47,
-    {0: [(4, 1.97, 1.5)],
-     1: [(4, 1.97, 1.125)],
-     2: [(4, 2.44, 0.75)],
-     3: [(4, 2.91, 0.375)],
-     4: [(4, 3.38, 0.0)],}
+    {1: [(0, 2.91, 0.375)],
+     2: [(0, 2.44, 0.75)],
+     3: [(0, 1.97, 1.125)],
+     4: [(0, 1.97, 1.5)],}
    ),
+    # test simple case
    (4, 0, 1.5, 0.47,
-    {0: [(0, 3.38, 0.375)],
-     1: [(0, 2.91, 0.5)],
-     2: [(0, 2.34, 1.5)],
-     3: [(0, 1.97, 4.5)],
-     4: [(0, 1.97, 6.0)],
+    {1: [(0, 2.91, 0.375)],
+     2: [(0, 2.44, 0.75)],
+     3: [(0, 1.97, 1.125)],
+     4: [(0, 1.97, 1.5)],
     }
    ),
    ))
 def test_set_distance_restraint(test_molecule, target_node, ref_node, distance, avg_step_length, expected):
-
-    path = nx.algorithms.shortest_path(test_molecule,
-                                       source=target_node,
-                                       target=ref_node)
-
     polyply.src.restraints.set_distance_restraint(test_molecule,
                                                   target_node,
                                                   ref_node,
                                                   distance,
-                                                  avg_step_length,
-                                                  path)
+                                                  avg_step_length,)
 
-    attr_list = nx.get_node_attributes(test_molecule, "restraint")
+    attr_list = nx.get_node_attributes(test_molecule, "distance_restraints")
     for node, restr_list in attr_list.items():
         ref_list = expected[node]
         for ref_restr, new_restr in zip(ref_list, restr_list):
-            assert pytest.approx(ref_restr, new_restr)
-
+            print(new_restr)
+            assert ref_restr[0] == new_restr[0]
+            assert ref_restr[1] == new_restr[1]
+            assert ref_restr[2] == new_restr[2]
 
