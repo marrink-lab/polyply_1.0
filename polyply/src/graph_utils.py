@@ -151,26 +151,17 @@ def _compute_path_length_cartesian(mol_idx, path, nonbond_matrix):
                                                       node_to)[0]
     return path_length
 
-def compute_avg_step_length(molecule, mol_idx, start, nonbond_matrix, stop=None):
+def compute_avg_step_length(molecule, mol_idx, nonbond_matrix, path):
     """
     Computes an average step length on a path.
     """
-    # compute the shortest path between the ends in graph space
-    if stop:
-        end_to_end_path = nx.algorithms.shortest_path(molecule,
-                                                      source=start,
-                                                      target=stop)
-        end_to_end_path = list(zip(end_to_end_path[:-1], end_to_end_path[1:]))
-    else:
-        end_to_end_path = list(nx.dfs_edges(molecule, source=start))
-
     # compute the length of that path in cartesian space
     max_path_length = _compute_path_length_cartesian(mol_idx,
-                                                     end_to_end_path,
+                                                     path,
                                                      nonbond_matrix)
     # define range of end-to-end distances
     # increment is the average step length
-    avg_step_length = max_path_length / len(end_to_end_path)
+    avg_step_length = max_path_length / len(path)
     return avg_step_length, max_path_length
 
 def get_all_predecessors(graph, node, start_node=0):

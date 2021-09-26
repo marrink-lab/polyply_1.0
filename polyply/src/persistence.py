@@ -144,12 +144,16 @@ def sample_end_to_end_distances(topology, nonbond_matrix, seed=None):
     # loop over all batches of molecules
     for specs in topology.persistences:
         molecule = topology.molecules[specs.mol_idxs[0]]
+
+        # first we initalize the path
+        molecule.root = specs.start
+        path = list(molecule.search_tree.edges)
+
         # compute the average step length end-to-end
         avg_step_length, max_length = compute_avg_step_length(molecule,
                                                               specs.mol_idxs[0],
-                                                              specs.start,
                                                               nonbond_matrix,
-                                                              stop=specs.stop)
+                                                              path)
         # generate a distribution of end-to-end distances
         distribution = generate_end_end_distances(specs,
                                                   avg_step_length,
