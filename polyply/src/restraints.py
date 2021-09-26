@@ -88,7 +88,7 @@ def set_restraints(topology, nonbond_matrix):
         distance_restraints = topology.distance_restraints[(mol_name, mol_idx)]
         mol = topology.molecules[mol_idx]
 
-        if len(set(dict(nx.degree(g)).values())) > 1:
+        if set(dict(nx.degree(mol)).values()) != {1, 2}:
             raise IOError("Distance restraints currently can only be applied to linear molecules.")
 
         for ref_node, target_node in distance_restraints:
