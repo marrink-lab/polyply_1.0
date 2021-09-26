@@ -76,16 +76,16 @@ def test_base_parser_geometry(line, expected):
 
 @pytest.mark.parametrize('line, parser, attribute, key, expected', (
    # simple example
-   ("5 12.0 6.0 7.0 3.0",
-    "_position_restraints",
-    "position_restraints",
-    5,
-    (np.array([12.0, 6.0, 7.0]), 3.0)),
    ("5 25 3.0",
     "_distance_restraints",
     "distance_restraints",
     (5, 25),
-    3.0),
+    (3.0, 0.0)),
+   ("5 25 3.0 1.0",
+    "_distance_restraints",
+    "distance_restraints",
+    (5, 25),
+    (3.0, 1.0)),
    ))
 def test_distance_position_restraints(line, parser, attribute, key, expected):
     ff = vermouth.forcefield.ForceField(name='test_ff')

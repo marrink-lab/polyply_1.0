@@ -14,7 +14,12 @@
 import networkx as nx
 from .graph_utils import compute_avg_step_length, get_all_predecessors
 
-def set_distance_restraint(molecule, target_node, ref_node, distance, avg_step_length):
+def set_distance_restraint(molecule,
+                           target_node,
+                           ref_node,
+                           distance,
+                           avg_step_length,
+                           tolerance):
     """
     Given that a target_node is supposed to be restrained to a reference node at a given
     distance, this function computes for each node in the molecule an upper and lower
@@ -42,6 +47,8 @@ def set_distance_restraint(molecule, target_node, ref_node, distance, avg_step_l
         the cartesian distance between nodes in nm
     avg_step_length: float
         average step length (nm)
+    tolerance: float
+        absolute tolerance (nm)
     """
     # if the target node is a predecssor to the ref node the order
     # needs to be reveresed because the target node will be placed
@@ -65,10 +72,11 @@ def set_distance_restraint(molecule, target_node, ref_node, distance, avg_step_l
        else:
            graph_distance = graph_distances_target[node]
 
-       upper_bound = graph_distance * avg_step_length + distance
-       avg_needed_step_length = distance / graph_distances_target[ref_node]
-       lower_bound = avg_needed_step_length * graph_distances_ref[node]
+       upper_bound = graph_distance * avg_step_length + distance + tolerance
 
+       avg_needed_step_length = distance / graph_distances_target[ref_node]
+       lower_bound = avg_needed_step_length * graph_distances_ref[node] - tolerance
+       print(upper_bound, lower_bound)
        current_restraints = molecule.nodes[node].get('distance_restraints', [])
        molecule.nodes[node]['distance_restraints'] = current_restraints + [(ref_node,
                                                                             upper_bound,
@@ -99,5 +107,5 @@ def set_restraints(topology, nonbond_matrix):
                                                          nonbond_matrix,
                                                          stop=ref_node)
 
-            distance = distance_restraints[(ref_node, target_node)]
-            set_distance_restraint(mol, target_node, ref_node, distance, avg_step_length)
+            distance, tolerance = distance_restraints[(ref_node, target_node)]
+            set_distance_restraint(mol, target_node, ref_node, distance, avg_step_length, tolerance)

@@ -167,4 +167,5 @@ def sample_end_to_end_distances(topology, nonbond_matrix, seed=None):
                                    specs.stop,
                                    specs.start,
                                    dist,
-                                   avg_step_length)
+                                   avg_step_length,
+                                   tolerance=0.0)

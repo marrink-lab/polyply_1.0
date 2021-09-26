@@ -248,7 +248,8 @@ def test_persistence(topology, specs, seed, avg_step, expected):
                                                           batch.stop,
                                                           batch.start,
                                                           distance,
-                                                          avg_step_length,)
+                                                          avg_step_length,
+                                                          tolerance=0.0)
             for node in mol.nodes:
                 if "distance_restraints" in mol_copy.nodes[node]:
                     restr = mol.nodes[node]["distance_restraints"]
