@@ -131,11 +131,37 @@ def topology():
    19    20    1  0.47 2000
    20    21    1  0.47 2000
    21    22    1  0.47 2000
+    [ moleculetype ]
+    testC 1
+    [ atoms ]
+    1    N0   1   ASP    BB   1 0.00     45
+    2    N0   2   GLY    SC1  1 0.00     45
+    3    N0   3   ASP    SC2  1 0.00     45
+    4    N0   4   ASP    BB   2 0.00     45
+    5    N0   5   GLY    SC1  2 0.00     45
+    6    N0   6   ASP    SC2  2 0.00     45
+    7    N0   7   ASP    SC2  2 0.00     45
+    8    N0   8   GLU    SC2  2 0.00     45
+    9    N0   9   GLU    SC2  2 0.00     45
+   10    N0  10   GLY    SC2  2 0.00     45
+   11    N0  11   ASP    SC2  2 0.00     45
+    [ bonds ]
+    1     2    1  0.47 2000
+    2     3    1  0.47 2000
+    3     4    1  0.47 2000
+    4     5    1  0.47 2000
+    2     6    1  0.47 2000
+    6     7    1  0.47 2000
+    3     8    1  0.47 2000
+    8     9    1  0.47 2000
+    4    10    1  0.47 2000
+   10    11    1  0.47 2000
    [ system ]
     test system
     [ molecules ]
     testA 10
     testB 10
+    testC 5
     """
     lines = textwrap.dedent(top_lines)
     lines = lines.splitlines()
@@ -149,12 +175,19 @@ def topology():
 #PersistenceSpecs = namedtuple("presist", ["model", "lp", "start", "stop", "mol_idxs"])
 
 @pytest.mark.parametrize('specs, seed, avg_step, expected', (
-   # single restraint
+   # single restrain
    (
     [PersistenceSpecs(model="WCM", lp=1.5, start=0, stop=21, mol_idxs=list(range(0, 10)))],
     63594,
     [0.6533],
     [5.88, 4.57333333, 5.88, 7.84, 7.84, 9.14666667, 7.84, 3.26666667, 5.22666667, 6.53333333],
+   ),
+   # single restrain branched
+   (
+    [PersistenceSpecs(model="WCM", lp=1.5, start=0, stop=5, mol_idxs=list(range(20, 24)))],
+    63594,
+    [0.6533],
+    [5.88, 4.57333333, 5.88, 7.84],
    ),
    # single restraint different random seed
    (
@@ -206,21 +239,16 @@ def test_persistence(topology, specs, seed, avg_step, expected):
     for batch_count, batch in enumerate(specs):
         for mol_idx in batch.mol_idxs:
             mol = topology.molecules[mol_idx]
-            mol_copy = nx.Graph()
+            mol_copy = polyply.src.meta_molecule.MetaMolecule()
             mol_copy.add_edges_from(mol.edges)
             distance = expected[mol_count]
             avg_step_length = avg_step[batch_count]
-
-            path = nx.algorithms.shortest_path(mol_copy,
-                                               source=batch.stop,
-                                               target=batch.start)
 
             polyply.src.restraints.set_distance_restraint(mol_copy,
                                                           batch.stop,
                                                           batch.start,
                                                           distance,
-                                                          avg_step_length,
-                                                          path)
+                                                          avg_step_length,)
             for node in mol.nodes:
                 if "distance_restraints" in mol_copy.nodes[node]:
                     restr = mol.nodes[node]["distance_restraints"]
