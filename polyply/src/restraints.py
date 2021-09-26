@@ -100,12 +100,11 @@ def set_restraints(topology, nonbond_matrix):
             raise IOError("Distance restraints currently can only be applied to linear molecules.")
 
         for ref_node, target_node in distance_restraints:
-
+            path = list(mol.search_tree.edges)
             avg_step_length, _ = compute_avg_step_length(mol,
                                                          mol_idx,
-                                                         target_node,
                                                          nonbond_matrix,
-                                                         stop=ref_node)
+                                                         path)
 
             distance, tolerance = distance_restraints[(ref_node, target_node)]
             set_distance_restraint(mol, target_node, ref_node, distance, avg_step_length, tolerance)
