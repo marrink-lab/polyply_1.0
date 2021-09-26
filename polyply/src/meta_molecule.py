@@ -97,8 +97,8 @@ class MetaMolecule(nx.Graph):
         super().__init__(*args, **kwargs)
         self.molecule = None
         nx.set_node_attributes(self, True, "build")
-        self.__bfs_tree = None
-        self.bfs_root = None
+        self.__search_tree = None
+        self.root = None
 
     def add_monomer(self, current, resname, connections):
         """
@@ -185,14 +185,17 @@ class MetaMolecule(nx.Graph):
         return mapping
 
     @property
-    def bfs_tree(self):
+    def search_tree(self, dfs=False):
 
-        if self.__bfs_tree is None:
-            if self.bfs_root is None:
-                self.bfs_root =_find_starting_node(self)
-            self.__bfs_tree = nx.bfs_tree(self, source=self.bfs_root)
+        if self.__search_tree is None:
+            if self.root is None:
+                self.root =_find_starting_node(self)
+            if dfs:
+                self.__search_tree = nx.bfs_tree(self, source=self.root)
+            else:
+                self.__search_tree = nx.dfs_tree(self, source=self.root)
 
-        return self.__bfs_tree
+        return self.__search_tree
 
     @staticmethod
     def _block_graph_to_res_graph(block):

@@ -48,10 +48,10 @@ def set_distance_restraint(molecule, target_node, ref_node, distance, avg_step_l
     # before the ref node
     # we get the path lying between target and reference node
     try:
-        path = get_all_predecessors(molecule.bfs_tree, node=target_node, start_node=ref_node)
+        path = get_all_predecessors(molecule.search_tree, node=target_node, start_node=ref_node)
     except IndexError:
         ref_node, target_node = target_node, ref_node
-        path = get_all_predecessors(molecule.bfs_tree, node=target_node, start_node=ref_node)
+        path = get_all_predecessors(molecule.search_tree, node=target_node, start_node=ref_node)
 
     # graph distances can be computed from the path positions
     graph_distances_ref = {node: path.index(node) for node in path}
