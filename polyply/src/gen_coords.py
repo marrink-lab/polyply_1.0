@@ -74,6 +74,8 @@ def _initialize_cylces(topology, cycles):
         for mol_idx in topology.mol_idx_by_name[mol_name]:
             # initalize as dfs tree
             molecule = topology.molecules[mol_idx]
+            if set(dict(nx.degree(molecule)).values()) != {1, 2}:
+                raise IOError("Only linear cyclic molecules are allowed at the moment.")
             molecule.dfs=True
             nodes = (list(molecule.search_tree.edges)[0][0],
                      list(molecule.search_tree.edges)[-1][1])
@@ -134,7 +136,6 @@ def gen_coords(args):
     AnnotateLigands(topology, args.ligands).run_system(topology)
     LOGGER.info("generating system coordinates",  type="step")
     _initialize_cylces(topology, args.cycles)
-    print(args.cycles)
     BuildSystem(topology,
                 start_dict=start_dict,
                 density=args.density,
