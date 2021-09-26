@@ -74,14 +74,6 @@ def _filter_by_molname(molecules, ignore):
         if molecule.mol_name not in ignore:
             yield molecule
 
-def _initialize_cylces(molecules, cycles):
-    for mol_name in cycles:
-        for mol_idx in mol_idx_by_name[mol_name]:
-            # initalize as dfs tree
-            molecules[mol_idx].search_tree(dfs=True)
-            nodes = (molecule.search_tree.root, list(molecule.search_tree.edges)[-1][1])
-            topology.distance_restraints[(molname, mol_idx)][nodes] = 0.0
-
 class BuildSystem():
     """
     Compose a system of molecules according
@@ -142,7 +134,7 @@ class BuildSystem():
         self.start_dict = start_dict
         self.molecules = []
         self.nonbond_matrix = None
-        self.cycles = []
+        self.cycles = cycles
 
         # first we check if **kwargs are actually in random-walk
         valid_kwargs = inspect.getfullargspec(RandomWalk).args
@@ -246,8 +238,6 @@ class BuildSystem():
         # generate the nonbonded matrix wrapping all information about molecular
         # interactions
         self.nonbond_matrix = NonBondEngine.from_topology(self.molecules, self.topology, self.box)
-        # deal with cycles
-        _initialize_cylces(self.topology, self.cycles)
         # apply sampling of persistence length
         sample_end_to_end_distances(self.topology, self.nonbond_matrix)
         # set any other distance and/or position restraints

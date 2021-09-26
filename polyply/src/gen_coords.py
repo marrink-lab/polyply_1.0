@@ -69,6 +69,16 @@ def find_starting_node_from_spec(topology, start_nodes):
                     start_dict[idx] = node
     return start_dict
 
+def _initialize_cylces(topology, cycles):
+    for mol_name in cycles:
+        for mol_idx in topology.mol_idx_by_name[mol_name]:
+            # initalize as dfs tree
+            molecule = topology.molecules[mol_idx]
+            molecule.dfs=True
+            nodes = (list(molecule.search_tree.edges)[0][0],
+                     list(molecule.search_tree.edges)[-1][1])
+            topology.distance_restraints[(mol_name, mol_idx)][nodes] = 0.0
+
 def _check_molecules(molecules):
     """
     Helper method which raises an IOError
@@ -123,6 +133,8 @@ def gen_coords(args):
     LOGGER.info("annotating ligands",  type="step")
     AnnotateLigands(topology, args.ligands).run_system(topology)
     LOGGER.info("generating system coordinates",  type="step")
+    _initialize_cylces(topology, args.cycles)
+    print(args.cycles)
     BuildSystem(topology,
                 start_dict=start_dict,
                 density=args.density,
