@@ -24,8 +24,7 @@ import argparse
 from pathlib import Path
 import numpy as np
 from vermouth.log_helpers import (StyleAdapter, BipolarFormatter,
-                                  CountingHandler, TypeAdapter,
-                                  ignore_warnings_and_count,)
+                                  CountingHandler, TypeAdapter,)
 import polyply
 from polyply import (gen_itp, gen_coords, gen_seq, DATA_PATH)
 from polyply.src.load_library import load_library
@@ -132,6 +131,9 @@ def main():
     topology_group.add_argument('-cycles', dest='cycles', type=str,
                                 help='molecule names of cyclic molecules',
                                 default=[], nargs='+')
+    topology_group.add_argument('-cycle_tol', dest='cycle_tol', type=float,
+                                help='tolerance in nm for cycles to be closed (def. 0)',
+                                default=0.0)
     topology_group.add_argument('-split', dest='split', nargs='+', type=str, default=[],
                                 help=('split single residue into more residues. The syntax is '
                                       '<resname>:<new_resname>-<atom1>,<atom2><etc>:<new_resname> '

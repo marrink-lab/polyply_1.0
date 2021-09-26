@@ -76,7 +76,7 @@ def set_distance_restraint(molecule,
 
        avg_needed_step_length = distance / graph_distances_target[ref_node]
        lower_bound = avg_needed_step_length * graph_distances_ref[node] - tolerance
-       print(upper_bound, lower_bound)
+
        current_restraints = molecule.nodes[node].get('distance_restraints', [])
        molecule.nodes[node]['distance_restraints'] = current_restraints + [(ref_node,
                                                                             upper_bound,
