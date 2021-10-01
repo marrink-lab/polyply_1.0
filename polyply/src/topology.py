@@ -180,10 +180,6 @@ def match_dihedral_interaction_types(atoms, interaction_dict):
 
     for pattern in patterns:
         key = _wildcard_dih(atoms, pattern)
-        print("---------")
-        print(pattern)
-        print(key)
-        print(key[::-1])
         if key in interaction_dict:
             return key
         elif key[::-1] in interaction_dict:
