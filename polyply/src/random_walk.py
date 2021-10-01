@@ -20,6 +20,7 @@ from .processor import Processor
 from .linalg_functions import norm_sphere
 from .linalg_functions import _vector_angle_degrees
 from .graph_utils import neighborhood
+from .meta_molecule import _find_starting_node
 """
 Processor implementing a random-walk to generate
 coordinates for a meta-molecule.
@@ -301,6 +302,22 @@ class RandomWalk(Processor):
                                                              potential="LJ")
         return norm(force_vect) > self.max_force
 
+
+    def checks_milestones(self, current_node, current_position, fudge=0.7):
+
+        if 'distance_restraints' in self.molecule.nodes[current_node]:
+            for restraint in self.molecule.nodes[current_node]['distance_restraints']:
+                ref_node, upper_bound, lower_bound = restraint
+                ref_pos = self.nonbond_matrix.get_point(self.mol_idx, ref_node)
+                current_distance = self.nonbond_matrix.pbc_min_dist(current_position, ref_pos)
+                if current_distance > upper_bound:
+                    return False
+
+                if current_distance < lower_bound:
+                    return False
+
+        return True
+
     def update_positions(self, vector_bundle, current_node, prev_node):
         """
         Take an array of unit vectors `vector_bundle` and generate the coordinates
@@ -327,8 +344,8 @@ class RandomWalk(Processor):
         while True:
 
             new_point, index = _take_step(vector_bundle, step_length, last_point, self.maxdim)
-
             if fulfill_geometrical_constraints(new_point, self.molecule.nodes[current_node])\
+                and self.checks_milestones(current_node, new_point, step_length)\
                 and is_restricted(new_point, last_point, self.molecule.nodes[current_node])\
                 and not self._is_overlap(new_point, current_node):
 
@@ -359,6 +376,8 @@ class RandomWalk(Processor):
         else:
             first_node = self.start_node
 
+        meta_molecule.root = first_node
+
         if "position" not in meta_molecule.nodes[first_node]:
             constrained = fulfill_geometrical_constraints(self.start,
                                                           self.molecule.nodes[first_node])
@@ -375,7 +394,7 @@ class RandomWalk(Processor):
 
         vector_bundle = self.vector_sphere.copy()
         count = 0
-        path = list(nx.bfs_edges(meta_molecule, source=first_node))
+        path = list(meta_molecule.search_tree.edges)
         step_count = 0
 
         while step_count < len(path):

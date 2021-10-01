@@ -227,6 +227,8 @@ class Topology(System):
         self.types = defaultdict(dict)
         self.nonbond_params = {}
         self.mol_idx_by_name = defaultdict(list)
+        self.persistences = []
+        self.distance_restraints = defaultdict(dict)
 
     def preprocess(self):
         """
