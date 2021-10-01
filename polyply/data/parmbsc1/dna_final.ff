@@ -40,7 +40,11 @@ DA5 3
 [ impropers ]
 C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C1'", "ifdef":"eq_polyply"}
 C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C3'", "ifdef":"eq_polyply"}
-C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center O4'", "ifdef":"eq_polyply"}
+C4' C5' C3' O4'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center O4'", "ifdef":"eq_polyply"}
+
+C1' C2' N9 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
 [ bonds ]
 H5T O5'  1
 O5' C5'  1 
@@ -338,6 +342,10 @@ DA   3
 C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C1'", "ifdef":"eq_polyply"}
 C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C3'", "ifdef":"eq_polyply"}
 C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center O4'", "ifdef":"eq_polyply"}
+
+C1' C2' N9 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
 
 [ bonds ]
 P O1P 1
@@ -643,6 +651,10 @@ DA3 3
 C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C1'", "ifdef":"eq_polyply"}
 C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C3'", "ifdef":"eq_polyply"}
 C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center O4'", "ifdef":"eq_polyply"}
+
+C1' C2' N9 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
 [ bonds ]
 P O1P 1
 P O2P 1
@@ -951,6 +963,10 @@ DT5 3
 C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTC1'", "ifdef":"eq_polyply"}
 C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTC3'", "ifdef":"eq_polyply"}
 C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTO4'", "ifdef":"eq_polyply"}
+
+C1' C2' N1 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
 [ bonds ]
 H5T O5' 1
 O5' C5' 1
@@ -1244,6 +1260,10 @@ DT 3
 C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTC1'", "ifdef":"eq_polyply"}
 C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTC3'", "ifdef":"eq_polyply"}
 C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTO4'", "ifdef":"eq_polyply"}
+
+C1' C2' N1 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
 [ bonds ]
 P O1P 1
 P O2P 1
@@ -1547,6 +1567,10 @@ DT3 3
 C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTC1'", "ifdef":"eq_polyply"}
 C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTC3'", "ifdef":"eq_polyply"}
 C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTO4'", "ifdef":"eq_polyply"}
+
+C1' C2' N1 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
 [ bonds ]
 P O1P 1
 P O2P 1
@@ -1856,6 +1880,10 @@ DG5 3
 C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC1'", "ifdef":"eq_polyply"}
 C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC3'", "ifdef":"eq_polyply"}
 C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGO4'", "ifdef":"eq_polyply"}
+
+C1' C2' N9 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
 [ bonds ]
 H5T O5' 1
 O5' C5' 1
@@ -2162,6 +2190,10 @@ DG 3
 C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC1'", "ifdef":"eq_polyply"}
 C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC3'", "ifdef":"eq_polyply"}
 C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGO4'", "ifdef":"eq_polyply"}
+
+C1' C2' N9 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
 [ bonds ]
 P O1P 1
 P O2P 1
@@ -2478,6 +2510,10 @@ DG3 3
 C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC1'", "ifdef":"eq_polyply"}
 C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC3'", "ifdef":"eq_polyply"}
 C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGO4'", "ifdef":"eq_polyply"}
+
+C1' C2' N9 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
 [ bonds ]
 P O1P 1
 P O2P 1
@@ -2796,6 +2832,10 @@ DC5 3
 C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC1'", "ifdef":"eq_polyply"}
 C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC3'", "ifdef":"eq_polyply"}
 C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCO4'", "ifdef":"eq_polyply"}
+
+C1' C2' N1 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
 [ bonds ]
 H5T O5' 1
 O5' C5' 1
@@ -3068,6 +3108,10 @@ DC 3
 C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC1'", "ifdef":"eq_polyply"}
 C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC3'", "ifdef":"eq_polyply"}
 C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCO4'", "ifdef":"eq_polyply"}
+
+C1' C2' N1 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
 [ bonds ]
 P O1P 1
 P O2P 1
@@ -3351,6 +3395,10 @@ DC3 3
 C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC1'", "ifdef":"eq_polyply"}
 C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC3'", "ifdef":"eq_polyply"}
 C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCO4'", "ifdef":"eq_polyply"}
+
+C1' C2' N1 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
 [ bonds ]
 P O1P 1
 P O2P 1
