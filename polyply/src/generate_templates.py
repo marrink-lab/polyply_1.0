@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 import networkx as nx
 import numpy as np
 import scipy
@@ -22,6 +21,7 @@ from .processor import Processor
 from .linalg_functions import (u_vect, center_of_geometry,
                                radius_of_gyration)
 from .topology import replace_defined_interaction
+from .linalg_functions import dih
 """
 Processor generating coordinates for all residues of a meta_molecule
 matching those in the meta_molecule.molecule attribute.
@@ -109,7 +109,8 @@ def _expand_inital_coords(block, bond=None, pos=None, fixed=None,
     dict
       dictonary of node index and position
     """
-    return nx.kamada_kawai_layout(block, dim=3)
+    coords = nx.kamada_kawai_layout(block, dim=3)
+    return coords
 
 def compute_volume(molecule, block, coords, nonbond_params, treshold=1e-18):
     """
@@ -255,6 +256,18 @@ def extract_block(molecule, resname, defines):
 
     return block
 
+def _good_impropers(coords, block):
+    for improper in block.interactions["dihedrals"]:
+        if improper.parameters[0] == "2":
+            atoms = improper.atoms
+            dih_angle = dih(coords[atoms[0]], coords[atoms[1]], coords[atoms[2]], coords[atoms[3]])
+            if float(improper.parameters[1]) == 0:
+                return True
+
+            if np.sign(dih_angle) != np.sign(float(improper.parameters[1])):
+                return False
+    return True
+
 class GenerateTemplates(Processor):
     """
     This processor takes a a class:`polyply.src.MetaMolecule` and
@@ -292,7 +305,6 @@ class GenerateTemplates(Processor):
                                               "resname").values())
         templates = {}
         volumes = {}
-
         for resname in resnames:
             if not resname in self.resnames:
                 self.resnames.append(resname)
@@ -301,8 +313,14 @@ class GenerateTemplates(Processor):
                                       self.topology.defines)
                 opt_counter = 0
                 while True:
-                    coords = _expand_inital_coords(block)
-                    success, coords = optimize_geometry(block, coords, ["bonds", "constraints"])
+
+                    count = 0
+                    while True:
+                        coords = _expand_inital_coords(block)
+                        if _good_impropers(coords, block):
+                            break
+                        count =  count + 1
+
                     success, coords = optimize_geometry(block, coords, ["bonds", "constraints", "angles"])
                     success, coords = optimize_geometry(block, coords, ["bonds", "constraints", "angles", "dihedrals"])
 
