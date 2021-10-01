@@ -23,6 +23,8 @@ from tqdm import tqdm
 from .random_walk import RandomWalk
 from .linalg_functions import norm_sphere
 from .nonbond_engine import NonBondEngine
+from .persistence import sample_end_to_end_distances
+from .restraints import set_restraints
 
 def _compute_box_size(topology, density):
     """
@@ -119,6 +121,7 @@ class BuildSystem():
                  box=None,
                  ignore=[],
                  grid=None,
+                 cycles=[],
                  **kwargs):
 
         self.topology = topology
@@ -129,14 +132,17 @@ class BuildSystem():
         self.box_grid = grid
         self.box = box
         self.start_dict = start_dict
+        self.molecules = []
+        self.nonbond_matrix = None
+        self.cycles = cycles
 
         # first we check if **kwargs are actually in random-walk
         valid_kwargs = inspect.getfullargspec(RandomWalk).args
         for kwarg in kwargs:
             if kwarg not in valid_kwargs:
-               msg = ("Keyword argument {} is not valid for the "
-                      "RandomWalk processor class. ")
-               raise TypeError(msg.format(kwarg))
+                msg = ("Keyword argument {} is not valid for the "
+                       "RandomWalk processor class. ")
+                raise TypeError(msg.format(kwarg))
         self.rwargs = kwargs
 
         # set the box if a box is given
@@ -229,9 +235,12 @@ class BuildSystem():
         """
         # filter all molecules that should be ignored during the building process
         self.molecules = list(_filter_by_molname(self.topology.molecules, self.ignore))
-
         # generate the nonbonded matrix wrapping all information about molecular
         # interactions
         self.nonbond_matrix = NonBondEngine.from_topology(self.molecules, self.topology, self.box)
-        self._compose_system(self.molecules)
+        # apply sampling of persistence length
+        sample_end_to_end_distances(self.topology, self.nonbond_matrix)
+        # set any other distance and/or position restraints
+        set_restraints(self.topology, self.nonbond_matrix)
+        self._compose_system(self.topology.molecules)
         return molecules
