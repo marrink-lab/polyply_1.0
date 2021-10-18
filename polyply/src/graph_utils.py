@@ -183,3 +183,39 @@ def get_all_predecessors(graph, node, start_node=0):
             break
     predecessors.reverse()
     return predecessors
+
+def _find_longest_path(graph, source, target):
+    all_paths = list(nx.all_simple_edge_paths(graph, source, target=target))
+    max_path_length = 0
+    idx = 0
+    for jdx, path in enumerate(all_paths):
+        if len(path) > max_path_length:
+            max_path_length = len(path)
+            idx = jdx
+    return all_paths[idx]
+
+def polyply_custom_tree(graph, source, target):
+    # find all simple paths from source to target
+    longest_path = _find_longest_path(graph, source, target)
+    path_nodes = { u for edge in longest_path for u in edge }
+    # substract path and extract the remaining graphs of the branches
+    graph_copy = graph.copy()
+    graph_copy.remove_edges_from(longest_path)
+    components = list(nx.connected_components(graph_copy))
+    # loop over the edges in the longest path and
+    # see if they are part of a connected component
+    # then add the bfs tree edges of that component to the
+    # graph before the edge
+    tree_graph = nx.DiGraph()
+    for from_node, to_node in longest_path:
+        for c in components:
+            if from_node in c:
+                break
+
+        subgraph = graph_copy.subgraph(c)
+        for u, v in nx.bfs_tree(subgraph, source=from_node).edges:
+            if u not in path_nodes or v not in path_nodes:
+                tree_graph.add_edge(u, v)
+        tree_graph.add_edge(from_node, to_node)
+
+    return tree_graph
