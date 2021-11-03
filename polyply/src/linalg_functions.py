@@ -83,6 +83,7 @@ def _dih(A, B, C, D):
     Paramters
     ---------
     A, B, C, D:  numpy.array
+
     Returns
     ---------
     float
@@ -96,7 +97,8 @@ def _dih(A, B, C, D):
     n1 = u_vect(cross1)
     n2 = u_vect(cross2)
     dih = vector_angle_degrees(n1, n2)
-    # GROMACS specific hack
+    # GROMACS specific definition of the sign of the
+    # dihedral.
     if dot(r1, cross2) < 0:
         dih = - dih
     return dih
