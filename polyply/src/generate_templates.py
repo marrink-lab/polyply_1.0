@@ -94,7 +94,7 @@ def find_interaction_involving(block, current_node, prev_node):
                  linking atom {} and atom {}.'''
         raise IOError(msg.format(block.nodes[0]["resname"], prev_node, current_node))
 
-def _expand_inital_coords(block, bond=None, pos=None, fixed=None,
+def _expand_inital_coords(block, max_count=50000, bond=None, pos=None, fixed=None,
                           iterations=50, weight="weight", max_box=1.0):
     """
     Given a `graph` generate initial coordinates in three dimensions
@@ -109,8 +109,44 @@ def _expand_inital_coords(block, bond=None, pos=None, fixed=None,
     dict
       dictonary of node index and position
     """
-    coords = nx.kamada_kawai_layout(block, dim=3)
+    count = 0
+    while True:
+        coords = nx.kamada_kawai_layout(block, dim=3)
+        if _good_impropers(coords, block):
+            break
+        count =  count + 1
+
+        if count > max_count:
+            break
+
     return coords
+
+def _good_impropers(coords, block):
+    """
+    Given the coords of the block, check if the sign of the improper
+    dihedrals defined in the interaction section is satisfied by the
+    coordinates. This ensures that coordinates are in an initial
+    geometry which can be optimzied later.
+
+    Parameters
+    ----------
+    coords: dict
+    block: `:class:vermouth.molecule.Block`
+
+    Returns
+    -------
+    bool
+    """
+    for improper in block.interactions["dihedrals"]:
+        if improper.parameters[0] == "2":
+            atoms = improper.atoms
+            dih_angle = dih(coords[atoms[0]], coords[atoms[1]], coords[atoms[2]], coords[atoms[3]])
+            if np.isclose(np.abs(float(improper.parameters[1])), 0):
+                continue
+
+            if np.sign(dih_angle) != np.sign(float(improper.parameters[1])):
+                return False
+    return True
 
 def compute_volume(molecule, block, coords, nonbond_params, treshold=1e-18):
     """
@@ -256,18 +292,6 @@ def extract_block(molecule, resname, defines):
 
     return block
 
-def _good_impropers(coords, block):
-    for improper in block.interactions["dihedrals"]:
-        if improper.parameters[0] == "2":
-            atoms = improper.atoms
-            dih_angle = dih(coords[atoms[0]], coords[atoms[1]], coords[atoms[2]], coords[atoms[3]])
-            if float(improper.parameters[1]) == 0:
-                return True
-
-            if np.sign(dih_angle) != np.sign(float(improper.parameters[1])):
-                return False
-    return True
-
 class GenerateTemplates(Processor):
     """
     This processor takes a a class:`polyply.src.MetaMolecule` and
@@ -308,19 +332,13 @@ class GenerateTemplates(Processor):
         for resname in resnames:
             if not resname in self.resnames:
                 self.resnames.append(resname)
-
                 block = extract_block(meta_molecule.molecule, resname,
                                       self.topology.defines)
+
                 opt_counter = 0
                 while True:
 
-                    count = 0
-                    while True:
-                        coords = _expand_inital_coords(block)
-                        if _good_impropers(coords, block):
-                            break
-                        count =  count + 1
-
+                    coords = _expand_inital_coords(block)
                     success, coords = optimize_geometry(block, coords, ["bonds", "constraints", "angles"])
                     success, coords = optimize_geometry(block, coords, ["bonds", "constraints", "angles", "dihedrals"])
 
