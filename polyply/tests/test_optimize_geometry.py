@@ -226,20 +226,17 @@ def test_optimize_geometry(lines):
     force_field = vermouth.forcefield.ForceField(name='test_ff')
     polyply.src.polyply_parser.read_polyply(lines, force_field)
     block = force_field.blocks['test']
-    # we get the inital random coordinates here, because this way
-    # we can set a seed for reproduction purposes
-    # 10437
-    init_pos = nx.random_layout(block, dim=3, seed=45437)
-
     for _iteration in range(0, 10):
-        init_coords = _expand_inital_coords(block, pos=init_pos)
-        success, coords = optimize_geometry(block, init_coords, ["bonds", "constraints"])
-        success, coords = optimize_geometry(block, init_coords, ["angles", "bonds", "constraints"])
-        success, coords = optimize_geometry(block, init_coords, ["bonds", "angles", "dihedrals", "constraints"])
+        init_coords = _expand_inital_coords(block)
+        success, coords = optimize_geometry(block, init_coords, ["bonds", "constraints", "angles"])
+        success, coords = optimize_geometry(block, coords, ["bonds", "constraints", "angles", "dihedrals"])
         if success:
             break
     else:
         print(_iteration)
+
+    # sanity check
+    assert success
 
     # this part checks that the tolarances are actually obayed in the minimizer
     for bond in itertools.chain(block.interactions["bonds"], block.interactions["constraints"]):
