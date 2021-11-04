@@ -94,15 +94,16 @@ def find_interaction_involving(block, current_node, prev_node):
                  linking atom {} and atom {}.'''
         raise IOError(msg.format(block.nodes[0]["resname"], prev_node, current_node))
 
-def _expand_inital_coords(block, max_count=50000, bond=None, pos=None, fixed=None,
-                          iterations=50, weight="weight", max_box=1.0):
+def _expand_inital_coords(block, max_count=50000):
     """
     Given a `graph` generate initial coordinates in three dimensions
     using the Kamada-Kawai algorithm.
 
     Parameters
     -----------
-    block:   networkx.Graph
+    block:   :class:`vermouth.molecule.Block`
+    max_count: int
+        maximum number of iterations trying to fix the improper dihedrals
 
     Returns
     ---------
@@ -112,11 +113,8 @@ def _expand_inital_coords(block, max_count=50000, bond=None, pos=None, fixed=Non
     count = 0
     while True:
         coords = nx.kamada_kawai_layout(block, dim=3)
-        if _good_impropers(coords, block):
-            break
-        count =  count + 1
-
-        if count > max_count:
+        count += 1
+        if count > max_count or _good_impropers(coords, block):
             break
 
     return coords
@@ -131,7 +129,7 @@ def _good_impropers(coords, block):
     Parameters
     ----------
     coords: dict
-    block: `:class:vermouth.molecule.Block`
+    block: :class:`vermouth.molecule.Block`
 
     Returns
     -------
