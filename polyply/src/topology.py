@@ -130,6 +130,64 @@ def geometric_rule(C6_A, C6_B, C12_A, C12_B):
     return C6, C12
 
 
+def _wildcard_dih(atoms, idxs):
+    """
+    Given atoms and idxs which define a
+    pattern return a tuple consisting of
+    a entry from atoms if the pattern is
+    an int and else the value in idxs.
+    """
+    atom_key = []
+    for idx in idxs:
+        if type(idx) is int:
+            atom_key.append(atoms[idx])
+        else:
+            atom_key.append(idx)
+
+    return tuple(atom_key)
+
+def match_dihedral_interaction_types(atoms, interaction_dict):
+    """
+    Dihedral interaction types within GROMACS can have wildcard
+    pattern matching. The wildcard is indicated by an 'X' and
+    grompp matches against the atoms and the reverse atoms. For
+    example 'X C C C' would apply to an interaction with atoms
+    'N C C C' as well as 'C C C N'. Also note that the most
+    specific pattern takes precedence.
+
+    Parameters
+    ----------
+    atoms: abc.iteratable
+        list of atom-types
+    interaction_dict: dict
+        dict of interaction types
+
+    Returns
+    --------
+    tuple
+        a tuple of 4 atom indices, which are the matching key
+        to the interaction dict.
+    """
+    patterns = [(0, 1, 2, 3),
+                ('X', 1, 2, 3),
+                (0, 'X', 2, 3),
+                (0, 1, 'X', 3),
+                ('X', 1, 2, 'X'),
+                ('X', 'X', 2, 3),
+                (0, 'X', 'X', 3),
+                ('X', 1, 'X', 3),
+                ('X', 'X', 'X', 3)]
+
+    for pattern in patterns:
+        key = _wildcard_dih(atoms, pattern)
+        if key in interaction_dict:
+            return key
+        elif key[::-1] in interaction_dict:
+            return key[::-1]
+
+    return None
+
+
 class Topology(System):
     """
     Ties together vermouth molecule definitions, and
@@ -246,7 +304,7 @@ class Topology(System):
                         # in turn matches an expression in the bondedtypes section
                         if "_FF_OPLS" in self.defines or "_FF_OPLS_AA" in self.defines:
                             atoms = tuple(self.atom_types[block.nodes[node]["atype"]]["bond_type"]
-                                         for node in interaction.atoms)
+                                          for node in interaction.atoms)
                         # Other force-fields like charmm and amber use the atomtype directly for
                         # matching the bondded types
                         else:
@@ -256,21 +314,19 @@ class Topology(System):
                             new_params, meta = self.types[inter_type][atoms]
                         elif atoms[::-1] in self.types[inter_type]:
                             new_params, meta = self.types[inter_type][atoms[::-1]]
-                        elif inter_type in "dihedrals" and\
-                             ("X", atoms[1], atoms[2], "X") in self.types[inter_type]:
-                            new_params, meta = self.types[inter_type][("X", atoms[1], atoms[2], "X")]
-                        elif inter_type == "dihedrals" and\
-                             ("X", atoms[2], atoms[1], "X") in self.types[inter_type]:
-                            new_params, meta = self.types[inter_type][("X", atoms[2], atoms[1], "X")]
-                        elif inter_type in "dihedrals" and\
-                             (atoms[0], "X", "X", atoms[3]) in self.types[inter_type]:
-                            new_params, meta = self.types[inter_type][(atoms[0], "X", "X", atoms[3])]
-                        elif inter_type == "dihedrals" and\
-                             (atoms[3], "X", "X", atoms[0]) in self.types[inter_type]:
-                            new_params, meta = self.types[inter_type][(atoms[3], "X", "X", atoms[0])]
+                        elif inter_type in "dihedrals":
+                            match = match_dihedral_interaction_types(atoms, self.types[inter_type])
+                            if match:
+                                new_params, meta = self.types[inter_type][match]
+                            else:
+                                msg = ("In section dihedrals interaction of atoms {} has no "
+                                       "corresponding bonded type.")
+                                atoms = " ".join(list(map(lambda x: str(x), interaction.atoms)))
+                                raise OSError(msg.format(atoms))
+
                         else:
-                            msg=("In section {} interaction of atoms {} has no corresponding bonded"
-                                 "type.")
+                            msg = ("In section {} interaction of atoms {} has no corresponding "
+                                   "bonded type.")
                             atoms = " ".join(list(map(lambda x: str(x), interaction.atoms)))
                             raise OSError(msg.format(inter_type, atoms))
 
@@ -313,8 +369,8 @@ class Topology(System):
             for node in meta_mol.molecule.nodes:
                 resname = meta_mol.molecule.nodes[node]["resname"]
                 if resname in build_res:
-                   no_coords.append(node)
-                   continue
+                    no_coords.append(node)
+                    continue
                 try:
                     position = molecules.nodes[total]["position"]
                 except KeyError:

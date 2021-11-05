@@ -80,7 +80,6 @@ def _dih(A, B, C, D):
     """
     Compute dihedral angle between four points,
     where `B` and `C` are in the center.
-
     Paramters
     ---------
     A, B, C, D:  numpy.array
@@ -91,11 +90,17 @@ def _dih(A, B, C, D):
          angle in degrees
     """
     r1 = A - B
-    r2 = B - C
+    r2 = C - B
     r3 = C - D
-    n1 = u_vect(cross(r1, r2))
-    n2 = u_vect(cross(r2, r3))
+    cross1 = cross(r1, r2)
+    cross2 = cross(r2, r3)
+    n1 = u_vect(cross1)
+    n2 = u_vect(cross2)
     dih = vector_angle_degrees(n1, n2)
+    # GROMACS specific definition of the sign of the
+    # dihedral.
+    if dot(r1, cross2) < 0:
+        dih = - dih
     return dih
 dih = jit(_dih)
 
