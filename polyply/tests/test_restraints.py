@@ -87,7 +87,7 @@ def test_restraints_on_abitr_topology(graph):
     test_molecule.add_edges_from(graph.edges)
 
     target_node = list(graph.nodes)[0]
-    ref_node = list(graph.nodes)[1]
+    ref_node = list(graph.nodes)[-1]
     distance = 4
     avg_step_length = 0.47
     tolerance = 0
