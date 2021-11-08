@@ -18,7 +18,7 @@ from networkx.readwrite import json_graph
 from vermouth.graph_utils import make_residue_graph
 from vermouth.log_helpers import StyleAdapter, get_logger
 from .polyply_parser import read_polyply
-from .graph_utils import find_nodes_with_attributes
+from .graph_utils import find_nodes_with_attributes, annotate_hierarchy
 
 Monomer = namedtuple('Monomer', 'resname, n_blocks')
 LOGGER = StyleAdapter(get_logger(__name__))
@@ -196,6 +196,7 @@ class MetaMolecule(nx.Graph):
             else:
                 self.__search_tree = nx.dfs_tree(self, source=self.root)
 
+        annotate_hierarchy(self.__search_tree)
         return self.__search_tree
 
     @staticmethod
