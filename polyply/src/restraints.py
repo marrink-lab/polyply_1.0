@@ -111,17 +111,18 @@ def set_distance_restraint(molecule,
         print("go here")
         # if target node is to be placed before ref node we need to switch them around
         # otherwise the designations are fine
-        if molecule.search_tree[ref_node]["hierarchy"] > molecule.search_tree[target_node]["hierarchy"]:
+        if molecule.search_tree.nodes[ref_node]["hierarchy"] >\
+           molecule.search_tree.nodes[target_node]["hierarchy"]:
             ref_node, target_node = (target_node, ref_node)
 
-        ref_nodes = [ancestor, ref_node]
+        ref_nodes = [ancestor, ancestor]
         target_nodes = [ref_node, target_node]
 
         # The first part of the split distance restraint is a new restraint
-        # that is the average expected distance between the target node and the
+        # that is the average expected distance between the ref node and the
         # common ancestor
         path = get_all_predecessors(molecule.search_tree,
-                                    node=target_node,
+                                    node=ref_node,
                                     start_node=ancestor)
 
         graph_dist_ref_target = len(path) - 1
@@ -134,7 +135,7 @@ def set_distance_restraint(molecule,
         # on a partial path between ancestor and target node
         path = get_all_predecessors(molecule.search_tree,
                                     node=target_node,
-                                    start_node=ref_node)
+                                    start_node=ancestor)
         paths.append(path)
         distances.append(distance)
     # if ancestor is equal to ref node all order is full-filled and we just proceed
@@ -149,6 +150,7 @@ def set_distance_restraint(molecule,
                                       start_node=ref_nodes[0])]
 
     for ref_node, target_node, dist, path in zip(ref_nodes, target_nodes, distances, paths):
+        print(ref_node, target_node, path)
         _set_restraint_on_path(molecule,
                                path,
                                avg_step_length,

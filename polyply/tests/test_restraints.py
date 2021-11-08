@@ -76,7 +76,7 @@ def test_set_distance_restraint(test_molecule,
 
 builder = graph_builder(graph_type=nx.Graph,
                         node_keys=st.integers(),
-                        min_nodes=4, max_nodes=10,
+                        min_nodes=4, max_nodes=60,
                         min_edges=3, max_edges=None,
                         self_loops=True,
                         connected=True)
@@ -86,8 +86,13 @@ def test_restraints_on_abitr_topology(graph):
     test_molecule.add_nodes_from(graph.nodes)
     test_molecule.add_edges_from(graph.edges)
 
-    target_node = list(graph.nodes)[0]
-    ref_node = list(graph.nodes)[-1]
+    ref_node, target_node = np.random.choice(list(graph.nodes), replace=False, size=2)
+
+  # if set(dict(nx.degree(test_molecule)).values()) != {1, 2}:
+  #     ancestor = nx.algorithms.lowest_common_ancestor(test_molecule.search_tree, ref_node, target_node)
+  #     if ancestor != ref_node and ancestor != target_node:
+  #         assert False
+
     distance = 4
     avg_step_length = 0.47
     tolerance = 0
