@@ -17,8 +17,12 @@ Test that distance and position restraints are tagged.
 import pytest
 import numpy as np
 import networkx as nx
+from hypothesis import given
+from hypothesis_networkx import graph_builder
+from hypothesis import strategies as st
 import polyply
 from polyply.tests.test_build_file_parser import test_molecule
+from polyply.src.meta_molecule import MetaMolecule
 
 @pytest.mark.parametrize('target_node, ref_node, distance, avg_step_length, tolerance, expected',(
     # test simple revers
@@ -67,3 +71,30 @@ def test_set_distance_restraint(test_molecule,
             assert pytest.approx(ref_restr[1], new_restr[1])
             assert pytest.approx(ref_restr[2], new_restr[2])
 
+
+
+
+builder = graph_builder(graph_type=nx.Graph,
+                        node_keys=st.integers(),
+                        min_nodes=4, max_nodes=10,
+                        min_edges=3, max_edges=None,
+                        self_loops=True,
+                        connected=True)
+@given(graph=builder)
+def test_restraints_on_abitr_topology(graph):
+    test_molecule = MetaMolecule()
+    test_molecule.add_nodes_from(graph.nodes)
+    test_molecule.add_edges_from(graph.edges)
+
+    target_node = list(graph.nodes)[0]
+    ref_node = list(graph.nodes)[1]
+    distance = 4
+    avg_step_length = 0.47
+    tolerance = 0
+    polyply.src.restraints.set_distance_restraint(test_molecule,
+                                                  target_node,
+                                                  ref_node,
+                                                  distance,
+                                                  avg_step_length,
+                                                  tolerance)
+    assert len(nx.get_node_attributes(test_molecule, "distance_restraints")) != 0

@@ -181,6 +181,7 @@ def get_all_predecessors(graph, node, start_node=0):
         predecessors.append(pre_node)
         if pre_node == start_node:
             break
+
     predecessors.reverse()
     return predecessors
 
@@ -219,3 +220,10 @@ def polyply_custom_tree(graph, source, target):
         tree_graph.add_edge(from_node, to_node)
 
     return tree_graph
+
+def annotate_hierarchy(graph):
+    hierarchy= {}
+    for idx, ndx in enumerate(graph.nodes()):
+        hierarchy[ndx] = idx
+    nx.set_node_attributes(graph, hierarchy, "hierarchy")
+    return graph

@@ -18,12 +18,9 @@ def upper_bound(avg_step_length, distance, graph_dist, tolerance=0):
     bound = graph_dist * avg_step_length + distance + tolerance
     return bound
 
-
-def lower_bound(distance, graph_dist_ref, graph_dist_target, tolerance=0):
-    avg_needed_step_length = distance / graph_dist_target
+def lower_bound(distance, graph_dist_ref, avg_needed_step_length, tolerance=0):
     bound = avg_needed_step_length * graph_dist_ref - tolerance
     return bound
-
 
 def _set_restraint_on_path(graph,
                            path,
@@ -43,6 +40,8 @@ def _set_restraint_on_path(graph,
     if not ref_node:
         ref_node = path[0]
 
+    avg_needed_step_length = distance / graph_distances_target[ref_node]
+
     for node in path[1:]:
         if node == target_node:
             graph_dist_ref = 1.0
@@ -50,8 +49,8 @@ def _set_restraint_on_path(graph,
             graph_dist_ref = graph_distances_target[node]
 
         graph_dist_target = graph_distances_target[node]
-        up_bound = upper_bound(avg_step_length, distance, tolerance, graph_dist_ref)
-        low_bound = lower_bound(distance, graph_dist_ref, graph_dist_target, tolerance)
+        up_bound = upper_bound(avg_step_length, distance, graph_dist_ref, tolerance)
+        low_bound = lower_bound(distance, graph_dist_ref, avg_needed_step_length, tolerance)
 
         current_restraints = graph.nodes[node].get('distance_restraints', [])
         graph.nodes[node]['distance_restraints'] = current_restraints + [(ref_node,
@@ -97,8 +96,7 @@ def set_distance_restraint(molecule,
     """
     # First we need to figure out if the two nodes to be restrained are
     # each others common ancestor. This breaks on cyclic graphs
-    ancestor = nx.find_lowest_common_ancestor(
-        molecule.search_tree, ref_node, target_node)
+    ancestor = nx.algorithms.lowest_common_ancestor(molecule.search_tree, ref_node, target_node)
     # if the ancestor is equal to the target node we have to switch the
     # reference and target node
     paths = []
@@ -106,15 +104,21 @@ def set_distance_restraint(molecule,
         ref_nodes = [target_node]
         target_nodes = [ref_node]
         distances = [distance]
-    # if ancestor is neither target nor ref_node, there is no continues path
+    # if ancestor is neither target nor ref_node, there is no continous path
     # between the two. In this case we have to split the distance restraint
     # into two parts
     elif ancestor != ref_node:
-        # !!!!!!!!! THIS NEEDS TO HAVE THE APPROPIATE ORDER !!!!!!!!!!!!!!!
+        print("go here")
+        # if target node is to be placed before ref node we need to switch them around
+        # otherwise the designations are fine
+        if molecule.search_tree[ref_node]["hierarchy"] > molecule.search_tree[target_node]["hierarchy"]:
+            ref_node, target_node = (target_node, ref_node)
+
         ref_nodes = [ancestor, ref_node]
         target_nodes = [ref_node, target_node]
 
-        # the first part is the average expected distance between the target node and the
+        # The first part of the split distance restraint is a new restraint
+        # that is the average expected distance between the target node and the
         # common ancestor
         path = get_all_predecessors(molecule.search_tree,
                                     node=target_node,
@@ -141,8 +145,8 @@ def set_distance_restraint(molecule,
 
     if not paths:
         paths = [get_all_predecessors(molecule.search_tree,
-                                      node=target_node,
-                                      start_node=ref_node)]
+                                      node=target_nodes[0],
+                                      start_node=ref_nodes[0])]
 
     for ref_node, target_node, dist, path in zip(ref_nodes, target_nodes, distances, paths):
         _set_restraint_on_path(molecule,
@@ -167,10 +171,6 @@ def set_restraints(topology, nonbond_matrix):
         distance_restraints = topology.distance_restraints[(mol_name, mol_idx)]
         mol = topology.molecules[mol_idx]
 
-        if set(dict(nx.degree(mol)).values()) != {1, 2}:
-            raise IOError(
-                "Distance restraints currently can only be applied to linear molecules.")
-
         for ref_node, target_node in distance_restraints:
             path = list(mol.search_tree.edges)
             avg_step_length, _ = compute_avg_step_length(mol,
@@ -179,5 +179,9 @@ def set_restraints(topology, nonbond_matrix):
                                                          path)
 
             distance, tolerance = distance_restraints[(ref_node, target_node)]
-            set_distance_restraint(
-                mol, target_node, ref_node, distance, avg_step_length, tolerance)
+            set_distance_restraint(mol,
+                                   target_node,
+                                   ref_node,
+                                   distance,
+                                   avg_step_length,
+                                   tolerance)
