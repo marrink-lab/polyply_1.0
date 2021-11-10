@@ -54,11 +54,16 @@ def set_distance_restraint(molecule,
     # needs to be reveresed because the target node will be placed
     # before the ref node
     # we get the path lying between target and reference node
-    try:
-        path = get_all_predecessors(molecule.search_tree, node=target_node, start_node=ref_node)
-    except IndexError:
+    ancestor = nx.algorithms.lowest_common_ancestor(molecule.search_tree, target_node, ref_node)
+    if ancestor == target_node:
         ref_node, target_node = target_node, ref_node
-        path = get_all_predecessors(molecule.search_tree, node=target_node, start_node=ref_node)
+    elif ancestor != ref_node:
+        msg=("Your distance restraint between node { } { } is not valid. "
+             "Likely you are trying to apply distance restraints on a "
+             "branched molecule. This is not fully supported yet. ")
+        raise OSError(msg.format(ref_node, target_node))
+
+    path = get_all_predecessors(molecule.search_tree, node=target_node, start_node=ref_node)
 
     # graph distances can be computed from the path positions
     graph_distances_ref = {node: path.index(node) for node in path}
@@ -95,9 +100,6 @@ def set_restraints(topology, nonbond_matrix):
     for mol_name, mol_idx in topology.distance_restraints:
         distance_restraints = topology.distance_restraints[(mol_name, mol_idx)]
         mol = topology.molecules[mol_idx]
-
-        if set(dict(nx.degree(mol)).values()) != {1, 2}:
-            raise IOError("Distance restraints currently can only be applied to linear molecules.")
 
         for ref_node, target_node in distance_restraints:
             path = list(mol.search_tree.edges)
