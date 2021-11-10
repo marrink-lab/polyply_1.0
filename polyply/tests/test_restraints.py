@@ -64,6 +64,5 @@ def test_set_distance_restraint(test_molecule,
         ref_list = expected[node]
         for ref_restr, new_restr in zip(ref_list, restr_list):
             assert ref_restr[0] == new_restr[0]
-            assert pytest.approx(ref_restr[1], new_restr[1])
-            assert pytest.approx(ref_restr[2], new_restr[2])
-
+            assert np.isclose(ref_restr[1], new_restr[1], atol=0.001)
+            assert np.isclose(ref_restr[2], new_restr[2], atol=0.001)

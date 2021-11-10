@@ -74,8 +74,9 @@ def _initialize_cylces(topology, cycles, tolerance):
         for mol_idx in topology.mol_idx_by_name[mol_name]:
             # initalize as dfs tree
             molecule = topology.molecules[mol_idx]
-            if set(dict(nx.degree(molecule)).values()) != {1, 2}:
-                raise IOError("Only linear cyclic molecules are allowed at the moment.")
+            cycles = nx.cycle_basis(molecule)
+            if len(cycles) > 1:
+                raise IOError("More than one cycle is not allowed.")
             molecule.dfs=True
             nodes = (list(molecule.search_tree.edges)[0][0],
                      list(molecule.search_tree.edges)[-1][1])
@@ -133,7 +134,8 @@ def gen_coords(args):
     LOGGER.info("generating templates",  type="step")
     GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
     LOGGER.info("annotating ligands",  type="step")
-    AnnotateLigands(topology, args.ligands).run_system(topology)
+    ligand_annotator = AnnotateLigands(topology, args.ligands)
+    ligand_annotator.run_system(topology)
     LOGGER.info("generating system coordinates",  type="step")
     _initialize_cylces(topology, args.cycles, args.cycle_tol)
     BuildSystem(topology,
@@ -148,7 +150,7 @@ def gen_coords(args):
                 grid=args.grid,
                 cycles=args.cycles,
                 nrewind=args.nrewind).run_system(topology.molecules)
-    AnnotateLigands(topology, args.ligands).split_ligands()
+    ligand_annotator.split_ligands()
     LOGGER.info("backmapping to target resolution",  type="step")
     Backmap(fudge_coords=args.bfudge).run_system(topology)
     # Write output
