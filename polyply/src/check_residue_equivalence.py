@@ -1,23 +1,6 @@
 import networkx as nx
 from vermouth.molecule import attributes_match
 
-def _match(node1, node2):
-    """
-    Helper function. Return true when atomtypes in
-    node attribute dicts are the same.
-    """
-    ignore = [key for key in node2.keys() if key != "atype"]
-    return attributes_match(node1, node2, ignore_keys=ignore)
-
-def _are_subgraph_isomorphic(graph1, graph2):
-    """
-    Wrapper for isomoprhism check.
-    """
-    GM = nx.isomorphism.GraphMatcher(graph1,
-                                     graph2,
-                                     node_match=_match,)
-    return GM.is_isomorphic()
-
 def check_residue_equivalence(topology):
     """
     Check that each residue in all moleculetypes
@@ -42,7 +25,8 @@ def check_residue_equivalence(topology):
             resname = molecule.nodes[node]["resname"]
             graph = molecule.nodes[node]["graph"]
             if resname in visited_residues:
-                if not _are_subgraph_isomorphic(graph, visited_residues[resname]):
+                print(graph.edges, visited_residues[resname].edges)
+                if not nx.is_isomorphic(graph, visited_residues[resname]):
                     msg = ("Residue {resname} with resid {residA} in moleculetype {molnameA} is\n"
                            "different from residue {resname} with resid {residB} in moleculetype\n"
                            "{molnameB}. All residues have to be unique in polyply.\n")

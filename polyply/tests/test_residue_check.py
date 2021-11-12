@@ -29,8 +29,10 @@ from polyply.src.top_parser import read_topology
     1   1   no   1.0     1.0
     [ atomtypes ]
     N0 72.0 0.000 A 0.0 0.0
+    N1 72.0 0.000 A 0.0 0.0
     [ nonbond_params ]
     N0   N0   1 4.700000e-01    3.700000e+00
+    N1   N1   1 4.700000e-01    3.700000e+00
     [ moleculetype ]
     testA 1
     [ atoms ]
@@ -59,51 +61,6 @@ from polyply.src.top_parser import read_topology
     2     3    1  0.47 2000
     3     4    1  0.47 2000
     4     5    1  0.47 2000
-    [ system ]
-    test system
-    [ molecules ]
-    testA 1
-    testB 1
-    """),
-    # residue in two different molecules not equivalent by
-    # atomtype
-    ("""
-    [ defaults ]
-    1   1   no   1.0     1.0
-    [ atomtypes ]
-    N0 72.0 0.000 A 0.0 0.0
-    [ nonbond_params ]
-    N0   N0   1 4.700000e-01    3.700000e+00
-    [ moleculetype ]
-    testA 1
-    [ atoms ]
-    1    N0   1   GLY    BB   1 0.00     45
-    2    N0   1   GLY    SC1  1 0.00     45
-    3    N0   1   GLY    SC2  1 0.00     45
-    4    N1   2   GLU    BB   2 0.00     45
-    5    N1   2   GLU    SC1  2 0.00     45
-    6    N1   2   GLU    SC2  2 0.00     45
-    [ bonds ]
-    1     2    1  0.47 2000
-    2     3    1  0.47 2000
-    3     4    1  0.47 2000
-    4     5    1  0.47 2000
-    5     6    1  0.47 2000
-    [ moleculetype ]
-    testB 1
-    [ atoms ]
-    1    N0   1   ASP    BB   1 0.00     45
-    2    N0   1   ASP    SC3  1 0.00     45
-    3    N0   1   ASP    SC4  1 0.00     45
-    4    N1   2   GLU    BB   2 0.00     45
-    5    N0   2   GLU    SC1  2 0.00     45
-    6    N0   2   GLU    SC2  2 0.00     45
-    [ bonds ]
-    1     2    1  0.47 2000
-    2     3    1  0.47 2000
-    3     4    1  0.47 2000
-    4     5    1  0.47 2000
-    5     6    1  0.47 2000
     [ system ]
     test system
     [ molecules ]
@@ -117,8 +74,10 @@ from polyply.src.top_parser import read_topology
     1   1   no   1.0     1.0
     [ atomtypes ]
     N0 72.0 0.000 A 0.0 0.0
+    N1 72.0 0.000 A 0.0 0.0
     [ nonbond_params ]
     N0   N0   1 4.700000e-01    3.700000e+00
+    N1   N1   1 4.700000e-01    3.700000e+00
     [ moleculetype ]
     testA 1
     [ atoms ]
@@ -128,12 +87,14 @@ from polyply.src.top_parser import read_topology
     4    N1   2   GLU    BB   2 0.00     45
     5    N1   2   GLU    SC1  2 0.00     45
     6    N1   2   GLU    SC2  2 0.00     45
+    7    N1   2   GLU    SC3  2 0.00     45
     [ bonds ]
     1     2    1  0.47 2000
     2     3    1  0.47 2000
     3     4    1  0.47 2000
     4     5    1  0.47 2000
     5     6    1  0.47 2000
+    6     7    1  0.47 2000
     [ moleculetype ]
     testB 1
     [ atoms ]
@@ -141,14 +102,16 @@ from polyply.src.top_parser import read_topology
     2    N0   1   ASP    SC3  1 0.00     45
     3    N0   1   ASP    SC4  1 0.00     45
     4    N1   2   GLU    BB   2 0.00     45
-    5    N0   2   GLU    SC1  2 0.00     45
-    6    N0   2   GLU    SC2  2 0.00     45
+    5    N1   2   GLU    SC1  2 0.00     45
+    6    N1   2   GLU    SC2  2 0.00     45
+    7    N1   2   GLU    SC3  2 0.00     45
     [ bonds ]
     1     2    1  0.47 2000
     2     3    1  0.47 2000
     3     4    1  0.47 2000
     4     5    1  0.47 2000
-    4     6    1  0.47 2000
+    5     6    1  0.47 2000
+    5     7    1  0.47 2000
     [ system ]
     test system
     [ molecules ]
