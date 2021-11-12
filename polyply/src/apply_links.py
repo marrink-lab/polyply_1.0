@@ -20,7 +20,7 @@ import vermouth.molecule
 from vermouth.log_helpers import StyleAdapter, get_logger
 from vermouth.molecule import Interaction, attributes_match
 from vermouth.graph_utils import make_residue_graph
-from vermouth.processors.do_links import match_order
+from vermouth.processors.do_links import match_order, _is_valid_non_edges, _any_pattern_match
 from .processor import Processor
 from .graph_utils import neighborhood
 
@@ -225,19 +225,21 @@ def match_link_and_residue_atoms(meta_molecule, link, link_to_resid):
     for node in link.nodes:
         meta_mol_key = link_to_resid[node]
         block = meta_molecule.nodes[meta_mol_key]["graph"]
+        resid = block.nodes[list(block.nodes)[0]]["resid"]
         attrs = link.nodes[node]
-        attrs.update({'resid': meta_mol_key + 1})
-        ignore = ['order', 'charge_group', 'replace']
+        # relative resid has been asserted before so we can
+        # exclude it here
+        ignore = ['order', 'charge_group', 'replace', 'resid']
         matchs = list(find_atoms(block, ignore=ignore, **attrs))
 
         if len(matchs) == 1:
             link_to_mol[node] = matchs[0]
         elif len(matchs) == 0:
             msg = "Found no matchs for node {} in resiue {}. Cannot apply link."
-            raise MatchError(msg.format(node, attrs["resid"]))
+            raise MatchError(msg.format(node, resid))
         else:
             msg = "Found {} matches for node {} in resiue {}. Cannot apply link."
-            raise MatchError(msg.format(len(matchs), node, attrs["resid"]))
+            raise MatchError(msg.format(len(matchs), node, resid))
 
     return link_to_mol
 
@@ -264,6 +266,11 @@ def _res_match(node1, node2):
     # which at the moment does not compare properly
     ignore = [key for key in node2.keys() if key != "resname"]
     return attributes_match(node1, node2, ignore_keys=ignore)
+
+def _linktype_match(edge_attrs1, edge_attrs2):
+    type1 = edge_attrs1.get("linktype", None)
+    type2 = edge_attrs2.get("linktype", None)
+    return type1 == type2
 
 def _resnames_match(resnames, allowed_resnames):
     """
@@ -363,6 +370,17 @@ class ApplyLinks(Processor):
                                                    link,
                                                    link_to_resid)
 
+        # check if the non-edge criteria are satisfied
+        if not _is_valid_non_edges(molecule, link, link_to_mol):
+            msg = "Found edge, which should not be there. Cannot apply link."
+            raise MatchError(msg)
+
+        # check if any of the patterns matches
+        any_pattern_match = _any_pattern_match(molecule, link.patterns, link_to_mol)
+        if link.patterns and (not any_pattern_match):
+            msg = "No pattern matches! Cannot apply link."
+            raise MatchError(msg)
+
         # if all atoms have a match the link applies and we first
         # replace any attributes from the link node section
         for node in link.nodes:
@@ -377,7 +395,7 @@ class ApplyLinks(Processor):
                 # that multiple versions are kept and not overwritten
                 interaction_key = tuple(new_interaction.atoms) +\
                                   tuple([new_interaction.meta.get("version",1)])
-                self.applied_links[inter_type][interaction_key] = new_interaction
+                self.applied_links[inter_type][interaction_key] = (new_interaction, link.citations)
         # now we already add the edges of this link
         # links can overwrite each other but the edges must be the same
         # this is safer than using the make_edge method because it accounts
@@ -406,11 +424,11 @@ class ApplyLinks(Processor):
         molecule = meta_molecule.molecule
         force_field = meta_molecule.force_field
         resnames = set(nx.get_node_attributes(molecule, "resname").values())
-
         for link in tqdm(force_field.links):
             link_resnames = _get_link_resnames(link)
-            if not _resnames_match(resnames, link_resnames):
+            if not _resnames_match(resnames, link_resnames) or not attributes_match(molecule.meta, link.molecule_meta):
                 continue
+
             # we only use the order because each order needs to be
             # matching exactly 1 residue, which means their resname
             # needs to match as well. However, resname can be a
@@ -419,11 +437,15 @@ class ApplyLinks(Processor):
             res_link = make_residue_graph(link, attrs=('order',))
             # however when finding the LCIS we do match against the residue
             # name and topology of the link
-            GM = nx.isomorphism.GraphMatcher(meta_molecule, res_link, node_match=_res_match)
+            GM = nx.isomorphism.GraphMatcher(meta_molecule,
+                                             res_link,
+                                             node_match=_res_match,
+                                             edge_match=_linktype_match)
             raw_matchs = GM.subgraph_isomorphisms_iter()
             for match in raw_matchs:
-                resids = match.keys()
-                orders = [ res_link.nodes[match[resid]]["order"] for resid in resids]
+                nodes = match.keys()
+                resids =[meta_molecule.nodes[node]["resid"] for node in nodes]
+                orders = [ res_link.nodes[match[node]]["order"] for node in nodes]
                 if _check_relative_order(resids, orders):
                     link_node_to_resid = _assign_link_resids(res_link, match)
                     try:
@@ -432,8 +454,10 @@ class ApplyLinks(Processor):
                         LOGGER.debug(str(error), type='step')
 
         for inter_type in self.applied_links:
-            for interaction in self.applied_links[inter_type].values():
+            for interaction, citation in self.applied_links[inter_type].values():
                 meta_molecule.molecule.interactions[inter_type].append(interaction)
+                if citation:
+                    meta_molecule.molecule.citations.update(citation)
 
         for link in force_field.links:
             if link.molecule_meta.get('by_atom_id'):

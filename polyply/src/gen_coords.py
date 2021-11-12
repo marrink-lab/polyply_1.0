@@ -61,12 +61,26 @@ def find_starting_node_from_spec(topology, start_nodes):
             mol_idx = res_spec['mol_idx']
             node = list(_find_nodes(topology.molecules[mol_idx], res_spec))[0]
             start_dict[mol_idx] = node
+            topology.molecules[mol_idx].root = node
         else:
             for idx, molecule in enumerate(topology.molecules):
                 if molecule.mol_name == res_spec['molname']:
                     node = list(_find_nodes(molecule, res_spec))[0]
                     start_dict[idx] = node
     return start_dict
+
+def _initialize_cylces(topology, cycles, tolerance):
+    for mol_name in cycles:
+        for mol_idx in topology.mol_idx_by_name[mol_name]:
+            # initalize as dfs tree
+            molecule = topology.molecules[mol_idx]
+            cycles = nx.cycle_basis(molecule)
+            if len(cycles) > 1:
+                raise IOError("More than one cycle is not allowed.")
+            molecule.dfs=True
+            nodes = (list(molecule.search_tree.edges)[0][0],
+                     list(molecule.search_tree.edges)[-1][1])
+            topology.distance_restraints[(mol_name, mol_idx)][nodes] = (0.0, tolerance)
 
 def _check_molecules(molecules):
     """
@@ -106,7 +120,7 @@ def gen_coords(args):
         LOGGER.info("reading build file",  type="step")
         with open(args.build) as build_file:
             lines = build_file.readlines()
-            read_build_file(lines, topology.molecules)
+            read_build_file(lines, topology.molecules, topology)
 
     # collect all starting points for the molecules
     start_dict = find_starting_node_from_spec(topology, args.start)
@@ -120,8 +134,10 @@ def gen_coords(args):
     LOGGER.info("generating templates",  type="step")
     GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
     LOGGER.info("annotating ligands",  type="step")
-    AnnotateLigands(topology, args.ligands).run_system(topology)
+    ligand_annotator = AnnotateLigands(topology, args.ligands)
+    ligand_annotator.run_system(topology)
     LOGGER.info("generating system coordinates",  type="step")
+    _initialize_cylces(topology, args.cycles, args.cycle_tol)
     BuildSystem(topology,
                 start_dict=start_dict,
                 density=args.density,
@@ -132,8 +148,9 @@ def gen_coords(args):
                 step_fudge=args.step_fudge,
                 ignore=args.ignore,
                 grid=args.grid,
+                cycles=args.cycles,
                 nrewind=args.nrewind).run_system(topology.molecules)
-    AnnotateLigands(topology, args.ligands).split_ligands()
+    ligand_annotator.split_ligands()
     LOGGER.info("backmapping to target resolution",  type="step")
     Backmap(fudge_coords=args.bfudge).run_system(topology)
     # Write output

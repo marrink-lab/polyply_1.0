@@ -126,10 +126,19 @@ class TestPolyply:
         name = "test"
         meta_mol = MetaMolecule.from_json(ff, file_name, name)
 
+        assert len(nx.get_node_attributes(meta_mol, "resid")) == len(nodes)
         #assert nx.get_node_attributes(meta_mol, "resname") == attrs
         print(meta_mol.edges)
         assert set(meta_mol.nodes) == set(nodes)
         assert set(meta_mol.edges) == set(edges)
+
+    @staticmethod
+    def test_from_json_error_resid():
+        ff = vermouth.forcefield.ForceField(name='test_ff')
+        name = "test"
+        file_name = TEST_DATA + "/json/fail.json"
+        with pytest.raises(IOError):
+            meta_mol = MetaMolecule.from_json(ff, file_name, name)
 
     @staticmethod
     def test_from_itp():

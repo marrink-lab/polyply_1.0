@@ -181,113 +181,283 @@ def test_match_link_and_residue_atoms_fail(example_meta_molecule,
                                                               link,
                                                               link_to_resid)
 
-@pytest.mark.parametrize('link_defs, link_to_resids, inter_type, link_inters, expected_nodes, expected_inters',
+@pytest.mark.parametrize('''link_defs,
+                          link_to_resids,
+                          inter_types,
+                          link_inters,
+                          link_non_edges,
+                          link_patterns,
+                          expected_nodes,
+                          expected_inters''',
                         (
-                        # simple check single residue
+                        # 0 - simple check single residue
                         ([[(0, {'name': 'BB1'}),
                           (1, {'name': 'BB'})]],
                          [{0: 0, 1: 1}],
-                         'bonds',
+                         ['bonds'],
                          [[vermouth.molecule.Interaction(atoms=(0, 1),
                                                         parameters=['1', '0.33', '500'],
                                                         meta={})]],
-                         [(1, 4, 1)],
-                         [(0, 0)]
+                         [[]],
+                         [[]],
+                         [[(1, 4, 1)]],
+                         [[(0, 0)]]
                         ),
-                        # simple check single residue reverse
+                        # 1 - simple check single residue reverse
                         ([[(0, {'name': 'BB'}),
                           (1, {'name': 'BB1'})]],
                          [{0: 1, 1: 0}],
-                         'bonds',
+                         ['bonds'],
                          [[vermouth.molecule.Interaction(atoms=(0, 1),
                                                         parameters=['1', '0.33', '500'],
                                                         meta={})]],
-                         [(4, 1, 1)],
-                         [(0, 0)]
+                         [[]],
+                         [[]],
+                         [[(4, 1, 1)]],
+                         [[(0, 0)]]
                         ),
-                        # add replace with node
+                        # 2 - add replace with node
                         ([[(0, {'name': 'BB1', 'replace': {'charge': 1.0}}),
                           (1, {'name': 'BB'})]],
                          [{0: 0, 1: 1}],
-                         'bonds',
+                         ['bonds'],
                          [[vermouth.molecule.Interaction(atoms=(0, 1),
                                                         parameters=['1', '0.33', '500'],
                                                         meta={})]],
-                         [(1, 4, 1)],
-                         [(0, 0)]
+                         [[]],
+                         [[]],
+                         [[(1, 4, 1)]],
+                         [[(0, 0)]]
                         ),
-                      # test multiple versions don't overwrite
+                        # 3 - test multiple versions don't overwrite
                         ([[(0, {'name': 'BB1', 'replace': {'charge': 1.0}}),
                           (1, {'name': 'BB'})]],
                          [{0: 0, 1: 1}],
-                         'bonds',
+                         ['bonds'],
                          [[vermouth.molecule.Interaction(atoms=(0, 1),
                                                         parameters=['1', '0.33', '500'],
                                                         meta={"version": 1}),
                           vermouth.molecule.Interaction(atoms=(0, 1),
                                                         parameters=['1', '0.33', '600'],
                                                         meta={"version": 2})]],
-                          [(1, 4, 1), (1, 4, 2)],
-                          [(0, 0), (0, 1)]
+                          [[]],
+                          [[]],
+                          [[(1, 4, 1), (1, 4, 2)]],
+                          [[(0, 0), (0, 1)]]
                         ),
-                      # test multiple links which don't overwrite
+                        # 4 - test multiple links which don't overwrite
                         ([[(0, {'name': 'BB1', 'replace': {'charge': 1.0}}),
                            (1, {'name': 'BB'})],
                          [(0, {'name': 'BB2'}), (1, {'name': 'BB'})]],
                          [{0: 0, 1: 1},
                           {0: 1, 1: 2}],
-                         'bonds',
+                         ['bonds', 'bonds'],
                          [[vermouth.molecule.Interaction(atoms=(0, 1),
                                                         parameters=['1', '0.33', '500'],
                                                         meta={"version": 1})],
                           [vermouth.molecule.Interaction(atoms=(0, 1),
                                                         parameters=['1', '0.33', '600'],
                                                         meta={"version": 1})]],
-                          [(1, 4, 1), (6, 9, 1)],
-                          [(0, 0), (1, 0)]
+                          [[], []],
+                          [[], []],
+                          [[(1, 4, 1)], [(6, 9, 1)]],
+                          [[(0, 0), (1, 0)]]
                         ),
-                      # test multiple links which do overwrite
+                        # 5 - test multiple links which do overwrite
                         ([[(0, {'name': 'BB1'}), (1, {'name': 'BB'})],
                           [(0, {'name': 'BB1'}), (1, {'name': 'BB'})]],
                          [{0: 0, 1: 1},
                           {0: 0, 1: 1}],
-                         'bonds',
+                         ['bonds', 'bonds'],
                          [[vermouth.molecule.Interaction(atoms=(0, 1),
                                                         parameters=['1', '0.33', '500'],
                                                         meta={"version": 1})],
                           [vermouth.molecule.Interaction(atoms=(0, 1),
                                                         parameters=['1', '0.33', '600'],
                                                         meta={"version": 1})]],
-                          [(1, 4, 1)],
-                          [(1, 0)]
+                          [[], []],
+                          [[], []],
+                          [[(1, 4, 1)]],
+                          [[(1, 0)]]
+                        ),
+                        # 6 - test non-edges which is OK
+                        ([[(0, {'name': 'BB1'}),
+                           (1, {'name': 'BB'})],
+                           [(0, {'name': 'BB1'}),
+                           (1, {'name': 'BB'}),
+                           (2, {'name': 'BB1'}),
+                           (3, {'name': 'BB2'})]],
+                         [{0: 0, 1: 1},
+                          {0: 0, 1: 1, 2: 1, 3: 1}],
+                         ['bonds', 'dihedrals'],
+                         [[vermouth.molecule.Interaction(atoms=(0, 1),
+                                                        parameters=['1', '0.33', '500'],
+                                                        meta={"version": 1})],
+                          [vermouth.molecule.Interaction(atoms=(0, 1, 2, 3),
+                                                        parameters=['1', '0.33', '500'],
+                                                        meta={})]],
+                         [[], [[3 , {'atomname':'BB8' , 'order': 1}]]],
+                         [[], []],
+                         [[(1, 4, 1)],[(1, 4, 5, 6, 1)]],
+                         [[(0, 0)], [(1, 0)]]
+                        ),
+                        # 7 - test pattern that works
+                        ([[(0, {'name': 'BB1','replace': {'label': 'A'}}),
+                           (1, {'name': 'BB', 'replace': {'label': 'A'}})],
+                          [(0, {'name': 'BB2', 'replace': {'label': 'B'}}),
+                           (1, {'name': 'BB', 'replace': {'label': 'B'}})],
+                          [(0, {'name': 'BB1'}),
+                           (1, {'name': 'BB'}),
+                           (2, {'name': 'BB1'}),
+                           (3, {'name': 'BB2'})]],
+                         [{0: 0, 1: 1}, {0: 1, 1: 2}, {0: 0, 1: 1, 2: 1, 3: 1}],
+                         ['bonds', 'bonds', 'dihedrals'],
+                         [[vermouth.molecule.Interaction(atoms=(0, 1),
+                                                        parameters=['1', '0.33', '500'],
+                                                        meta={"version": 1})],
+                          [vermouth.molecule.Interaction(atoms=(0, 1),
+                                                        parameters=['1', '0.33', '500'],
+                                                        meta={"version": 1})],
+                          [vermouth.molecule.Interaction(atoms=(0, 1, 2, 3),
+                                                        parameters=['1', '0.33', '500'],
+                                                        meta={})]],
+                         [[], [], []],
+                         [[], [], [[[0, {'label': 'A', 'name': 'BB1'}], [1, {'label': 'A', 'name': 'BB'}],
+                                   [2, {'name': 'BB1'}], [3, {'label': 'B', 'name': 'BB2'}]]]],
+                         [[(1, 4, 1)], [(6, 9, 1)], [(1, 4, 5, 6, 1)]],
+                         [[(0, 0)], [(1, 0)], [(2, 0)]]
                         ),
                         ))
 def test_apply_link_to_residue(example_meta_molecule,
                                link_defs,
                                link_to_resids,
-                               inter_type,
+                               inter_types,
                                link_inters,
+                               link_non_edges,
+                               link_patterns,
                                expected_nodes,
                                expected_inters):
     links = []
     processor = ApplyLinks()
-    for link_nodes, link_to_resid, interactions in zip(link_defs,
-                                                       link_to_resids,
-                                                       link_inters):
+    for link_nodes, link_to_resid, interactions, non_edges, patterns, inter_type in zip(link_defs,
+                                                                                        link_to_resids,
+                                                                                        link_inters,
+                                                                                        link_non_edges,
+                                                                                        link_patterns,
+                                                                                        inter_types):
         link = Link()
         link.add_nodes_from(link_nodes)
         link.interactions[inter_type] = interactions
+        link.non_edges = non_edges
+        link.patterns = patterns
+        link.make_edges_from_interaction_type(inter_type)
         processor.apply_link_between_residues(example_meta_molecule,
-                                              link,
-                                              link_to_resid)
+                                                  link,
+                                                  link_to_resid)
 
-    for nodes, inter_idx in zip(expected_nodes, expected_inters):
-        interaction = link_inters[inter_idx[0]][inter_idx[1]]
-        new_interactions = processor.applied_links[inter_type][nodes]
-        assert new_interactions.atoms == tuple(nodes[:-1])
-        assert new_interactions.parameters == interaction.parameters
-        assert new_interactions.meta == interaction.meta
+    for nodes, inter_idxs, inter_type in zip(expected_nodes, expected_inters, inter_types):
+        for inter_nodes, inter_idx in zip(nodes, inter_idxs):
+            interaction = link_inters[inter_idx[0]][inter_idx[1]]
+            new_interactions = processor.applied_links[inter_type][inter_nodes][0]
+            assert new_interactions.atoms == tuple(inter_nodes[:-1])
+            assert new_interactions.parameters == interaction.parameters
+            assert new_interactions.meta == interaction.meta
 
+
+@pytest.mark.parametrize('''link_defs,
+                          link_to_resids,
+                          inter_types,
+                          link_inters,
+                          link_non_edges,
+                          link_patterns,
+                          ''',
+                        (
+                        # 1 - simple check single residue where atom-name is amiss
+                        ([[(0, {'name': 'QB1'}),
+                          (1, {'name': 'BB'})]],
+                         [{0: 0, 1: 1}],
+                         ['bonds'],
+                         [[vermouth.molecule.Interaction(atoms=(0, 1),
+                                                        parameters=['1', '0.33', '500'],
+                                                        meta={})]],
+                         [[]],
+                         [[]],
+                        ),
+                        # 2 - test non-edges which doesn't apply
+                        # -> here there is an edge present where the non-edge
+                        #    is specified
+                        ([[(0, {'name': 'BB1'}),
+                           (1, {'name': 'BB'})],
+                          [(0, {'name': 'BB2'}),
+                           (1, {'name': 'BB'})],
+                          [(0, {'name': 'BB1'}),
+                           (1, {'name': 'BB'}),
+                           (2, {'name': 'BB1'}),
+                           (3, {'name': 'BB2'})]],
+                         [{0: 0, 1: 1}, {0: 1, 1: 2}, {0: 0, 1: 1, 2: 1, 3: 1}],
+                         ['bonds', 'bonds', 'dihedrals'],
+                         [[vermouth.molecule.Interaction(atoms=(0, 1),
+                                                        parameters=['1', '0.33', '500'],
+                                                        meta={"version": 1})],
+                          [vermouth.molecule.Interaction(atoms=(0, 1),
+                                                        parameters=['1', '0.33', '500'],
+                                                        meta={"version": 1})],
+                          [vermouth.molecule.Interaction(atoms=(0, 1, 2, 3),
+                                                        parameters=['1', '0.33', '500'],
+                                                        meta={})]],
+                         [[], [], [[3 , {'name':'BB' , 'order': 1}]]],
+                         [[], [], []],
+                        ),
+                        # 3 - test pattern that fails because no match can be found
+                        ([[(0, {'name': 'BB1','replace': {'label': 'A'}}),
+                           (1, {'name': 'BB', 'replace': {'label': 'A'}})],
+                          [(0, {'name': 'BB2', 'replace': {'label': 'B'}}),
+                           (1, {'name': 'BB', 'replace': {'label': 'B'}})],
+                          [(0, {'name': 'BB1'}),
+                           (1, {'name': 'BB'}),
+                           (2, {'name': 'BB1'}),
+                           (3, {'name': 'BB2'})]],
+                         [{0: 0, 1: 1}, {0: 1, 1: 2}, {0: 0, 1: 1, 2: 1, 3: 1}],
+                         ['bonds', 'bonds', 'dihedrals'],
+                         [[vermouth.molecule.Interaction(atoms=(0, 1),
+                                                        parameters=['1', '0.33', '500'],
+                                                        meta={"version": 1})],
+                          [vermouth.molecule.Interaction(atoms=(0, 1),
+                                                        parameters=['1', '0.33', '500'],
+                                                        meta={"version": 1})],
+                          [vermouth.molecule.Interaction(atoms=(0, 1, 2, 3),
+                                                        parameters=['1', '0.33', '500'],
+                                                        meta={})]],
+                         [[], [], []],
+                         [[], [], [[[0, {'label': 'C', 'name': 'BB1'}], [1, {'label': 'A', 'name': 'BB'}],
+                                   [2, {'name': 'BB1'}], [3, {'label': 'B', 'name': 'BB2'}]]]],
+                        )))
+def test_apply_link_fail(example_meta_molecule,
+                         link_defs,
+                         link_to_resids,
+                         inter_types,
+                         link_inters,
+                         link_non_edges,
+                         link_patterns):
+    links = []
+
+    with pytest.raises(polyply.src.apply_links.MatchError):
+        processor = ApplyLinks()
+        for link_nodes, link_to_resid, interactions, non_edges, patterns, inter_type in zip(link_defs,
+                                                                                            link_to_resids,
+                                                                                            link_inters,
+                                                                                            link_non_edges,
+                                                                                            link_patterns,
+                                                                                            inter_types):
+            link = Link()
+            link.add_nodes_from(link_nodes)
+            link.interactions[inter_type] = interactions
+            link.non_edges = non_edges
+            link.patterns = patterns
+            link.make_edges_from_interaction_type(inter_type)
+            processor.apply_link_between_residues(example_meta_molecule,
+                                                  link,
+                                                  link_to_resid)
 
 @pytest.mark.parametrize('links, interactions, edges, inttype',(
    ("""

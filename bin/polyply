@@ -24,8 +24,7 @@ import argparse
 from pathlib import Path
 import numpy as np
 from vermouth.log_helpers import (StyleAdapter, BipolarFormatter,
-                                  CountingHandler, TypeAdapter,
-                                  ignore_warnings_and_count,)
+                                  CountingHandler, TypeAdapter,)
 import polyply
 from polyply import (gen_itp, gen_coords, gen_seq, DATA_PATH)
 from polyply.src.load_library import load_library
@@ -54,7 +53,6 @@ LOGGER.addHandler(COUNTER)
 LOGGER = StyleAdapter(LOGGER)
 
 VERSION = 'polyply version {}'.format(polyply.__version__)
-
 def main():
     """
     Parses commandline arguments and call relevant sub_programs.
@@ -74,7 +72,7 @@ def main():
     subparsers = parser.add_subparsers()
 
     # List of Subparsers for the different tools
-    parser_gen_itp = subparsers.add_parser('gen_itp')
+    parser_gen_itp = subparsers.add_parser('gen_params', aliases=['gen_itp'])
     parser_gen_coords = subparsers.add_parser('gen_coords')
     parser_gen_seq = subparsers.add_parser('gen_seq')
 
@@ -130,6 +128,12 @@ def main():
     topology_group.add_argument('-ign', dest='ignore', type=str,
                                 help='molecules to ignore when building structure',
                                 default=[], nargs='+')
+    topology_group.add_argument('-cycles', dest='cycles', type=str,
+                                help='molecule names of cyclic molecules',
+                                default=[], nargs='+')
+    topology_group.add_argument('-cycle_tol', dest='cycle_tol', type=float,
+                                help='tolerance in nm for cycles to be closed (def. 0)',
+                                default=0.0)
     topology_group.add_argument('-split', dest='split', nargs='+', type=str, default=[],
                                 help=('split single residue into more residues. The syntax is '
                                       '<resname>:<new_resname>-<atom1>,<atom2><etc>:<new_resname> '
@@ -170,8 +174,8 @@ def main():
                                    help='max number of trys to place a residue', default=100)
     random_walk_group.add_argument('-sf', dest='step_fudge', type=float,
                                    help='scale step length in random walk by fudge factor',
-                                   default=0.8)
-    random_walk_group.add_argument('-mf', dest='max_force', type=float, default=10**3.0,
+                                   default=1.0)
+    random_walk_group.add_argument('-mf', dest='max_force', type=float, default=5*10**4.0,
                                    help='max force to allow in residue placing (kJ /(mol*nm))')
     random_walk_group.add_argument('-nr', dest='nrewind', type=int, default=5,
                                    help=('number of residues to trace back '
