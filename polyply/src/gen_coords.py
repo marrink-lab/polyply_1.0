@@ -31,6 +31,7 @@ from .topology import Topology
 from .build_system import BuildSystem
 from .annotate_ligands import AnnotateLigands, parse_residue_spec, _find_nodes
 from .build_file_parser import read_build_file
+from .check_residue_equivalence import check_residue_equivalence
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
@@ -130,6 +131,9 @@ def gen_coords(args):
         LOGGER.info("loading grid",  type="step")
         args.grid = np.loadtxt(args.grid)
 
+    # do a sanity check
+    LOGGER.info("checking residue integrity",  type="step")
+    check_residue_equivalence(topology)
     # Build polymer structure
     LOGGER.info("generating templates",  type="step")
     GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
