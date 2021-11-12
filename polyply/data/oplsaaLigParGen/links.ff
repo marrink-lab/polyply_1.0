@@ -1,0 +1,115 @@
+;-------------------------------------
+;        PEO-PEO LINK
+;-------------------------------------
+[link]
+resname "PEO"
+[ bonds ]
+ +C01   C03     1      0.1529 224262.400  {"group": "connection"}
+[ angles ]
+  O02   C03  +C01     1    109.500    418.400  {"group": "connection"}
+  C03  +C01  +O02     1    109.500    418.400  {"group": "connection"}
+  C03  +C01  +H04     1    110.700    313.800  {"group": "connection"}
+  C03  +C01  +H05     1    110.700    313.800  {"group": "connection"}
+ +C01   C03   H06     1    110.700    313.800  {"group": "connection"}
+ +C01   C03   H07     1    110.700    313.800  {"group": "connection"}
+[ dihedrals ]
+ +C01  C03  O02  C01        3       1.715   2.845   1.046  -5.607  -0.000   0.000  {"group": "connection"}
+ +C03 +O02 +C01  C03        3       1.715   2.845   1.046  -5.607  -0.000   0.000  {"group": "connection"}
+ +H05 +C01  C03  H07        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"group": "connection"}
+ +H05 +C01  C03  H06        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"group": "connection"}
+ +H04 +C01  C03  H06        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"group": "connection"}
+ +H04 +C01  C03  H07        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"group": "connection"}
+ +H05 +C01  C03  O02        3       0.979   2.937   0.000  -3.916  -0.000   0.000  {"group": "connection"}
+  H07  C03 +C01 +O02        3       0.979   2.937   0.000  -3.916  -0.000   0.000  {"group": "connection"}
+  H06  C03 +C01 +O02        3       0.979   2.937   0.000  -3.916  -0.000   0.000  {"group": "connection"}
+ +H04 +C01  C03  O02        3       0.979   2.937   0.000  -3.916  -0.000   0.000  {"group": "connection"}
+ +O02 +C01  C03  O02        3      -1.151   1.151   0.000  -0.000  -0.000   0.000  {"group": "connection"}
+[ pairs ]
+   C01  +C01    1  {"group": "connection"}
+   O02  +O02    1  {"group": "connection"}
+   C03  +C03    1  {"group": "connection"}
+   O02  +H04    1  {"group": "connection"}
+  +O02   H06    1  {"group": "connection"}
+   O02  +H05    1  {"group": "connection"}
+  +O02   H07    1  {"group": "connection"}
+   H06  +H04    1  {"group": "connection"}
+   H07  +H04    1  {"group": "connection"}
+   H06  +H05    1  {"group": "connection"}
+   H07  +H05    1  {"group": "connection"}
+
+
+;-----------------------------------
+;       PEO-TERMINI LINKS
+;-----------------------------------
+[link]
+resname "OHter|PEO"
+[ bonds ]
+ +C01    C2     1      0.1529 224262.400  {"comment":"OH-l-link", "group": "termini"}
+[ pairs ]
+   OA1  +O02    1  {"comment":"OH-l-link", "group": "termini"}
+    C2  +C03    1  {"comment":"OH-l-link", "group": "termini"}
+  +C01   HA3    1  {"comment":"OH-l-link", "group": "termini"}
+   OA1  +H04    1  {"comment":"OH-l-link", "group": "termini"}
+  +O02    H4    1  {"comment":"OH-l-link", "group": "termini"}
+   OA1  +H05    1  {"comment":"OH-l-link", "group": "termini"}
+  +O02    H5    1  {"comment":"OH-l-link", "group": "termini"}
+    H4  +H04    1  {"comment":"OH-l-link", "group": "termini"}
+    H5  +H04    1  {"comment":"OH-l-link", "group": "termini"}
+    H4  +H05    1  {"comment":"OH-l-link", "group": "termini"}
+    H5  +H05    1  {"comment":"OH-l-link", "group": "termini"}
+[ angles ]
+  OA1    C2  +C01     1    109.500    418.400  {"comment":"OH-l-link", "group": "termini"}
+   C2  +C01  +O02     1    109.500    418.400  {"comment":"OH-l-link", "group": "termini"}
+   C2  +C01  +H04     1    110.700    313.800  {"comment":"OH-l-link", "group": "termini"}
+   C2  +C01  +H05     1    110.700    313.800  {"comment":"OH-l-link", "group": "termini"}
+ +C01    C2    H4     1    110.700    313.800  {"comment":"OH-l-link", "group": "termini"}
+ +C01    C2    H5     1    110.700    313.800  {"comment":"OH-l-link", "group": "termini"}
+[ dihedrals ]                               
+ +C03 +O02 +C01   C2        3       1.715   2.845   1.046  -5.607  -0.000   0.000  {"comment":"OH-l-link", "group": "termini"}
+ +H05 +C01   C2   H4        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"OH-l-link", "group": "termini"}
+ +H05 +C01   C2   H5        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"OH-l-link", "group": "termini"}
+ +H04 +C01   C2   H5        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"OH-l-link", "group": "termini"}
+ +H04 +C01   C2   H4        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"OH-l-link", "group": "termini"}
+ +H05 +C01   C2  OA1        3       0.979   2.937   0.000  -3.916  -0.000   0.000  {"comment":"OH-l-link", "group": "termini"}
+ +H04 +C01   C2  OA1        3       0.979   2.937   0.000  -3.916  -0.000   0.000  {"comment":"OH-l-link", "group": "termini"}
+   H4   C2 +C01 +O02        3       0.979   2.937   0.000  -3.916  -0.000   0.000  {"comment":"OH-l-link", "group": "termini"}
+   H5   C2 +C01 +O02        3       0.979   2.937   0.000  -3.916  -0.000   0.000  {"comment":"OH-l-link", "group": "termini"}
+  HA3  OA1   C2 +C01        3      -0.444   3.833   0.728  -4.117  -0.000   0.000  {"comment":"OH-l-link", "group": "termini"}
+ +O02 +C01   C2  OA1        3       9.035  -9.035   0.000  -0.000  -0.000   0.000  {"comment":"OH-l-link", "group": "termini"}
+
+
+[link]
+resname "PEO|OHter"
+[ bonds ]
+  +C2   C03     1      0.1529 224262.400  {"comment":"OH-r-link", "group": "termini"}
+[ pairs ]
+   C01   +C2    1  {"comment":"OH-r-link", "group": "termini"}
+   O02  +OA1    1  {"comment":"OH-r-link", "group": "termini"}
+   O02   +H4    1  {"comment":"OH-r-link", "group": "termini"}
+  +OA1   H06    1  {"comment":"OH-r-link", "group": "termini"}
+   O02   +H5    1  {"comment":"OH-r-link", "group": "termini"}
+  +OA1   H07    1  {"comment":"OH-r-link", "group": "termini"}
+   C03  +HA3    1  {"comment":"OH-r-link", "group": "termini"}
+   H06   +H4    1  {"comment":"OH-r-link", "group": "termini"}
+   H07   +H4    1  {"comment":"OH-r-link", "group": "termini"}
+   H06   +H5    1  {"comment":"OH-r-link", "group": "termini"}
+   H07   +H5    1  {"comment":"OH-r-link", "group": "termini"}
+[ angles ]
+  O02   C03   +C2     1    109.500    418.400  {"comment":"OH-r-link", "group": "termini"}
+  C03   +C2  +OA1     1    109.500    418.400  {"comment":"OH-r-link", "group": "termini"}
+  C03   +C2   +H4     1    110.700    313.800  {"comment":"OH-r-link", "group": "termini"}
+  C03   +C2   +H5     1    110.700    313.800  {"comment":"OH-r-link", "group": "termini"}
+  +C2   C03   H06     1    110.700    313.800  {"comment":"OH-r-link", "group": "termini"}
+  +C2   C03   H07     1    110.700    313.800  {"comment":"OH-r-link", "group": "termini"}
+[ dihedrals ]
+  +C2  C03  O02  C01        3       1.715   2.845   1.046  -5.607  -0.000   0.000  {"comment":"OH-r-link", "group": "termini"}
+  +H4  +C2  C03  H07        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"OH-r-link", "group": "termini"}
+  +H5  +C2  C03  H07        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"OH-r-link", "group": "termini"}
+  +H5  +C2  C03  H06        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"OH-r-link", "group": "termini"}
+  +H4  +C2  C03  H06        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"OH-r-link", "group": "termini"}
+  H07  C03  +C2 +OA1        3       0.979   2.937   0.000  -3.916  -0.000   0.000  {"comment":"OH-r-link", "group": "termini"}
+  H06  C03  +C2 +OA1        3       0.979   2.937   0.000  -3.916  -0.000   0.000  {"comment":"OH-r-link", "group": "termini"}
+  +H5  +C2  C03  O02        3       0.979   2.937   0.000  -3.916  -0.000   0.000  {"comment":"OH-r-link", "group": "termini"}
+  +H4  +C2  C03  O02        3       0.979   2.937   0.000  -3.916  -0.000   0.000  {"comment":"OH-r-link", "group": "termini"}
+ +HA3 +OA1  +C2  C03        3      -0.444   3.833   0.728  -4.117  -0.000   0.000  {"comment":"OH-r-link", "group": "termini"}
+ +OA1  +C2  C03  O02        3       9.035  -9.035   0.000  -0.000  -0.000   0.000  {"comment":"OH-r-link", "group": "termini"}

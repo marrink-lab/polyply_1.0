@@ -22,6 +22,18 @@ from .virtual_site_builder import construct_vs
 Processor and functions for optimizing the geomtry
 of vermoth molecules.
 """
+# we use weights in the minization procedure
+# to account for the fact that differences in
+# bond length are typically small owing to the
+# fact that the length unit is nm. Scaling them
+# by 10,000 also increases their weight over
+# angles, and dihedrals, which is wanted as
+# the bonds have to be very close to their
+# equilbrium value
+WEIGHTS = {"bonds": 10000.0,
+           "angles": 1.0,
+           "constraints": 10000.0,
+           "dihedrals": 1.0,}
 
 def compute_bond(params, coords):
     """
@@ -42,7 +54,7 @@ def compute_bond(params, coords):
     float
     """
     dist = np.linalg.norm(coords[0] - coords[1])
-    return 10000 *(dist - float(params[1]))**2.0
+    return WEIGHTS["bonds"] *(dist - float(params[1]))**2.0
 
 def compute_angle(params, coords):
     """
@@ -60,13 +72,13 @@ def compute_angle(params, coords):
     float
     """
     angle_value = angle(coords[0], coords[1], coords[2])
-    return (angle_value - float(params[1]))**2.0
+    return WEIGHTS["angles"] * (angle_value - float(params[1]))**2.0
 
-def compute_dih(params, coords):
+def compute_improper_dih(params, coords):
     """
-    Compute the dihedral angle between four points in `coords`
-    and then take the MSD with repsect to a reference
-    value provided in `params`.
+    Compute the improper dihedral angle of GROMACS type 2
+    between four points in `coords` and then take the MSD
+    with repsect to a reference value provided in `params`.
 
     Parameters
     -----------
@@ -77,8 +89,14 @@ def compute_dih(params, coords):
     -------
     float
     """
-    dih_angle = dih(coords[0], coords[1], coords[2], coords[3])
-    return (dih_angle - float(params[1]))**2.0
+    # we filter all non-imporpers out here because
+    # the itp file parser doesn't distinguish them
+    if params[0] == "2":
+        dih_angle = dih(coords[0], coords[1], coords[2], coords[3])
+        penalty = WEIGHTS["dihedrals"] * (dih_angle - float(params[1]))**2.0
+    else:
+        penalty = 0
+    return penalty
 
 def renew_vs(positions, block, atom_to_idx):
     """
@@ -112,9 +130,18 @@ def renew_vs(positions, block, atom_to_idx):
 INTER_METHODS = {"bonds": compute_bond,
                  "constraints": compute_bond,
                  "angles": compute_angle,
-                 "dihedrals": compute_dih}
+                 "dihedrals": compute_improper_dih}
+# Note that we only optimize improper dihedral angles
+# because they keep molecules flat, whereas proper
+# dihedral angles typically are fixed well in the
+# energy minimization. We could optimize proper
+# dihedral angles but then we'd also have to support
+# all different function types and their multipicity.
 
-def optimize_geometry(block, coords, inter_types=[]):
+def optimize_geometry(block, coords, inter_types=[], tolerance={"angles": 5,
+                                                                "dihedrals": 5,
+                                                                "bonds": 0.05,
+                                                                "constraints": 0.05}):
     """
     Take the definitions of a `block` and associated
     `coords` and optimize the geometry based on the
@@ -126,6 +153,9 @@ def optimize_geometry(block, coords, inter_types=[]):
     block:  :class:vermouth.molecule.Block
     coords: dict
         dictionary of coordinates in form atom_name:np.ndarray
+    tolerance: dict
+        dictionary of allowed tolerance in nm or degree per
+        interaction-type
 
     Returns
     -------
@@ -154,11 +184,24 @@ def optimize_geometry(block, coords, inter_types=[]):
         return energy
 
     opt_results = scipy.optimize.minimize(target_function, positions, method='L-BFGS-B',
-                                          options={'ftol':0.001, 'maxiter': 100})
+                                          options={'ftol': 0.001, 'maxiter': 100})
 
+    # evaluate if optimization was successful
     positions = opt_results['x'].reshape((-1, 3))
     positions = renew_vs(positions, block, atom_to_idx)
+
     for node_key, idx in atom_to_idx.items():
         coords[node_key] = positions[idx]
 
-    return opt_results['success'], coords
+    for inter_type in inter_types:
+        interactions = block.interactions.get(inter_type, [])
+        for interaction in interactions:
+            atoms = interaction.atoms
+            params = interaction.parameters
+            atom_coords = [positions[atom_to_idx[name]]
+                           for name in atoms]
+            penalty = INTER_METHODS[inter_type](params, atom_coords)
+            if penalty > WEIGHTS[inter_type]*tolerance[inter_type]**2.:
+                return False, coords
+
+    return True, coords

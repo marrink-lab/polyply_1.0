@@ -1,0 +1,111 @@
+; /coarse/fabian/current-projects/polymer_itp_builder/vermouth_dev/venvv/bin/polyply gen_params -lib 2016H66 -seqf PP.json -name PP -o PP.itp
+
+; Please cite the following papers:
+
+[ moleculetype ]
+PP 3
+
+[ atoms ]
+ 1 CH3 1 CH3ter C1   1 0.0  15.035
+ 2 CH2 2 PP     VC1  2 0.0 14.0270
+ 3 CH1 2 PP     VC2  3 0.0 13.0190
+ 4 CH3 2 PP     SC1  4 0.0  15.035
+ 5 CH2 3 PP     VC1  5 0.0 14.0270
+ 6 CH1 3 PP     VC2  6 0.0 13.0190
+ 7 CH3 3 PP     SC1  7 0.0  15.035
+ 8 CH2 4 PP     VC1  8 0.0 14.0270
+ 9 CH1 4 PP     VC2  9 0.0 13.0190
+10 CH3 4 PP     SC1 10 0.0  15.035
+11 CH2 5 PP     VC1 11 0.0 14.0270
+12 CH1 5 PP     VC2 12 0.0 13.0190
+13 CH3 5 PP     SC1 13 0.0  15.035
+14 CH2 6 PP     VC1 14 0.0 14.0270
+15 CH1 6 PP     VC2 15 0.0 13.0190
+16 CH3 6 PP     SC1 16 0.0  15.035
+17 CH3 7 CH3ter C1  17 0.0  15.035
+
+[ bonds ]
+ 2  3 2 gb_27 ; C,CHn-CHn,C
+ 3  4 2 gb_27 ; C,CHn-CHn,C
+ 5  6 2 gb_27 ; C,CHn-CHn,C
+ 6  7 2 gb_27 ; C,CHn-CHn,C
+ 8  9 2 gb_27 ; C,CHn-CHn,C
+ 9 10 2 gb_27 ; C,CHn-CHn,C
+11 12 2 gb_27 ; C,CHn-CHn,C
+12 13 2 gb_27 ; C,CHn-CHn,C
+14 15 2 gb_27 ; C,CHn-CHn,C
+15 16 2 gb_27 ; C,CHn-CHn,C
+
+; link
+ 5  3 2 gb_27 ; C,CHn-CHn,C
+ 8  6 2 gb_27 ; C,CHn-CHn,C
+11  9 2 gb_27 ; C,CHn-CHn,C
+14 12 2 gb_27 ; C,CHn-CHn,C
+15 17 2 gb_27 ; C,CHn-CHn,C
+ 2  1 2 gb_27 ; C,CHn-CHn,C
+
+[ pairs ]
+; link
+ 2  6 1
+ 5  9 1
+ 8 12 1
+11 15 1
+ 3  8 1
+ 6 11 1
+ 9 14 1
+ 3  7 1
+ 6 10 1
+ 9 13 1
+12 16 1
+ 4  6 1
+ 7  9 1
+10 12 1
+13 15 1
+ 1  5 1 ; A
+ 1  4 1 ; C
+12 17 1 ; B
+
+[ angles ]
+ 2  3  4 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
+ 5  6  7 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
+ 8  9 10 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
+11 12 13 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
+14 15 16 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
+
+; link
+ 5  3  2 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
+ 8  6  5 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
+11  9  8 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
+14 12 11 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
+ 3  5  6 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
+ 6  8  9 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
+ 9 11 12 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
+12 14 15 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
+ 5  3  4 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
+ 8  6  7 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
+11  9 10 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
+14 12 13 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
+14 15 17 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
+ 1  2  3 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
+16 15 17 2 ga_15 ; CHn-CHn-C,CHn,OA,OE,NR,NT,NL
+
+[ dihedrals ]
+; link
+ 2  3  5  6 1 gd_34 ; X-SI,CHn-CHn-X
+ 5  6  8  9 1 gd_34 ; X-SI,CHn-CHn-X
+ 8  9 11 12 1 gd_34 ; X-SI,CHn-CHn-X
+11 12 14 15 1 gd_34 ; X-SI,CHn-CHn-X
+ 3  5  6  8 1 gd_34 ; X-SI,CHn-CHn-X
+ 6  8  9 11 1 gd_34 ; X-SI,CHn-CHn-X
+ 9 11 12 14 1 gd_34 ; X-SI,CHn-CHn-X
+ 1  2  3  5 1 gd_34 ; X-SI,CHn-CHn-X
+12 14 15 17 1 gd_34 ; X-SI,CHn-CHn-X
+
+[ dihedrals ]
+; link
+ 3  4  5  2 2 gi_2 ; center S
+ 9 10 11  8 2 gi_2 ; center S
+ 6  7  8  5 2 gi_5 ; center R
+12 13 14 11 2 gi_5 ; center R
+15 16 17 14 2 gi_5 ; center R
+

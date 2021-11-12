@@ -372,3 +372,16 @@ class TestTopParsing:
                                 "gen-pairs":'no',
                                 "fudgeLJ":1.0,
                                 "fudgeQQ":1.0}
+
+def test_consistency():
+    """
+    This test checks that all interaction formats defined
+    in TOPDirector.atom_idxs also have a corresponding
+    method in ITPDirector.METH_DICT.
+    """
+    ff = vermouth.forcefield.ForceField(name='test_ff')
+    top = Topology(ff, name="test")
+    top_director = polyply.src.top_parser.TOPDirector(top)
+    for inter_type in top_director.atom_idxs:
+        assert (tuple(['moleculetype', inter_type]) in top_director.METH_DICT or \
+                tuple([inter_type]) in top_director.METH_DICT)

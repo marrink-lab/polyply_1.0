@@ -16,10 +16,12 @@ import json
 import networkx as nx
 from networkx.readwrite import json_graph
 from vermouth.graph_utils import make_residue_graph
+from vermouth.log_helpers import StyleAdapter, get_logger
 from .polyply_parser import read_polyply
 from .graph_utils import find_nodes_with_attributes
 
 Monomer = namedtuple('Monomer', 'resname, n_blocks')
+LOGGER = StyleAdapter(get_logger(__name__))
 
 def _make_edges(force_field):
     for block in force_field.blocks.values():
@@ -72,6 +74,16 @@ def _interpret_residue_mapping(graph, resname, new_residues):
                 atom_name_to_resname[node] = new_name
     return atom_name_to_resname
 
+def _find_starting_node(meta_molecule):
+    """
+    Find the first node that has coordinates if there is
+    otherwise return first node in list of nodes.
+    """
+    for node in meta_molecule.nodes:
+        if "build" not in meta_molecule.nodes[node]:
+            return node
+    return next(iter(meta_molecule.nodes()))
+
 class MetaMolecule(nx.Graph):
     """
     Graph that describes molecules at the residue level.
@@ -85,6 +97,9 @@ class MetaMolecule(nx.Graph):
         super().__init__(*args, **kwargs)
         self.molecule = None
         nx.set_node_attributes(self, True, "build")
+        self.__search_tree = None
+        self.root = None
+        self.dfs = False
 
     def add_monomer(self, current, resname, connections):
         """
@@ -170,6 +185,19 @@ class MetaMolecule(nx.Graph):
         self.relabel_and_redo_res_graph(mapping)
         return mapping
 
+    @property
+    def search_tree(self):
+
+        if self.__search_tree is None:
+            if self.root is None:
+                self.root =_find_starting_node(self)
+            if self.dfs:
+                self.__search_tree = nx.bfs_tree(self, source=self.root)
+            else:
+                self.__search_tree = nx.dfs_tree(self, source=self.root)
+
+        return self.__search_tree
+
     @staticmethod
     def _block_graph_to_res_graph(block):
         """
@@ -226,9 +254,16 @@ class MetaMolecule(nx.Graph):
 
         for node in nodes:
             attrs = init_graph.nodes[node]
+            if "resid" not in attrs:
+                LOGGER.warning("Node {} has no resid. Setting resid to {} + 1.", node, node)
+                try:
+                    attrs["resid"] = node + 1
+                except TypeError:
+                    msg = "Couldn't add 1 to node. Either provide resids or use integers as node keys."
+                    raise IOError(msg)
             graph.add_node(node, **attrs)
 
-        graph.add_edges_from(init_graph.edges)
+        graph.add_edges_from(init_graph.edges(data=True))
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
         return meta_mol
 

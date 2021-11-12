@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 import networkx as nx
 import numpy as np
 import scipy
@@ -22,6 +21,7 @@ from .processor import Processor
 from .linalg_functions import (u_vect, center_of_geometry,
                                radius_of_gyration)
 from .topology import replace_defined_interaction
+from .linalg_functions import dih
 """
 Processor generating coordinates for all residues of a meta_molecule
 matching those in the meta_molecule.molecule attribute.
@@ -94,25 +94,57 @@ def find_interaction_involving(block, current_node, prev_node):
                  linking atom {} and atom {}.'''
         raise IOError(msg.format(block.nodes[0]["resname"], prev_node, current_node))
 
-def _expand_inital_coords(block, bond=None, pos=None, fixed=None,
-                          iterations=50, weight="weight", max_box=1.0):
+def _expand_inital_coords(block, max_count=50000):
     """
-    Given a `graph` generate initial random coordinates
-    in three dimensions and relax them using a Fruchterman
-    Reingold generic simulation aka spring_layout to relax
-    the coordinates topologically.
+    Given a `graph` generate initial coordinates in three dimensions
+    using the Kamada-Kawai algorithm.
 
     Parameters
     -----------
-    block:   networkx.Graph
+    block:   :class:`vermouth.molecule.Block`
+    max_count: int
+        maximum number of iterations trying to fix the improper dihedrals
 
     Returns
     ---------
     dict
       dictonary of node index and position
     """
-    # replace by kamada kwau
-    return nx.kamada_kawai_layout(block, dim=3)
+    count = 0
+    while True:
+        coords = nx.kamada_kawai_layout(block, dim=3)
+        count += 1
+        if count > max_count or _good_impropers(coords, block):
+            break
+
+    return coords
+
+def _good_impropers(coords, block):
+    """
+    Given the coords of the block, check if the sign of the improper
+    dihedrals defined in the interaction section is satisfied by the
+    coordinates. This ensures that coordinates are in an initial
+    geometry which can be optimzied later.
+
+    Parameters
+    ----------
+    coords: dict
+    block: :class:`vermouth.molecule.Block`
+
+    Returns
+    -------
+    bool
+    """
+    for improper in block.interactions["dihedrals"]:
+        if improper.parameters[0] == "2":
+            atoms = improper.atoms
+            dih_angle = dih(coords[atoms[0]], coords[atoms[1]], coords[atoms[2]], coords[atoms[3]])
+            if np.isclose(np.abs(float(improper.parameters[1])), 0):
+                continue
+
+            if np.sign(dih_angle) != np.sign(float(improper.parameters[1])):
+                return False
+    return True
 
 def compute_volume(molecule, block, coords, nonbond_params, treshold=1e-18):
     """
@@ -295,17 +327,16 @@ class GenerateTemplates(Processor):
                                               "resname").values())
         templates = {}
         volumes = {}
-
         for resname in resnames:
             if not resname in self.resnames:
                 self.resnames.append(resname)
-
                 block = extract_block(meta_molecule.molecule, resname,
                                       self.topology.defines)
+
                 opt_counter = 0
                 while True:
+
                     coords = _expand_inital_coords(block)
-                    success, coords = optimize_geometry(block, coords, ["bonds", "constraints"])
                     success, coords = optimize_geometry(block, coords, ["bonds", "constraints", "angles"])
                     success, coords = optimize_geometry(block, coords, ["bonds", "constraints", "angles", "dihedrals"])
 

@@ -1,84 +1,49 @@
 # polyply
 
 [![codecov](https://codecov.io/gh/marrink-lab/polyply_1.0/branch/master/graph/badge.svg)](https://codecov.io/gh/marrink-lab/polyply_1.0)
+[![PyPI version](https://badge.fury.io/py/polyply.svg)](https://badge.fury.io/py/polyply)
+![license](https://img.shields.io/github/license/marrink-lab/polyply_1.0)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/marrink-lab/polyply_1.0/Upload%20Python%20Package)
+[![arXiv](https://img.shields.io/badge/arXiv-2105.05890-b31b1b.svg)](https://arxiv.org/abs/2105.05890)
 
 ## Functionality
-Polyply is a python suite designed to facilitate the generation of input files for simulating
-bio-macromolecules with GROMACS. It is possible to generate both itp and coordinates files for most
-(bio) macromolecules such as synthetic polymers or polysaccharides. It also facilitates
-manipulation of itp files and structures to extend or change already existing files. A library for
-some commonly used macro molecules using different force-fields (martini, gromos) is included.
-In principle the program can be used with any type of force-field (FF).
+Polyply is a python suite designed to facilitate the generation of input files and coordinates for simulating
+(bio)macromolecules such as synthetic polymers or polysaccharides. Input files can be generated either from user
+specified building blocks or by using the polymers available in the library. The library currently includes polymer
+definitions for the GROMOS and Martini force-fields. The [quick start](https://github.com/marrink-lab/polyply_1.0/wiki/Quick-Start)
+section in the wiki gives an overview of the most important commands. In addition some [tutorials][wiki] are provided for more
+in-depth information on how to use the program. Tutorials for example include, how to generate
+[Martini polymer systems](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-martini-polymer-melts) or
+[write input files](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-writing-.ff-input-files).
+More details on the algorithm and verification can be found in the [publication](https://arxiv.org/abs/2105.05890).
 
 Make sure to always verify the results and give appropriate credit to the developers of the
-force-field, molecule parameters and this program.
+force-field, molecule parameters and this program. 
 
-### Installation
-Polyply requires python 3.6 or greater. It is distributed via [PyPi][pypi_polyply], and can be installed 
-using the pip command:
-```
-pip install polyply
-```
-This installs the last released version. You can update an existing installation by running `pip install -U polyply`. 
-In some cases you may want to experiment with running the latest development version. You can install this 
-version with the following command:
-```
-pip install git+https://github.com/fgrunewald/polyply_1.0.git#polyply_1.0
-```
-The behavior of the pip command can vary depending of the specificity of your python installation. See the 
-[documentation on installing a python package][pipdoc] to learn more.
-
-### Polymer Library
-Some macro molecules are implemented in our library for a range of different force-fields.
-To get a list of all libraries available run:
-```
-polyply -list-lib
-```
-To get a detailed list of all the individual macro molecules:
-```
-polyply -list-blocks <Force Field Name>
-```
-Note that while you can combine fragments from different libraries (e.g. the martini-3 polymer
-library with martini-3 proteins), we cannot guarantee that all the links are present to make a
-meaningful itp. All blocks within a library can safely be combined. For more information on how
-to implement links between different blocks see the wiki.
-
-### Itp file generation
-To generate a linear polymer chain using parameters, provided in the library run:
-```
-polyply gen_itp -lib <library_name> -name <name> -seq <monomer:#number> -o <name_outfile + .itp>
-```
-
-For more information on how to generate itp-files for more complex polymers or how
-to combine them with existing itp-files see the wiki pages.
-
-### Initial structure generation
-To generate an initial structure run:
-```
-polyply gen_coords -p <top> -o <name_outfile + .gro> -name <name of molecule> -dens <density>
-```
-or:
-```
-polyply gen_coords -p <top> -o <name_outfile + .gro> -name <name of molecule> -box <x, y, z>
-```
-In order to append coordinates to an already existing coordinate file run:
-```
-polyply gen_coords -p <top> -o <name_outfile + .gro> -name <name of molecule> -c <init_coords.gro> -box <x, y, z>
-```
-or
-```
-polyply gen_coords -p <top> -o <name_outfile + .gro> -name <name of molecule> -c <init_coords.gro> -dens <density>
-```
-Note that at the moment polyply can only generate disordered structures of polymers. All molecules
-that have secondary structure (e.g. DNA, proteins) cannot be generated accurately. At the moment
-chirality is also not taken into account. All polymers are atactic unless a dihedral specifies the 
-chirality.
+## Quick references
+[Installation Guide](https://github.com/marrink-lab/polyply_1.0/wiki/Installation)\
+[FAQs](https://github.com/marrink-lab/polyply_1.0/wiki/FAQs)\
+[Submissions to Martini Polymer Library](https://github.com/marrink-lab/polyply_1.0/wiki/Submit-polymer-parameters)\
+[Tutorial Martini Polymers](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-martini-polymer-melts)\
+[Tutorial GROMOS Polymers](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-GROMOS-polymer-melts)
 
 ## Contributions
-The development of polyply is done on [github]. Contributions
-are welcome as [bug reports] and [pull requests]. Note however that the
-decision of whether or not contributions can give authorship on the resulting
-academic paper is left to our sole discretion.
+We are happy to accept submissions of polymer parameters (mostly for the Martini force-field). After a small quality control
+procedure, parameters are distributed via the Martini library including appropiate citations. To submit parameters simply 
+open an [issue][bug reports]. More details on submitting parameters can be found 
+[here](https://github.com/marrink-lab/polyply_1.0/wiki/Submit-polymer-parameters). The code development of polyply is done 
+on [github]. Contributions are welcome as [bug reports] and [pull requests] from everyone.
+
+## Citation
+```
+@article{grunewald2021polyply,
+  title={Polyply: a python suite for facilitating simulations of (bio-) macromolecules and nanomaterials},
+  author={Gr{\"u}newald, Fabian and Alessandri, Riccardo and Kroon, Peter C and 
+  	  Monticelli, Luca and Souza, Paulo CT and Marrink, Siewert J},
+  journal={arXiv preprint arXiv:2105.05890},
+  year={2021}
+}
+```
 
 ## License
 
@@ -103,5 +68,6 @@ The full text of the license is available in the source repository.
 [github]: https://github.com/marrink-lab/polyply_1.0
 [bug reports]: https://github.com/marrink-lab/polyply_1.0/issues
 [pull requests]: https://github.com/marrink-lab/polyply_1.0/pulls
+[wiki]:https://github.com/marrink-lab/polyply_1.0/wiki
 [pypi_polyply]: https://pypi.org/project/polyply/
 [pipdoc]: https://packaging.python.org/tutorials/installing-packages/#installing-packages

@@ -17,6 +17,7 @@ Test that build files are properly read.
 import textwrap
 import pytest
 import numpy as np
+import networkx as nx
 import vermouth.forcefield
 import vermouth.molecule
 import polyply
@@ -58,7 +59,9 @@ def test_base_parser_geometry(tokens, _type, expected):
     {"resname": "PEO", "start": 0, "stop": 10, "parameters": [np.array([4.0, 4.0, 1.0]), 25.0]})
    ))
 def test_base_parser_geometry(line, expected):
-    processor = polyply.src.build_file_parser.BuildDirector([])
+    ff = vermouth.forcefield.ForceField(name='test_ff')
+    top = Topology(ff)
+    processor = polyply.src.build_file_parser.BuildDirector([], top)
     processor.current_molidxs = [1]
     processor.current_molname = "PEO"
     processor._rw_restriction(line)
@@ -70,6 +73,33 @@ def test_base_parser_geometry(line, expected):
         else:
             assert all(result[key][0] == expected[key][0])
             assert result[key][1] == expected[key][1]
+
+@pytest.mark.parametrize('line, parser, attribute, key, expected', (
+   # simple example
+   ("5 25 3.0",
+    "_distance_restraints",
+    "distance_restraints",
+    (5, 25),
+    (3.0, 0.0)),
+   ("5 25 3.0 1.0",
+    "_distance_restraints",
+    "distance_restraints",
+    (5, 25),
+    (3.0, 1.0)),
+   ))
+def test_distance_position_restraints(line, parser, attribute, key, expected):
+    ff = vermouth.forcefield.ForceField(name='test_ff')
+    top = Topology(ff)
+    processor = polyply.src.build_file_parser.BuildDirector([], top)
+    processor.current_molidxs = [1]
+    processor.current_molname = "PEO"
+    getattr(processor, parser)(line)
+    result =  getattr(top, attribute)[("PEO", 1)]
+    if attribute == "distance_restraints":
+        assert result[key] == expected
+    else:
+        assert all(result[key][0] == expected[0])
+        assert result[key][1] == result[key][1]
 
 @pytest.fixture
 def test_molecule():
@@ -112,6 +142,8 @@ def test_tag_nodes(test_molecule, _type, option, expected):
     for node in test_molecule.nodes:
         if "restraints" in test_molecule.nodes[node]:
            assert node in expected
+
+
 
 @pytest.fixture()
 def test_system():
@@ -181,11 +213,56 @@ def test_system():
 def test_parser(test_system, lines, tagged_mols, tagged_nodes):
    lines = textwrap.dedent(lines).splitlines()
    ff = vermouth.forcefield.ForceField(name='test_ff')
+   top = Topology(ff)
    polyply.src.build_file_parser.read_build_file(lines,
-                                                 test_system.molecules)
+                                                 test_system.molecules,
+                                                 top)
    for idx, mol in enumerate(test_system.molecules):
        for node in mol.nodes:
            if "restraints" in mol.nodes[node]:
                assert node in tagged_nodes
                assert idx in tagged_mols
 
+@staticmethod
+@pytest.mark.parametrize('lines, expected', (
+   # basic test
+   ("""
+   [ molecule ]
+   ; name from to
+   AA    0  2
+   ;
+   [ persistence_length ]
+   ; model  lp start stop
+     WCM   4.0  0    8
+   """,
+   [["WCM", 4.0, 0, 8, np.array([0, 1])]]),
+   # test two batches are recognized
+   ("""
+   [ molecule ]
+   ; name from to
+   AA    0  2
+   ;
+   [ persistence_length ]
+   ; model  lp start stop
+   WCM   4.0  0    8
+   [ molecule ]
+   ; name from to
+   BB 2  4
+   [ persistence_length ]
+   WCM   2.0   0  8
+   """,
+   [["WCM", 4.0, 0, 8, np.array([0, 1])],
+    ["WCM", 2.0, 0, 8, np.array([2, 3])]]
+   )))
+def test_persistence_parsers(test_system, lines, expected):
+   lines = textwrap.dedent(lines).splitlines()
+   ff = vermouth.forcefield.ForceField(name='test_ff')
+   top = Topology(ff)
+   polyply.src.build_file_parser.read_build_file(lines,
+                                                 test_system.molecules,
+                                                 top)
+   for ref, new in zip(expected, top.persistences):
+        print(ref, new)
+        for info_ref, info_new in zip(ref[:-1], new[:-1]):
+            assert info_ref == info_new
+        assert all(ref[-1] == new[-1])
