@@ -87,10 +87,6 @@ class BuildDirector(SectionLineParser):
                                        float(tokens[6])]}
 
         for idx in self.current_molidxs:
-            if int(tokens[1]) not in self.topology.molecules[idx].nodes:
-                LOGGER.warning("Could not find atom {node} in molecule with idx {idx}.", idx=idx, node=tokens[1])
-            elif int(tokens[2]) not in self.topology.molecules[idx].nodes:
-                LOGGER.warning("Could not find atom {node} in molecule with idx {idx}.", idx=idx, node=tokens[2])
             self.rw_options[(self.current_molname, idx)] = geometry_def
 
     @SectionLineParser.section_parser('molecule', 'distance_restraints')
