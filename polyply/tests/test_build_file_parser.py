@@ -30,7 +30,7 @@ from polyply.src.topology import Topology
     "cylinder",
     {"resname": "PEO", "start": 63, "stop": 154, "parameters":["in", np.array([1.0, 2.0, 3.0]), 6.0, 7.0, "cylinder"]})
    # for recangle
-   ,(["PEO", "0", "10", "out", "11", "12", "14", "1", "2", "3"],
+   ,(["PEO", "0", "10", "out", "11", "12", "13", "1", "2", "3"],
     "rectangle",
     {"resname": "PEO", "start": 0, "stop": 10, "parameters":["out", np.array([11.0, 12.0, 13.0]), 1.0, 2.0, 3.0, "rectangle"]})
    # for sphere
@@ -130,7 +130,7 @@ def test_system():
    ,("GLU 5 6 4.0 4.0 1.0 25.0",
     {"resname": "GLU", "start": 5, "stop": 6, "parameters": [np.array([4.0, 4.0, 1.0]), 25.0]})
    ))
-def test_base_parser_geometry(test_system, line, expected):
+def test_rw_restriction_parsing(test_system, line, expected):
     processor = polyply.src.build_file_parser.BuildDirector([], test_system)
     processor.current_molidxs = [1]
     processor.current_molname = "AA"
@@ -153,13 +153,21 @@ def test_base_parser_geometry(test_system, line, expected):
     (1, 8),
     (3.0, 1.0)),
    ))
-def test_distance_position_restraints(test_system, line, key, expected):
+def test_distance_restraints(test_system, line, key, expected):
     processor = polyply.src.build_file_parser.BuildDirector([], test_system)
     processor.current_molidxs = [0]
     processor.current_molname = "AA"
     processor._distance_restraints(line)
     result = test_system.distance_restraints[("AA", 0)]
     result[key] == expected
+
+def test_distance_restraints_error(test_system):
+    line = "1 50 3.0"
+    processor = polyply.src.build_file_parser.BuildDirector([], test_system)
+    processor.current_molidxs = [0]
+    processor.current_molname = "AA"
+    with pytest.raises(IOError):
+        processor._distance_restraints(line)
 
 @staticmethod
 @pytest.mark.parametrize('lines, tagged_mols, tagged_nodes', (
