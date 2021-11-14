@@ -14,6 +14,9 @@
 from collections import defaultdict, namedtuple
 import numpy as np
 from vermouth.parser_utils import SectionLineParser
+from vermouth.log_helpers import StyleAdapter, get_logger
+
+LOGGER = StyleAdapter(get_logger(__name__))
 
 PersistenceSpecs = namedtuple("persistence", ["model", "lp", "start", "stop", "mol_idxs"])
 
@@ -43,6 +46,10 @@ class BuildDirector(SectionLineParser):
         tokens = line.split()
         self.current_molname = tokens[0]
         self.current_molidxs = np.arange(float(tokens[1]), float(tokens[2]), 1., dtype=int)
+        for idx in self.current_molidxs:
+            if idx not in self.topology.mol_idx_by_name[tokens[0]]:
+                LOGGER.warning("parsing build file: could not find molecule with name {name} and index {index}.",
+                              **{"index": idx, "name": tokens[0]})
 
     @SectionLineParser.section_parser('molecule', 'cylinder', geom_type="cylinder")
     @SectionLineParser.section_parser('molecule', 'sphere', geom_type="sphere")
@@ -78,7 +85,12 @@ class BuildDirector(SectionLineParser):
                         "stop":  int(tokens[2]),
                         "parameters": [np.array(tokens[3:6], dtype=float),
                                        float(tokens[6])]}
+
         for idx in self.current_molidxs:
+            if int(tokens[1]) not in self.topology.molecules[idx].nodes:
+                LOGGER.warning("Could not find atom {node} in molecule with idx {idx}.", idx=idx, node=tokens[1])
+            elif int(tokens[2]) not in self.topology.molecules[idx].nodes:
+                LOGGER.warning("Could not find atom {node} in molecule with idx {idx}.", idx=idx, node=tokens[2])
             self.rw_options[(self.current_molname, idx)] = geometry_def
 
     @SectionLineParser.section_parser('molecule', 'distance_restraints')
@@ -96,6 +108,11 @@ class BuildDirector(SectionLineParser):
             tol = 0.0
 
         for idx in self.current_molidxs:
+            if nodes[0] not in self.topology.molecules[idx]:
+                raise IOError("Could not find atom {node} in molecule with index {idx}.".format(node=nodes[0], idx=idx))
+            elif nodes[1] not in self.topology.molecules[idx]:
+                raise IOError("Could not find atom {node} in molecule with index {idx}.".format(node=nodes[1], idx=idx))
+
             self.topology.distance_restraints[(self.current_molname, idx)][nodes] = (dist, tol)
 
     @SectionLineParser.section_parser('molecule', 'persistence_length')
@@ -137,6 +154,17 @@ class BuildDirector(SectionLineParser):
             and molecule.nodes[node]["resname"] == resname:
                 molecule.nodes[node][keyword] = molecule.nodes[node].get(keyword, []) +\
                                                 [option['parameters']]
+            # broadcast warning if we find the resid but it doesn't match the resname
+            elif molecule.nodes[node]["resid"] in resids and not\
+                 molecule.nodes[node]["resname"] == resname:
+                 LOGGER.warning("parsing build file: could not find resid {resid} with resname {resname} in molecule.",
+                 **{"resid": molecule.nodes[node]["resid"], "resname": resname})
+
+            # broadcast warning if we find the resname but it doesn't match the resid
+            elif molecule.nodes[node]["resname"] == resname and not\
+                 molecule.nodes[node]["resid"]:
+                 LOGGER.warning("parsing build file: could not find residue {resname} with resid {resid} in molecule {molname}.",
+                 **{"resid": molecule.nodes[node]["resid"], "resname": resname})
 
     @staticmethod
     def _base_parser_geometry(tokens, _type):
