@@ -161,8 +161,12 @@ def test_distance_restraints(test_system, line, key, expected):
     result = test_system.distance_restraints[("AA", 0)]
     result[key] == expected
 
-def test_distance_restraints_error(test_system):
-    line = "1 50 3.0"
+
+@pytest.mark.parametrize('line', (
+   # basic test
+   ("1 50 3.0",
+    "50 1 3.0")))
+def test_distance_restraints_error(test_system, line):
     processor = polyply.src.build_file_parser.BuildDirector([], test_system)
     processor.current_molidxs = [0]
     processor.current_molname = "AA"
