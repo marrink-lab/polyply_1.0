@@ -43,10 +43,10 @@ LOGGER.setLevel(loglevels[1])
     ),
    # raise warning that residue random cannot be found
    ("sphere",
-    {"resname": "random", "start": 1, "stop": 3, "parameters":["in", np.array([10.0, 10.0, 10.0]), 5.0]},
+    {"resname": "ALA", "start": 9, "stop": 12, "parameters":["in", np.array([10.0, 10.0, 10.0]), 5.0]},
     [],
-    "parsing build file: could not find resid {} with resname random in molecule.",
-    range(1, 4)),
+    "parsing build file: could not find resid {} with resname ALA in molecule.",
+    range(9, 12)),
    ))
 def test_tag_nodes_logging(caplog, test_molecule, _type, option, expected, warning, idxs):
     polyply.src.build_file_parser.BuildDirector._tag_nodes(test_molecule, _type, option)
