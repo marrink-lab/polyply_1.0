@@ -11,9 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-import vermouth
-import polyply.src
 from tqdm import tqdm
 
 class Processor:
@@ -47,4 +44,3 @@ class Processor:
             Either the provided molecule, or a brand new one.
         """
         raise NotImplementedError
-
