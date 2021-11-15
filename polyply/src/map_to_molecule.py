@@ -80,6 +80,11 @@ MultiblockError = ("Block {} seems to represent more than a single residue,\n"
                    "provide the full residue graph and label all nodes that\n"
                    "corresponding to multiresidues with the \"from_itp\" label.")
 
+def _assert_blocks_in_FF(block_names, force_field):
+    for name in block_names:
+        if name not in force_field.blocks:
+            raise IOError("Couldn't find block with residue name {name}\n"
+                          "in the library or input file definitions.".format(name=name))
 
 class MapToMolecule(Processor):
     """
@@ -276,6 +281,9 @@ class MapToMolecule(Processor):
         # a block which consists of multiple residues. This
         # gets entangled here
         self.match_nodes_to_blocks(meta_molecule)
+        # raise an error if a block is not known to the library
+        _assert_blocks_in_FF(self.node_to_block.values(),
+                             self.force_field)
         # next we check if all exclusions are the same and if
         # not we adjust it such that the lowest exclusion number
         # is used. ApplyLinks then generates those appropiately

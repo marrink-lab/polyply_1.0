@@ -173,6 +173,7 @@ class Backmap(Processor):
                 cg_coord = meta_molecule.nodes[node]["position"]
                 resid = meta_molecule.nodes[node]["resid"]
                 high_res_atoms = meta_molecule.nodes[node]["graph"].nodes
+
                 template = orient_template(meta_molecule, node,
                                            meta_molecule.templates[resname],
                                            built_nodes)

@@ -14,6 +14,9 @@
 from collections import defaultdict, namedtuple
 import numpy as np
 from vermouth.parser_utils import SectionLineParser
+from vermouth.log_helpers import StyleAdapter, get_logger
+
+LOGGER = StyleAdapter(get_logger(__name__))
 
 PersistenceSpecs = namedtuple("persistence", ["model", "lp", "start", "stop", "mol_idxs"])
 
@@ -43,6 +46,10 @@ class BuildDirector(SectionLineParser):
         tokens = line.split()
         self.current_molname = tokens[0]
         self.current_molidxs = np.arange(float(tokens[1]), float(tokens[2]), 1., dtype=int)
+        for idx in self.current_molidxs:
+            if idx not in self.topology.mol_idx_by_name[tokens[0]]:
+                LOGGER.warning("parsing build file: could not find molecule with name {name} and index {index}.",
+                              **{"index": idx, "name": tokens[0]})
 
     @SectionLineParser.section_parser('molecule', 'cylinder', geom_type="cylinder")
     @SectionLineParser.section_parser('molecule', 'sphere', geom_type="sphere")
@@ -78,6 +85,7 @@ class BuildDirector(SectionLineParser):
                         "stop":  int(tokens[2]),
                         "parameters": [np.array(tokens[3:6], dtype=float),
                                        float(tokens[6])]}
+
         for idx in self.current_molidxs:
             self.rw_options[(self.current_molname, idx)] = geometry_def
 
@@ -96,6 +104,12 @@ class BuildDirector(SectionLineParser):
             tol = 0.0
 
         for idx in self.current_molidxs:
+            msg = "Could not find atom {node} in molecule {molname} with index {idx}."
+            if nodes[0] not in self.topology.molecules[idx]:
+                raise IOError(msg.format(node=nodes[0], idx=idx, molname=self.current_molname))
+            elif nodes[1] not in self.topology.molecules[idx]:
+                raise IOError(msg.format(node=nodes[1], idx=idx, molname=self.current_molname))
+
             self.topology.distance_restraints[(self.current_molname, idx)][nodes] = (dist, tol)
 
     @SectionLineParser.section_parser('molecule', 'persistence_length')
@@ -120,16 +134,17 @@ class BuildDirector(SectionLineParser):
 
             if (molecule.mol_name, mol_idx) in self.build_options:
                 for option in self.build_options[(molecule.mol_name, mol_idx)]:
-                    self._tag_nodes(molecule, "restraints", option)
+                    self._tag_nodes(molecule, "restraints", option, molecule.mol_name)
 
             if (molecule.mol_name, mol_idx)  in self.rw_options:
                 self._tag_nodes(molecule, "rw_options",
-                                self.rw_options[(molecule.mol_name, mol_idx)])
+                                self.rw_options[(molecule.mol_name, mol_idx)],
+                                molecule.mol_name)
 
         super().finalize
 
     @staticmethod
-    def _tag_nodes(molecule, keyword, option):
+    def _tag_nodes(molecule, keyword, option, molname=""):
         resids = np.arange(option['start'], option['stop'], 1.)
         resname = option["resname"]
         for node in molecule.nodes:
@@ -137,6 +152,19 @@ class BuildDirector(SectionLineParser):
             and molecule.nodes[node]["resname"] == resname:
                 molecule.nodes[node][keyword] = molecule.nodes[node].get(keyword, []) +\
                                                 [option['parameters']]
+            # broadcast warning if we find the resid but it doesn't match the resname
+            elif molecule.nodes[node]["resid"] in resids and not\
+                 molecule.nodes[node]["resname"] == resname:
+                 msg = "parsing build file: could not find resid {resid} with resname {resname} in molecule {molname}."
+                 LOGGER.warning(msg, **{"resid": molecule.nodes[node]["resid"], "resname": resname,
+                                          "molname": molname})
+
+            # broadcast warning if we find the resname but it doesn't match the resid
+            elif molecule.nodes[node]["resname"] == resname and not\
+                 molecule.nodes[node]["resid"]:
+                 msg = "parsing build file: could not find residue {resname} with resid {resid} in molecule {molname}."
+                 LOGGER.warning(msg, **{"resid": molecule.nodes[node]["resid"], "resname": resname,
+                                        "molname": molname})
 
     @staticmethod
     def _base_parser_geometry(tokens, _type):
