@@ -19,7 +19,6 @@ Perform the parsing and input redirect for the
 different subcommands. This is the main executable.
 """
 import os
-import logging
 import argparse
 from pathlib import Path
 import numpy as np
