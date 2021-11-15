@@ -70,22 +70,22 @@ def set_distance_restraint(molecule,
     graph_distances_target = {node: len(path) - 1 - graph_distances_ref[node] for node in path}
 
     for node in path:
-       if node == target_node:
-           graph_distance = 1.0
-       elif node == ref_node:
-           continue
-       else:
-           graph_distance = graph_distances_target[node]
+        if node == target_node:
+            graph_distance = 1.0
+        elif node == ref_node:
+            continue
+        else:
+            graph_distance = graph_distances_target[node]
 
-       upper_bound = graph_distance * avg_step_length + distance + tolerance
+        upper_bound = graph_distance * avg_step_length + distance + tolerance
 
-       avg_needed_step_length = distance / graph_distances_target[ref_node]
-       lower_bound = avg_needed_step_length * graph_distances_ref[node] - tolerance
+        avg_needed_step_length = distance / graph_distances_target[ref_node]
+        lower_bound = avg_needed_step_length * graph_distances_ref[node] - tolerance
 
-       current_restraints = molecule.nodes[node].get('distance_restraints', [])
-       molecule.nodes[node]['distance_restraints'] = current_restraints + [(ref_node,
-                                                                            upper_bound,
-                                                                            lower_bound)]
+        current_restraints = molecule.nodes[node].get('distance_restraints', [])
+        molecule.nodes[node]['distance_restraints'] = current_restraints + [(ref_node,
+                                                                             upper_bound,
+                                                                             lower_bound)]
 
 def set_restraints(topology, nonbond_matrix):
     """

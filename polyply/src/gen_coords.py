@@ -16,12 +16,8 @@
 High level API for the polyply coordinate generator
 """
 import sys
-from collections import defaultdict
-from functools import partial
-import multiprocessing
 import numpy as np
 import networkx as nx
-from tqdm import tqdm
 import vermouth.forcefield
 from vermouth.file_writer import DeferredFileWriter
 from vermouth.log_helpers import StyleAdapter, get_logger
@@ -107,9 +103,9 @@ def gen_coords(args):
     _check_molecules(topology.molecules)
 
     if args.split:
-       LOGGER.info("splitting residues",  type="step")
-       for molecule in topology.molecules:
-           molecule.split_residue(args.split)
+        LOGGER.info("splitting residues",  type="step")
+        for molecule in topology.molecules:
+            molecule.split_residue(args.split)
 
     # read in coordinates if there are any
     if args.coordpath:
