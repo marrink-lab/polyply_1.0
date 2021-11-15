@@ -27,8 +27,9 @@ from polyply import (gen_itp, gen_coords, gen_seq, DATA_PATH)
 from polyply.src.load_library import load_library
 from polyply.src.logging import LOGGER, LOGLEVELS
 
-VERSION = 'polyply version {}'.format(polyply.__version__)
-def main():
+VERSION = 'polyply version {}'.format(polyply.__version__) # pylint: disable=consider-using-f-string
+
+def main(): # pylint: disable=too-many-locals,too-many-statements
     """
     Parses commandline arguments and call relevant sub_programs.
     """
@@ -118,7 +119,7 @@ def main():
                                 default=[],
                                 help=('Specify ligands of molecules which should be placed close '
                                       'to a specific molecule. The format is as follows: '
-                                      '<mol_name>#<mol_idx>-<resname>#<resid>:<mol_name>#<mol_idx>-<resname>#<resid>. '
+                                      '<mol_name>#<mol_idx>-<resname>#<resid>:<mol_name>#<mol_idx>-<resname>#<resid>. '# pylint: disable=line-too-long
                                       'Elements of the specification can be omitted as required. '
                                       'Note mol_name and resname cannot contain the characters '
                                       '# and -.'))
@@ -231,7 +232,7 @@ def main():
         libs = [lib for lib in libs if not lib.startswith("__")]
         print('The following libraries are known:')
         for idx, ff_name in enumerate(libs):
-            print('{:3d}. {}'.format(idx, ff_name))
+            print('{:3d}. {}'.format(idx, ff_name)) # pylint: disable=consider-using-f-string
         parser.exit()
 
     if args.list_blocks:
