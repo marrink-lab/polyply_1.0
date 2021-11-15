@@ -15,18 +15,18 @@ LOGGER.setLevel(LOGLEVELS[1])
    ("cylinder",
     {"resname": "ALA", "start": 1, "stop": 9, "parameters":["in", np.array([5.0, 5.0, 5.0]), 5.0, 5.0]},
     [0, 1, 2, 3],
-    "parsing build file: could not find resid {} with resname ALA in molecule.",
+    "parsing build file: could not find resid {} with resname ALA in molecule AA.",
     range(5, 9),
     ),
    # raise warning that residue random cannot be found
    ("sphere",
     {"resname": "ALA", "start": 9, "stop": 12, "parameters":["in", np.array([10.0, 10.0, 10.0]), 5.0]},
     [],
-    "parsing build file: could not find resid {} with resname ALA in molecule.",
+    "parsing build file: could not find resid {} with resname ALA in molecule AA.",
     range(9, 12)),
    ))
 def test_tag_nodes_logging(caplog, test_molecule, _type, option, expected, warning, idxs):
-    polyply.src.build_file_parser.BuildDirector._tag_nodes(test_molecule, _type, option)
+    polyply.src.build_file_parser.BuildDirector._tag_nodes(test_molecule, _type, option, "AA")
     for record, idx in zip(caplog.records, idxs):
         assert record.getMessage() == warning.format(idx)
     for node in test_molecule.nodes:

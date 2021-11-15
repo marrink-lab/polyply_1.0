@@ -104,10 +104,11 @@ class BuildDirector(SectionLineParser):
             tol = 0.0
 
         for idx in self.current_molidxs:
+            msg = "Could not find atom {node} in molecule {molname} with index {idx}."
             if nodes[0] not in self.topology.molecules[idx]:
-                raise IOError("Could not find atom {node} in molecule with index {idx}.".format(node=nodes[0], idx=idx))
+                raise IOError(msg.format(node=nodes[0], idx=idx, molname=self.current_molname))
             elif nodes[1] not in self.topology.molecules[idx]:
-                raise IOError("Could not find atom {node} in molecule with index {idx}.".format(node=nodes[1], idx=idx))
+                raise IOError(msg.format(node=nodes[1], idx=idx, molname=self.current_molname))
 
             self.topology.distance_restraints[(self.current_molname, idx)][nodes] = (dist, tol)
 
@@ -133,16 +134,17 @@ class BuildDirector(SectionLineParser):
 
             if (molecule.mol_name, mol_idx) in self.build_options:
                 for option in self.build_options[(molecule.mol_name, mol_idx)]:
-                    self._tag_nodes(molecule, "restraints", option)
+                    self._tag_nodes(molecule, "restraints", option, molecule.mol_name)
 
             if (molecule.mol_name, mol_idx)  in self.rw_options:
                 self._tag_nodes(molecule, "rw_options",
-                                self.rw_options[(molecule.mol_name, mol_idx)])
+                                self.rw_options[(molecule.mol_name, mol_idx)],
+                                molecule.mol_name)
 
         super().finalize
 
     @staticmethod
-    def _tag_nodes(molecule, keyword, option):
+    def _tag_nodes(molecule, keyword, option, molname=""):
         resids = np.arange(option['start'], option['stop'], 1.)
         resname = option["resname"]
         for node in molecule.nodes:
@@ -153,14 +155,16 @@ class BuildDirector(SectionLineParser):
             # broadcast warning if we find the resid but it doesn't match the resname
             elif molecule.nodes[node]["resid"] in resids and not\
                  molecule.nodes[node]["resname"] == resname:
-                 LOGGER.warning("parsing build file: could not find resid {resid} with resname {resname} in molecule.",
-                 **{"resid": molecule.nodes[node]["resid"], "resname": resname})
+                 msg = "parsing build file: could not find resid {resid} with resname {resname} in molecule {molname}."
+                 LOGGER.warning(msg, **{"resid": molecule.nodes[node]["resid"], "resname": resname,
+                                          "molname": molname})
 
             # broadcast warning if we find the resname but it doesn't match the resid
             elif molecule.nodes[node]["resname"] == resname and not\
                  molecule.nodes[node]["resid"]:
-                 LOGGER.warning("parsing build file: could not find residue {resname} with resid {resid} in molecule {molname}.",
-                 **{"resid": molecule.nodes[node]["resid"], "resname": resname})
+                 msg = "parsing build file: could not find residue {resname} with resid {resid} in molecule {molname}."
+                 LOGGER.warning(msg, **{"resid": molecule.nodes[node]["resid"], "resname": resname,
+                                        "molname": molname})
 
     @staticmethod
     def _base_parser_geometry(tokens, _type):
