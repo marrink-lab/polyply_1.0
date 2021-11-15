@@ -23,8 +23,6 @@ import logging
 import argparse
 from pathlib import Path
 import numpy as np
-from vermouth.log_helpers import (StyleAdapter, BipolarFormatter,
-                                  CountingHandler, TypeAdapter,)
 import polyply
 from polyply import (gen_itp, gen_coords, gen_seq, DATA_PATH)
 from polyply.src.load_library import load_library
