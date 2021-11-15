@@ -25,7 +25,6 @@ def check_residue_equivalence(topology):
             resname = molecule.nodes[node]["resname"]
             graph = molecule.nodes[node]["graph"]
             if resname in visited_residues:
-                print(graph.edges, visited_residues[resname].edges)
                 if not nx.is_isomorphic(graph, visited_residues[resname]):
                     msg = ("Residue {resname} with resid {residA} in moleculetype {molnameA} is\n"
                            "different from residue {resname} with resid {residB} in moleculetype\n"
