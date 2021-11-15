@@ -433,6 +433,16 @@ class TOPDirector(SectionLineParser):
            cwdir = os.path.dirname(path)
            filename = path
 
+        if not os.path.exists(filename):
+            msg = ("Cannot find file {}. This can happen when you "
+                  "try to include force-field files from the GMX "
+                  "library (e.g. #incldue \"gromos\"). Instead provide "
+                  "the full path. Another source for this error can be "
+                  "that you have a #ifdef section with an #include but "
+                  "your include file does not exist. In that case if you "
+                  "don't have the file remove the #include statement.")
+            raise IOError(msg.format(filename))
+
         with open(filename, 'r') as _file:
             lines = _file.readlines()
 

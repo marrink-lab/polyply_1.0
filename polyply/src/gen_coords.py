@@ -16,12 +16,8 @@
 High level API for the polyply coordinate generator
 """
 import sys
-from collections import defaultdict
-from functools import partial
-import multiprocessing
 import numpy as np
 import networkx as nx
-from tqdm import tqdm
 import vermouth.forcefield
 from vermouth.file_writer import DeferredFileWriter
 from vermouth.log_helpers import StyleAdapter, get_logger
@@ -31,6 +27,7 @@ from .topology import Topology
 from .build_system import BuildSystem
 from .annotate_ligands import AnnotateLigands, parse_residue_spec, _find_nodes
 from .build_file_parser import read_build_file
+from .check_residue_equivalence import check_residue_equivalence
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
@@ -106,9 +103,9 @@ def gen_coords(args):
     _check_molecules(topology.molecules)
 
     if args.split:
-       LOGGER.info("splitting residues",  type="step")
-       for molecule in topology.molecules:
-           molecule.split_residue(args.split)
+        LOGGER.info("splitting residues",  type="step")
+        for molecule in topology.molecules:
+            molecule.split_residue(args.split)
 
     # read in coordinates if there are any
     if args.coordpath:
@@ -130,6 +127,9 @@ def gen_coords(args):
         LOGGER.info("loading grid",  type="step")
         args.grid = np.loadtxt(args.grid)
 
+    # do a sanity check
+    LOGGER.info("checking residue integrity",  type="step")
+    check_residue_equivalence(topology)
     # Build polymer structure
     LOGGER.info("generating templates",  type="step")
     GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
