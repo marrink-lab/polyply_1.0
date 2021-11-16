@@ -20,6 +20,10 @@ def check_residue_equivalence(topology):
     resids = {}
     molnames = {}
     for mol_name, mol_idxs in topology.mol_idx_by_name.items():
+        # molecules that are included but not used in the topology
+        # simply don't get mol_idxs but we need to skip them here
+        if not mol_idxs:
+            continue
         molecule = topology.molecules[mol_idxs[0]]
         for node in molecule.nodes:
             resname = molecule.nodes[node]["resname"]
