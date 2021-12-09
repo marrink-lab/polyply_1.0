@@ -31,5 +31,8 @@ if __name__ == '__main__':
     threshold = args.threshold
     run = lint.Run(remaining_args, do_exit=False)
     score = run.linter.stats['global_note'] # Yes this is a terrible name for the score
+    print("score", score)
+    print("threshold", threshold)
+    print(run.linter.msg_status)
     if score < threshold:
         sys.exit(run.linter.msg_status)
