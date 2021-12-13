@@ -53,7 +53,6 @@ lennard_jones_force = jit(_lennard_jones_force)
 
 POTENTIAL_FUNC = {"LJ": lennard_jones_force}
 
-
 def _n_particles(molecules):
     """
     Count the number of meta_molecule nodes

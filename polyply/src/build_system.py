@@ -19,12 +19,17 @@ Processor for building systems with more than one molecule
 """
 import inspect
 import numpy as np
+from numpy.linalg import norm
 from tqdm import tqdm
+from vermouth.log_helpers import StyleAdapter, get_logger
 from .random_walk import RandomWalk
 from .linalg_functions import norm_sphere
 from .nonbond_engine import NonBondEngine
 from .persistence import sample_end_to_end_distances
 from .restraints import set_restraints
+from .solvator import Solvator
+
+LOGGER = StyleAdapter(get_logger(__name__))
 
 def _compute_box_size(topology, density):
     """
@@ -135,6 +140,7 @@ class BuildSystem():
         self.molecules = []
         self.nonbond_matrix = None
         self.cycles = cycles
+        self.solvents = []
 
         # first we check if **kwargs are actually in random-walk
         valid_kwargs = inspect.getfullargspec(RandomWalk).args
@@ -207,6 +213,7 @@ class BuildSystem():
         pbar = tqdm(total=len(molecules))
         mol_tot = len(molecules)
         vector_sphere = norm_sphere(5000)
+        success = False
         while mol_idx < mol_tot:
 
             molecule = molecules[mol_idx]
@@ -216,9 +223,17 @@ class BuildSystem():
                 pbar.update(1)
                 continue
 
-            success, new_nonbond_matrix = self._handle_random_walk(molecule,
-                                                                   mol_idx,
-                                                                   vector_sphere)
+            if len(molecule.nodes) != 1:
+                success, new_nonbond_matrix = self._handle_random_walk(molecule,
+                                                                       mol_idx,
+                                                                       vector_sphere)
+            else:
+                success = False
+                # chache all solvent molecules
+                self.solvents.append(mol_idx)
+                mol_idx += 1
+                pbar.update(1)
+
             if success:
                 self.nonbond_matrix = new_nonbond_matrix
                 self.nonbond_matrix.concatenate_trees()
@@ -226,6 +241,13 @@ class BuildSystem():
                 pbar.update(1)
 
         pbar.close()
+
+        LOGGER.info("Placing solvent molecules.")
+        solvent_placer = Solvator(self.nonbond_matrix,
+                                   max_force=self.rwargs['max_force'],
+                                   mol_idxs=self.solvents)
+        solvent_placer.run_system(molecules)
+        self.nonbond_matrix = solvent_placer.nonbond_matrix
         self.nonbond_matrix.update_positions_in_molecules(molecules)
 
     def run_system(self, molecules):
