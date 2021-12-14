@@ -192,8 +192,8 @@ def test_get_interaction(topology, mol_idx_a, mol_idx_b, node_a, node_b, expecte
 
 @pytest.mark.parametrize('dist, ref, expected',
                         # LJ force is zero at minimum
-			((2**(1/6.)*0.35,
-                          np.array([0.0, 0.0, 2**1/6.*0.35]),
+            			((2**(1/6.)*0.35,
+                          np.array([0.0, 0.0, 2**(1/6.)*0.35]),
                           np.array([0.0, 0.0, 0.0])),
                         # LJ force is also zero at infinity
                          (100000.0,
@@ -208,13 +208,14 @@ def test_get_interaction(topology, mol_idx_a, mol_idx_b, node_a, node_b, expecte
                           np.array([0.0, 0.42, 0.0]),
                           np.array([0.0, 13.27016, 0.0])),
                         # truly 3d distance
-                         (0.42,
+                         (0.48989794855663565,
                           np.array([0.2, 0.4, 0.2]),
-                          np.array([ 6.31912, 12.63825,  6.31912]))
+                          np.array([4.09965989, 8.19931978, 4.09965989]))
                         ))
 def test_LJ_force(dist, ref, expected):
      point = np.array([0.0, 0.0, 0.0])
      params = (0.35, 2.1)
+     # fail safe
+     assert dist == np.linalg.norm(ref)
      value = polyply.src.nonbond_engine._lennard_jones_force(dist, point, ref, params)
-     print(value)
      assert np.allclose(value, expected)
