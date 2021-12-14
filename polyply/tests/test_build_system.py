@@ -55,7 +55,7 @@ def example_topology():
     [ atoms ]
     1    N0  1   ASP    BB   1 0.00
     2    N0  1   ASP    SC1  1 0.00
-    3    N0  1   ASP    SC2  1 0.00
+    3    N0  2   GPN    BB   1 0.00
     [ bonds ]
     1    2    1  0.47 2000
     2    3    1  0.47 2000
@@ -71,7 +71,7 @@ def example_topology():
     topology = Topology(force_field)
     read_topology(lines=lines, topology=topology, cwdir="./")
     topology.preprocess()
-    topology.volumes = {"GLY": 0.53, "GLU": 0.67, "ASP": 0.43}
+    topology.volumes = {"GLY": 0.53, "GLU": 0.67, "ASP": 0.43, "GPN": 0.43}
     return topology
 
 @pytest.mark.parametrize('density, result', (
@@ -218,6 +218,7 @@ def test_build_system(positions,
                            start_dict=starting_nodes,
                            box=box,
                            grid=starting_grid,
+                           max_force=10**5
                            )
    processor.run_system(example_topology)
    total = 0

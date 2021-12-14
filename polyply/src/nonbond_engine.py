@@ -134,6 +134,15 @@ class NonBondEngine():
                                                              boxsize=self.boxsize)]
         self.gndx_to_tree = {idx: 0 for idx in self.defined_idxs[0]}
 
+    def add_no_tree_pos(self, point, mol_idx, node_key, start=True):
+        """
+        Add `point` with global index `gndx` to the position-matrix
+        and but not a position tree. This is faster because the trees
+        are not rebuilt.
+        """
+        gndx = self.nodes_to_gndx[(mol_idx, node_key)]
+        self.positions[gndx] = point
+
     def add_positions(self, point, mol_idx, node_key, start=True):
         """
         Add `point` with global index `gndx` to the position-matrix

@@ -20,12 +20,13 @@ import scipy.optimize
 from tqdm import tqdm
 from .processor import Processor
 from .nonbond_engine import POTENTIAL_FUNC
+from .random_walk import fulfill_geometrical_constraints
 
 def norm_lennard_jones_force(dist, sig, eps, force):
     """
     Norm of the LJ force between two particles.
     """
-    return 24 * eps / dist * ((2 * (sig/dist)**12.0) - (sig/dist)**6) - force
+    return np.abs(24 * eps / dist * ((2 * (sig/dist)**12.0) - (sig/dist)**6)) - force
 
 class Solvator(Processor):
     """
@@ -83,51 +84,12 @@ class Solvator(Processor):
         min_dist = scipy.optimize.fsolve(norm_lennard_jones_force,
                                          x0=0.2,
                                          args=(max_sigma, 1.0, self.max_force))
+        print(min_dist)
         # build grid
         grid = np.mgrid[0:self.box[0]:min_dist,
                         0:self.box[1]:min_dist,
                         0:self.box[2]:min_dist].reshape(3, -1).T
         return grid
-
-    def compute_forces(self, points):
-        """
-        Given an array of `points` compute the forces these points
-        have in relation to the coordinates saved in the nonbond
-        matrix.
-
-        Parameters
-        ----------
-        points: np.ndrarry
-            the points to compute the forces for
-
-        Returns
-        -------
-        forces: np.ndarray
-            an array of the force vectors corresponding to each point
-        """
-        #TODO
-        # move this implementation to the nonbond matrix
-        # probably should refactor the force computation then as well
-        # but that will take thorough performance checking
-        forces = np.zeros((points.shape[0]))
-        ref_tree = scipy.spatial.ckdtree.cKDTree(points,
-                                                 boxsize=self.box)
-
-        pos_tree = self.nonbond_matrix.position_trees[0]
-        dist_mat = ref_tree.sparse_distance_matrix(pos_tree, self.nonbond_matrix.cut_off)
-
-        for (sol_idx, gndx), dist in dist_mat.items():
-            sol_gndx = self.nonbond_matrix.nodes_to_gndx[(sol_idx, 0)]
-            atype_sol = self.nonbond_matrix.atypes[sol_gndx]
-            atype_ref = self.nonbond_matrix.atypes[gndx]
-            params = self.nonbond_matrix.interaction_matrix[frozenset([atype_sol, atype_ref])]
-            force_vect = POTENTIAL_FUNC[self.potential](dist,
-                                                        points[sol_idx],
-                                                        self.nonbond_matrix.positions[gndx],
-                                                        params)
-            norm_force = norm(force_vect)
-            forces[sol_idx] += norm_force
-        return forces
 
     def run_system(self, molecules):
         """
@@ -137,6 +99,7 @@ class Solvator(Processor):
         # the solvent molecules to be placed
         not_placed_sols = np.full((self.mol_idxs.shape[0]), True)
         sol_idxs = np.arange(0, self.mol_idxs.shape[0])
+        sol_coords = np.zeros((self.mol_idxs.shape[0], 3))
         # initialize the grid
         grid = self.clever_grid()
         indices = np.arange(0, len(grid))
@@ -151,17 +114,25 @@ class Solvator(Processor):
                                       replace=False)
 
             points = grid[selected_idx]
-            forces = self.compute_forces(points)
-            for sol_idx, point, force in zip(sol_idxs[not_placed_sols], points, forces):
-                if force < self.max_force:
+            for sol_idx, point in zip(sol_idxs[not_placed_sols], points):
+                force = self.nonbond_matrix.compute_force_point(point,
+                                                                self.mol_idxs[sol_idx],
+                                                                node=0)
+                node = molecules[self.mol_idxs[sol_idx]].nodes[0]
+                if fulfill_geometrical_constraints(point, node) and\
+                norm(force) < self.max_force:
+
                     not_placed_sols[sol_idx] = False
-                    self.nonbond_matrix.add_positions(point,
-                                                      self.mol_idxs[sol_idx],
-                                                      node_key=0,
-                                                      start=True)
+                    sol_coords[sol_idx][:] = point[:]
                     pbar.update(1)
 
             avail_indices[selected_idx] = False
+
+        for mol_idx, coord in zip(self.mol_idxs, sol_coords):
+            self.nonbond_matrix.add_no_tree_pos(coord,
+                                                mol_idx,
+                                                node_key=0,
+                                                start=True)
 
         pbar.close()
         return molecules

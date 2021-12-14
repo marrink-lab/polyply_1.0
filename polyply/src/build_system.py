@@ -241,6 +241,9 @@ class BuildSystem():
                 pbar.update(1)
 
         pbar.close()
+        # release the memory occupied by the box-grid
+        # we'll need to make a new grid
+        del self.box_grid
 
         LOGGER.info("Placing solvent molecules.")
         solvent_placer = Solvator(self.nonbond_matrix,
