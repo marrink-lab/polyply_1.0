@@ -92,7 +92,7 @@ def gen_params(args):
         msg = "You molecule consists of {:d} disjoint parts. Perhaps links were not applied correctly."
         LOGGER.warning(msg, (n_components))
 
-    with open(args.outpath, 'w') as outpath:
+    with deferred_open(args.outpath, 'w') as outpath:
         header = [ ' '.join(sys.argv) + "\n" ]
         header.append("Please cite the following papers:")
         for citation in meta_molecule.molecule.citations:
