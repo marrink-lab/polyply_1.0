@@ -50,6 +50,27 @@ def _calc_tangents(X):
 # this is the numba implementation
 calc_tangents = jit(_calc_tangents)
 
+def _gen_base_frame(base, template):
+
+    if base[:2] == "DA" or base[:2] == "DG":
+        vec1 = template["N1"] - template["C4"]
+        vec2 = template["C2"] - template["C6"]
+
+        e2 = u_vect(vec1)
+        e3 = u_vect(np.cross(vec1, vec2))
+        e1 = u_vect(np.cross(e3, e2))
+
+    else: # base == "DT" or base == "DC":
+        vec1 = template["N3"] - template["C6"]
+        vec2 = template["C2"] - template["C4"]
+
+        e2 = u_vect(vec1)
+        e3 = u_vect(np.cross(vec1, vec2))
+        e1 = u_vect(np.cross(e2, e3))
+
+    frame = np.stack((e1, e2, e3), axis=1)
+    return frame
+
 
 def orient_template(strand, base, template, meta_frame):
     """
@@ -69,72 +90,52 @@ def orient_template(strand, base, template, meta_frame):
         the oriented template
     """
 
-    # TODO: Split the generating the frame off into a seperate function
-    if base[:2] == "DA" or base[:2] == "DG":
-        vec1 = template["N1"] - template["C4"]
-        vec2 = template["C2"] - template["C6"]
+    # Calculate intrinsic frame of the base
+    template_frame = _gen_base_frame(base, template)
 
-        e2 = u_vect(vec1)
-        e3 = u_vect(np.cross(vec1, vec2))
-        e1 = u_vect(np.cross(e3, e2))
-
-    else:
-    # base == "DT" or base == "DC":
-        vec1 = template["N3"] - template["C6"]
-        vec2 = template["C2"] - template["C4"]
-
-        e2 = u_vect(vec1)
-        e3 = u_vect(np.cross(vec1, vec2))
-        e1 = u_vect(np.cross(e2, e3))
-
-
-    template_frame = np.stack((e1, e2, e3), axis=1)
-
+    # Detemine rotation matrices
     inv_rot_template_frame = template_frame.T
     rot_meta_frame = meta_frame
 
     # Determine origin point of template
     positions = np.array([template["N1"], template["N3"], template["C2"],
                           template["C4"], template["C5"], template["C5"]])
-    COB = center_of_geometry(positions)
+    ref_origin = center_of_geometry(positions)
 
-    # write the template as array
+    # Write the template as array and center at origin
     template_arr = np.zeros((3, len(template)))
     key_to_ndx = {}
     for ndx, key in enumerate(template.keys()):
-        template_arr[:, ndx] = template[key] - COB
+        template_arr[:, ndx] = template[key] - ref_origin
         key_to_ndx[key] = ndx
 
-    #TODO: Clean up these conditional statements
-    if base[:2] == "DG" or base[:2] == "DC":
-        rotation = Rotation.from_rotvec(np.pi * e2)
-        template_arr = rotation.apply(template_arr.T).T
+    # if base[:2] == "DG" or base[:2] == "DC":
+    #     rotation = Rotation.from_rotvec(np.pi * e2)
+    #     template_arr = rotation.apply(template_arr.T).T
 
+    # Transform base template into backward strand variant
     if strand == "backward":
         # Rotate 180 around e2 if backward strand
-        # rotation = Rotation.from_rotvec(3 * np.pi * e2)
-        # template_arr = rotation.apply(template_arr.T).T
+        rotation = Rotation.from_rotvec(3 * np.pi * e2)
+        template_arr = rotation.apply(template_arr.T).T
 
         # Rotate 180 around e3 if backward strand
         rotation = Rotation.from_rotvec(np.pi * e3)
         template_arr = rotation.apply(template_arr.T).T
 
-    # rotate into meta_molecule frame
+    # Rotate base frame into meta_molecule frame
     template_rotated_arr = rot_meta_frame @ (inv_rot_template_frame @ template_arr)
 
-    if strand == "forward":
-        # translate along base-base vector
-        template_final_arr = (template_rotated_arr.T - meta_frame[:, 1] * 0.3).T
-    else:
-        # translate along base-base vector
+    # Translate rotated template along base-base vector
+    if strand == "backward":
         template_final_arr = (template_rotated_arr.T + meta_frame[:, 1] * 0.3).T
+    else:
+        template_final_arr = (template_rotated_arr.T - meta_frame[:, 1] * 0.3).T
 
-    # write the template back as dictionary
+    # Write the template back as dictionary
     template_result = {}
     for key, ndx in key_to_ndx.items():
         template_result[key] = template_final_arr[:, ndx]
-
-
 
     return template_result
 
@@ -165,7 +166,7 @@ class Backmap_DNA(Processor):
         meta_molecule: :class:`polyply.src.MetaMolecule`
         """
 
-        # Create frenet-serret frame on meta_molecule
+        # Read meta_molecule coordinates as array
         X = np.zeros((len(meta_molecule.nodes), 3))
         for node in meta_molecule.nodes:
             X[node] = meta_molecule.nodes[node]['position']
@@ -174,26 +175,27 @@ class Backmap_DNA(Processor):
         T = calc_tangents(X)
         T = np.apply_along_axis(u_vect, axis=1, arr=T)
 
-        # Initialize the reference vector
+        # Initialize the reference vector which together with
+        # the tangent construct the curve's minimal rotating frame
         R = np.zeros_like(X)
         R[0] = (T[0, 1], -T[0, 0], 0)
 
-        # TODO: assign better variable names to frame generation algorithm
-        # Perform double reflection and create reference vector
+        # Construct reference vector's along curve using double reflection
+        # Ref: Wang et al. (DOI:10.1145/1330511.1330513)
         for i, _ in enumerate(X[:-1]):
-            v1 = X[i+1] - X[i]
-            c1 = v1 @ v1
-            R_l = R[i] - (2/c1) * (v1 @ R[i]) * v1
-            T_l = T[i] - (2/c1) * (v1 @ T[i]) * v1
-            v2 = T[i+1] - T_l
-            c2 = v2 @ v2
-            R[i+1] = R_l - (2/c2) * (v2 @ R_l) * v2
+            vec1 = X[i+1] - X[i]
+            norm1 = vec1 @ vec1
+            R_l = R[i] - (2/norm1) * (vec1 @ R[i]) * vec1
+            T_l = T[i] - (2/norm1) * (vec1 @ T[i]) * vec1
+            vec2 = T[i+1] - T_l
+            norm2 = vec2 @ vec2
+            R[i+1] = R_l - (2/norm2) * (vec2 @ R_l) * vec2
         R = np.apply_along_axis(u_vect, axis=1, arr=R)
 
         # Calculate the binormals
         S = np.cross(T, R)
 
-        # Rotate frenet-serret frame into darboux frame
+        # Rotate minimal rotating frame into a darboux frame
         rotation_vectors = [vec * self.rotation_angle *
                             i for i, vec in enumerate(T, start=1)]
         rotation = Rotation.from_rotvec(rotation_vectors)
@@ -203,27 +205,30 @@ class Backmap_DNA(Processor):
         e2 = rotation.apply(S)
         e3 = T
 
-        # Adjust frame if DNA is a closed loop
+        # Comply with boundary conditions if DNA is closed.
+        # Uniformly distributing the corrective curviture,
+        # minimizes the total squared angular speed.
         if self.closed:
-            v1 = X[0] - X[-1]
-            c1 = v1 @ v1
-            R_l = e2[-1] - (2/c1) * (v1 @ e2[-1]) * v1
-            T_l = e3[-1] - (2/c1) * (v1 @ e3[-1]) * v1
-            v2 = e3[0] - T_l
-            c2 = v2 @ v2
-            R_calc = R_l - (2/c2) * (v2 @ R_l) * v2
+            vec1 = X[0] - X[-1]
+            norm1 = vec1 @ vec1
+            R_l = e2[-1] - (2/norm1) * (vec1 @ e2[-1]) * vec1
+            T_l = e3[-1] - (2/norm1) * (vec1 @ e3[-1]) * vec1
+            vec2 = e3[0] - T_l
+            norm2 = vec2 @ vec2
+            R_calc = R_l - (2/norm2) * (vec2 @ R_l) * vec2
             R_calc = u_vect(R_calc)
             phi = np.arccos(R_calc @ e2[0])
 
-            a = phi / len(X)
+            correction_per_base = phi / len(X)
             for ndx, _ in enumerate(e3):
-                R = Rotation.from_rotvec(a * (ndx) * e3[ndx])
+                R = Rotation.from_rotvec(correction_per_base * (ndx) * e3[ndx])
 
                 temp = R.apply(e2[ndx])
                 e2[ndx] = u_vect(temp)
 
                 e1[ndx] = np.cross(e3[ndx], e2[ndx])
 
+        # Construct frame out of generated vectors
         meta_frames = [np.stack((i, j, k), axis=1) for i, j, k in zip(e1,e2,e3)]
 
         for node in meta_molecule.nodes:
@@ -232,14 +237,15 @@ class Backmap_DNA(Processor):
                 cg_coord = meta_molecule.nodes[node]["position"]
                 forward_base, backward_base = basepair.split(",")
 
+                # Correctly orientate base on forward and backward strands
                 forward_template = orient_template("forward", forward_base,
                                                    meta_molecule.templates[forward_base],
                                                    meta_frames[node])
-
                 backward_template = orient_template("backward", backward_base,
                                                     meta_molecule.templates[backward_base],
                                                     meta_frames[node])
 
+                # Place the molecule atoms according to the backmapping
                 high_res_atoms = meta_molecule.nodes[node]["graph"].nodes
                 for atom_high in high_res_atoms:
                     atomname = meta_molecule.molecule.nodes[atom_high]["atomname"]
