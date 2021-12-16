@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import numpy as np
-import networkx as nx
-import matplotlib.pyplot as plt
 from scipy.spatial.transform import Rotation
 
 from polyply.src.processor import Processor
@@ -70,45 +68,52 @@ def orient_template(strand, base, template, meta_frame):
     dict
         the oriented template
     """
-    if base == "DA":
+
+    # TODO: Split the generating the frame off into a seperate function
+    if base[:2] == "DA" or base[:2] == "DG":
         vec1 = template["N1"] - template["C4"]
         vec2 = template["C2"] - template["C6"]
 
-        # e3=tangent vector, e2=base-base vector, e1=minor grove vector
-        e3 = u_vect(np.cross(vec2, vec1))
-        e1 = u_vect(np.cross(vec1, e3))
-        e2 = u_vect(np.cross(e3, e1))
+        e2 = u_vect(vec1)
+        e3 = u_vect(np.cross(vec1, vec2))
+        e1 = u_vect(np.cross(e3, e2))
 
-    elif base == "DT":
+    else:
+    # base == "DT" or base == "DC":
         vec1 = template["N3"] - template["C6"]
         vec2 = template["C2"] - template["C4"]
 
-        e3 = u_vect(np.cross(vec2, vec1))
-        e2 = u_vect(np.cross(e3, vec1))
+        e2 = u_vect(vec1)
+        e3 = u_vect(np.cross(vec1, vec2))
         e1 = u_vect(np.cross(e2, e3))
+
 
     template_frame = np.stack((e1, e2, e3), axis=1)
 
-    inv_rot_template_frame = template_frame.T # template_frame is column matrix of basis vectors
-    rot_meta_frame = meta_frame # meta_frame is column matrix of basis vectors
+    inv_rot_template_frame = template_frame.T
+    rot_meta_frame = meta_frame
 
-    # Determine COG translation of template
-    positions = np.zeros((len(template), 3))
-    for i, key in enumerate(template):
-        positions[i] = template[key]
-    COG = center_of_geometry(positions)
+    # Determine origin point of template
+    positions = np.array([template["N1"], template["N3"], template["C2"],
+                          template["C4"], template["C5"], template["C5"]])
+    COB = center_of_geometry(positions)
 
     # write the template as array
     template_arr = np.zeros((3, len(template)))
     key_to_ndx = {}
     for ndx, key in enumerate(template.keys()):
-        template_arr[:, ndx] = template[key] - COG
+        template_arr[:, ndx] = template[key] - COB
         key_to_ndx[key] = ndx
+
+    #TODO: Clean up these conditional statements
+    if base[:2] == "DG" or base[:2] == "DC":
+        rotation = Rotation.from_rotvec(np.pi * e2)
+        template_arr = rotation.apply(template_arr.T).T
 
     if strand == "backward":
         # Rotate 180 around e2 if backward strand
-        rotation = Rotation.from_rotvec(np.pi * e2)
-        template_arr = rotation.apply(template_arr.T).T
+        # rotation = Rotation.from_rotvec(3 * np.pi * e2)
+        # template_arr = rotation.apply(template_arr.T).T
 
         # Rotate 180 around e3 if backward strand
         rotation = Rotation.from_rotvec(np.pi * e3)
@@ -119,15 +124,17 @@ def orient_template(strand, base, template, meta_frame):
 
     if strand == "forward":
         # translate along base-base vector
-        template_final_arr = (template_rotated_arr.T - meta_frame[:, 1] * 0.65).T
+        template_final_arr = (template_rotated_arr.T - meta_frame[:, 1] * 0.3).T
     else:
         # translate along base-base vector
-        template_final_arr = (template_rotated_arr.T + meta_frame[:, 1] * 0.65).T
+        template_final_arr = (template_rotated_arr.T + meta_frame[:, 1] * 0.3).T
 
-    # 6. write the template back as dictionary
+    # write the template back as dictionary
     template_result = {}
     for key, ndx in key_to_ndx.items():
         template_result[key] = template_final_arr[:, ndx]
+
+
 
     return template_result
 
@@ -144,6 +151,7 @@ class Backmap_DNA(Processor):
         # self.fudge_coords = fudge_coords
         self.fudge_coords = 1
         self.rotation_angle = 0.59  # 34° in radian
+        self.closed = True
 
     def _place_init_coords(self, meta_molecule):
         """
@@ -170,6 +178,7 @@ class Backmap_DNA(Processor):
         R = np.zeros_like(X)
         R[0] = (T[0, 1], -T[0, 0], 0)
 
+        # TODO: assign better variable names to frame generation algorithm
         # Perform double reflection and create reference vector
         for i, _ in enumerate(X[:-1]):
             v1 = X[i+1] - X[i]
@@ -194,18 +203,39 @@ class Backmap_DNA(Processor):
         e2 = rotation.apply(S)
         e3 = T
 
+        # Adjust frame if DNA is a closed loop
+        if self.closed:
+            v1 = X[0] - X[-1]
+            c1 = v1 @ v1
+            R_l = e2[-1] - (2/c1) * (v1 @ e2[-1]) * v1
+            T_l = e3[-1] - (2/c1) * (v1 @ e3[-1]) * v1
+            v2 = e3[0] - T_l
+            c2 = v2 @ v2
+            R_calc = R_l - (2/c2) * (v2 @ R_l) * v2
+            R_calc = u_vect(R_calc)
+            phi = np.arccos(R_calc @ e2[0])
+
+            a = phi / len(X)
+            for ndx, _ in enumerate(e3):
+                R = Rotation.from_rotvec(a * (ndx) * e3[ndx])
+
+                temp = R.apply(e2[ndx])
+                e2[ndx] = u_vect(temp)
+
+                e1[ndx] = np.cross(e3[ndx], e2[ndx])
+
         meta_frames = [np.stack((i, j, k), axis=1) for i, j, k in zip(e1,e2,e3)]
 
         for node in meta_molecule.nodes:
             if meta_molecule.nodes[node]["build"]:
                 basepair = meta_molecule.nodes[node]["basepair"]
                 cg_coord = meta_molecule.nodes[node]["position"]
-                forward_base = "D" + basepair[0]
+                forward_base, backward_base = basepair.split(",")
+
                 forward_template = orient_template("forward", forward_base,
                                                    meta_molecule.templates[forward_base],
                                                    meta_frames[node])
 
-                backward_base = "D" + basepair[1]
                 backward_template = orient_template("backward", backward_base,
                                                     meta_molecule.templates[backward_base],
                                                     meta_frames[node])
