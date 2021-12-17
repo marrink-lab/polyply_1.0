@@ -20,7 +20,13 @@ import networkx as nx
 import vermouth
 import vermouth.forcefield
 from vermouth.log_helpers import StyleAdapter, get_logger
-from vermouth.file_writer import open, DeferredFileWriter
+# patch to get rid of martinize dependency
+try:
+    from vermouth.file_writer import deferred_open
+except ImportError:
+    from vermouth.file_writer import open
+    deferred_open = open
+from vermouth.file_writer import DeferredFileWriter
 from vermouth.citation_parser import citation_formatter
 from polyply import (MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
 from .load_library import load_library
@@ -86,7 +92,7 @@ def gen_params(args):
         msg = "You molecule consists of {:d} disjoint parts. Perhaps links were not applied correctly."
         LOGGER.warning(msg, (n_components))
 
-    with open(args.outpath, 'w') as outpath:
+    with deferred_open(args.outpath, 'w') as outpath:
         header = [ ' '.join(sys.argv) + "\n" ]
         header.append("Please cite the following papers:")
         for citation in meta_molecule.molecule.citations:
