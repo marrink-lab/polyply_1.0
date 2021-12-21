@@ -134,10 +134,17 @@ def test_run_molecule(topology, mol_idxs, pos):
     assert all(solvent_placer.nonbond_matrix.positions[0] == np.array([0.0, 0.0, 0.0]))
     assert all(solvent_placer.nonbond_matrix.positions[1] == np.array([0.0, 0.0, 0.32]))
 
+    solvent_placer.nonbond_matrix.concatenate_trees()
+
     if pos is not None:
         for idx in range(0, pos.shape[0]):
             if all(pos[idx, :] != np.array([np.inf, np.inf, np.inf])):
-                assert all(solvent_placer.nonbond_matrix.positions[idx+2] == pos[idx, :])
+                internal_pos = solvent_placer.nonbond_matrix.positions[idx+2]
+                assert all(internal_pos == pos[idx, :])
+                force = solvent_placer.nonbond_matrix.compute_force_point(point=internal_pos,
+                                                                          mol_idx=idx+1,
+                                                                          node=0)
+                assert np.linalg.norm(force) < 10**5.
 
 @pytest.mark.parametrize('dist, expected',
                         # LJ force is zero at minimum

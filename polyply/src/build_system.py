@@ -227,16 +227,17 @@ class BuildSystem():
                 success, new_nonbond_matrix = self._handle_random_walk(molecule,
                                                                        mol_idx,
                                                                        vector_sphere)
+
+                if success:
+                    self.nonbond_matrix = new_nonbond_matrix
+                    self.nonbond_matrix.concatenate_trees()
+                    mol_idx += 1
+                    pbar.update(1)
+
             else:
                 success = False
-                # chache all solvent molecules
+                # cache all solvent molecules
                 self.solvents.append(mol_idx)
-                mol_idx += 1
-                pbar.update(1)
-
-            if success:
-                self.nonbond_matrix = new_nonbond_matrix
-                self.nonbond_matrix.concatenate_trees()
                 mol_idx += 1
                 pbar.update(1)
 

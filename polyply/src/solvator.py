@@ -122,7 +122,7 @@ class Solvator(Processor):
                                                                 node=0)
                 node = molecules[self.mol_idxs[sol_idx]].nodes[0]
                 if fulfill_geometrical_constraints(point, node) and\
-                norm(force) < self.max_force:
+                   norm(force) < self.max_force:
 
                     not_placed_sols[sol_idx] = False
                     sol_coords[sol_idx][:] = point[:]
