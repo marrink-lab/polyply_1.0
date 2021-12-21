@@ -22,11 +22,11 @@ from .processor import Processor
 from .nonbond_engine import POTENTIAL_FUNC
 from .random_walk import fulfill_geometrical_constraints
 
-def norm_lennard_jones_force(dist, sig, eps, force):
+def norm_lennard_jones_force(dist, sig, eps):
     """
     Norm of the LJ force between two particles.
     """
-    return np.abs(24 * eps / dist * ((2 * (sig/dist)**12.0) - (sig/dist)**6)) - force
+    return np.abs(24 * eps / dist * ((2 * (sig/dist)**12.0) - (sig/dist)**6))
 
 class Solvator(Processor):
     """
@@ -81,10 +81,11 @@ class Solvator(Processor):
                 max_sigma = sigma
         # compute the minimum distance these beads need to have in order
         # to fullfill the max-force criterion
-        min_dist = scipy.optimize.fsolve(norm_lennard_jones_force,
-                                         x0=0.2,
-                                         args=(max_sigma, 1.0, self.max_force))
-        print(min_dist)
+        def _min_ljn(dist):
+           return (norm_lennard_jones_force(dist sig=max_sigma, eps=1.0) - self.max_force)**2.0
+
+        min_dist = scipy.optimize.minimize_scalar(_min_ljn,
+                                                  x0=0.2,)
         # build grid
         grid = np.mgrid[0:self.box[0]:min_dist,
                         0:self.box[1]:min_dist,
