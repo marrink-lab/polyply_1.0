@@ -284,16 +284,16 @@ class NonBondEngine():
 
             dist_mat = ref_tree.sparse_distance_matrix(pos_tree, self.cut_off)
 
-            if any(np.array(list(dist_mat.values())) < 0.1):
+            gndx = self.nodes_to_gndx[(mol_idx, node)]
+            if any(np.array(list(dist_mat.values())) < 0.1) and gndx not in defined_idxs:
                 return np.inf
 
-            gndx = self.nodes_to_gndx[(mol_idx, node)]
             current_atype = self.atypes[gndx]
 
             for pair, dist in dist_mat.items():
                 gndx_pair = defined_idxs[pair[1]]
 
-                if gndx_pair not in exclusions:
+                if gndx_pair not in exclusions and gndx != gndx_pair:
                     other_atype = self.atypes[gndx_pair]
                     params = self.interaction_matrix[frozenset([current_atype, other_atype])]
                     force += POTENTIAL_FUNC[potential](dist, point, self.positions[gndx_pair], params)
