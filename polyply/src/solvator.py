@@ -82,10 +82,11 @@ class Solvator(Processor):
         # compute the minimum distance these beads need to have in order
         # to fullfill the max-force criterion
         def _min_ljn(dist):
-           return (norm_lennard_jones_force(dist sig=max_sigma, eps=1.0) - self.max_force)**2.0
+            return (norm_lennard_jones_force(dist, sig=max_sigma, eps=1.0) - self.max_force)**2.0
 
-        min_dist = scipy.optimize.minimize_scalar(_min_ljn,
-                                                  x0=0.2,)
+        # at distances smaller than 0.1 non-bond forces are considered infinite
+        # and larger than 1.1 are beyond cut-off; hence the bounds of the search
+        min_dist = scipy.optimize.minimize_scalar(_min_ljn, method='bounded', bounds=(0.1, 1.1)).x
         # build grid
         grid = np.mgrid[0:self.box[0]:min_dist,
                         0:self.box[1]:min_dist,
