@@ -158,5 +158,5 @@ def test_run_molecule(topology, mol_idxs, pos):
                         ))
 def test_LJ_force(dist, expected):
      ref = np.linalg.norm(expected)
-     value = polyply.src.solvator.norm_lennard_jones_force(dist, sig=0.35, eps=2.1, force=0)
+     value = polyply.src.solvator.norm_lennard_jones_force(dist, sig=0.35, eps=2.1)
      assert np.allclose(value, ref)
