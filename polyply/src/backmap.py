@@ -60,72 +60,77 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
     # 1. find neighbours at meta_mol level
     neighbours = nx.all_neighbors(meta_molecule, current_node)
     current_resid = meta_molecule.nodes[current_node]["resid"]
+    if len(list(neighbours)) > 0:
+        # 2. find connecting atoms at low-res level
+        edges = []
+        ref_nodes = []
+        for node in neighbours:
+            resid = meta_molecule.nodes[node]["resid"]
+            edge = find_connecting_edges(meta_molecule,
+                                         meta_molecule.molecule,
+                                         (node, current_node))
+            edges += edge
+            ref_nodes.extend([node]*len(edge))
 
-    # 2. find connecting atoms at low-res level
-    edges = []
-    ref_nodes = []
-    for node in neighbours:
-        resid = meta_molecule.nodes[node]["resid"]
-        edge = find_connecting_edges(meta_molecule,
-                                     meta_molecule.molecule,
-                                     (node, current_node))
-        edges += edge
-        ref_nodes.extend([node]*len(edge))
+        # 3. build coordinate system
+        ref_coords = np.zeros((3, len(edges)))
+        opt_coords = np.zeros((3, len(edges)))
 
-    # 3. build coordinate system
-    ref_coords = np.zeros((3, len(edges)))
-    opt_coords = np.zeros((3, len(edges)))
+        for ndx, edge in enumerate(edges):
+            for atom in edge:
+                resid = meta_molecule.molecule.nodes[atom]["resid"]
+                if resid == current_resid:
+                    current_atom = atom
+                else:
+                    ref_atom = atom
+                    ref_resid = resid
 
-    for ndx, edge in enumerate(edges):
-        for atom in edge:
-            resid = meta_molecule.molecule.nodes[atom]["resid"]
-            if resid == current_resid:
-                current_atom = atom
+            # the reference residue has already been build so we take the lower
+            # resolution coordinates as reference
+            if ref_resid in built_nodes:
+                atom_name = meta_molecule.molecule.nodes[current_atom]["atomname"]
+
+                # record the coordinates of the atom that is rotated
+                opt_coords[:, ndx] = template[atom_name]
+
+                # given the reference atom that already exits translate it to the origin
+                # of the rotation, this will be the reference point for rotation
+                ref_coords[:, ndx] = meta_molecule.molecule.nodes[ref_atom]["position"] -\
+                                     meta_molecule.nodes[current_node]["position"]
+
+            # the reference residue has not been build the CG center is taken as
+            # reference
             else:
-                ref_atom = atom
-                ref_resid = resid
+                atom_name = meta_molecule.molecule.nodes[current_atom]["atomname"]
+                cg_node = ref_nodes[ndx] #find_atoms(meta_molecule, "resid", ref_resid)[0]
 
-        # the reference residue has already been build so we take the lower
-        # resolution coordinates as reference
-        if ref_resid in built_nodes:
-            atom_name = meta_molecule.molecule.nodes[current_atom]["atomname"]
+                # record the coordinates of the atom that is rotated
+                opt_coords[:, ndx] = template[atom_name]
 
-            # record the coordinates of the atom that is rotated
-            opt_coords[:, ndx] = template[atom_name]
-
-            # given the reference atom that already exits translate it to the origin
-            # of the rotation, this will be the reference point for rotation
-            ref_coords[:, ndx] = meta_molecule.molecule.nodes[ref_atom]["position"] -\
-                                 meta_molecule.nodes[current_node]["position"]
-
-        # the reference residue has not been build the CG center is taken as
-        # reference
-        else:
-            atom_name = meta_molecule.molecule.nodes[current_atom]["atomname"]
-            cg_node = ref_nodes[ndx] #find_atoms(meta_molecule, "resid", ref_resid)[0]
-
-            # record the coordinates of the atom that is rotated
-            opt_coords[:, ndx] = template[atom_name]
-
-            # as the reference atom is not built take the cg node as reference point
-            # for rotation; translate it to origin
-            ref_coords[:, ndx] = meta_molecule.nodes[cg_node]["position"] -\
-                                 meta_molecule.nodes[current_node]["position"]
+                # as the reference atom is not built take the cg node as reference point
+                # for rotation; translate it to origin
+                ref_coords[:, ndx] = meta_molecule.nodes[cg_node]["position"] -\
+                                     meta_molecule.nodes[current_node]["position"]
 
 
-    # 4. optimize the distance between reference nodes and nodes to be placed
-    # only using rotation of the complete template
-    #@profile
-    def target_function(angles):
-        rotated = rotate_xyz(opt_coords, angles[0], angles[1], angles[2])
-        diff = rotated - ref_coords
-        score = norm_matrix(diff)
-        return score
+        # 4. optimize the distance between reference nodes and nodes to be placed
+        # only using rotation of the complete template
+        #@profile
+        def target_function(angles):
+            rotated = rotate_xyz(opt_coords, angles[0], angles[1], angles[2])
+            diff = rotated - ref_coords
+            score = norm_matrix(diff)
+            return score
 
-    # choose random starting angles
-    angles = np.random.uniform(low=0, high=2*np.pi, size=(3))
-    opt_results = scipy.optimize.minimize(target_function, angles, method='L-BFGS-B',
-                                          options={'ftol':0.01, 'maxiter': 400})
+        # choose random starting angles
+        angles = np.random.uniform(low=0, high=2*np.pi, size=(3))
+        opt_results = scipy.optimize.minimize(target_function, angles, method='L-BFGS-B',
+                                              options={'ftol':0.01, 'maxiter': 400})
+
+        angles = opt_results['x']
+    else:
+        angles = np.random.uniform(low=0, high=2*np.pi, size=(3))
+
 
     # 5. write the template as array and rotate it corrsponding to the result above
     template_arr = np.zeros((3, len(template)))
@@ -134,7 +139,6 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
         template_arr[:, ndx] = template[key]
         key_to_ndx[key] = ndx
 
-    angles = opt_results['x']
     template_rotated_arr = rotate_xyz(template_arr, angles[0], angles[1], angles[2])
 
     # 6. write the template back as dictionary
