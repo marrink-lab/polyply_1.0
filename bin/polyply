@@ -101,6 +101,8 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
     topology_group = parser_gen_coords.add_argument_group('Change or modify topology')
     topology_group.add_argument('-res', dest='build_res', type=str,
                                 help='list of residues to built', default=[], nargs='+')
+    topology_group.add_argument('-sol', dest='solvents', type=str,
+                                help='build these molecules as solvents', default=[], nargs='+')
     topology_group.add_argument('-ign', dest='ignore', type=str,
                                 help='molecules to ignore when building structure',
                                 default=[], nargs='+')

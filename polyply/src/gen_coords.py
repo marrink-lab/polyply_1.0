@@ -149,6 +149,7 @@ def gen_coords(args):
                 ignore=args.ignore,
                 grid=args.grid,
                 cycles=args.cycles,
+                sol_mols=args.solvents,
                 nrewind=args.nrewind).run_system(topology.molecules)
     ligand_annotator.split_ligands()
     LOGGER.info("backmapping to target resolution",  type="step")

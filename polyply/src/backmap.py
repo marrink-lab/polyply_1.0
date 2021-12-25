@@ -155,9 +155,10 @@ class Backmap(Processor):
     for the lower resolution molecule associated with the MetaMolecule.
     """
 
-    def __init__(self, fudge_coords=0.4, *args, **kwargs):
+    def __init__(self, rescale_build=False, fudge_coords=0.4, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fudge_coords = fudge_coords
+        self.rescale_build = rescale_build
 
     def _place_init_coords(self, meta_molecule):
         """
@@ -188,6 +189,13 @@ class Backmap(Processor):
                     new_coords = cg_coord + vector * self.fudge_coords
                     meta_molecule.molecule.nodes[atom_high]["position"] = new_coords
                 built_nodes.append(resid)
+            else:
+                high_res_atoms = meta_molecule.nodes[node]["graph"].nodes
+                cg_coord = meta_molecule.nodes[node]["position"]
+                for atom_high  in high_res_atoms:
+                    old_coord = meta_molecule.molecule.nodes[atom_high]["position"]
+                    new_coord = old_coord - (cg_coord - old_coord) * self.fudge_coords
+                    meta_molecule.molecule.nodes[atom_high]["position"] = new_coord
 
     def run_molecule(self, meta_molecule):
         """

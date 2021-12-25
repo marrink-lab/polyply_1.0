@@ -78,6 +78,7 @@ class Solvator(Processor):
             atype_key = frozenset([self.nonbond_matrix.atypes[gndx]])
             sigma = self.nonbond_matrix.interaction_matrix[atype_key][0]
             if sigma > max_sigma:
+                print(atype_key)
                 max_sigma = sigma
         # compute the minimum distance these beads need to have in order
         # to fullfill the max-force criterion
@@ -87,10 +88,12 @@ class Solvator(Processor):
         # at distances smaller than 0.1 non-bond forces are considered infinite
         # and larger than 1.1 are beyond cut-off; hence the bounds of the search
         min_dist = scipy.optimize.minimize_scalar(_min_ljn, method='bounded', bounds=(0.1, 1.1)).x
+        print(min_dist)
         # build grid
         grid = np.mgrid[0:self.box[0]:min_dist,
                         0:self.box[1]:min_dist,
                         0:self.box[2]:min_dist].reshape(3, -1).T
+        print(len(grid))
         return grid
 
     def run_system(self, molecules):
@@ -100,6 +103,7 @@ class Solvator(Processor):
         """
         # the solvent molecules to be placed
         not_placed_sols = np.full((self.mol_idxs.shape[0]), True)
+        print(np.sum(not_placed_sols))
         sol_idxs = np.arange(0, self.mol_idxs.shape[0])
         sol_coords = np.zeros((self.mol_idxs.shape[0], 3))
         # initialize the grid
