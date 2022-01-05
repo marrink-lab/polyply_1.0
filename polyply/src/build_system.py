@@ -127,6 +127,7 @@ class BuildSystem():
                  ignore=[],
                  grid=None,
                  cycles=[],
+                 sol_mols=[],
                  **kwargs):
 
         self.topology = topology
@@ -141,6 +142,7 @@ class BuildSystem():
         self.nonbond_matrix = None
         self.cycles = cycles
         self.solvents = []
+        self.sol_mols = sol_mols
 
         # first we check if **kwargs are actually in random-walk
         valid_kwargs = inspect.getfullargspec(RandomWalk).args
@@ -223,7 +225,7 @@ class BuildSystem():
                 pbar.update(1)
                 continue
 
-            if len(molecule.nodes) != 1:
+            if molecule.mol_name not in self.sol_mols or len(molecule.nodes) != 1:
                 success, new_nonbond_matrix = self._handle_random_walk(molecule,
                                                                        mol_idx,
                                                                        vector_sphere)
