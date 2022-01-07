@@ -1,6 +1,7 @@
 # polyply
 
 [![codecov](https://codecov.io/gh/marrink-lab/polyply_1.0/branch/master/graph/badge.svg)](https://codecov.io/gh/marrink-lab/polyply_1.0)
+[![Build Status](https://github.com/marrink-lab/polyply_1.0/actions/workflows/python-app.yml/badge.svg)](https://github.com/marrink-lab/polyply_1.0/actions)
 [![PyPI version](https://badge.fury.io/py/polyply.svg)](https://badge.fury.io/py/polyply)
 ![license](https://img.shields.io/github/license/marrink-lab/polyply_1.0)
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/marrink-lab/polyply_1.0/Upload%20Python%20Package)
