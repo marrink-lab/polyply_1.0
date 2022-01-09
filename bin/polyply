@@ -201,11 +201,11 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
                                 "using the connects flag.")
     seq_group.add_argument('-connects', dest='connects', nargs='+', type=str,
                            help="Provide connect records for sequence. "
-                                "The format is <seq-index,seq-index-res_id,res_id>. "
+                                "The format is <seq-index:seq-index:res_id-res_id>. "
                                 "For example if we want to connect the first and third "
                                 "block in a sequence, using a connection between the second "
                                 "and third residue in these blocks respectively the input "
-                                "would be <1,3-2,3>.", default=[])
+                                "would be <1:3:2-3>.", default=[])
     seq_group.add_argument('-modf_ter', dest='modifications', nargs='+', type=str,
                            help="change the resname of terminii of a specific block "
                                 "in the sequence. The format is <SeqID:new_resname>.",
