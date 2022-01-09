@@ -33,7 +33,7 @@ force-field, molecule parameters and this program.
 [Submissions to Martini Polymer Library](https://github.com/marrink-lab/polyply_1.0/wiki/Submit-polymer-parameters)\
 [Tutorial: Martini Polymers](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-martini-polymer-melts)\
 [Tutorial: GROMOS Polymers](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-GROMOS-polymer-melts)\
-[Tutorial: PEGylated lipid bilayers](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-PEGylated-lipid-bilayers)\
+[Tutorial: PEGylated lipid bilayers](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-PEGylated-lipid-bilayers)
 
 ## Contributions & Support
 We are happy to accept submissions of polymer parameters to the polyply library. To submit parameters simply 
