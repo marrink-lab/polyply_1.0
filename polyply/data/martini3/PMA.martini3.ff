@@ -13,12 +13,12 @@ PMA 1
 [ link ]
 resname "PMA"
 [ bonds ]
-VNL     +VNL    1     0.253 8000  {"group": "vinly backbone"}
+VNL     +VNL    1     0.253 8000  {"group": "vinyl backbone"}
 
 [ link ]
 resname "PMA"
 [ angles ]
-VNL  +VNL  ++VNL   2  139  100  {"group": "vinly backbone"}
+VNL  +VNL  ++VNL   2  139  100  {"group": "vinyl backbone"}
 
 [ link ]
 resname "PMA"
