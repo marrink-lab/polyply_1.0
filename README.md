@@ -50,9 +50,8 @@ any of your projects or hear about how you used polyply in your research project
   author={Gr{\"u}newald, Fabian and Alessandri, Riccardo and Kroon, Peter C and 
   	  Monticelli, Luca and Souza, Paulo CT and Marrink, Siewert J},
   journal={Nature Communications},
-  volume={TBA},
-  number={TBA},
-  pages={TBA},
+  volume={13},
+  pages={68},
   doi={https://doi.org/10.1038/s41467-021-27627-4},
   year={2022}
 }
