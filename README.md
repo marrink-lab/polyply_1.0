@@ -7,7 +7,6 @@
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/marrink-lab/polyply_1.0/Upload%20Python%20Package)
 [![arXiv](https://img.shields.io/badge/arXiv-2105.05890-b31b1b.svg)](https://arxiv.org/abs/2105.05890)
 [![DOI:10.1038/s41467-021-27627-4](https://zenodo.org/badge/DOI/10.1038/s41467-021-27627-4.svg)](https://doi.org/10.1038/s41467-021-27627-4)
-[![PyPI download month](https://img.shields.io/pypi/dm/polyply.svg)](https://pypi.python.org/pypi/polyply/)
 
 ## Functionality
 Polyply is a python suite designed to facilitate the generation of input files and system coordinates for simulating
