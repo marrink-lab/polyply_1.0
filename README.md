@@ -45,7 +45,7 @@ any of your projects or hear about how you used polyply in your research project
 
 ## Citation
 ```
-@article{Grunewald2021Polyply,
+@article{Grunewald2022Polyply,
   title={Polyply; a python suite for facilitating simulations of (bio-) macromolecules and nanomaterials},
   author={Gr{\"u}newald, Fabian and Alessandri, Riccardo and Kroon, Peter C and 
   	  Monticelli, Luca and Souza, Paulo CT and Marrink, Siewert J},
