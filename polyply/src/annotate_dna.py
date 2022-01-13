@@ -28,6 +28,12 @@ class AnnotateDNA(Processor):
         """
         Initalize the processor with a :class:`topology`
         and a list of DNA molecules in this topology.
+
+        Parameters
+        ------------
+        topology: :class: `polyply.src.topology.Topology`
+        strands: list[int]
+            list of node keys of the nodes tagged as DNA in the system
         """
         self.topology = topology
         self.DNA_strands = DNA_strands
