@@ -34,7 +34,7 @@ def _calc_tangents(X):
         dX[-1] = 25*X[-1] - 48*X[-2] + 36*X[-3] - 16*X[-4] + 3*X[-5]
 
         # Calculate tangent interior points
-        for i, _ in enumerate(X[2:-2], 2):
+        for i in range(2, len(X) - 2):
             dX[i] = X[i-2] - 8 * X[i-1] + 8 * X[i+1] - X[i+2]
     else:
         # Calculate tangent boundary points
@@ -42,7 +42,7 @@ def _calc_tangents(X):
         dX[-1] = X[-1] - X[-2]
 
         # Calculate tangent interior points
-        for i, _ in enumerate(X[1:-1], 1):
+        for i in range(1, len(X) - 1):
             dX[i] = X[i-1] - X[i+1]
     return dX
 
@@ -173,7 +173,7 @@ class Backmap_DNA(Processor):
 
         # Construct reference vector's along curve using double reflection
         # Ref: Wang et al. (DOI:10.1145/1330511.1330513)
-        for i, _ in enumerate(X[:-1]):
+        for i in range(len(X) - 1):
             vec1 = X[i+1] - X[i]
             norm1 = vec1 @ vec1
             R_l = R[i] - (2/norm1) * (vec1 @ R[i]) * vec1
