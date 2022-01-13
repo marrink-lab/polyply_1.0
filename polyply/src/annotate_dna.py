@@ -11,9 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from .processor import Processor
-import networkx as nx
 import numpy as np
+import networkx as nx
+from .processor import Processor
 
 class AnnotateDNA(Processor):
     """
