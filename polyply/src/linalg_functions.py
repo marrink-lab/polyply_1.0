@@ -235,3 +235,33 @@ def _rotate_xyz(object_xyz, theta_x, theta_y, theta_z):
     return rotated_object
 
 rotate_xyz = jit(_rotate_xyz)
+
+def _rotate_from_vect(object_xyz, vect):
+    """
+    Rotate `object_xyz` by angle 'norm(vect)' around
+    `vect` and return coordinates of the rotated object.
+    Note object_xyz needs to be in column vector format
+    i.e. of numpy shape (3, N).
+
+    Parameters:
+    ----------
+    object_xyz: numpy.ndarray
+        coordinates of the object
+    vect: numpy.ndarray
+        rotation vector
+    """
+    theta = norm(vect)
+    vect = u_vect(vect)
+    cross_product_matrix = np.array([[0, -vect[2], vect[1]],
+                                    [vect[2], 0, -vect[0]],
+                                    [-vect[1], vect[0], 0]])
+
+    # Construct rotation matrix
+    Rotation =  cos(theta) * np.identity(3) + \
+                sin(theta) * cross_product_matrix + \
+                (1-cos(theta)) * np.outer(vect, vect)
+    # Multiply rotation matrix with object matrix
+    rotated_object = np.dot(Rotation, object_xyz)
+    return rotated_object
+
+rotate_from_vect = jit(_rotate_from_vect)

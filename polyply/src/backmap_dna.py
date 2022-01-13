@@ -12,11 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import numpy as np
-from scipy.spatial.transform import Rotation
 
-from polyply.src.processor import Processor
-from polyply.src.linalg_functions import u_vect, center_of_geometry
 from polyply import jit
+from polyply.src.processor import Processor
+from polyply.src.linalg_functions import u_vect, center_of_geometry, rotate_from_vect
 
 """
 Processor implementing a template based back
@@ -56,19 +55,19 @@ def _gen_base_frame(base, template):
         vec1 = template["N1"] - template["C4"]
         vec2 = template["C2"] - template["C6"]
 
-        e2 = u_vect(vec1)
-        e3 = u_vect(np.cross(vec1, vec2))
-        e1 = u_vect(np.cross(e3, e2))
+        S = u_vect(vec1)
+        T = u_vect(np.cross(vec1, vec2))
+        R = u_vect(np.cross(T, S))
 
     else: # base == "DT" or base == "DC":
         vec1 = template["N3"] - template["C6"]
         vec2 = template["C2"] - template["C4"]
 
-        e2 = u_vect(vec1)
-        e3 = u_vect(np.cross(vec1, vec2))
-        e1 = u_vect(np.cross(e2, e3))
+        S = u_vect(vec1)
+        T = u_vect(np.cross(vec1, vec2))
+        R = u_vect(np.cross(S, T))
 
-    frame = np.stack((e1, e2, e3), axis=1)
+    frame = np.stack((R, S, T), axis=1)
     return frame
 
 
@@ -109,28 +108,20 @@ def orient_template(strand, base, template, meta_frame):
         template_arr[:, ndx] = template[key] - ref_origin
         key_to_ndx[key] = ndx
 
-    # if base[:2] == "DG" or base[:2] == "DC":
-    #     rotation = Rotation.from_rotvec(np.pi * e2)
-    #     template_arr = rotation.apply(template_arr.T).T
-
-    # Transform base template into backward strand variant
-    if strand == "backward":
-        # Rotate 180 around e2 if backward strand
-        rotation = Rotation.from_rotvec(3 * np.pi * e2)
-        template_arr = rotation.apply(template_arr.T).T
-
-        # Rotate 180 around e3 if backward strand
-        rotation = Rotation.from_rotvec(np.pi * e3)
-        template_arr = rotation.apply(template_arr.T).T
-
     # Rotate base frame into meta_molecule frame
     template_rotated_arr = rot_meta_frame @ (inv_rot_template_frame @ template_arr)
 
-    # Translate rotated template along base-base vector
+    # Final adjustments to rotated templates
     if strand == "backward":
-        template_final_arr = (template_rotated_arr.T + meta_frame[:, 1] * 0.3).T
+        template_rotated_arr = rotate_from_vect(template_rotated_arr,
+                                                np.pi * meta_frame[:, 2])
+
+        template_final_arr = (template_rotated_arr.T +
+                              meta_frame[:, 1] * 0.3).T
     else:
-        template_final_arr = (template_rotated_arr.T - meta_frame[:, 1] * 0.3).T
+        template_final_arr = (template_rotated_arr.T -
+                             meta_frame[:, 1] * 0.3).T
+
 
     # Write the template back as dictionary
     template_result = {}
@@ -147,10 +138,9 @@ class Backmap_DNA(Processor):
     for the lower resolution molecule associated with the MetaMolecule.
     """
 
-    def __init__(self, fudge_coords=0.4, *args, **kwargs):
+    def __init__(self, fudge_coords=1, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # self.fudge_coords = fudge_coords
-        self.fudge_coords = 1
+        self.fudge_coords = fudge_coords
         self.rotation_angle = 0.59  # 34° in radian
         self.closed = True
 
@@ -171,6 +161,7 @@ class Backmap_DNA(Processor):
         for node in meta_molecule.nodes:
             X[node] = meta_molecule.nodes[node]['position']
 
+        # T=tangent vector, S=base-base vector, R=minor grove vector
         # Calculate tangents
         T = calc_tangents(X)
         T = np.apply_along_axis(u_vect, axis=1, arr=T)
@@ -178,7 +169,7 @@ class Backmap_DNA(Processor):
         # Initialize the reference vector which together with
         # the tangent construct the curve's minimal rotating frame
         R = np.zeros_like(X)
-        R[0] = (T[0, 1], -T[0, 0], 0)
+        R[0] = (T[0, 1], -T[0, 0], 0.)
 
         # Construct reference vector's along curve using double reflection
         # Ref: Wang et al. (DOI:10.1145/1330511.1330513)
@@ -198,12 +189,9 @@ class Backmap_DNA(Processor):
         # Rotate minimal rotating frame into a darboux frame
         rotation_vectors = [vec * self.rotation_angle *
                             i for i, vec in enumerate(T, start=1)]
-        rotation = Rotation.from_rotvec(rotation_vectors)
-
-        # e3=tangent vector, e2=base-base vector, e1=minor grove vector
-        e1 = rotation.apply(R)
-        e2 = rotation.apply(S)
-        e3 = T
+        for ndx, vector in enumerate(rotation_vectors):
+            R[ndx] = rotate_from_vect(R[ndx], vector)
+            S[ndx] = rotate_from_vect(S[ndx], vector)
 
         # Comply with boundary conditions if DNA is closed.
         # Uniformly distributing the corrective curviture,
@@ -211,25 +199,24 @@ class Backmap_DNA(Processor):
         if self.closed:
             vec1 = X[0] - X[-1]
             norm1 = vec1 @ vec1
-            R_l = e2[-1] - (2/norm1) * (vec1 @ e2[-1]) * vec1
-            T_l = e3[-1] - (2/norm1) * (vec1 @ e3[-1]) * vec1
-            vec2 = e3[0] - T_l
+            R_l = S[-1] - (2/norm1) * (vec1 @ S[-1]) * vec1
+            T_l = T[-1] - (2/norm1) * (vec1 @ T[-1]) * vec1
+            vec2 = T[0] - T_l
             norm2 = vec2 @ vec2
             R_calc = R_l - (2/norm2) * (vec2 @ R_l) * vec2
             R_calc = u_vect(R_calc)
-            phi = np.arccos(R_calc @ e2[0])
+            phi = np.arccos(R_calc @ S[0])
 
             correction_per_base = phi / len(X)
-            for ndx, _ in enumerate(e3):
-                R = Rotation.from_rotvec(correction_per_base * (ndx) * e3[ndx])
-
-                temp = R.apply(e2[ndx])
-                e2[ndx] = u_vect(temp)
-
-                e1[ndx] = np.cross(e3[ndx], e2[ndx])
+            for ndx in range(1, len(T)):
+                rotation_vector = correction_per_base * ndx * T[ndx]
+                S[ndx] = rotate_from_vect(S[ndx], rotation_vector)
+                S[ndx] = u_vect(S[ndx])
+                R[ndx] = np.cross(T[ndx], S[ndx])
 
         # Construct frame out of generated vectors
-        meta_frames = [np.stack((i, j, k), axis=1) for i, j, k in zip(e1,e2,e3)]
+        meta_frames = [np.stack((i, j, k), axis=1)
+                       for i, j, k in zip(R,S,T)]
 
         for node in meta_molecule.nodes:
             if meta_molecule.nodes[node]["build"]:
