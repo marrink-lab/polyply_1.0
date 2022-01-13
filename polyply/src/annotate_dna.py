@@ -63,9 +63,6 @@ class AnnotateDNA(Processor):
                     current_mol['build'] = fbase['build'] + bbase['build']
                     current_mol['basepair'] = f"{fbase['resname']},{bbase['resname']}"
                     current_mol['density'] = (fbase['density'] + bbase['density']) / 2
-                    # current_mol['position'] = [0.33 / np.sqrt(3) * (ndx + 1),
-                    #                            0.33 / np.sqrt(3) * (ndx + 1),
-                    #                            0.33 / np.sqrt(3) * (ndx + 1)]
 
                     del current_mol['resname']
                     del current_mol['resid']
