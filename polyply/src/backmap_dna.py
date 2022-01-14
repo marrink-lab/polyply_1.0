@@ -306,12 +306,10 @@ class Backmap_DNA(Processor):
                     base = meta_molecule.molecule.nodes[atom_high]["resname"]
                     if base == forward_base:
                         vector = forward_template[atomname]
-                        new_coords = cg_coord + vector * self.fudge_coords
-                        meta_molecule.molecule.nodes[atom_high]["position"] = new_coords
                     else:
                         vector = backward_template[atomname]
-                        new_coords = cg_coord + vector * self.fudge_coords
-                        meta_molecule.molecule.nodes[atom_high]["position"] = new_coords
+                    new_coords = cg_coord + vector * self.fudge_coords
+                    meta_molecule.molecule.nodes[atom_high]["position"] = new_coords
 
     def run_molecule(self, meta_molecule):
         """
