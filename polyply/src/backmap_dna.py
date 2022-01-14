@@ -20,10 +20,29 @@ from polyply.src.linalg_functions import u_vect, center_of_geometry, rotate_from
 """
 Processor implementing a template based back
 mapping to lower resolution coordinates for
+a DNA strand meta molecule.
 """
 
 
 def _calc_tangents(X):
+    """
+    Compute the tangent vectors for a discrete 3d curve.
+    If enough data points are available the tangents are calculatd
+    using a fifth order appromation, else the function reverts to
+    a first order appromation.
+
+    Parameters
+    ---------
+    X: numpy.ndarray
+        A ndarray, of shape (N, 3), corresponding to the
+        coordinates of a discrete 3d curve
+
+    Returns
+    ---------
+    dX: numpy.ndarray
+        A ndarray, of shape (N-1, 3), corresponding
+        to the tangent vectors of X
+    """
     dX = np.zeros_like(X)
     # If enough points use fifth order tangent approx. else use second order
     if len(X) > 4:
@@ -50,6 +69,23 @@ def _calc_tangents(X):
 calc_tangents = jit(_calc_tangents)
 
 def _gen_base_frame(base, template):
+    """
+    Given a 'base' type and a lower resolution 'template',
+    construct the intrinsic reference needed for aligning
+    the base.
+
+    Parameters
+    ---------
+    base: str
+       specify base type
+    template: dict[collections.abc.Hashable, np.ndarray]
+        dict of positions referring to the lower resolution atoms of node
+
+    Returns
+    ---------
+    numpy.ndarray
+        the base reference frame
+    """
 
     if base[:2] == "DA" or base[:2] == "DG":
         vec1 = template["N1"] - template["C4"]
