@@ -225,67 +225,65 @@ class Backmap_DNA(Processor):
         meta_molecule: :class:`polyply.src.MetaMolecule`
         """
 
-        # Read meta_molecule coordinates as array
-        X = np.zeros((len(meta_molecule.nodes), 3))
+        # Read meta_molecule coordinates
+        curve_coords = np.zeros((len(meta_molecule.nodes), 3))
         for node in meta_molecule.nodes:
-            X[node] = meta_molecule.nodes[node]['position']
+            curve_coords[node] = meta_molecule.nodes[node]['position']
 
-        # T=tangent vector, S=base-base vector, R=minor grove vector
         # Calculate tangents
-        T = calc_tangents(X)
-        T = np.apply_along_axis(u_vect, axis=1, arr=T)
+        tangents = calc_tangents(curve_coords)
+        tangents = np.apply_along_axis(u_vect, axis=1, arr=tangents)
 
-        # Initialize the reference vector which together with
-        # the tangent construct the curve's minimal rotating frame
-        R = np.zeros_like(X)
-        R[0] = (T[0, 1], -T[0, 0], 0.)
+        # Initialize the reference normal vector
+        normals = np.zeros_like(curve_coords)
+        normals[0] = (tangents[0, 1], -tangents[0, 0], 0.)
 
-        # Construct reference vector's along curve using double reflection
+        # Construct reference vectors along curve using double reflection
         # Ref: Wang et al. (DOI:10.1145/1330511.1330513)
-        for i in range(len(X) - 1):
-            vec1 = X[i+1] - X[i]
+        for i in range(len(tangents) - 1):
+            vec1 = curve_coords[i+1] - curve_coords[i]
             norm1 = vec1 @ vec1
-            R_l = R[i] - (2/norm1) * (vec1 @ R[i]) * vec1
-            T_l = T[i] - (2/norm1) * (vec1 @ T[i]) * vec1
-            vec2 = T[i+1] - T_l
+            R_l = R[i] - (2/norm1) * (vec1 @ normals[i]) * vec1
+            T_l = T[i] - (2/norm1) * (vec1 @ tangents[i]) * vec1
+            vec2 = tangents[i+1] - T_l
             norm2 = vec2 @ vec2
-            R[i+1] = R_l - (2/norm2) * (vec2 @ R_l) * vec2
-        R = np.apply_along_axis(u_vect, axis=1, arr=R)
+            normals[i+1] = R_l - (2/norm2) * (vec2 @ R_l) * vec2
+        normals = np.apply_along_axis(u_vect, axis=1, arr=normals)
 
-        # Calculate the binormals
-        S = np.cross(T, R)
+        # Calculate the rotated binormals
+        binormals = np.cross(tangents, normals)
 
-        # Rotate minimal rotating frame into a darboux frame
+        # Rotate frame into a darboux frame
         rotation_vectors = [vec * self.rotation_angle *
-                            i for i, vec in enumerate(T, start=1)]
+                            i for i, vec in enumerate(tangents, start=1)]
         for ndx, vector in enumerate(rotation_vectors):
-            R[ndx] = rotate_from_vect(R[ndx], vector)
-            S[ndx] = rotate_from_vect(S[ndx], vector)
+            normals[ndx] = rotate_from_vect(normals[ndx], vector)
+            binormals[ndx] = rotate_from_vect(binormals[ndx], vector)
 
         # Comply with boundary conditions if DNA is closed.
         # Uniformly distributing the corrective curviture,
         # minimizes the total squared angular speed.
         if self.closed:
-            vec1 = X[0] - X[-1]
+            vec1 = curve_coords[0] - curve_coords[-1]
             norm1 = vec1 @ vec1
-            R_l = S[-1] - (2/norm1) * (vec1 @ S[-1]) * vec1
-            T_l = T[-1] - (2/norm1) * (vec1 @ T[-1]) * vec1
-            vec2 = T[0] - T_l
+            R_l = binormals[-1] - (2/norm1) * (vec1 @ binormals[-1]) * vec1
+            T_l = tangents[-1] - (2/norm1) * (vec1 @ tangents[-1]) * vec1
+            vec2 = tangents[0] - T_l
             norm2 = vec2 @ vec2
             R_calc = R_l - (2/norm2) * (vec2 @ R_l) * vec2
             R_calc = u_vect(R_calc)
-            phi = np.arccos(R_calc @ S[0])
+            phi = np.arccos(R_calc @ binormals[0])
 
-            correction_per_base = phi / len(X)
-            for ndx in range(1, len(T)):
-                rotation_vector = correction_per_base * ndx * T[ndx]
-                S[ndx] = rotate_from_vect(S[ndx], rotation_vector)
-                S[ndx] = u_vect(S[ndx])
-                R[ndx] = np.cross(T[ndx], S[ndx])
+            correction_per_base = phi / len(tangents)
+            for ndx in range(1, len(tangents)):
+                rotation_vector = correction_per_base * ndx * tangents[ndx]
+                binormals[ndx] = rotate_from_vect(binormals[ndx], rotation_vector)
+                binormals[ndx] = u_vect(binormals[ndx])
+                normals[ndx] = np.cross(tangents[ndx], binormals[ndx])
 
         # Construct frame out of generated vectors
         meta_frames = [np.stack((i, j, k), axis=1)
-                       for i, j, k in zip(R,S,T)]
+                       for i, j, k in zip(normals, binormals, tangents)]
 
         for node in meta_molecule.nodes:
             if meta_molecule.nodes[node]["build"]:
