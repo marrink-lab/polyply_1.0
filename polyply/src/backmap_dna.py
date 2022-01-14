@@ -47,6 +47,8 @@ def _finite_difference_O1(X):
     for i in range(1, len(X) - 1):
         dX[i] = X[i-1] - X[i+1]
 
+finite_difference_O1 = jit(_finite_difference_O1)
+
 def _finite_difference_O5(X):
     """
     Numerical derivative of function values X
@@ -74,7 +76,9 @@ def _finite_difference_O5(X):
         dX[i] = X[i-2] - 8 * X[i-1] + 8 * X[i+1] - X[i+2]
     return dX
 
-def _calc_tangents(X):
+finite_difference_O5 = jit(_finite_difference_O5)
+
+def calc_tangents(X):
     """
     Compute the tangent vectors for a discrete 3d curve.
     If enough data points are available the tangents are calculatd
@@ -94,12 +98,9 @@ def _calc_tangents(X):
         to the tangent vectors of X
     """
     if len(X) > 4:
-        return _finite_difference_O5(X)
+        return finite_difference_O5(X)
     else:
-        return _finite_difference_O1(X)
-
-# this is the numba implementation
-calc_tangents = jit(_calc_tangents)
+        return finite_difference_O1(X)
 
 def _gen_base_frame(base, template):
     """
