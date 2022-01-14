@@ -219,6 +219,9 @@ class Backmap_DNA(Processor):
         positions of the atoms associated with that residue stored in
         attr:`polyply.src.MetaMolecule.molecule` are created from a
         template residue located in attr:`polyply.src.MetaMolecule.templates`.
+        The orientation of the aforementioned templates is determined by
+        reference frames constructed along the DNA curve using the
+        double-reflection method by Wang et al. (DOI:10.1145/1330511.1330513)
 
         Parameters
         ----------
