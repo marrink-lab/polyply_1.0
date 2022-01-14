@@ -246,8 +246,8 @@ class Backmap_DNA(Processor):
         for i in range(len(tangents) - 1):
             vec1 = curve_coords[i+1] - curve_coords[i]
             norm1 = vec1 @ vec1
-            R_l = R[i] - (2/norm1) * (vec1 @ normals[i]) * vec1
-            T_l = T[i] - (2/norm1) * (vec1 @ tangents[i]) * vec1
+            R_l = normals[i] - (2/norm1) * (vec1 @ normals[i]) * vec1
+            T_l = tangents[i] - (2/norm1) * (vec1 @ tangents[i]) * vec1
             vec2 = tangents[i+1] - T_l
             norm2 = vec2 @ vec2
             normals[i+1] = R_l - (2/norm2) * (vec2 @ R_l) * vec2
