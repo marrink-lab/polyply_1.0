@@ -15,7 +15,8 @@ import numpy as np
 
 from polyply import jit
 from polyply.src.processor import Processor
-from polyply.src.linalg_functions import u_vect, center_of_geometry, rotate_from_vect
+from polyply.src.linalg_functions import u_vect, center_of_geometry, \
+    rotate_from_vect
 
 """
 Processor implementing a template based back
@@ -141,7 +142,8 @@ def _gen_base_frame(base, template):
     return frame
 
 
-def orient_template(strand, base, template, meta_frame):
+def orient_template(template, meta_frame, strand, base,
+                    is_closed, base_base_dist):
     """
     Orient DNA bases
 
@@ -187,10 +189,10 @@ def orient_template(strand, base, template, meta_frame):
                                                 np.pi * meta_frame[:, 2])
 
         template_final_arr = (template_rotated_arr.T +
-                              meta_frame[:, 1] * 0.3).T
+                              meta_frame[:, 1] * base_base_dist).T
     else:
         template_final_arr = (template_rotated_arr.T -
-                             meta_frame[:, 1] * 0.3).T
+                             meta_frame[:, 1] * base_base_dist).T
 
 
     # Write the template back as dictionary
@@ -208,11 +210,13 @@ class Backmap_DNA(Processor):
     for the lower resolution molecule associated with the MetaMolecule.
     """
 
-    def __init__(self, fudge_coords=1, *args, **kwargs):
+    def __init__(self, fudge_coords=1, is_closed=False, rotation_per_bp=0.59,
+                 base_base_dist=0.3, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fudge_coords = fudge_coords
-        self.rotation_angle = 0.59  # 34° in radian
-        self.closed = True
+        self.rotation_per_bp = rotation_per_bp  # 34° in radian
+        self.base_base_dist = base_base_dist
+        self.is_closed = is_closed
 
     def _place_init_coords(self, meta_molecule):
         """
@@ -258,7 +262,7 @@ class Backmap_DNA(Processor):
         binormals = np.cross(tangents, normals)
 
         # Rotate frame into a darboux frame
-        rotation_vectors = [vec * self.rotation_angle *
+        rotation_vectors = [vec * self.rotation_per_bp *
                             i for i, vec in enumerate(tangents, start=1)]
         for ndx, vector in enumerate(rotation_vectors):
             normals[ndx] = rotate_from_vect(normals[ndx], vector)
@@ -267,7 +271,7 @@ class Backmap_DNA(Processor):
         # Comply with boundary conditions if DNA is closed.
         # Uniformly distributing the corrective curviture,
         # minimizes the total squared angular speed.
-        if self.closed:
+        if self.is_closed:
             vec1 = curve_coords[0] - curve_coords[-1]
             norm1 = vec1 @ vec1
             R_l = binormals[-1] - (2/norm1) * (vec1 @ binormals[-1]) * vec1
@@ -296,12 +300,14 @@ class Backmap_DNA(Processor):
                 forward_base, backward_base = basepair.split(",")
 
                 # Correctly orientate base on forward and backward strands
-                forward_template = orient_template("forward", forward_base,
-                                                   meta_molecule.templates[forward_base],
-                                                   meta_frames[node])
-                backward_template = orient_template("backward", backward_base,
-                                                    meta_molecule.templates[backward_base],
-                                                    meta_frames[node])
+                forward_template = orient_template(meta_molecule.templates[forward_base],
+                                                   meta_frames[node], "forward",
+                                                   forward_base, self.is_closed,
+                                                   self.base_base_dist)
+                backward_template = orient_template(meta_molecule.templates[backward_base],
+                                                    meta_frames[node], "backward",
+                                                    backward_base, self.is_closed,
+                                                    self.base_base_dist)
 
                 # Place the molecule atoms according to the backmapping
                 high_res_atoms = meta_molecule.nodes[node]["graph"].nodes
