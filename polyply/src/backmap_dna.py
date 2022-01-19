@@ -68,25 +68,25 @@ def _gen_base_frame(base, template):
         the base reference frame
     """
 
-    if base[:2] == "DA" or base[:2] == "DG":
-        vec1 = template["N1"] - template["C4"]
-        vec2 = template["C2"] - template["C6"]
+    anchor_library = {"DA": [("N1", "C4"), ("C2", "C6")],
+                     "DG": [("N1", "C4"), ("C2", "C6")],
+                     "DT": [("N3", "C6"), ("C2", "C4")],
+                     "DC": [("N3", "C6"), ("C2", "C4")]}
+    try:
+        base_type = base[:2]
+        anch1, anch2 = anchor_library[base_type]
+    except :
+        raise Exception('No reference frame available for nucleobase type.')
 
-        S = u_vect(vec1)
-        T = u_vect(np.cross(vec1, vec2))
-        R = u_vect(np.cross(T, S))
+    ref_vec1 = template[anch1[0]] - template[anch1[1]]
+    ref_vec2 = template[anch2[0]] - template[anch2[1]]
 
-    else: # base == "DT" or base == "DC":
-        vec1 = template["N3"] - template["C6"]
-        vec2 = template["C2"] - template["C4"]
+    binormal = u_vect(ref_vec1)
+    tangent = u_vect(np.cross(ref_vec1, ref_vec2))
+    normal = u_vect(np.cross(binormal, tangent))
 
-        S = u_vect(vec1)
-        T = u_vect(np.cross(vec1, vec2))
-        R = u_vect(np.cross(S, T))
-
-    frame = np.stack((R, S, T), axis=1)
+    frame = np.stack((normal, binormal, tangent), axis=1)
     return frame
-
 
 def orient_template(template, meta_frame, strand, base,
                     is_closed, base_base_dist):
