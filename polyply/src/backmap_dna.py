@@ -166,11 +166,11 @@ class Backmap_DNA(Processor):
     """
 
     def __init__(self, fudge_coords=1, is_closed=False, rotation_per_bp=0.59,
-                 base_base_dist=0.3, *args, **kwargs):
+                 strand_separation=0.3, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fudge_coords = fudge_coords
         self.rotation_per_bp = rotation_per_bp  # 34° in radian
-        self.base_base_dist = base_base_dist
+        self.strand_separation = strand_separation
         self.is_closed = is_closed
 
     def _place_init_coords(self, meta_molecule):
@@ -258,11 +258,11 @@ class Backmap_DNA(Processor):
                 forward_template = orient_template(meta_molecule.templates[forward_base],
                                                    meta_frames[node], "forward",
                                                    forward_base, self.is_closed,
-                                                   self.base_base_dist)
+                                                   self.strand_separation)
                 backward_template = orient_template(meta_molecule.templates[backward_base],
                                                     meta_frames[node], "backward",
                                                     backward_base, self.is_closed,
-                                                    self.base_base_dist)
+                                                    self.strand_separation)
 
                 # Place the molecule atoms according to the backmapping
                 high_res_atoms = meta_molecule.nodes[node]["graph"].nodes
