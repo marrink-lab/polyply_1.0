@@ -24,7 +24,7 @@ mapping to lower resolution coordinates for
 a DNA strand meta molecule.
 """
 
-def calc_tangents(X):
+def calc_tangents(curve):
     """
     Compute the tangent vectors for a discrete 3d curve.
     If enough data points are available the tangents are calculatd
@@ -33,7 +33,7 @@ def calc_tangents(X):
 
     Parameters
     ---------
-    X: numpy.ndarray
+    curve: numpy.ndarray
         A ndarray, of shape (N, 3), corresponding to the
         coordinates of a discrete 3d curve
 
@@ -43,10 +43,11 @@ def calc_tangents(X):
         A ndarray, of shape (N-1, 3), corresponding
         to the tangent vectors of X
     """
-    if len(X) > 4:
-        return finite_difference_O5(X)
+    if len(curve) > 4:
+        curve_tangents = finite_difference_O5(curve)
     else:
-        return finite_difference_O1(X)
+        curve_tangents = finite_difference_O1(curve)
+    return curve_tangents
 
 def _gen_base_frame(base, template):
     """
