@@ -58,7 +58,7 @@ def _gen_base_frame(base, template):
     Parameters
     ---------
     base: str
-       specify base type
+       base type
     template: dict[collections.abc.Hashable, np.ndarray]
         dict of positions referring to the lower resolution atoms of node
 
@@ -89,28 +89,37 @@ def _gen_base_frame(base, template):
     return frame
 
 def orient_template(template, meta_frame, strand, base,
-                    is_closed, base_base_dist):
+                    is_closed, strand_separation):
     """
-    Orient DNA bases
+    Align the nucleobase reference template with the local refernce frame
+    defined on the meta_molecule
 
     Parameters:
     -----------
-    meta_molecule: :class:`polyply.src.meta_molecule`
-    current_node:
-        node key of the node in meta_molecule to which template referes to
     template: dict[collections.abc.Hashable, np.ndarray]
         dict of positions referring to the lower resolution atoms of node
+    meta_frame: numpy.ndarray
+        local reference on the meta_molecule
+    strand: str
+        specify if base is component of forward or backward strand
+    base: str
+       base type
+    is_closed: bool
+    strand_separation: float
+        strand separation in angstroms, measured between the reference
+        origins of complementary nucleobases.
+
 
     Returns:
     --------
     dict
-        the oriented template
+        The oriented base template
     """
 
     # Calculate intrinsic frame of the base
     template_frame = _gen_base_frame(base, template)
 
-    # Detemine rotation matrices
+    # Determine rotation matrices
     inv_rot_template_frame = template_frame.T
     rot_meta_frame = meta_frame
 
@@ -131,14 +140,14 @@ def orient_template(template, meta_frame, strand, base,
 
     # Final adjustments to rotated templates
     if strand == "backward":
+        template_final_arr = (template_rotated_arr.T -
+                              meta_frame[:, 1] * strand_separation).T
+    else:
         template_rotated_arr = rotate_from_vect(template_rotated_arr,
-                                                np.pi * meta_frame[:, 2])
+                                                np.pi * meta_frame[:, 0])
 
         template_final_arr = (template_rotated_arr.T +
-                              meta_frame[:, 1] * base_base_dist).T
-    else:
-        template_final_arr = (template_rotated_arr.T -
-                             meta_frame[:, 1] * base_base_dist).T
+                             meta_frame[:, 1] * strand_separation).T
 
 
     # Write the template back as dictionary
