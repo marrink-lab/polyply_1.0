@@ -16,68 +16,13 @@ import numpy as np
 from polyply import jit
 from polyply.src.processor import Processor
 from polyply.src.linalg_functions import u_vect, center_of_geometry, \
-    rotate_from_vect
+    rotate_from_vect, finite_difference_O5, finite_difference_O1
 
 """
 Processor implementing a template based back
 mapping to lower resolution coordinates for
 a DNA strand meta molecule.
 """
-
-def _finite_difference_O1(X):
-    """
-    Numerical derivative of function values X
-    using a 1st order approximation method.
-
-    Parameters
-    ---------
-    X: numpy.ndarray
-        Function values, a ndarray of shape (N, 3)
-
-    Returns
-    ---------
-    dX: numpy.ndarray
-        Derivatives, a ndarray of shape (N-1, 3)
-    """
-    dX = np.zeros_like(X)
-    # Calculate tangent boundary points
-    dX[0] = X[1] - X[0]
-    dX[-1] = X[-1] - X[-2]
-
-    # Calculate tangent interior points
-    for i in range(1, len(X) - 1):
-        dX[i] = X[i-1] - X[i+1]
-
-finite_difference_O1 = jit(_finite_difference_O1)
-
-def _finite_difference_O5(X):
-    """
-    Numerical derivative of function values X
-    using a 5th order approximation method.
-
-    Parameters
-    ---------
-    X: numpy.ndarray
-        Function values, a ndarray of shape (N, 3)
-
-    Returns
-    ---------
-    dX: numpy.ndarray
-        Derivatives, a ndarray of shape (N-1, 3)
-    """
-    dX = np.zeros_like(X)
-    # Calculate tangent boundary points
-    dX[0] = -25*X[0] + 48*X[1] - 36*X[2] + 16*X[3] - 3*X[4]
-    dX[1] = -3*X[0] - 10*X[1] + 18*X[2] - 6*X[3] + X[4]
-    dX[-2] = 3*X[-1] + 10*X[-2] - 18*X[-3] + 6*X[-4] - X[-5]
-    dX[-1] = 25*X[-1] - 48*X[-2] + 36*X[-3] - 16*X[-4] + 3*X[-5]
-
-    # Calculate tangent interior points
-    for i in range(2, len(X) - 2):
-        dX[i] = X[i-2] - 8 * X[i-1] + 8 * X[i+1] - X[i+2]
-    return dX
-
-finite_difference_O5 = jit(_finite_difference_O5)
 
 def calc_tangents(X):
     """
