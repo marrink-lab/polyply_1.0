@@ -25,11 +25,12 @@ base_library = {"DA": "DT", "DT": "DA", "DG": "DC", "DC": "DG",
 
 class AnnotateDNA(Processor):
     """
-    Given some molecules defined as DNA strands,
-    the processor generates the appropriate meta_molecule
-    corresponding to the strand definition. This meta_molecule
-    is later used for both building the DNA structure and backmapping
-    to the desired forcefield.
+    Given a topology and list indexes that indicate the molecules that
+    contain DNA, the processor generates the appropriate meta_molecule
+    structure. The DNA strands are identified using a greedy search method
+    on the meta_molecule network and later combined with their complementary
+    strand. The generated meta_molecule is later used for both building the
+    DNA structure and backmapping to the desired forcefield.
     """
 
     def __init__(self, topology, includes_DNA = []):
