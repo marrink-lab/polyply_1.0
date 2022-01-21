@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import numpy as np
+import networkx as nx
 
 from polyply import jit
 from polyply.src.processor import Processor
@@ -89,7 +90,7 @@ def _gen_base_frame(base, template):
     return frame
 
 def orient_template(template, meta_frame, strand, base,
-                    is_closed, strand_separation):
+                    strand_separation):
     """
     Align the nucleobase reference template with the local refernce frame
     defined on the meta_molecule
@@ -104,7 +105,6 @@ def orient_template(template, meta_frame, strand, base,
         specify if base is component of forward or backward strand
     base: str
        base type
-    is_closed: bool
     strand_separation: float
         strand separation in angstroms, measured between the reference
         origins of complementary nucleobases.
@@ -165,13 +165,12 @@ class Backmap_DNA(Processor):
     for the lower resolution molecule associated with the MetaMolecule.
     """
 
-    def __init__(self, fudge_coords=1, is_closed=False, rotation_per_bp=0.59,
+    def __init__(self, fudge_coords=1, rotation_per_bp=0.59,
                  strand_separation=0.3, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fudge_coords = fudge_coords
         self.rotation_per_bp = rotation_per_bp  # 34° in radian
         self.strand_separation = strand_separation
-        self.is_closed = is_closed
 
     def _place_init_coords(self, meta_molecule):
         """
@@ -226,7 +225,7 @@ class Backmap_DNA(Processor):
         # Comply with boundary conditions if DNA is closed.
         # Uniformly distributing the corrective curviture,
         # minimizes the total squared angular speed.
-        if self.is_closed:
+        if nx.cycle_basis(meta_molecule):
             vec1 = curve_coords[0] - curve_coords[-1]
             norm1 = vec1 @ vec1
             R_l = binormals[-1] - (2/norm1) * (vec1 @ binormals[-1]) * vec1
@@ -250,18 +249,18 @@ class Backmap_DNA(Processor):
 
         for node in meta_molecule.nodes:
             if meta_molecule.nodes[node]["build"]:
-                basepair = meta_molecule.nodes[node]["basepair"]
+                basepair = meta_molecule.nodes[node]["resname"]
                 cg_coord = meta_molecule.nodes[node]["position"]
                 forward_base, backward_base = basepair.split(",")
 
                 # Correctly orientate base on forward and backward strands
                 forward_template = orient_template(meta_molecule.templates[forward_base],
                                                    meta_frames[node], "forward",
-                                                   forward_base, self.is_closed,
+                                                   forward_base,
                                                    self.strand_separation)
                 backward_template = orient_template(meta_molecule.templates[backward_base],
                                                     meta_frames[node], "backward",
-                                                    backward_base, self.is_closed,
+                                                    backward_base,
                                                     self.strand_separation)
 
                 # Place the molecule atoms according to the backmapping
