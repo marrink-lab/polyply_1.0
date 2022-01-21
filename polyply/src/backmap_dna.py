@@ -92,8 +92,16 @@ def _gen_base_frame(base, template):
 def orient_template(template, meta_frame, strand, base,
                     strand_separation):
     """
-    Align the nucleobase reference template with the local refernce frame
-    defined on the meta_molecule
+    Align the nucleobase reference template with the local reference frame
+    defined on the meta_molecule. The rotational alignment is performed by a
+    linear transformation that matches the predefined reference frame of the
+    base with the reference frame constructed on the meta_molecule. Later the
+    rotated base is translated onto the correct position in the strand.
+
+    For every forcefield a predefined reference frame needs to be provided in
+    order to perform the template orientation. This frame should consist out of
+    three orthonormal vectors: 1) along the strand tangent, 2) along the
+    base-base vector and 3) normal to 1) and 2) and pointing into the minor grove.
 
     Parameters:
     -----------
@@ -123,7 +131,7 @@ def orient_template(template, meta_frame, strand, base,
     inv_rot_template_frame = template_frame.T
     rot_meta_frame = meta_frame
 
-    # Determine origin point of template
+    # Determine optimal reference origin point of template
     positions = np.array([template["N1"], template["N3"], template["C2"],
                           template["C4"], template["C5"], template["C5"]])
     ref_origin = center_of_geometry(positions)
