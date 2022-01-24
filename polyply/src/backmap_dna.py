@@ -197,8 +197,8 @@ class Backmap_DNA(Processor):
 
         # Read meta_molecule coordinates
         curve_coords = np.zeros((len(meta_molecule.nodes), 3))
-        for node in meta_molecule.nodes:
-            curve_coords[node] = meta_molecule.nodes[node]['position']
+        for ndx, node in enumerate(meta_molecule.nodes):
+            curve_coords[ndx] = meta_molecule.nodes[node]['position']
 
         # Calculate tangents
         tangents = calc_tangents(curve_coords)
@@ -255,7 +255,7 @@ class Backmap_DNA(Processor):
         meta_frames = [np.stack((i, j, k), axis=1)
                        for i, j, k in zip(normals, binormals, tangents)]
 
-        for node in meta_molecule.nodes:
+        for ndx, node in enumerate(meta_molecule.nodes):
             if meta_molecule.nodes[node]["build"]:
                 basepair = meta_molecule.nodes[node]["resname"]
                 cg_coord = meta_molecule.nodes[node]["position"]
@@ -263,11 +263,11 @@ class Backmap_DNA(Processor):
 
                 # Correctly orientate base on forward and backward strands
                 forward_template = orient_template(meta_molecule.templates[forward_base],
-                                                   meta_frames[node], "forward",
+                                                   meta_frames[ndx], "forward",
                                                    forward_base,
                                                    self.strand_separation)
                 backward_template = orient_template(meta_molecule.templates[backward_base],
-                                                    meta_frames[node], "backward",
+                                                    meta_frames[ndx], "backward",
                                                     backward_base,
                                                     self.strand_separation)
 

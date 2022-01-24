@@ -76,7 +76,7 @@ class AnnotateDNA(Processor):
             strand = []
             while queue:
                 # pop first node out of queue
-                current_node = queue.pop(0)
+                current_node = queue.pop()
                 visited.append(current_node)
 
                 if _is_nucleobase(current_node):
