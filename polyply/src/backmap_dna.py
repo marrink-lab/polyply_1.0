@@ -147,16 +147,16 @@ def orient_template(template, meta_frame, strand, base,
     template_rotated_arr = rot_meta_frame @ (inv_rot_template_frame @ template_arr)
 
     # Final adjustments to rotated templates
-    if strand == "backward":
+    if strand == "forward":
         template_final_arr = (template_rotated_arr.T -
                               meta_frame[:, 1] * strand_separation).T
     else:
         template_rotated_arr = rotate_from_vect(template_rotated_arr,
                                                 np.pi * meta_frame[:, 0])
-
+        template_rotated_arr = rotate_from_vect(template_rotated_arr,
+                                                np.pi * meta_frame[:, 1])
         template_final_arr = (template_rotated_arr.T +
                              meta_frame[:, 1] * strand_separation).T
-
 
     # Write the template back as dictionary
     template_result = {}
