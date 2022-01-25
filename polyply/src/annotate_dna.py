@@ -149,12 +149,11 @@ class AnnotateDNA(Processor):
         """
 
         while len(strands) > 1:
-            ref_strand = strands.pop(0)
+            ref_strand = strands.pop()
 
             match_strand = self._find_complementary_strands(ref_strand, strands)
 
-            # Loop over half the meta_mol
-            for findex, bindex in zip(ref_strand, match_strand):
+            for findex, bindex in zip(ref_strand, sorted(match_strand)):
 
                 fbase = ref_strand.nodes[findex]
                 bbase = match_strand.nodes[bindex]
@@ -169,9 +168,6 @@ class AnnotateDNA(Processor):
                 current_node['graph'] = nx.compose(fbase['graph'], bbase['graph'])
                 current_node['density'] = (fbase['density'] + bbase['density']) / 2
                 current_node['resname'] = f"{fbase['resname']},{bbase['resname']}"
-                current_node['position'] = [0.33 / np.sqrt(3) * (findex + 1),
-                                            0.33 / np.sqrt(3) * (findex + 1),
-                                            0.33 / np.sqrt(3) * (findex + 1)]
 
             meta_molecule.remove_nodes_from(match_strand)
 
