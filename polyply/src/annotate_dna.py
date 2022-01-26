@@ -96,36 +96,27 @@ class AnnotateDNA(Processor):
                 strands.append(meta_molecule.subgraph(strand))
         return strands
 
-    def _determine_sequence(self, strand):
-        sequence = []
-        if nx.cycle_basis(strand):
-            start_base = sample(strand.nodes, 1)
-        else:
-            condition = lambda node: strand.degree(node) == 1
-            start_base = next(filter(condition, strand.nodes), None)
-        for resid in nx.dfs_tree(strand, start_base):
-            sequence.append(strand.nodes[resid]['resname'])
-        return sequence
-
     def _find_complementary_strands(self, ref_strand, strands):
         # Sequence we want to find match for
-        ref_seq = self._determine_sequence(ref_strand)
+        resnames = nx.get_node_attributes(ref_strand, 'resname')
+        ref_sequence = resnames.values()
 
         match_ratios = {}
         for ndx, strand in enumerate(strands, start=1):
-            seq = self._determine_sequence(strand)
+            resnames = nx.get_node_attributes(strand, 'resname')
+            sequence = resnames.values()
 
             match_ratio = 0
-            for ref_base, base in zip(ref_seq, seq):
+            for ref_base, base in zip(ref_sequence, sequence):
                 if base_library[ref_base] == base:
                     match_ratio += 1
-            match_ratios[ndx] = match_ratio/len(ref_seq)
+            match_ratios[ndx] = match_ratio/len(ref_sequence)
 
             match_ratio = 0
-            for ref_base, base in zip(ref_seq, reversed(seq)):
+            for ref_base, base in zip(ref_sequence, reversed(sequence)):
                 if base_library[ref_base] == base:
                     match_ratio += 1
-            match_ratios[-ndx] = match_ratio/len(ref_seq)
+            match_ratios[-ndx] = match_ratio/len(ref_sequence)
 
         match =  max(match_ratios, key=match_ratios.get)
         match_strand = strands.pop(abs(match) - 1)
