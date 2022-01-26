@@ -33,7 +33,7 @@ class AnnotateDNA(Processor):
     DNA structure and backmapping to the desired forcefield.
     """
 
-    def __init__(self, topology, includes_DNA = []):
+    def __init__(self, topology, includes_DNA):
         """
         Initalize the processor with a :class:`topology`
         and a list of DNA molecules in this topology.
@@ -45,7 +45,7 @@ class AnnotateDNA(Processor):
             node keys list of the meta_molecules tagged as indluding DNA
         """
         self.topology = topology
-        self.includes_DNA = includes_DNA
+        self.includes_DNA = [float(ndx) for ndx in includes_DNA]
 
     def _find_dna_strands(self, meta_molecule):
         """

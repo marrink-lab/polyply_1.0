@@ -23,7 +23,7 @@ import argparse
 from pathlib import Path
 import numpy as np
 import polyply
-from polyply import (gen_itp, gen_coords, gen_seq, DATA_PATH)
+from polyply import (gen_itp, gen_coords, gen_seq, gen_dna, DATA_PATH)
 from polyply.src.load_library import load_library
 from polyply.src.logging import LOGGER, LOGLEVELS
 
@@ -51,6 +51,7 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
     parser_gen_itp = subparsers.add_parser('gen_params', aliases=['gen_itp'])
     parser_gen_coords = subparsers.add_parser('gen_coords')
     parser_gen_seq = subparsers.add_parser('gen_seq')
+    parser_gen_dna = subparsers.add_parser('gen_dna')
 
     # =============================================================================
     # Input Arguments for the itp generation tool
@@ -220,6 +221,52 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
                                 "<0:chiral:R-0.5,S-0.5>",
                            default=[])
     parser_gen_seq.set_defaults(func=gen_seq)
+
+    # ============================================================================
+    #           Input Arguments for the DNA backmapping tool
+    # ============================================================================
+
+    parser_gen_dna.add_argument('-name', required=True, type=str, dest="name",
+                                help="name of the final molecule")
+    parser_gen_dna.add_argument('-v', dest='verbosity', action='count',
+                                help='Enable debug logging output. Can be given '
+                                'multiple times.', default=0)
+
+    file_group = parser_gen_dna.add_argument_group('Input and output options')
+    file_group.add_argument('-p', dest='toppath', required=False, type=Path,
+                            help='topology file (.top)')
+    file_group.add_argument('-o', dest='outpath', type=Path,
+                            help='output GRO (.gro)')
+    file_group.add_argument('-b', dest='build', type=Path, default=None,
+                            help=('input file; specify molecule specific building options'))
+
+
+    system_group = parser_gen_dna.add_argument_group('Options for system generation')
+    sys_req_group = system_group.add_mutually_exclusive_group(required=True)
+    sys_req_group.add_argument('-dens', dest='density', type=float,
+                              help='density of system (kg/m3)', default=None)
+    sys_req_group.add_argument('-box', dest='box', type=lambda s: np.array(s, dtype=float),
+                              help='rectangluar box x y z (nm)', default=None, nargs=3)
+
+    coord_group = parser_gen_dna.add_argument_group('Options for initial coordinates')
+    coord_excl = coord_group.add_mutually_exclusive_group(required=True)
+    coord_excl.add_argument('-line', dest='line', action='store_true',
+                            help='generate coordinates on line', default=None)
+    coord_excl.add_argument('-circle', dest='circle', action='store_true',
+                            help='generate coordinates on circle', default=None)
+    coord_excl.add_argument('-c', dest='coordpath', type=Path,
+                            help='coordinate input file (.xyz)', default=None)
+
+    backmap_group = parser_gen_dna.add_argument_group('Options for backmapping')
+    system_group.add_argument('-gen-templates', dest='generate_templates', action='store_true',
+                              help='auto generate new nucleobase templates', default=None)
+    backmap_group.add_argument('-includes_DNA', dest='includes_DNA', type=lambda s: s.split(':'),
+                               default=[], help=('Specify the molecules that contain DNA strands '
+                                             'which should be backmapped. The input format '
+                                             'is list of molecule indices : [<mol_idx>]'))
+    backmap_group.add_argument('-back_fudge', dest='bfudge', type=float, default=1,
+                               help='factor by which to scale the coordinates when backmapping.')
+    parser_gen_dna.set_defaults(func=gen_dna)
 
     # ============================================================================
     # Deal with queries of the polyply library
