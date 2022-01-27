@@ -47,6 +47,24 @@ class AnnotateDNA(Processor):
         self.topology = topology
         self.includes_DNA = [float(ndx) for ndx in includes_DNA]
 
+    def _is_nucleobase(self, node_ndx, meta_molecule):
+        """
+        Determine whether a specific node in meta_molecule
+        is a nucleobase.
+
+        Parameters
+        ------------
+        node_ndx: int
+            node index
+        meta_molecule: :class:`polyply.src.MetaMolecule`
+
+        Returns
+        ---------
+        bool:
+            True if node is nucleobase, False otherwise
+        """
+        return meta_molecule.nodes[node_ndx]['resname'] in base_library
+
     def _find_dna_strands(self, meta_molecule):
         """
         Extract the subgraphs of meta_molecule that are DNA strands
@@ -60,9 +78,6 @@ class AnnotateDNA(Processor):
         strands: list[:class: `networkx.Graph`]
             list of DNA strands represented as subgraphs of meta_molecule
         """
-
-        def _is_nucleobase(node):
-            return (meta_molecule.nodes[node]['resname'] in base_library)
 
         seperated_meta_mol = [meta_molecule.subgraph(graph) for graph
                               in nx.connected_components(meta_molecule)]
@@ -79,7 +94,7 @@ class AnnotateDNA(Processor):
                 current_node = queue.pop()
                 visited.append(current_node)
 
-                if _is_nucleobase(current_node):
+                if self._is_nucleobase(current_node, meta_molecule):
                     strand.append(current_node)
                 elif strand:
                     strands.append(meta_mol.subgraph(strand))
@@ -90,7 +105,8 @@ class AnnotateDNA(Processor):
                 # update queue
                 queue = neighbors + queue
                 # Sort queue according to heuristic
-                queue.sort(key=_is_nucleobase, reverse=True)
+                heuristic = lambda node: self._is_nucleobase(node, meta_mol)
+                queue.sort(key=heuristic, reverse=True)
 
             if strand not in strands:
                 strands.append(meta_molecule.subgraph(strand))
