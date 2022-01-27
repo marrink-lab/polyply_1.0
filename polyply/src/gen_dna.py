@@ -17,6 +17,7 @@ High level API for the polyply DNA coordinate generator
 """
 import sys, glob, os
 import numpy as np
+import vermouth
 from vermouth.file_writer import DeferredFileWriter
 from vermouth.gmx import read_gro
 from vermouth.log_helpers import StyleAdapter, get_logger
@@ -26,44 +27,9 @@ from .backmap_dna import Backmap_DNA
 from .topology import Topology
 from .annotate_dna import AnnotateDNA
 from .build_file_parser import read_build_file
+from .coord_file_parser import read_xyz
 
 LOGGER = StyleAdapter(get_logger(__name__))
-
-def read_xyz(path):
-    """
-    Read an xyz file and extract molecule's coordinates.
-
-    The file should be in the format::
-
-        <number of atoms>
-        comment line
-        <element0> <X0> <Y0> <Z0>
-        <element1> <X1> <Y1> <Z1>
-        ...
-
-    Parameters
-    ----------
-    path : str
-        Path to the xyz file to read
-
-    Returns
-    -------
-    coords : list
-        list of atom coordinates
-    """
-
-    coords = []
-    with open(path, 'r') as f:
-        num_atoms = int(f.readline())
-        next(f)
-
-        for line in f:
-            _, x, y, z = line.strip().split()
-            coords.append([float(x), float(y), float(z)])
-
-        assert num_atoms == len(coords), \
-            '<number of atoms> not equal to number of coordinates in xyz file'
-    return coords
 
 def circle_coords(molecule):
     """
@@ -104,8 +70,25 @@ def line_coords(molecule):
         array of atom coordinates with shape (len(molecule.nodes), 3)
     """
     nnodes = len(molecule.nodes)
-    coords = [[0.33*ndx, 0, 0] for ndx in range(nnodes)]
+    spacing = 0.33
+    coords = [[spacing * ndx, 0, 0] for ndx in range(nnodes)]
     return coords
+
+def _read_templates_from_lib(topology):
+        path = os.path.join(DATA_PATH, "parmbsc1/*.gro")
+        templates = {}
+        for file_ in glob.glob(path):
+            base = os.path.basename(file_)[:-4]
+            base_template = read_gro(file_)
+
+            templates[base] = {}
+            for node in base_template.nodes:
+                atomname = base_template.nodes[node]['atomname']
+                position = base_template.nodes[node]['position']
+                templates[base][atomname] = position
+
+        for molecule in topology.molecules:
+            molecule.templates = templates
 
 def gen_dna(args):
     LOGGER.info("reading topology",  type="step")
@@ -122,27 +105,13 @@ def gen_dna(args):
     if args.generate_templates:
         GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
     else:
-        path = DATA_PATH + "/parmbsc1/"
-        templates = {}
-        for file in glob.glob(path + '*.gro'):
-            base = os.path.basename(file)[:-4]
-            base_template = read_gro(file)
-
-            templates[base] = {}
-            for node in base_template.nodes:
-                atomname = base_template.nodes[node]['atomname']
-                position = base_template.nodes[node]['position']
-                templates[base][atomname] = position
-
-        for molecule in topology.molecules:
-            molecule.templates = templates
+        _read_templates_from_lib(topology)
 
     LOGGER.info("annotating DNA strands",  type="step")
     dna_annotator = AnnotateDNA(topology, args.includes_DNA)
     dna_annotator.run_system(topology)
 
     LOGGER.info("generating system coordinates",  type="step")
-
     for molecule in topology.molecules:
         if args.line:
             coords = line_coords(molecule)
