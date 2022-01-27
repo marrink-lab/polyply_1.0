@@ -11,14 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from random import sample
 from difflib import SequenceMatcher
 from itertools import permutations
 import numpy as np
 import networkx as nx
 from .processor import Processor
 
-base_library = {"DA": "DT", "DT": "DA", "DG": "DC", "DC": "DG",
+BASE_LIBRARY = {"DA": "DT", "DT": "DA", "DG": "DC", "DC": "DG",
                 "DA5": "DT5", "DT5": "DA5", "DG5": "DC5", "DC5": "DG5",
                 "DA3": "DT3", "DT3": "DA3", "DG3": "DC3", "DC3": "DG3"
                 }
@@ -63,7 +62,7 @@ class AnnotateDNA(Processor):
         bool:
             True if node is nucleobase, False otherwise
         """
-        return meta_molecule.nodes[node_ndx]['resname'] in base_library
+        return meta_molecule.nodes[node_ndx]['resname'] in BASE_LIBRARY
 
     def _find_dna_strands(self, meta_molecule):
         """
@@ -86,7 +85,7 @@ class AnnotateDNA(Processor):
         # all connected_components of meta_molecule
         strands = []
         for meta_mol in seperated_meta_mol:
-            queue = sample(meta_mol.nodes, 1)
+            queue = list(meta_mol.nodes.keys())[:1]
             visited = []
             strand = []
             while queue:
@@ -115,38 +114,37 @@ class AnnotateDNA(Processor):
     def _determine_sequence(self, strand):
         sequence = []
         if nx.cycle_basis(strand):
-            start_base = sample(strand.nodes, 1)
+            start_base = list(strand.nodes.keys())[:1]
         else:
             condition = lambda node: strand.degree(node) == 1
             start_base = next(filter(condition, strand.nodes), None)
-        for resid in nx.dfs_tree(strand, start_base):
-            sequence.append(strand.nodes[resid]['resname'])
+        for node_ndx in nx.dfs_tree(strand, start_base):
+            sequence.append(strand.nodes[node_ndx]['resname'])
         return sequence
+
+    def _match_ratio(self, ref_sequence, sequence):
+        match_ratio = 0
+        for ref_base, base in zip(ref_sequence, sequence):
+            if BASE_LIBRARY[ref_base] == base:
+                match_ratio += 1
+        return match_ratio / len(ref_sequence)
 
     def _find_complementary_strands(self, ref_strand, strands):
         # Sequence we want to find match for
-        ref_seq = self._determine_sequence(ref_strand)
+        ref_sequence = self._determine_sequence(ref_strand)
 
+        # Determine all match_ratios with all sequences and reversed sequences
         match_ratios = {}
-        for ndx, strand in enumerate(strands, start=1):
-            seq = self._determine_sequence(strand)
+        for ndx, strand in enumerate(strands):
+            sequence = self._determine_sequence(strand)
+            # Determine match_ration sequence
+            match_ratios[ndx, False] = self._match_ratio(ref_sequence, sequence)
+            # Determine match_ration reverse sequence
+            match_ratios[ndx, True] = self._match_ratio(ref_sequence, reversed(sequence))
+        match, reverse =  max(match_ratios, key=match_ratios.get)
+        match_strand = strands.pop(match)
 
-            match_ratio = 0
-            for ref_base, base in zip(ref_seq, seq):
-                if base_library[ref_base] == base:
-                    match_ratio += 1
-            match_ratios[ndx] = match_ratio/len(ref_seq)
-
-            match_ratio = 0
-            for ref_base, base in zip(ref_seq, reversed(seq)):
-                if base_library[ref_base] == base:
-                    match_ratio += 1
-            match_ratios[-ndx] = match_ratio/len(ref_seq)
-
-        match =  max(match_ratios, key=match_ratios.get)
-        match_strand = strands.pop(abs(match) - 1)
-
-        if match <= 0:
+        if reverse:
             mapping = dict(zip(match_strand, sorted(match_strand, reverse=True)))
             match_strand = nx.relabel_nodes(match_strand, mapping)
 
