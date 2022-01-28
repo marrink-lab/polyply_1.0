@@ -53,7 +53,7 @@ def circle_coords(molecule):
         coords[ndx] = [radius * np.sin(2 * np.pi / nnodes * ndx),
                        radius * np.cos(2 * np.pi / nnodes * ndx),
                        0.0]
-    return coords
+    return np.array(coords)
 
 def line_coords(molecule):
     """
@@ -71,8 +71,8 @@ def line_coords(molecule):
     """
     nnodes = len(molecule.nodes)
     spacing = 0.33
-    coords = [[spacing * ndx, 0, 0] for ndx in range(nnodes)]
-    return coords
+    coords = [[spacing * ndx, 0.0, 0.0] for ndx in range(nnodes)]
+    return np.array(coords)
 
 def _read_templates_from_lib(topology):
         path = os.path.join(DATA_PATH, "parmbsc1/*.gro")
@@ -96,7 +96,6 @@ def gen_dna(args):
 
     LOGGER.info("reading build file",  type="step")
     if args.build:
-        LOGGER.info("reading build file",  type="step")
         with open(args.build) as build_file:
             lines = build_file.readlines()
             read_build_file(lines, topology.molecules, topology)
