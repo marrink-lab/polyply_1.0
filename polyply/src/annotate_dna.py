@@ -96,8 +96,11 @@ class AnnotateDNA(Processor):
                 if self._is_nucleobase(current_node, meta_molecule):
                     strand.append(current_node)
                 elif strand:
+                    meta_mol[current_node]['restype'] = 'non-DNA'
                     strands.append(meta_mol.subgraph(strand))
                     strand = []
+                else:
+                    meta_mol[current_node]['restype'] = 'non-DNA'
 
                 # Determine neighbors nodes
                 neighbors = [node for node in meta_molecule.neighbors(current_node) if node not in queue + visited]
@@ -107,7 +110,7 @@ class AnnotateDNA(Processor):
                 heuristic = lambda node: self._is_nucleobase(node, meta_mol)
                 queue.sort(key=heuristic, reverse=True)
 
-            if strand not in strands:
+            if strand and strand not in strands:
                 strands.append(meta_molecule.subgraph(strand))
         return strands
 
@@ -164,18 +167,17 @@ class AnnotateDNA(Processor):
 
         while len(strands) > 1:
             ref_strand = strands.pop()
-
             match_strand = self._find_complementary_strands(ref_strand, strands)
 
             for findex, bindex in zip(ref_strand, sorted(match_strand)):
 
                 fbase = ref_strand.nodes[findex]
                 bbase = match_strand.nodes[bindex]
-
                 current_node = fbase
 
                 # Combine attribute of strands
                 current_node['resid'] = findex
+                current_node['restype'] = 'DNA'
                 current_node['build'] = fbase['build'] | bbase['build']
                 current_node['nnodes'] = fbase['nnodes'] + bbase['nnodes']
                 current_node['nedges'] = fbase['nedges'] + bbase['nedges']

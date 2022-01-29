@@ -163,9 +163,10 @@ class Backmap_DNA(Processor):
 
         # Place base templates on reference frames
         for ndx, node in enumerate(meta_molecule.nodes):
-            if meta_molecule.nodes[node]["build"]:
-                basepair = meta_molecule.nodes[node]["resname"]
-                cg_coord = meta_molecule.nodes[node]["position"]
+            residue = meta_molecule.nodes[node]
+            if residue["build"] and residue["build"] == "DNA":
+                basepair = residue["resname"]
+                cg_coord = residue["position"]
                 forward_base, backward_base = basepair.split(",")
                 # Correctly orientate base on forward and backward strands
                 forward_template = orient_template(meta_molecule.templates[forward_base],
@@ -178,7 +179,7 @@ class Backmap_DNA(Processor):
                                                     self.strand_separation)
 
                 # Place the molecule atoms according to the backmapping
-                high_res_atoms = meta_molecule.nodes[node]["graph"].nodes
+                high_res_atoms = residue["graph"].nodes
                 for atom_high in high_res_atoms:
                     atomname = meta_molecule.molecule.nodes[atom_high]["atomname"]
                     base = meta_molecule.molecule.nodes[atom_high]["resname"]
