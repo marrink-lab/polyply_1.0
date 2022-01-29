@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Parser for coordinate files, which allows for the backmapping of
+a system on a user provided configuration.
+"""
+
 import numpy as np
 
 def read_xyz(path):
