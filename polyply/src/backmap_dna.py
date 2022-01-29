@@ -1,4 +1,4 @@
-# Copyrig 2020 University of Groningen
+# Copyright 2020 University of Groningen
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,47 +14,19 @@
 import numpy as np
 import networkx as nx
 
-from polyply import jit
-from polyply.src.processor import Processor
-from polyply.src.linalg_functions import u_vect, center_of_geometry, \
-    rotate_from_vect, finite_difference_O5, finite_difference_O1
+from .processor import Processor
+from .gen_moving_frame import ConstructFrame
+from .linalg_functions import u_vect, center_of_geometry, rotate_from_vect
 
 """
-Processor implementing a template based back
-mapping to lower resolution coordinates for
-a DNA strand meta molecule.
+Processor implementing a template based backmapping of DNA strands
+meta_molecules to higher resolution (pseudo)atom coordinates.
 """
 
-def calc_tangents(curve):
+def gen_template_frame(template, base):
     """
-    Compute the tangent vectors for a discrete 3d curve.
-    If enough data points are available the tangents are calculatd
-    using a fifth order finite difference, else the function reverts to
-    a first order finite difference.
-
-    Parameters
-    ---------
-    curve: numpy.ndarray
-        A ndarray, of shape (N, 3), corresponding to the
-        coordinates of a discrete 3d curve
-
-    Returns
-    ---------
-    dX: numpy.ndarray
-        A ndarray, of shape (N-1, 3), corresponding
-        to the tangent vectors of X
-    """
-    if len(curve) > 4:
-        curve_tangents = finite_difference_O5(curve)
-    else:
-        curve_tangents = finite_difference_O1(curve)
-    return curve_tangents
-
-def _gen_base_frame(base, template):
-    """
-    Given a 'base' type and a lower resolution 'template',
-    construct the intrinsic reference needed for aligning
-    the base.
+    Given a high resolution 'template' and 'base' type,
+    construct the intrinsic base template frame.
 
     Parameters
     ---------
@@ -66,9 +38,8 @@ def _gen_base_frame(base, template):
     Returns
     ---------
     numpy.ndarray
-        the base reference frame
+        base template frame
     """
-
     anchor_library = {"DA": [("N1", "C4"), ("C2", "C6")],
                      "DG": [("N1", "C4"), ("C2", "C6")],
                      "DT": [("N3", "C6"), ("C2", "C4")],
@@ -89,77 +60,68 @@ def _gen_base_frame(base, template):
     frame = np.stack((normal, binormal, tangent), axis=1)
     return frame
 
-def orient_template(template, meta_frame, strand, base,
-                    strand_separation):
+def orient_template(template, target_frame, strand, base, strand_separation):
     """
-    Align the nucleobase reference template with the local reference frame
-    defined on the meta_molecule. The rotational alignment is performed by a
-    linear transformation that matches the predefined reference frame of the
-    base with the reference frame constructed on the meta_molecule. Later the
-    rotated base is translated onto the correct position in the strand.
+    Align the base template frame with the local reference frame defined
+    on the meta_molecule. The rotational alignment is performed by a
+    linear transformation. Later the rotated base is translated to the
+    correct position on the meta_molecule.
 
-    For every forcefield a predefined reference frame needs to be provided in
-    order to perform the template orientation. This frame should consist out of
+    For every forcefield, a predefined reference frame needs to be provided
+    in order to perform the template orientation. This frame consists out of
     three orthonormal vectors: 1) along the strand tangent, 2) along the
-    base-base vector and 3) normal to 1) and 2) and pointing into the minor grove.
+    base-base vector and 3) pointing into the minor grove.
 
     Parameters:
     -----------
     template: dict[collections.abc.Hashable, np.ndarray]
-        dict of positions referring to the lower resolution atoms of node
-    meta_frame: numpy.ndarray
-        local reference on the meta_molecule
+        dict of positions referring to the high resolution (pseudo)atoms
+    target_frame: numpy.ndarray
+        local reference frame on meta_molecule
     strand: str
-        specify if base is component of forward or backward strand
+        specify if base on forward or backward strand
     base: str
        base type
     strand_separation: float
         strand separation in angstroms, measured between the reference
-        origins of complementary nucleobases.
-
+        origins of complementary bases.
 
     Returns:
     --------
     dict
-        The oriented base template
+        oriented base template
     """
-
     # Calculate intrinsic frame of the base
-    template_frame = _gen_base_frame(base, template)
+    template_frame = gen_template_frame(template, base)
 
     # Determine rotation matrices
     inv_rot_template_frame = template_frame.T
-    rot_meta_frame = meta_frame
+    rot_target_frame = target_frame
 
-    # Determine optimal reference origin point of template
+    # Determine optimal reference point of template
     positions = np.array([template["N1"], template["N3"], template["C2"],
                           template["C4"], template["C5"], template["C5"]])
     ref_origin = center_of_geometry(positions)
 
-    # Write the template as array and center at origin
+    # Write the template as array and centre at origin
     template_arr = np.zeros((3, len(template)))
     key_to_ndx = {}
     for ndx, key in enumerate(template.keys()):
         template_arr[:, ndx] = template[key] - ref_origin
         key_to_ndx[key] = ndx
 
-    # Rotate base frame into meta_molecule frame
-    template_rotated_arr = rot_meta_frame @ (inv_rot_template_frame @ template_arr)
+    # Rotate template frame into meta_molecule frame
+    template_rotated_arr = rot_target_frame @ (inv_rot_template_frame @ template_arr)
 
-    # Final adjustments to rotated templates
-    if strand == "forward":
-        template_rotated_arr = rotate_from_vect(template_rotated_arr,
-                                                np.pi * meta_frame[:, 1])
+    # Move rotated template frames to position on helix
+    if strand == "backward":
         template_final_arr = (template_rotated_arr.T -
-                              meta_frame[:, 1] * strand_separation).T
+                              target_frame[:, 1] * strand_separation).T
     else:
-        # Orient base template
         template_rotated_arr = rotate_from_vect(template_rotated_arr,
-                                                np.pi * meta_frame[:, 0])
-        template_rotated_arr = rotate_from_vect(template_rotated_arr,
-                                                np.pi * meta_frame[:, 1])
+                                                np.pi * target_frame[:, 0])
         template_final_arr = (template_rotated_arr.T +
-                             meta_frame[:, 1] * strand_separation).T
+                             target_frame[:, 1] * strand_separation).T
 
     # Write the template back as dictionary
     template_result = {}
@@ -168,12 +130,11 @@ def orient_template(template, meta_frame, strand, base,
 
     return template_result
 
-
 class Backmap_DNA(Processor):
     """
-    This processor takes a a class:`polyply.src.MetaMolecule` and
-    places coordinates form a higher resolution createing positions
-    for the lower resolution molecule associated with the MetaMolecule.
+    This processor takes a class:`polyply.src.MetaMolecule` and
+    places coordinates from higher resolution templates on positions
+    from the lower resolution molecule associated with the MetaMolecule.
     """
 
     def __init__(self, fudge_coords=1, rotation_per_bp=0.59,
@@ -189,88 +150,30 @@ class Backmap_DNA(Processor):
         positions of the atoms associated with that residue stored in
         attr:`polyply.src.MetaMolecule.molecule` are created from a
         template residue located in attr:`polyply.src.MetaMolecule.templates`.
-        The orientation of the aforementioned templates is determined by
-        reference frames constructed along the DNA curve using the
-        double-reflection method by Wang et al. (DOI:10.1145/1330511.1330513)
+        The orientation of the aforementioned templates are determined by
+        a moving frame constructed along the DNA curve.
 
         Parameters
         ----------
         meta_molecule: :class:`polyply.src.MetaMolecule`
         """
+        # Generate moving frames on meta_molecule
+        construct_frame = ConstructFrame(rotation_per_bp=self.rotation_per_bp)
+        moving_frame = construct_frame.run(meta_molecule)
 
-        # Read meta_molecule coordinates
-        curve_coords = np.zeros((len(meta_molecule.nodes), 3))
-        for ndx, node in enumerate(meta_molecule.nodes):
-            curve_coords[ndx] = meta_molecule.nodes[node]['position']
-
-        # Calculate tangents
-        tangents = calc_tangents(curve_coords)
-        tangents = np.apply_along_axis(u_vect, axis=1, arr=tangents)
-
-        # Initialize the reference normal vector
-        normals = np.zeros_like(curve_coords)
-        normals[0] = (tangents[0, 1], -tangents[0, 0], 0.)
-
-        # Construct reference vectors along curve using double reflection
-        # Ref: Wang et al. (DOI:10.1145/1330511.1330513)
-        for i in range(len(tangents) - 1):
-            vec1 = curve_coords[i+1] - curve_coords[i]
-            norm1 = vec1 @ vec1
-            R_l = normals[i] - (2/norm1) * (vec1 @ normals[i]) * vec1
-            T_l = tangents[i] - (2/norm1) * (vec1 @ tangents[i]) * vec1
-            vec2 = tangents[i+1] - T_l
-            norm2 = vec2 @ vec2
-            normals[i+1] = R_l - (2/norm2) * (vec2 @ R_l) * vec2
-        normals = np.apply_along_axis(u_vect, axis=1, arr=normals)
-
-        # Calculate the rotated binormals
-        binormals = np.cross(tangents, normals)
-
-        # Rotate frame into a darboux frame
-        rotation_vectors = [vec * self.rotation_per_bp *
-                            i for i, vec in enumerate(tangents, start=1)]
-        for ndx, vector in enumerate(rotation_vectors):
-            normals[ndx] = rotate_from_vect(normals[ndx], vector)
-            binormals[ndx] = rotate_from_vect(binormals[ndx], vector)
-
-        # Comply with boundary conditions if DNA is closed.
-        # Uniformly distributing the corrective curviture,
-        # minimizes the total squared angular speed.
-        if nx.cycle_basis(meta_molecule):
-            vec1 = curve_coords[0] - curve_coords[-1]
-            norm1 = vec1 @ vec1
-            R_l = binormals[-1] - (2/norm1) * (vec1 @ binormals[-1]) * vec1
-            T_l = tangents[-1] - (2/norm1) * (vec1 @ tangents[-1]) * vec1
-            vec2 = tangents[0] - T_l
-            norm2 = vec2 @ vec2
-            R_calc = R_l - (2/norm2) * (vec2 @ R_l) * vec2
-            R_calc = u_vect(R_calc)
-            phi = np.arccos(R_calc @ binormals[0])
-
-            correction_per_base = phi / len(tangents)
-            for ndx in range(1, len(tangents)):
-                rotation_vector = correction_per_base * ndx * tangents[ndx]
-                binormals[ndx] = rotate_from_vect(binormals[ndx], rotation_vector)
-                binormals[ndx] = u_vect(binormals[ndx])
-                normals[ndx] = np.cross(tangents[ndx], binormals[ndx])
-
-        # Construct frame out of generated vectors
-        meta_frames = [np.stack((i, j, k), axis=1)
-                       for i, j, k in zip(normals, binormals, tangents)]
-
+        # Place base templates on reference frames
         for ndx, node in enumerate(meta_molecule.nodes):
             if meta_molecule.nodes[node]["build"]:
                 basepair = meta_molecule.nodes[node]["resname"]
                 cg_coord = meta_molecule.nodes[node]["position"]
                 forward_base, backward_base = basepair.split(",")
-
                 # Correctly orientate base on forward and backward strands
                 forward_template = orient_template(meta_molecule.templates[forward_base],
-                                                   meta_frames[ndx], "forward",
+                                                   moving_frame[ndx], "forward",
                                                    forward_base,
                                                    self.strand_separation)
                 backward_template = orient_template(meta_molecule.templates[backward_base],
-                                                    meta_frames[ndx], "backward",
+                                                    moving_frame[ndx], "backward",
                                                     backward_base,
                                                     self.strand_separation)
 
