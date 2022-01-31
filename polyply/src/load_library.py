@@ -39,9 +39,10 @@ def _resolve_lib_paths(lib_names, data_path):
     files = []
     for name in lib_names:
         directory = os.path.join(data_path, name)
-        for _file in os.listdir(directory):
-            _file = os.path.join(directory, _file)
-            files.append(_file)
+        for item in os.scandir(directory):
+            if item.is_file():
+                _file = os.path.join(directory, item)
+                files.append(_file)
     return files
 
 
