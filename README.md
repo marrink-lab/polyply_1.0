@@ -34,6 +34,9 @@ force-field, molecule parameters and this program.
 [Tutorial: GROMOS Polymers](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-GROMOS-polymer-melts)\
 [Tutorial: PEGylated lipid bilayers](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-PEGylated-lipid-bilayers)
 
+## News 
+- (Feb 8) **Featured Research Article in Nature Communcations.** Our article on the polyply software suite is now featured on the [Editors' Highlights](https://www.nature.com/collections/hhfigaahch) for Structural biology, biochemistry and biophysics in Nature Communications. The Editors’ Highlights pages aims to showcase the 50 best papers recently published in an area. The development team is beyond happy to receive this honor.   
+
 ## Contributions & Support
 We are happy to accept submissions of polymer parameters to the polyply library. To submit parameters simply 
 open an [issue][bug reports]. More details on submitting parameters can be found 
