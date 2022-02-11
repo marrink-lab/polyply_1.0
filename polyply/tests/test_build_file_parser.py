@@ -173,7 +173,7 @@ def test_distance_restraints_error(test_system, line):
     with pytest.raises(IOError):
         processor._distance_restraints(line)
 
-@staticmethod
+
 @pytest.mark.parametrize('lines, tagged_mols, tagged_nodes', (
    # basic test
    ("""
@@ -221,7 +221,7 @@ def test_parser(test_system, lines, tagged_mols, tagged_nodes):
                assert node in tagged_nodes
                assert idx in tagged_mols
 
-@staticmethod
+
 @pytest.mark.parametrize('lines, expected', (
    # basic test
    ("""
