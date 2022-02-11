@@ -1,0 +1,1 @@
+polyply gen_params -lib parmbsc1 -seqf ../ref.json -name DNA -o DNA.itp

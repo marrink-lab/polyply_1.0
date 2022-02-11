@@ -17,6 +17,7 @@ Test that build files are properly read.
 import textwrap
 import pytest
 import numpy as np
+import networkx as nx
 import vermouth.forcefield
 import vermouth.molecule
 import polyply
@@ -29,7 +30,7 @@ from polyply.src.topology import Topology
     "cylinder",
     {"resname": "PEO", "start": 63, "stop": 154, "parameters":["in", np.array([1.0, 2.0, 3.0]), 6.0, 7.0, "cylinder"]})
    # for recangle
-   ,(["PEO", "0", "10", "out", "11", "12", "14", "1", "2", "3"],
+   ,(["PEO", "0", "10", "out", "11", "12", "13", "1", "2", "3"],
     "rectangle",
     {"resname": "PEO", "start": 0, "stop": 10, "parameters":["out", np.array([11.0, 12.0, 13.0]), 1.0, 2.0, 3.0, "rectangle"]})
    # for sphere
@@ -48,28 +49,6 @@ def test_base_parser_geometry(tokens, _type, expected):
             assert all(result[key][1] == expected[key][1])
             for result_param, expected_param in zip(result[key][2:], expected[key][2:]):
                 assert result_param == expected_param
-
-@pytest.mark.parametrize('line, expected', (
-   # simple example
-   ("PEO 63 154 5.0 3.0 2.0 50.0",
-    {"resname": "PEO", "start": 63, "stop": 154, "parameters": [np.array([5.0, 3.0, 2.0]), 50.]})
-   # other example
-   ,("PEO 0 10 4.0 4.0 1.0 25.0",
-    {"resname": "PEO", "start": 0, "stop": 10, "parameters": [np.array([4.0, 4.0, 1.0]), 25.0]})
-   ))
-def test_base_parser_geometry(line, expected):
-    processor = polyply.src.build_file_parser.BuildDirector([])
-    processor.current_molidxs = [1]
-    processor.current_molname = "PEO"
-    processor._rw_restriction(line)
-    result =  processor.rw_options[("PEO", 1)]
-    assert result.keys() == expected.keys()
-    for key in processor.rw_options[("PEO", 1)]:
-        if key != "parameters":
-            assert result[key] == expected[key]
-        else:
-            assert all(result[key][0] == expected[key][0])
-            assert result[key][1] == expected[key][1]
 
 @pytest.fixture
 def test_molecule():
@@ -143,6 +122,57 @@ def test_system():
   top.mol_idx_by_name = {"AA":[0, 1], "BB": [2], "NA":[3, 4, 5, 6]}
   return top
 
+@pytest.mark.parametrize('line, expected', (
+   # simple example
+   ("ALA 0 4 5.0 3.0 2.0 50.0",
+    {"resname": "ALA", "start": 0, "stop": 4, "parameters": [np.array([5.0, 3.0, 2.0]), 50.]})
+   # other example
+   ,("GLU 5 6 4.0 4.0 1.0 25.0",
+    {"resname": "GLU", "start": 5, "stop": 6, "parameters": [np.array([4.0, 4.0, 1.0]), 25.0]})
+   ))
+def test_rw_restriction_parsing(test_system, line, expected):
+    processor = polyply.src.build_file_parser.BuildDirector([], test_system)
+    processor.current_molidxs = [1]
+    processor.current_molname = "AA"
+    processor._rw_restriction(line)
+    result =  processor.rw_options[("AA", 1)]
+    assert result.keys() == expected.keys()
+    for key in processor.rw_options[("AA", 1)]:
+        if key != "parameters":
+            assert result[key] == expected[key]
+        else:
+            assert all(result[key][0] == expected[key][0])
+            assert result[key][1] == expected[key][1]
+
+@pytest.mark.parametrize('line, key, expected', (
+   # simple example
+   ("1 8 3.0",
+    (1, 8),
+    (3.0, 0.0)),
+   ("1 8 3.0 1.0",
+    (1, 8),
+    (3.0, 1.0)),
+   ))
+def test_distance_restraints(test_system, line, key, expected):
+    processor = polyply.src.build_file_parser.BuildDirector([], test_system)
+    processor.current_molidxs = [0]
+    processor.current_molname = "AA"
+    processor._distance_restraints(line)
+    result = test_system.distance_restraints[("AA", 0)]
+    result[key] == expected
+
+
+@pytest.mark.parametrize('line', (
+   # basic test
+   ("1 50 3.0",
+    "50 1 3.0")))
+def test_distance_restraints_error(test_system, line):
+    processor = polyply.src.build_file_parser.BuildDirector([], test_system)
+    processor.current_molidxs = [0]
+    processor.current_molname = "AA"
+    with pytest.raises(IOError):
+        processor._distance_restraints(line)
+
 @staticmethod
 @pytest.mark.parametrize('lines, tagged_mols, tagged_nodes', (
    # basic test
@@ -181,11 +211,56 @@ def test_system():
 def test_parser(test_system, lines, tagged_mols, tagged_nodes):
    lines = textwrap.dedent(lines).splitlines()
    ff = vermouth.forcefield.ForceField(name='test_ff')
+   top = Topology(ff)
    polyply.src.build_file_parser.read_build_file(lines,
-                                                 test_system.molecules)
+                                                 test_system.molecules,
+                                                 top)
    for idx, mol in enumerate(test_system.molecules):
        for node in mol.nodes:
            if "restraints" in mol.nodes[node]:
                assert node in tagged_nodes
                assert idx in tagged_mols
 
+@staticmethod
+@pytest.mark.parametrize('lines, expected', (
+   # basic test
+   ("""
+   [ molecule ]
+   ; name from to
+   AA    0  2
+   ;
+   [ persistence_length ]
+   ; model  lp start stop
+     WCM   4.0  0    8
+   """,
+   [["WCM", 4.0, 0, 8, np.array([0, 1])]]),
+   # test two batches are recognized
+   ("""
+   [ molecule ]
+   ; name from to
+   AA    0  2
+   ;
+   [ persistence_length ]
+   ; model  lp start stop
+   WCM   4.0  0    8
+   [ molecule ]
+   ; name from to
+   BB 2  4
+   [ persistence_length ]
+   WCM   2.0   0  8
+   """,
+   [["WCM", 4.0, 0, 8, np.array([0, 1])],
+    ["WCM", 2.0, 0, 8, np.array([2, 3])]]
+   )))
+def test_persistence_parsers(test_system, lines, expected):
+   lines = textwrap.dedent(lines).splitlines()
+   ff = vermouth.forcefield.ForceField(name='test_ff')
+   top = Topology(ff)
+   polyply.src.build_file_parser.read_build_file(lines,
+                                                 test_system.molecules,
+                                                 top)
+   for ref, new in zip(expected, top.persistences):
+        print(ref, new)
+        for info_ref, info_new in zip(ref[:-1], new[:-1]):
+            assert info_ref == info_new
+        assert all(ref[-1] == new[-1])

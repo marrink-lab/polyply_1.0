@@ -1,3 +1,7 @@
+[ citations ]
+Martini3
+polyply
+
 [ moleculetype ]
 PMMA 1
 ;
@@ -13,12 +17,12 @@ PMMA 1
 [ link ]
 resname "PMMA"
 [ bonds ]
-VNL     +VNL    1     0.315 4000  {"group": "vinly backbone"}
+VNL     +VNL    1     0.315 4000  {"group": "vinyl backbone"}
 
 [ link ]
 resname "PMMA"
 [ angles ]
-VNL  +VNL  ++VNL   2  115  35  {"group": "vinly backbone"}
+VNL  +VNL  ++VNL   2  115  35  {"group": "vinyl backbone"}
 
 [ link ]
 resname "PMMA"

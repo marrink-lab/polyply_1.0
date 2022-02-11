@@ -37,11 +37,12 @@ class TOPDirector(SectionLineParser):
                  'pairtypes': [0, 1],
                  'exclusions': [slice(None, None)],
                  'virtual_sitesn': [0, slice(2, None)],
+                 'virtual_sites1': [0],
                  'virtual_sites2': [0, 1, 2, 3],
                  'virtual_sites3': [0, 1, 2, 3],
-                 'pairs_nb': [0, 1],
-                 'SETTLE': [0],
                  'virtual_sites4': [slice(0, 5)],
+                 'pairs_nb': [0, 1],
+                 'settles': [0],
                  'distance_restraints':  [0, 1],
                  'dihedral_restraints':  [slice(0, 4)],
                  'orientation_restraints': [0, 1],
@@ -243,7 +244,7 @@ class TOPDirector(SectionLineParser):
         for mol_name, n_mol in self.molecules:
             block = self.force_field.blocks[mol_name]
             graph = MetaMolecule._block_graph_to_res_graph(block)
-            for idx in tqdm(range(0, int(n_mol))):
+            for idx in range(0, int(n_mol)):
                 graph_copy = graph.copy(as_view=False)
                 new_mol = MetaMolecule(graph_copy,
                                        force_field=self.force_field,
@@ -254,7 +255,6 @@ class TOPDirector(SectionLineParser):
                 self.topology.add_molecule(new_mol)
                 self.topology.mol_idx_by_name[mol_name].append(total_count)
                 total_count += 1
-
         super().finalize()
 
     def _new_itp(self):
@@ -332,7 +332,7 @@ class TOPDirector(SectionLineParser):
             raise OSError(msg.format(line))
 
         self.topology.atom_types[atom_name] = atom_type_line
-        
+
     @SectionLineParser.section_parser('nonbond_params')
     def _nonbond_params(self, line, lineno=0):
         """
@@ -373,13 +373,14 @@ class TOPDirector(SectionLineParser):
     @SectionLineParser.section_parser('moleculetype', 'constraints')
     @SectionLineParser.section_parser('moleculetype', 'pairs')
     @SectionLineParser.section_parser('moleculetype', 'exclusions')
+    @SectionLineParser.section_parser('moleculetype', 'virtual_sites1')
     @SectionLineParser.section_parser('moleculetype', 'virtual_sites2')
     @SectionLineParser.section_parser('moleculetype', 'virtual_sites3')
     @SectionLineParser.section_parser('moleculetype', 'virtual_sites4')
     @SectionLineParser.section_parser('moleculetype', 'virtual_sitesn')
     @SectionLineParser.section_parser('moleculetype', 'position_restraints')
     @SectionLineParser.section_parser('moleculetype', 'pairs_nb')
-    @SectionLineParser.section_parser('moleculetype', 'SETTLE')
+    @SectionLineParser.section_parser('moleculetype', 'settles')
     @SectionLineParser.section_parser('moleculetype', 'distance_restraints')
     @SectionLineParser.section_parser('moleculetype', 'orientation_restraints')
     @SectionLineParser.section_parser('moleculetype', 'dihedral_restraints')
@@ -431,6 +432,16 @@ class TOPDirector(SectionLineParser):
         else:
            cwdir = os.path.dirname(path)
            filename = path
+
+        if not os.path.exists(filename):
+            msg = ("Cannot find file {}. This can happen when you "
+                  "try to include force-field files from the GMX "
+                  "library (e.g. #incldue \"gromos\"). Instead provide "
+                  "the full path. Another source for this error can be "
+                  "that you have a #ifdef section with an #include but "
+                  "your include file does not exist. In that case if you "
+                  "don't have the file remove the #include statement.")
+            raise IOError(msg.format(filename))
 
         with open(filename, 'r') as _file:
             lines = _file.readlines()

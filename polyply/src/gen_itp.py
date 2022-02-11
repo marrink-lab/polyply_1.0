@@ -16,16 +16,19 @@
 High level API for the polyply itp generator
 """
 import sys
-from pathlib import Path
 import networkx as nx
 import vermouth
 import vermouth.forcefield
 from vermouth.log_helpers import StyleAdapter, get_logger
-from vermouth.file_writer import open, DeferredFileWriter
+# patch to get rid of martinize dependency
+try:
+    from vermouth.file_writer import deferred_open
+except ImportError:
+    from vermouth.file_writer import open
+    deferred_open = open
+from vermouth.file_writer import DeferredFileWriter
 from vermouth.citation_parser import citation_formatter
-import polyply
-import polyply.src.polyply_parser
-from polyply import (DATA_PATH, MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
+from polyply import (MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
 from .load_library import load_library
 
 LOGGER = StyleAdapter(get_logger(__name__))
@@ -59,23 +62,23 @@ def gen_params(args):
 
     # Generate the MetaMolecule
     if args.seq:
-       LOGGER.info("reading sequence from command",  type="step")
-       monomers = split_seq_string(args.seq)
-       meta_molecule = MetaMolecule.from_monomer_seq_linear(monomers=monomers,
-                                                            force_field=force_field,
-                                                            mol_name=args.name)
+        LOGGER.info("reading sequence from command",  type="step")
+        monomers = split_seq_string(args.seq)
+        meta_molecule = MetaMolecule.from_monomer_seq_linear(monomers=monomers,
+                                                             force_field=force_field,
+                                                             mol_name=args.name)
     #ToDo
     # fix too broad except
     elif args.seq_file:
-       LOGGER.info("reading sequence from file",  type="step")
-       extension = args.seq_file.suffix.casefold()[1:]
-       try:
-           parser = getattr(MetaMolecule, 'from_{}'.format(extension))
-           meta_molecule = parser(json_file=args.seq_file,
+        LOGGER.info("reading sequence from file",  type="step")
+        extension = args.seq_file.suffix.casefold()[1:]
+        try:
+            parser = getattr(MetaMolecule, 'from_{}'.format(extension))
+            meta_molecule = parser(json_file=args.seq_file,
                                   force_field=force_field,
                                   mol_name=args.name)
-       except AttributeError:
-         raise IOError("Cannot parse file with extension {}.".format(extension))
+        except AttributeError:
+            raise IOError("Cannot parse file with extension {}.".format(extension))
 
     # Do transformationa and apply link
     LOGGER.info("mapping sequence to molecule",  type="step")
@@ -89,7 +92,7 @@ def gen_params(args):
         msg = "You molecule consists of {:d} disjoint parts. Perhaps links were not applied correctly."
         LOGGER.warning(msg, (n_components))
 
-    with open(args.outpath, 'w') as outpath:
+    with deferred_open(args.outpath, 'w') as outpath:
         header = [ ' '.join(sys.argv) + "\n" ]
         header.append("Please cite the following papers:")
         for citation in meta_molecule.molecule.citations:
