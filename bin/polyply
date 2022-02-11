@@ -19,43 +19,17 @@ Perform the parsing and input redirect for the
 different subcommands. This is the main executable.
 """
 import os
-import logging
 import argparse
 from pathlib import Path
 import numpy as np
-from vermouth.log_helpers import (StyleAdapter, BipolarFormatter,
-                                  CountingHandler, TypeAdapter,
-                                  ignore_warnings_and_count,)
 import polyply
 from polyply import (gen_itp, gen_coords, gen_seq, DATA_PATH)
 from polyply.src.load_library import load_library
+from polyply.src.logging import LOGGER, LOGLEVELS
 
-# Implement Logger
-LOGGER = TypeAdapter(logging.getLogger('polyply'))
-PRETTY_FORMATTER = logging.Formatter(fmt='{levelname:} - {type} - {message}',
-                                     style='{')
-DETAILED_FORMATTER = logging.Formatter(fmt='{levelname:} - {type} - {name} - {message}',
-                                       style='{')
-COUNTER = CountingHandler()
+VERSION = 'polyply version {}'.format(polyply.__version__) # pylint: disable=consider-using-f-string
 
-# Control above what level message we want to count
-COUNTER.setLevel(logging.WARNING)
-
-CONSOLE_HANDLER = logging.StreamHandler()
-FORMATTER = BipolarFormatter(DETAILED_FORMATTER,
-                             PRETTY_FORMATTER,
-                             logging.DEBUG,
-                             logger=LOGGER)
-
-CONSOLE_HANDLER.setFormatter(FORMATTER)
-LOGGER.addHandler(CONSOLE_HANDLER)
-LOGGER.addHandler(COUNTER)
-
-LOGGER = StyleAdapter(LOGGER)
-
-VERSION = 'polyply version {}'.format(polyply.__version__)
-
-def main():
+def main(): # pylint: disable=too-many-locals,too-many-statements
     """
     Parses commandline arguments and call relevant sub_programs.
     """
@@ -130,6 +104,12 @@ def main():
     topology_group.add_argument('-ign', dest='ignore', type=str,
                                 help='molecules to ignore when building structure',
                                 default=[], nargs='+')
+    topology_group.add_argument('-cycles', dest='cycles', type=str,
+                                help='molecule names of cyclic molecules',
+                                default=[], nargs='+')
+    topology_group.add_argument('-cycle_tol', dest='cycle_tol', type=float,
+                                help='tolerance in nm for cycles to be closed (def. 0)',
+                                default=0.0)
     topology_group.add_argument('-split', dest='split', nargs='+', type=str, default=[],
                                 help=('split single residue into more residues. The syntax is '
                                       '<resname>:<new_resname>-<atom1>,<atom2><etc>:<new_resname> '
@@ -139,7 +119,7 @@ def main():
                                 default=[],
                                 help=('Specify ligands of molecules which should be placed close '
                                       'to a specific molecule. The format is as follows: '
-                                      '<mol_name>#<mol_idx>-<resname>#<resid>:<mol_name>#<mol_idx>-<resname>#<resid>. '
+                                      '<mol_name>#<mol_idx>-<resname>#<resid>:<mol_name>#<mol_idx>-<resname>#<resid>. '# pylint: disable=line-too-long
                                       'Elements of the specification can be omitted as required. '
                                       'Note mol_name and resname cannot contain the characters '
                                       '# and -.'))
@@ -221,11 +201,11 @@ def main():
                                 "using the connects flag.")
     seq_group.add_argument('-connects', dest='connects', nargs='+', type=str,
                            help="Provide connect records for sequence. "
-                                "The format is <seq-index,seq-index-res_id,res_id>. "
+                                "The format is <seq-index:seq-index:res_id-res_id>. "
                                 "For example if we want to connect the first and third "
                                 "block in a sequence, using a connection between the second "
                                 "and third residue in these blocks respectively the input "
-                                "would be <1,3-2,3>.", default=[])
+                                "would be <1:3:2-3>.", default=[])
     seq_group.add_argument('-modf_ter', dest='modifications', nargs='+', type=str,
                            help="change the resname of terminii of a specific block "
                                 "in the sequence. The format is <SeqID:new_resname>.",
@@ -252,7 +232,7 @@ def main():
         libs = [lib for lib in libs if not lib.startswith("__")]
         print('The following libraries are known:')
         for idx, ff_name in enumerate(libs):
-            print('{:3d}. {}'.format(idx, ff_name))
+            print('{:3d}. {}'.format(idx, ff_name)) # pylint: disable=consider-using-f-string
         parser.exit()
 
     if args.list_blocks:
@@ -267,8 +247,7 @@ def main():
 #        print(', '.join(known_force_fields[args.list_links]))
 #        parser.exit()
 
-    loglevels = {0: logging.INFO, 1: logging.DEBUG, 2: 5}
-    LOGGER.setLevel(loglevels[args.verbosity])
+    LOGGER.setLevel(LOGLEVELS[args.verbosity])
 
     args.func(args)
 

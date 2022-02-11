@@ -74,6 +74,18 @@ def _correspondence_to_residue(meta_molecule,
 
     return residue
 
+MultiblockError = ("Block {} seems to represent more than a single residue,\n"
+                   "but within the residue graph only a single corresponding node\n"
+                   "was found. If you have blocks representing multiresidues\n"
+                   "provide the full residue graph and label all nodes that\n"
+                   "corresponding to multiresidues with the \"from_itp\" label.")
+
+def _assert_blocks_in_FF(block_names, force_field):
+    for name in block_names:
+        if name not in force_field.blocks:
+            raise IOError("Couldn't find block with residue name {name}\n"
+                          "in the library or input file definitions.".format(name=name))
+
 class MapToMolecule(Processor):
     """
     This processor takes a :class:`MetaMolecule` and generates a
@@ -86,7 +98,6 @@ class MapToMolecule(Processor):
         self.node_to_fragment = {}
         self.fragments = []
         self.multiblock_correspondence = []
-        self.added_fragments = []
         self.added_fragment_nodes = []
         self.force_field = force_field
 
@@ -94,9 +105,9 @@ class MapToMolecule(Processor):
         """
         This function matches the nodes in the meta_molecule
         to the blocks in the force-field. It does the essential
-        bookkeeping for three cases and populates the node_to_block,
+        bookkeeping for two cases and populates the node_to_block,
         and node_to_fragment dicts as well as the fragments attribute.
-        It distinguishes three cases:
+        It distinguishes two cases:
 
         1) the node corresponds to a single residue block; here
            node_to_block entry is simply the resname of the block
@@ -107,10 +118,8 @@ class MapToMolecule(Processor):
            the nodes in those fragments all have the entry node_to_block
            set to the block. In addition it is recorded to which fragment
            specifically the node belongs in the node_to_fragment dict.
-        3) the node corresponds to a multiresidue block; but unlike in
-           case to it represents multiple residues. ....
 
-         Parameters
+        Parameters
         ----------
         meta_molecule: polyply.src.meta_molecule.MetaMolecule
             The meta molecule to process.
@@ -147,7 +156,6 @@ class MapToMolecule(Processor):
             block_name = restart_attr[list(fragment)[0]]
             if all([restart_attr[node] == block_name  for node in fragment]):
                 self.fragments.append(fragment)
-                block = self.force_field.blocks[block_name]
                 for node in fragment:
                     self.node_to_block[node] = block_name
                     self.node_to_fragment[node] = len(self.fragments) - 1
@@ -199,6 +207,12 @@ class MapToMolecule(Processor):
             # add residue to meta_molecule node
             meta_molecule.nodes[start_node]["graph"] = residue
         else:
+            # if the block represents more than one residue all residues
+            # have to be already in the meta_molecule and they have to be
+            # labelled as from_itp. If not we raise an error
+            if len(set(nx.get_node_attributes(new_mol, "resid").values())) > 1:
+                raise IOError(MultiblockError.format(meta_molecule.nodes[start_node]["resname"]))
+
             # we store the block together with the residue node
             meta_molecule.nodes[start_node]["graph"] = new_mol.copy()
 
@@ -212,6 +226,14 @@ class MapToMolecule(Processor):
             # in this case we have to add the node from the block definitions
             else:
                 block = self.force_field.blocks[self.node_to_block[node]]
+                # if the block represents more than one residue all residues
+                # have to be already in the meta_molecule and they have to be
+                # labelled as from_itp. If not we raise an error
+                if "from_itp" not in meta_molecule.nodes[node] and \
+                len(set(nx.get_node_attributes(block, "resid").values())) > 1:
+
+                    raise IOError(MultiblockError.format(self.node_to_block[node]))
+
                 correspondence = new_mol.merge_molecule(block)
 
             # make the residue from the correspondence
@@ -225,7 +247,7 @@ class MapToMolecule(Processor):
             # in this case we just added a new multiblock residue so we store
             # the correspondence as well as keep track of the nodes that are
             # part of that fragment
-            if "from_itp" in meta_molecule.nodes[node] and node not in self.added_fragments:
+            if "from_itp" in meta_molecule.nodes[node] and node not in self.added_fragment_nodes:
                 fragment_nodes = list(self.fragments[self.node_to_fragment[node]])
                 self.added_fragment_nodes += fragment_nodes
                 self.multiblock_correspondence.append(correspondence)
@@ -253,12 +275,15 @@ class MapToMolecule(Processor):
             The meta molecule with attribute molecule that is the
             fine grained molecule.
         """
-        # in a first step we match the residue names to blocks
+        # first we match the residue names to blocks
         # in the force-field. Residue names can also be part
         # of a larger fragment stored as a block or refer to
         # a block which consists of multiple residues. This
         # gets entangled here
         self.match_nodes_to_blocks(meta_molecule)
+        # raise an error if a block is not known to the library
+        _assert_blocks_in_FF(self.node_to_block.values(),
+                             self.force_field)
         # next we check if all exclusions are the same and if
         # not we adjust it such that the lowest exclusion number
         # is used. ApplyLinks then generates those appropiately
