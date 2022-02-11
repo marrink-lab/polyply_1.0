@@ -255,7 +255,7 @@ def test_persistence(topology, specs, seed, avg_step, expected):
                     restr = mol.nodes[node]["distance_restraints"]
                     ref_restr = mol_copy.nodes[node]["distance_restraints"]
                     for new, ref in zip(restr, ref_restr):
-                        assert pytest.approx(new, ref)
+                        assert new == pytest.approx(ref, rel=1e-3)
             mol_count += 1
         batch_count += 1
 
