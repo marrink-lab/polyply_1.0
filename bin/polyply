@@ -260,10 +260,6 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
     backmap_group = parser_gen_dna.add_argument_group('Options for backmapping')
     system_group.add_argument('-gen-templates', dest='generate_templates', action='store_true',
                               help='auto generate new nucleobase templates', default=None)
-    backmap_group.add_argument('-includes_DNA', dest='includes_DNA', type=lambda s: s.split(':'),
-                               default=[], help=('Specify the molecules that contain DNA strands '
-                                             'which should be backmapped. The input format '
-                                             'is list of molecule indices : [<mol_idx>]'))
     backmap_group.add_argument('-back_fudge', dest='bfudge', type=float, default=1,
                                help='factor by which to scale the coordinates when backmapping.')
     parser_gen_dna.set_defaults(func=gen_dna)

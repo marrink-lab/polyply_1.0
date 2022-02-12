@@ -75,7 +75,7 @@ def line_coords(molecule):
     return np.array(coords)
 
 def _read_templates_from_lib(topology):
-        path = os.path.join(DATA_PATH, "parmbsc1/*.gro")
+        path = os.path.join(DATA_PATH, "parmbsc1/nucleobase_templates/*.gro")
         templates = {}
         for file_ in glob.glob(path):
             base = os.path.basename(file_)[:-4]
@@ -107,7 +107,7 @@ def gen_dna(args):
         _read_templates_from_lib(topology)
 
     LOGGER.info("annotating DNA strands",  type="step")
-    dna_annotator = AnnotateDNA(topology, args.includes_DNA)
+    dna_annotator = AnnotateDNA()
     dna_annotator.run_system(topology)
 
     LOGGER.info("generating system coordinates",  type="step")
