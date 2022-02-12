@@ -18,33 +18,21 @@ import networkx as nx
 from .processor import Processor
 
 BASE_LIBRARY = {"DA": "DT", "DT": "DA", "DG": "DC", "DC": "DG",
-                "DA5": "DT5", "DT5": "DA5", "DG5": "DC5", "DC5": "DG5",
-                "DA3": "DT3", "DT3": "DA3", "DG3": "DC3", "DC3": "DG3"
+                "DA5": "DT3", "DT5": "DA3", "DG5": "DC3", "DC5": "DG3",
+                "DA3": "DT5", "DT3": "DA5", "DG3": "DC5", "DC3": "DG5"
                 }
 
 class AnnotateDNA(Processor):
     """
-    Given a topology and list indexes that indicate the molecules that
-    contain DNA, the processor generates the appropriate meta_molecule
-    structure. The DNA strands are identified using a greedy search method
-    on the meta_molecule network and later combined with their complementary
-    strand. The generated meta_molecule is later used for both building the
-    DNA structure and backmapping to the desired forcefield.
+    Given a topology, the processor generates the appropriate meta_molecule
+    structure for DNA strands. The DNA strands are identified using a greedy
+    search method on the meta_molecule network and later combined with their
+    complementary strand. The generated meta_molecule is later used for both
+    building the DNA structure and backmapping to the desired forcefield.
     """
 
-    def __init__(self, topology, includes_DNA):
-        """
-        Initalize the processor with a :class:`topology`
-        and a list of DNA molecules in this topology.
-
-        Parameters
-        ------------
-        topology: :class: `polyply.src.topology.Topology`
-        includes_DNA: list[int]
-            node keys list of the meta_molecules tagged as indluding DNA
-        """
-        self.topology = topology
-        self.includes_DNA = [float(ndx) for ndx in includes_DNA]
+    def __init__(self):
+        pass
 
     def _is_nucleobase(self, node_ndx, meta_molecule):
         """
@@ -66,7 +54,8 @@ class AnnotateDNA(Processor):
 
     def _find_dna_strands(self, meta_molecule):
         """
-        Extract the subgraphs of meta_molecule that are DNA strands
+        Extract the subgraphs of meta_molecule that are DNA strands using
+        greedy search.
 
         Parameters
         ------------
@@ -96,16 +85,17 @@ class AnnotateDNA(Processor):
                 if self._is_nucleobase(current_node, meta_molecule):
                     strand.append(current_node)
                 elif strand:
-                    meta_mol[current_node]['restype'] = 'non-DNA'
+                    meta_mol.nodes[current_node]['restype'] = 'non-DNA'
                     strands.append(meta_mol.subgraph(strand))
                     strand = []
                 else:
-                    meta_mol[current_node]['restype'] = 'non-DNA'
+                    meta_mol.nodes[current_node]['restype'] = 'non-DNA'
 
-                # Determine neighbors nodes
-                neighbors = [node for node in meta_molecule.neighbors(current_node) if node not in queue + visited]
+                # Determine neighbor nodes
+                NBRs= meta_molecule.neighbors(current_node)
+                new_NBRs = [node for node in NBRs if node not in queue + visited]
                 # update queue
-                queue = neighbors + queue
+                queue = new_NBRs + queue
                 # Sort queue according to heuristic
                 heuristic = lambda node: self._is_nucleobase(node, meta_mol)
                 queue.sort(key=heuristic, reverse=True)
@@ -117,11 +107,11 @@ class AnnotateDNA(Processor):
     def _determine_sequence(self, strand):
         sequence = []
         if nx.cycle_basis(strand):
-            start_base = list(strand.nodes.keys())[:1]
+            start_base = list(strand.nodes.keys())[0]
         else:
             condition = lambda node: strand.degree(node) == 1
             start_base = next(filter(condition, strand.nodes), None)
-        for node_ndx in nx.dfs_tree(strand, start_base):
+        for node_ndx in nx.dfs_tree(strand, source=start_base):
             sequence.append(strand.nodes[node_ndx]['resname'])
         return sequence
 
@@ -140,9 +130,9 @@ class AnnotateDNA(Processor):
         match_ratios = {}
         for ndx, strand in enumerate(strands):
             sequence = self._determine_sequence(strand)
-            # Determine match_ration sequence
+            # Determine match_ratio sequence
             match_ratios[ndx, False] = self._match_ratio(ref_sequence, sequence)
-            # Determine match_ration reverse sequence
+            # Determine match_ratio reversed sequence
             match_ratios[ndx, True] = self._match_ratio(ref_sequence, reversed(sequence))
         match, reverse =  max(match_ratios, key=match_ratios.get)
         match_strand = strands.pop(match)
@@ -175,6 +165,10 @@ class AnnotateDNA(Processor):
                 bbase = match_strand.nodes[bindex]
                 current_node = fbase
 
+                # Add strand indication to high_res_atom graph
+                nx.set_node_attributes(fbase['graph'], "forward", "strand")
+                nx.set_node_attributes(bbase['graph'], "backward", "strand")
+
                 # Combine attribute of strands
                 current_node['resid'] = findex
                 current_node['restype'] = 'DNA'
@@ -185,9 +179,9 @@ class AnnotateDNA(Processor):
                 current_node['density'] = (fbase['density'] + bbase['density']) / 2
                 current_node['resname'] = f"{fbase['resname']},{bbase['resname']}"
 
-            meta_molecule.remove_nodes_from(match_strand)
+            meta_molecule.remove_nodes_from(list(match_strand))
 
-    def run_molecule(self, meta_molecule, mol_idx):
+    def run_molecule(self, meta_molecule):
         """
         Perform the meta_molecule generation for a single molecule.
         """
@@ -204,7 +198,6 @@ class AnnotateDNA(Processor):
             The system to process. Is modified in-place.
         """
         mols = []
-        for mol_idx, molecule in enumerate(system.molecules):
-            if mol_idx in self.includes_DNA:
-                mols.append(self.run_molecule(molecule, mol_idx))
+        for molecule in system.molecules:
+            mols.append(self.run_molecule(molecule))
         system.molecules = mols

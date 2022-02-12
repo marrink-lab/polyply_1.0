@@ -164,11 +164,12 @@ class Backmap_DNA(Processor):
         # Place base templates on reference frames
         for ndx, node in enumerate(meta_molecule.nodes):
             residue = meta_molecule.nodes[node]
-            if residue["build"] and residue["build"] == "DNA":
+            if residue["build"] and residue["restype"] == "DNA":
                 basepair = residue["resname"]
                 cg_coord = residue["position"]
                 forward_base, backward_base = basepair.split(",")
-                # Correctly orientate base on forward and backward strands
+
+                # Correctly orientate base strand
                 forward_template = orient_template(meta_molecule.templates[forward_base],
                                                    moving_frame[ndx], "forward",
                                                    forward_base,
@@ -180,15 +181,15 @@ class Backmap_DNA(Processor):
 
                 # Place the molecule atoms according to the backmapping
                 high_res_atoms = residue["graph"].nodes
-                for atom_high in high_res_atoms:
-                    atomname = meta_molecule.molecule.nodes[atom_high]["atomname"]
-                    base = meta_molecule.molecule.nodes[atom_high]["resname"]
-                    if base == forward_base:
+                for atom_ndx in high_res_atoms:
+                    atomname = residue["graph"].nodes[atom_ndx]["atomname"]
+                    strand = residue["graph"].nodes[atom_ndx]["strand"]
+                    if strand == "forward":
                         vector = forward_template[atomname]
                     else:
                         vector = backward_template[atomname]
                     new_coords = cg_coord + vector * self.fudge_coords
-                    meta_molecule.molecule.nodes[atom_high]["position"] = new_coords
+                    meta_molecule.molecule.nodes[atom_ndx]["position"] = new_coords
 
     def run_molecule(self, meta_molecule):
         """
