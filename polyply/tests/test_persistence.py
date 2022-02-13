@@ -134,28 +134,56 @@ def topology():
     [ moleculetype ]
     testC 1
     [ atoms ]
-    1    N0   1   ASP    BB   1 0.00     45
+    1    N0   1   GLY    BB   1 0.00     45
     2    N0   2   GLY    SC1  1 0.00     45
-    3    N0   3   ASP    SC2  1 0.00     45
-    4    N0   4   ASP    BB   2 0.00     45
-    5    N0   5   GLY    SC1  2 0.00     45
-    6    N0   6   ASP    SC2  2 0.00     45
-    7    N0   7   ASP    SC2  2 0.00     45
+    3    N0   3   GLY    SC2  1 0.00     45
+    4    N0   4   GLU    BB   2 0.00     45
+    5    N0   5   GLU    SC1  2 0.00     45
+    6    N0   6   GLU    SC2  2 0.00     45
+    7    N0   7   GLU    SC2  2 0.00     45
     8    N0   8   GLU    SC2  2 0.00     45
     9    N0   9   GLU    SC2  2 0.00     45
-   10    N0  10   GLY    SC2  2 0.00     45
-   11    N0  11   ASP    SC2  2 0.00     45
+   10    N0  10   GLU    SC2  2 0.00     45
+   11    N0  11   GLU    SC2  2 0.00     45
+   12    N0  12   GLU    SC2  2 0.00     45
+   13    N0  13   GLU    SC2  2 0.00     45
+   14    N0  14   GLU    SC2  2 0.00     45
+   15    N0  15   GLU    SC2  2 0.00     45
+   16    N0  16   GLU    SC2  2 0.00     45
+   17    N0  17   GLU    SC2  2 0.00     45
+   18    N0  18   GLU    SC2  2 0.00     45
+   19    N0  19   GLU    SC2  2 0.00     45
+   20    N0  20   GLU    SC2  2 0.00     45
+   21    N0  21   GLU    SC2  2 0.00     45
+   22    N0  22   GLU    SC2  2 0.00     45
+   23    N0  22   GLU    SC2  2 0.00     45
+   24    N0  22   GLU    SC2  2 0.00     45
+   25    N0  22   GLU    SC2  2 0.00     45
     [ bonds ]
     1     2    1  0.47 2000
     2     3    1  0.47 2000
     3     4    1  0.47 2000
     4     5    1  0.47 2000
-    2     6    1  0.47 2000
+    5     6    1  0.47 2000
     6     7    1  0.47 2000
-    3     8    1  0.47 2000
+    7     8    1  0.47 2000
     8     9    1  0.47 2000
-    4    10    1  0.47 2000
+    9    10    1  0.47 2000
    10    11    1  0.47 2000
+   11    12    1  0.47 2000
+   12    13    1  0.47 2000
+   13    14    1  0.47 2000
+   14    15    1  0.47 2000
+   15    16    1  0.47 2000
+   16    17    1  0.47 2000
+   17    18    1  0.47 2000
+   18    19    1  0.47 2000
+   19    20    1  0.47 2000
+   20    21    1  0.47 2000
+   21    22    1  0.47 2000
+    3    23    1  0.47 2000
+    23   24    1  0.47 2000
+    3    25    1  0.47 2000
    [ system ]
     test system
     [ molecules ]
@@ -184,7 +212,7 @@ def topology():
    ),
    # single restrain branched
    (
-    [PersistenceSpecs(model="WCM", lp=1.5, start=0, stop=5, mol_idxs=list(range(20, 24)))],
+    [PersistenceSpecs(model="WCM", lp=1.5, start=0, stop=21, mol_idxs=list(range(20, 24)))],
     63594,
     [0.6533],
     [5.88, 4.57333333, 5.88, 7.84],
@@ -237,6 +265,7 @@ def test_persistence(topology, specs, seed, avg_step, expected):
     sample_end_to_end_distances(topology, nb_engine, seed=seed)
     mol_count = 0
     for batch_count, batch in enumerate(specs):
+        print(batch_count)
         for mol_idx in batch.mol_idxs:
             mol = topology.molecules[mol_idx]
             mol_copy = polyply.src.meta_molecule.MetaMolecule()
@@ -251,6 +280,7 @@ def test_persistence(topology, specs, seed, avg_step, expected):
                                                           avg_step_length,
                                                           tolerance=0.0)
             for node in mol.nodes:
+                print(node)
                 if "distance_restraints" in mol_copy.nodes[node]:
                     restr = mol.nodes[node]["distance_restraints"]
                     ref_restr = mol_copy.nodes[node]["distance_restraints"]
