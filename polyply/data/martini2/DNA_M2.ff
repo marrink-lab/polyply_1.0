@@ -559,5 +559,6 @@ BB2 +BB1
 BB3 +BB2
 [ dihedrals ]
 BB2 BB3 +BB1 +BB2     1  180.00000     2     3 {"group": "link"}
-BB3 +BB1 +BB2 +BB3    9   85.00000     2     2 {"group": "link"}
-BB3 +BB1 +BB2 +BB3    9  160.00000     2     3 {"group": "link"}
+BB3 +BB1 +BB2 +BB3    9   85.00000     2     2 {"group": "link", "version": "1"}
+BB3 +BB1 +BB2 +BB3    9  160.00000     2     3 {"group": "link", "version": "2"}
+; random comment
