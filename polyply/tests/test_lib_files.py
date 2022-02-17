@@ -83,7 +83,7 @@ def assert_equal_blocks(block1, block2):
         for atoms, ref_interactions in ref_terms.items():
             new_interactions = new_terms[atoms]
             for ref_inter in ref_interactions:
-                print(ref_inter)
+                #print(ref_inter)
                 for new_inter in new_interactions:
                     if _interaction_equal(ref_inter, new_inter, inter_type):
                         break
@@ -236,8 +236,8 @@ def test_integration_protein(tmp_path, monkeypatch, library, polymer):
                           universal_newlines=True)
     exit_code = proc.returncode
     if exit_code:
-        print(proc.stdout)
-        print(proc.stderr)
+        #print(proc.stdout)
+        #print(proc.stderr)
         assert not exit_code
 
     # check if strdout has citations in string
