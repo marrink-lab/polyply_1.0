@@ -83,7 +83,7 @@ def assert_equal_blocks(block1, block2):
         for atoms, ref_interactions in ref_terms.items():
             new_interactions = new_terms[atoms]
             for ref_inter in ref_interactions:
-                print(ref_inter)
+                #print(ref_inter)
                 for new_inter in new_interactions:
                     if _interaction_equal(ref_inter, new_inter, inter_type):
                         break
@@ -170,24 +170,26 @@ def _interaction_equal(interaction1, interaction2, inter_type):
     return False
 
 @pytest.mark.parametrize("library, polymer", [
-    ['2016H66', 'PP'],
-    ['2016H66', 'C12E4'],
-    ['2016H66', 'PE'],
-    ['2016H66', 'PVA'],
-    ['2016H66', 'PMA'],
-    ['2016H66', 'PS'],
-    ['gromos53A6', 'P3HT'],
-    ['martini3', 'PROT'],
-    ['martini3', 'PEO'],
-    ['martini3', 'PS'],
-    ['martini3', 'PE'],
-    ['martini3', 'DEX'],
-    ['martini3', 'P3HT'],
-    ['martini2', 'PEO'],
-    ['martini2', 'PS'],
-    ['martini2', 'PEL'],
-    ['martini2', 'PEO_PE'],
-    ['parmbsc1', 'DNA'],
+     ['2016H66', 'PP'],
+     ['2016H66', 'C12E4'],
+     ['2016H66', 'PE'],
+     ['2016H66', 'PVA'],
+     ['2016H66', 'PMA'],
+     ['2016H66', 'PS'],
+     ['gromos53A6', 'P3HT'],
+     ['oplsaaLigParGen', 'PEO'],
+     ['martini3', 'PROT'],
+     ['martini3', 'PEO'],
+     ['martini3', 'PS'],
+     ['martini3', 'PE'],
+     ['martini3', 'DEX'],
+     ['martini3', 'P3HT'],
+     ['martini2', 'PEO'],
+     ['martini2', 'PS'],
+     ['martini2', 'PEL'],
+     ['martini2', 'PEO_PE'],
+     ['martini2', 'ssDNA'],
+     ['parmbsc1', 'DNA'],
   # -> proteins?
 ])
 def test_integration_protein(tmp_path, monkeypatch, library, polymer):
@@ -234,8 +236,8 @@ def test_integration_protein(tmp_path, monkeypatch, library, polymer):
                           universal_newlines=True)
     exit_code = proc.returncode
     if exit_code:
-        print(proc.stdout)
-        print(proc.stderr)
+        #print(proc.stdout)
+        #print(proc.stderr)
         assert not exit_code
 
     # check if strdout has citations in string
