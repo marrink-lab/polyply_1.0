@@ -1,0 +1,9 @@
+/home/jan/VirtualEnvs/polyply/bin/polyply gen_coords -o DC3.gro -p DC3.top -name test -back_fudge 1 -box 3. 3. 3.
+6
+    1DC3    BB1    1   1.204   0.725   0.170
+    1DC3    BB2    2   1.280   0.575   0.438
+    1DC3    BB3    3   1.281   0.407   0.542
+    1DC3    SC1    4   0.979   0.413   0.753
+    1DC3    SC2    5   1.232   0.135   0.748
+    1DC3    SC3    6   1.224   0.145   0.949
+3.0 3.0 3.0

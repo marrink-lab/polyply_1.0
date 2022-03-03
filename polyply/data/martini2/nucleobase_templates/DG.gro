@@ -1,0 +1,10 @@
+/home/jan/VirtualEnvs/polyply/bin/polyply gen_coords -o DG.gro -p DG.top -name test -back_fudge 1 -box 3. 3. 3.
+7
+    1DG     BB1    1   0.406   2.544   1.716
+    1DG     BB2    2   0.115   2.674   1.545
+    1DG     BB3    3   0.104   2.871   1.570
+    1DG     SC1    4  -0.063   2.854   1.826
+    1DG     SC2    5  -0.346   2.944   1.857
+    1DG     SC3    6  -0.229   2.872   2.119
+    1DG     SC4    7   0.012   2.843   1.967
+3.0 3.0 3.0

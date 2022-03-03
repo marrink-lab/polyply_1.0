@@ -1,0 +1,9 @@
+/home/jan/VirtualEnvs/polyply/bin/polyply gen_coords -o DC.gro -p DC.top -name test -back_fudge 1 -box 3. 3. 3. -> Dit is zijn de coords van DT, PAS OP ZIJN DUS AANGEPAST VANWEGE BUG.
+6
+    1DC     BB1    1   0.645   2.247   3.175
+    1DC     BB2    2   0.940   2.303   2.975
+    1DC     BB3    3   0.888   2.393   2.796
+    1DC     SC1    4   0.791   2.168   2.702
+    1DC     SC2    5   0.918   2.096   2.544
+    1DC     SC3    6   0.618   1.992   2.609
+3.0 3.0 3.0
