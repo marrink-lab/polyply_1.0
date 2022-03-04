@@ -37,6 +37,7 @@ def split_seq_string(sequence):
     """
     Split a string definition for a linear sequence into monomer
     blocks and raise errors if the sequence is not valid.
+
     Parameters
     -----------
     sequence: str
