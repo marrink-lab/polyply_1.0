@@ -239,6 +239,26 @@ class MetaMolecule(nx.Graph):
         return meta_mol_graph
 
     @classmethod
+    def from_sequence_file(force_field, file_handle, extension, mol_name):
+        """
+        Generate a meta_molecule from known sequence file parsers. Currently
+        plain, fasta, IG, as well as csv and txt are known for linear sequences
+        and json files for branched sequences.
+        """
+        extension = file_handle.suffix.casefold()[1:]
+        if extension in self.known_file_parsers:
+
+            with open(file_handle) as file_:
+                lines = file_.readlines()
+
+            init_graph = self.know_file_parsers[extension](lines)
+            graph = _convert_nx_graph_to_polyply_graph(init_graph)
+
+        meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
+        return meta_mol
+
+
+    @classmethod
     def from_json(cls, force_field, json_file, mol_name):
         """
         Constructs a :class::`MetaMolecule` from a json file
@@ -247,23 +267,6 @@ class MetaMolecule(nx.Graph):
         with open(json_file) as file_:
             data = json.load(file_)
 
-        init_graph = nx.Graph(json_graph.node_link_graph(data))
-        graph = nx.Graph(node_dict_factory=OrderedDict)
-        nodes = list(init_graph.nodes)
-        nodes.sort()
-
-        for node in nodes:
-            attrs = init_graph.nodes[node]
-            if "resid" not in attrs:
-                LOGGER.warning("Node {} has no resid. Setting resid to {} + 1.", node, node)
-                try:
-                    attrs["resid"] = node + 1
-                except TypeError:
-                    msg = "Couldn't add 1 to node. Either provide resids or use integers as node keys."
-                    raise IOError(msg)
-            graph.add_node(node, **attrs)
-
-        graph.add_edges_from(init_graph.edges(data=True))
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
         return meta_mol
 

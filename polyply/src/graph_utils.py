@@ -183,3 +183,31 @@ def get_all_predecessors(graph, node, start_node=0):
             break
     predecessors.reverse()
     return predecessors
+
+def _convert_nx_graph_to_polyply_graph(init_graph):
+    """
+    Take any networkx graph that describes the residue
+    graph of a molecule and sort the nodes by their index
+    make sure the resid is set correctly or generate one
+    and verify that all nodes have the resname attribute.
+    Then return a ordered graph.
+    """
+    graph = nx.Graph(node_dict_factory=OrderedDict)
+    nodes = list(init_graph.nodes)
+    nodes.sort()
+
+    for node in nodes:
+        attrs = init_graph.nodes[node]
+        if "resid" not in attrs:
+            LOGGER.warning("Node {} has no resid. Setting resid to {} + 1.", node, node)
+
+            try:
+                attrs["resid"] = node + 1
+            except TypeError:
+                msg = "Couldn't add 1 to node. Either provide resids or use integers as node keys."
+                raise IOError(msg)
+
+            graph.add_node(node, **attrs)
+
+        graph.add_edges_from(init_graph.edges(data=True))
+    return graph
