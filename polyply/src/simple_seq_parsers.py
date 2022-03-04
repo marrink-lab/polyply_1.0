@@ -182,5 +182,5 @@ def parse_json(filehandle):
     nodes = list(init_json_graph.nodes(data=True))
     nodes.sort()
     seq_graph.add_nodes_from(nodes)
-    seq_graph.add_edges_from(init_json_graph.edges)
+    seq_graph.add_edges_from(init_json_graph.edges(data=True))
     return seq_graph
