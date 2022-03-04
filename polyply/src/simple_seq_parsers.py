@@ -11,7 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from collections import OrderedDict
+from functools import partial
+import json
 import networkx as nx
+from networkx.readwrite import json_graph
 from vermouth.parser_utils import split_comments
 
 ONE_LETTER_AAS = {
@@ -53,23 +57,34 @@ ONE_LETTER_RNA = {"A": "A",
                   "T": "U"}
 
 def _monomers_to_linear_nx_graph(monomers):
+    """
+    Take a list of monomers and generate a linear
+    graph from them setting both the resid and
+    resname attribute.
+    """
     seq_graph = nx.Graph()
     seq_graph.add_edges_from(zip(range(0, len(monomers))))
     nx.add_node_attributes(seq_graph, {node: resname for node, resname in zip(seq_graph.nodes, monomers)}, "resname")
     nx.add_node_attributes(seq_graph, {node: node+1 for node in zip(seq_graph.nodes)}, "resid")
     return seq_graph
 
-def parse_plain_delimited(lines, delimiter=" "):
+def parse_plain_delimited(filehandle, delimiter=" "):
     """
     Parse a plain delimited text file. The delimiter can
     be any special character.
     """
+    with open(filehandle) as file_:
+        lines = file_.readlines()
+
     monomers = []
     for line in lines:
         for resname in line.strip().split(delimiter):
             monomers.append(resname)
     seq_graph =  _monomers_to_linear_nx_graph(monomers)
     return seq_graph
+
+parse_csv = partial(parse_plain_delimited, delimiter=',')
+parse_txt = parse_plain_delimited
 
 def parse_plain(lines, DNA=False, RNA=False):
     """
@@ -97,13 +112,16 @@ def parse_plain(lines, DNA=False, RNA=False):
     seq_graph =  _monomers_to_linear_nx_graph(monomers)
     return seq_graph
 
-def parse_ig(lines):
+def parse_ig(filehandle):
     """
     Read ig sequence in DNA/AA formatted file. See following link
     for format:
 
     https://www.animalgenome.org/bioinfo/resources/manuals/seqformats
     """
+    with open(filehandle) as file_:
+        lines = file_.readlines()
+
     clean_lines = []
     idx = 0
     for idx, line in enumerate(lines):
@@ -123,13 +141,16 @@ def parse_ig(lines):
 
     return seq_graph
 
-def parse_fasta(lines):
+def parse_fasta(filehandle):
     """
     Read ig sequence in DNA/AA formatted file. See following link
     for format:
 
     https://www.animalgenome.org/bioinfo/resources/manuals/seqformats
     """
+    with open(filehandle) as file_:
+        lines = file_.readlines()
+
     clean_lines = []
     count = 0
     for line in lines:
@@ -144,4 +165,22 @@ def parse_fasta(lines):
         clean_lines.append(clean_line)
 
     seq_graph = parse_plain(clean_lines)
+    return seq_graph
+
+def parse_json(filehandle):
+    """
+    Read in json file.
+    """
+    with open(filehandle) as file_:
+        data = json.load(file_)
+
+    init_json_graph = nx.Graph(json_graph.node_link_graph(data))
+    # the nodes in the inital graph are not ordered, when no resid
+    # is given this can create issues. So we reorder the node based
+    # on the node key, which HAS to be numerical.
+    seq_graph = nx.Graph(node_dict_factory=OrderedDict)
+    nodes = list(init_json_graph.nodes(data=True))
+    nodes.sort()
+    seq_graph.add_nodes_from(nodes)
+    seq_graph.add_edges_from(init_json_graph.edges)
     return seq_graph
