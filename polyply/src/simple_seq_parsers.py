@@ -63,9 +63,10 @@ def _monomers_to_linear_nx_graph(monomers):
     resname attribute.
     """
     seq_graph = nx.Graph()
-    seq_graph.add_edges_from(zip(range(0, len(monomers))))
-    nx.add_node_attributes(seq_graph, {node: resname for node, resname in zip(seq_graph.nodes, monomers)}, "resname")
-    nx.add_node_attributes(seq_graph, {node: node+1 for node in zip(seq_graph.nodes)}, "resid")
+    mon_range = range(0, len(monomers))
+    seq_graph.add_edges_from(zip(mon_range[:-1], mon_range[1:]))
+    nx.set_node_attributes(seq_graph, {node: resname for node, resname in zip(seq_graph.nodes, monomers)}, "resname")
+    nx.set_node_attributes(seq_graph, {node: node+1 for node in seq_graph.nodes}, "resid")
     return seq_graph
 
 def parse_plain_delimited(filehandle, delimiter=" "):
@@ -90,9 +91,26 @@ def parse_plain(lines, DNA=False, RNA=False):
     """
     Parse a plain one letter sequence block either for DNA, RNA,
     or amino-acids. Lines can be a list of strings or a string.
+    This function also sets the appropiate defaults for the termini
+    of DNA and RNA
+
     For the format see here:
 
     https://www.animalgenome.org/bioinfo/resources/manuals/seqformats
+
+    Parameters
+    ----------
+    lines: `abc.iteratable`
+        list of strings matching one letter code DNA, RNA, or AAs
+    DNA: bool
+        if the sequence matches DNA
+    RNA: bool
+        if the sequence matches RNA
+
+    Returns
+    -------
+    `:class:nx.Graph`
+        the plain residue graph matching the sequence
     """
     monomers = []
     for line in lines:
@@ -104,13 +122,58 @@ def parse_plain(lines, DNA=False, RNA=False):
             elif token in ONE_LETTER_RNA and RNA:
                 resname = ONE_LETTER_RNA[token]
             else:
-                msg = "Cannot find one letter residue match for { }"
+                msg = f"Cannot find one letter residue match for {token}"
                 raise IOError(msg)
 
             monomers.append(resname)
 
+    # make sure to set the defaults for the DNA terminals
+    if DNA:
+        monomers[0] = monomers[0] + "5"
+        monomers[-1] = monomers[-1] + "3"
+
     seq_graph =  _monomers_to_linear_nx_graph(monomers)
     return seq_graph
+
+def _identify_nucleotypes(comments):
+    """
+    From a comment found in the ig or fasta file, identify if
+    the sequence is RNA or DNA sequence by checking if these
+    keywords are in the comment lines. Raise an error if
+    none or conflicting information are found.
+
+    Parameters
+    ----------
+    comments: abc.itertable
+        list of comment lines
+
+    Returns
+    -------
+    bool, bool
+        is it DNA, RNA
+
+    Raises
+    ------
+    IOError
+        neither RNA nor DNA keywords are found
+        both RNA and DNA are found
+    """
+    RNA = False
+    DNA = False
+    for comment in comments:
+        if "DNA" in comment:
+            DNA = True
+
+        if "RNA" in comment:
+            RNA = True
+
+    if RNA and DNA:
+        raise IOError("Cannot identify if sequence is RNA or DNA from comment.")
+
+    if not RNA and not DNA:
+        raise IOError("Cannot identify if sequence is RNA or DNA from comment.")
+
+    return DNA, RNA
 
 def parse_ig(filehandle):
     """
@@ -118,23 +181,37 @@ def parse_ig(filehandle):
     for format:
 
     https://www.animalgenome.org/bioinfo/resources/manuals/seqformats
+
+    Parameters
+    ----------
+    filehandle: :class:`pathlib.Path`
     """
     with open(filehandle) as file_:
         lines = file_.readlines()
 
     clean_lines = []
+    comments = []
     idx = 0
     for idx, line in enumerate(lines):
-        clean_line, _ = split_comments(line)
+        clean_line, comment = split_comments(line)
+        comments.append(comment)
+        if clean_line:
+            if clean_line[-1] == '1' or clean_line[-1] == '2':
+                ter_char = clean_line[:-1]
+                clean_line = clean_line[:-2]
+                clean_lines.append(clean_line)
+                DNA, RNA = _identify_nucleotypes(comments)
+                seq_graph = parse_plain(clean_lines[1:], DNA=DNA, RNA=RNA)
 
-        if clean_line[:-1] == '1' or clean_line[:-1] == '2':
-            ter_char = clean_line[:-1]
-            clean_line = clean_line[:-2]
-            clean_lines.append(clean_line)
-            seq_graph = parse_plain(clean_lines)
-            if ter_char == '2':
-                seq_graph.add_edge(0, len(seq_graph.nodes))
-            break
+                if ter_char == '2':
+                    nnodes = len(seq_graph.nodes)
+                    seq_graph.add_edge(0, nnodes)
+                    seq_graph.edges[(0, nnodes)]["circle"] = True
+                    seq_grpah[0]["resname"] = seq_grpah[0]["resname"][:-1]
+                    seq_grpah[nnodes]["resname"] = seq_grpah[nnodes]["resname"][:-1]
+                break
+            else:
+                clean_lines.append(clean_line)
 
     if idx < len(lines):
         print("Warning found mroe than one sequence. Only taking the first one")
@@ -153,18 +230,17 @@ def parse_fasta(filehandle):
 
     clean_lines = []
     count = 0
-    for line in lines:
-        if '>' in line:
-            count += 1
+    # first line must be a comment line
+    DNA, RNA =_identify_nucleotypes([lines[0]])
 
-        if count > 1:
-            print("Found more than 1 sequence. I am only using the first one.")
+    for line in lines[1:]:
+        if '>' in line:
+            print("Found more than 1 sequence. Will only using the first one.")
             break
 
-        clean_line, _ = split_comments(line, comment_char='>')
-        clean_lines.append(clean_line)
+        clean_lines.append(line)
 
-    seq_graph = parse_plain(clean_lines)
+    seq_graph = parse_plain(clean_lines, RNA=RNA, DNA=DNA)
     return seq_graph
 
 def parse_json(filehandle):
