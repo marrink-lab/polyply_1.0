@@ -197,8 +197,8 @@ def parse_ig(filehandle):
         comments.append(comment)
         if clean_line:
             if clean_line[-1] == '1' or clean_line[-1] == '2':
-                ter_char = clean_line[:-1]
-                clean_line = clean_line[:-2]
+                ter_char = clean_line[-1]
+                clean_line = clean_line[:-1]
                 clean_lines.append(clean_line)
                 DNA, RNA = _identify_nucleotypes(comments)
                 seq_graph = parse_plain(clean_lines[1:], DNA=DNA, RNA=RNA)
