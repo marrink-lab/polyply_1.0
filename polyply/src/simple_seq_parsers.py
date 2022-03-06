@@ -168,7 +168,7 @@ def _identify_nucleotypes(comments):
             RNA = True
 
     if RNA and DNA:
-        raise IOError("Cannot identify if sequence is RNA or DNA from comment.")
+        raise IOError("Found both RNA and DNA keyword in comment. Choose one.")
 
     if not RNA and not DNA:
         raise IOError("Cannot identify if sequence is RNA or DNA from comment.")
