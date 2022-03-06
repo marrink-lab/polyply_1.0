@@ -165,6 +165,7 @@ def _identify_nucleotypes(comments):
             DNA = True
 
         if "RNA" in comment:
+            print("go here")
             RNA = True
 
     if RNA and DNA:
@@ -205,10 +206,10 @@ def parse_ig(filehandle):
 
                 if ter_char == '2':
                     nnodes = len(seq_graph.nodes)
-                    seq_graph.add_edge(0, nnodes)
-                    seq_graph.edges[(0, nnodes)]["circle"] = True
-                    seq_grpah[0]["resname"] = seq_grpah[0]["resname"][:-1]
-                    seq_grpah[nnodes]["resname"] = seq_grpah[nnodes]["resname"][:-1]
+                    seq_graph.add_edge(0, nnodes-1)
+                    seq_graph.edges[(0, nnodes-1)]["circle"] = True
+                    seq_graph.nodes[0]["resname"] = seq_graph.nodes[0]["resname"][:-1]
+                    seq_graph.nodes[nnodes-1]["resname"] = seq_graph.nodes[nnodes-1]["resname"][:-1]
                 break
             else:
                 clean_lines.append(clean_line)
