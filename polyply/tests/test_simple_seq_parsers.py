@@ -57,10 +57,8 @@ def test_identify_nucleotypes(comments, DNA, RNA):
       ["lorem ipsum", "one more line"]
      ))
 def test_identify_nucleotypes(comments):
-    print(comments)
-    #with pytest.raises(IOError):
-    _identify_nucleotypes(comments)
-    assert True
+    with pytest.raises(IOError):
+        _identify_nucleotypes(comments)
 
 def _node_match(nodeA, nodeB):
     resname = nodeA["resname"] == nodeB["resname"]
