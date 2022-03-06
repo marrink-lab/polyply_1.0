@@ -56,7 +56,7 @@ def test_identify_nucleotypes(comments, DNA, RNA):
     # neither DNA and RNA are defined
       ["lorem ipsum", "one more line"]
      ))
-def test_identify_nucleotypes(comments):
+def test_identify_nucleotypes_fail(comments):
     with pytest.raises(IOError):
         _identify_nucleotypes(comments)
 
