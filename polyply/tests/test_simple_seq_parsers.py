@@ -81,6 +81,16 @@ def test_sequence_parses(extension):
     seq_graph = MetaMolecule.parsers[extension](filepath)
     monomers = ["DA5", "DT", "DC", "DG", "DT", "DA", "DC", "DA", "DT3"]
     ref_graph = _monomers_to_linear_nx_graph(monomers)
-    print(seq_graph.nodes(data=True))
-    print(ref_graph.nodes(data=True))
     assert nx.is_isomorphic(seq_graph, ref_graph, node_match=_node_match)
+
+def test_ig_cirle():
+    filepath = Path(TEST_DATA + "/simple_seq_files/test_circle.ig")
+    seq_graph = MetaMolecule.parsers["ig"](filepath)
+    monomers = ["DA", "DT", "DC", "DG", "DT", "DA", "DC", "DA", "DT"]
+    ref_graph = _monomers_to_linear_nx_graph(monomers)
+    ref_graph.add_edge(0, 8)
+    #ref_graph.edges[(0, 8)]["cricle"] = True
+    assert seq_graph.edges[(0, 8)]["circle"]
+    assert nx.is_isomorphic(seq_graph,
+                            ref_graph,
+                            node_match=_node_match)
