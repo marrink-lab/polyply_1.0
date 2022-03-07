@@ -17,6 +17,9 @@ import json
 import networkx as nx
 from networkx.readwrite import json_graph
 from vermouth.parser_utils import split_comments
+from vermouth.log_helpers import StyleAdapter, get_logger
+
+LOGGER = StyleAdapter(get_logger(__name__))
 
 ONE_LETTER_DNA = {"A": "DA",
                   "C": "DC",
@@ -185,7 +188,7 @@ def parse_ig(filehandle):
                 clean_lines.append(clean_line)
 
     if idx < len(lines):
-        print("Warning found mroe than one sequence. Only taking the first one")
+        LOGGER.warning("Found more than 1 sequence. Will only use the first one.")
 
     return seq_graph
 
@@ -206,7 +209,7 @@ def parse_fasta(filehandle):
 
     for line in lines[1:]:
         if '>' in line:
-            print("Found more than 1 sequence. Will only using the first one.")
+            LOGGER.warning("Found more than 1 sequence. Will only use the first one.")
             break
 
         clean_lines.append(line)
