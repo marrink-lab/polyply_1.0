@@ -33,6 +33,11 @@ from .load_library import load_library
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
+BASE_LIBRARY = {"DA": "DT", "DT": "DA", "DG": "DC", "DC": "DG",
+                "DA5": "DT3", "DT5": "DA3", "DG5": "DC3", "DC5": "DG3",
+                "DA3": "DT5", "DT3": "DA5", "DG3": "DC5", "DC3": "DG5"
+                }
+
 def split_seq_string(sequence):
     """
     Split a string definition for a linear sequence into monomer
@@ -62,6 +67,15 @@ def gen_params(args):
 
     # Generate the MetaMolecule
     if args.seq:
+        if args.type == "dsDNA":
+            # Append complementary sequence
+            comp_seq = []
+            for monomer in args.seq:
+                resname, n_blocks = monomer.split(":")
+                resname = BASE_LIBRARY[resname]
+                comp_seq.append(":".join([resname, n_blocks]))
+            args.seq += comp_seq
+
         LOGGER.info("reading sequence from command",  type="step")
         monomers = split_seq_string(args.seq)
         meta_molecule = MetaMolecule.from_monomer_seq_linear(monomers=monomers,
