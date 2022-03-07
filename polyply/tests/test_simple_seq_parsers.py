@@ -21,7 +21,8 @@ from polyply import TEST_DATA
 from polyply.src.meta_molecule import MetaMolecule
 from .example_fixtures import example_meta_molecule
 from polyply.src.simple_seq_parsers import (_identify_nucleotypes,
-                                            _monomers_to_linear_nx_graph,)
+                                            _monomers_to_linear_nx_graph,
+                                            parse_plain)
 
 @pytest.mark.parametrize('comments, DNA, RNA', (
     # single DNA comment
@@ -89,8 +90,23 @@ def test_ig_cirle():
     monomers = ["DA", "DT", "DC", "DG", "DT", "DA", "DC", "DA", "DT"]
     ref_graph = _monomers_to_linear_nx_graph(monomers)
     ref_graph.add_edge(0, 8)
-    #ref_graph.edges[(0, 8)]["cricle"] = True
     assert seq_graph.edges[(0, 8)]["circle"]
     assert nx.is_isomorphic(seq_graph,
                             ref_graph,
                             node_match=_node_match)
+
+@pytest.mark.parametrize('extension, ', (
+      "ig",
+      "fasta"
+     ))
+def test_sequence_parses_RNA(extension):
+    filepath = Path(TEST_DATA + "/simple_seq_files/test_RNA."+ extension)
+    seq_graph = MetaMolecule.parsers[extension](filepath)
+    monomers = ["A", "U", "C", "G", "U", "A", "C", "A", "U"]
+    ref_graph = _monomers_to_linear_nx_graph(monomers)
+    assert nx.is_isomorphic(seq_graph, ref_graph, node_match=_node_match)
+
+def test_unkown_nucleotype_error():
+    with pytest.raises(IOError):
+        lines = ["AABBBCCTG"]
+        parse_plain(lines, DNA=True, RNA=False)
