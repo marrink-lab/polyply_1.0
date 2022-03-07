@@ -18,34 +18,6 @@ import networkx as nx
 from networkx.readwrite import json_graph
 from vermouth.parser_utils import split_comments
 
-ONE_LETTER_AAS = {
- "A": "ALA",
- "R": "ARG",
- "N": "ASN",
- "D": "ASP",
- "C": "CYS",
- "Q": "GLB",
- "E": "GLU",
- "G": "GLY",
- "H": "HIS",
- "I": "ILE",
- "L": "LEU",
- "K": "LYS",
- "M": "MET",
- "F": "PHE",
- "P": "PRO",
- "O": "PLY",
- "S": "SER",
- "U": "SEC",
- "T": "THR",
- "W": "TRP",
- "Y": "TYR",
- "V": "VAL",
- "B": "ASX",
- "Z": "GLX",
- "X": "XAA",
- "J": "XLE",}
-
 ONE_LETTER_DNA = {"A": "DA",
                   "C": "DC",
                   "G": "DG",
@@ -115,9 +87,7 @@ def parse_plain(lines, DNA=False, RNA=False):
     monomers = []
     for line in lines:
         for token in line.strip():
-            if token in ONE_LETTER_AAS and not DNA and not RNA:
-                resname = ONE_LETTER_AAS[token]
-            elif token in ONE_LETTER_DNA and DNA:
+            if token in ONE_LETTER_DNA and DNA:
                 resname = ONE_LETTER_DNA[token]
             elif token in ONE_LETTER_RNA and RNA:
                 resname = ONE_LETTER_RNA[token]
