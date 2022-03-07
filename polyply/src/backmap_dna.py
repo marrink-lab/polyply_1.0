@@ -23,7 +23,7 @@ Processor implementing a template based backmapping of DNA strands
 meta_molecules to higher resolution (pseudo)atom coordinates.
 """
 
-def gen_template_frame(template, base):
+def gen_template_frame(template, base, force_field):
     """
     Given a high resolution 'template' and 'base' type,
     construct the intrinsic base template frame.
@@ -40,34 +40,49 @@ def gen_template_frame(template, base):
     numpy.ndarray
         base template frame
     """
-    anchor_library = {"DA": [("N1", "C4"), ("C2", "C6")],
-                     "DG": [("N1", "C4"), ("C2", "C6")],
-                     "DT": [("N3", "C6"), ("C2", "C4")],
-                     "DC": [("N3", "C6"), ("C2", "C4")]}
+    anchor_library = {'parmbsc1': {"DA": [[["N1"], ["C4"]], [["C2"], ["C6"]]],
+                                   "DG": [[["N1"], ["C4"]], [["C2"], ["C6"]]],
+                                   "DT": [[["N3"], ["C6"]], [["C2"], ["C4"]]],
+                                   "DC": [[["N3"], ["C6"]], [["C2"], ["C4"]]]
+                                   },
+                      'martini2': {"DG": [[["SC3", "SC2"], ["SC1", "SC4"]],
+                                          [["SC1"],["SC4"]]],
+                                   "DA": [[["SC3", "SC2"], ["SC1", "SC4"]],
+                                          [["SC1"],["SC4"]]],
+                                   "DT": [[["SC1"], ["SC3", "SC2"]],
+                                          [["SC2"],["SC3"]]],
+                                   "DC": [[["SC1"], ["SC3", "SC2"]],
+                                          [["SC2"],["SC3"]]]
+                                   }
+                    }
+    # TODO: Find bug creating DC Base Template???
     try:
         base_type = base[:2]
-        anch1, anch2 = anchor_library[base_type]
+        anch1, anch2 = anchor_library[force_field][base_type]
     except :
         raise Exception('No reference frame available for nucleobase type.')
 
-    ref_vec1 = template[anch1[0]] - template[anch1[1]]
-    ref_vec2 = template[anch2[0]] - template[anch2[1]]
+    ref_vec1 = sum(template[key] for key in anch1[0])\
+               - sum(template[key] for key in anch1[1])
+    ref_vec2 =  sum(template[key] for key in anch2[0])\
+                - sum(template[key] for key in anch2[1])
 
     binormal = u_vect(ref_vec1)
-    tangent = u_vect(np.cross(ref_vec1, ref_vec2))
-    normal = u_vect(np.cross(binormal, tangent))
+    normal = u_vect(ref_vec2)
+    tangent = u_vect(np.cross(normal, binormal))
 
     frame = np.stack((normal, binormal, tangent), axis=1)
     return frame
 
-def orient_template(template, target_frame, strand, base, strand_separation):
+def orient_template(template, target_frame, strand,
+                    base, force_field, strand_separation):
     """
     Align the base template frame with the local reference frame defined
     on the meta_molecule. The rotational alignment is performed by a
     linear transformation. Later the rotated base is translated to the
     correct position on the meta_molecule.
 
-    For every forcefield, a predefined reference frame needs to be provided
+    For every force field, a predefined reference frame needs to be provided
     in order to perform the template orientation. This frame consists out of
     three orthonormal vectors: 1) along the strand tangent, 2) along the
     base-base vector and 3) pointing into the minor grove.
@@ -92,16 +107,17 @@ def orient_template(template, target_frame, strand, base, strand_separation):
         oriented base template
     """
     # Calculate intrinsic frame of the base
-    template_frame = gen_template_frame(template, base)
+    template_frame = gen_template_frame(template, base, force_field)
 
     # Determine rotation matrices
     inv_rot_template_frame = template_frame.T
     rot_target_frame = target_frame
 
     # Determine optimal reference point of template
-    positions = np.array([template["N1"], template["N3"], template["C2"],
-                          template["C4"], template["C5"], template["C5"]])
-    ref_origin = center_of_geometry(positions)
+    ref_origin_library = {'parmbsc1': ["N1", "N3", "C2", "C4", "C5", "C5"],
+                          'martini2': ["SC1", "SC2", "SC3"]
+                          }
+    ref_origin = center_of_geometry([template[key] for key in ref_origin_library[force_field]])
 
     # Write the template as array and centre at origin
     template_arr = np.zeros((3, len(template)))
@@ -114,7 +130,7 @@ def orient_template(template, target_frame, strand, base, strand_separation):
     template_rotated_arr = rot_target_frame @ (inv_rot_template_frame @ template_arr)
 
     # Move rotated template frames to position on helix
-    if strand == "backward":
+    if strand == "forward":
         template_final_arr = (template_rotated_arr.T -
                               target_frame[:, 1] * strand_separation).T
     else:
@@ -137,12 +153,13 @@ class Backmap_DNA(Processor):
     from the lower resolution molecule associated with the MetaMolecule.
     """
 
-    def __init__(self, fudge_coords=1, rotation_per_bp=0.59,
-                 strand_separation=0.3, *args, **kwargs):
+    def __init__(self, force_field="parmbsc1", rotation_per_bp=0.59,
+                 strand_separation=0.3, fudge_coords=1, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fudge_coords = fudge_coords
         self.rotation_per_bp = rotation_per_bp  # 34° in radian
         self.strand_separation = strand_separation
+        self.force_field = force_field
 
     def _place_init_coords(self, meta_molecule):
         """
@@ -172,12 +189,13 @@ class Backmap_DNA(Processor):
                 # Correctly orientate base strand
                 forward_template = orient_template(meta_molecule.templates[forward_base],
                                                    moving_frame[ndx], "forward",
-                                                   forward_base,
+                                                   forward_base, self.force_field,
                                                    self.strand_separation)
                 backward_template = orient_template(meta_molecule.templates[backward_base],
                                                     moving_frame[ndx], "backward",
-                                                    backward_base,
+                                                    backward_base, self.force_field,
                                                     self.strand_separation)
+
 
                 # Place the molecule atoms according to the backmapping
                 high_res_atoms = residue["graph"].nodes
