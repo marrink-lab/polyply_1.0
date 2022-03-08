@@ -27,7 +27,8 @@ from .backmap_dna import Backmap_DNA
 from .topology import Topology
 from .annotate_dna import AnnotateDNA
 from .build_file_parser import read_build_file
-from .coord_file_parser import read_xyz
+from . import coord_file_parser
+from .build_system import BuildSystem
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
@@ -74,8 +75,8 @@ def line_coords(molecule):
     coords = [[spacing * ndx, 0.0, 0.0] for ndx in range(nnodes)]
     return np.array(coords)
 
-def _read_templates_from_lib(topology):
-        path = os.path.join(DATA_PATH, "parmbsc1/nucleobase_templates/*.gro")
+def _read_templates_from_lib(topology, force_field):
+        path = os.path.join(DATA_PATH, f"{force_field}/nucleobase_templates/*.gro")
         templates = {}
         for file_ in glob.glob(path):
             base = os.path.basename(file_)[:-4]
@@ -83,8 +84,8 @@ def _read_templates_from_lib(topology):
 
             templates[base] = {}
             for node in base_template.nodes:
-                atomname = base_template.nodes[node]['atomname']
-                position = base_template.nodes[node]['position']
+                atomname = base_template.nodes[node]["atomname"]
+                position = base_template.nodes[node]["position"]
                 templates[base][atomname] = position
 
         for molecule in topology.molecules:
@@ -104,25 +105,40 @@ def gen_dna(args):
     if args.generate_templates:
         GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
     else:
-        _read_templates_from_lib(topology)
+        _read_templates_from_lib(topology, args.force_field)
 
     LOGGER.info("annotating DNA strands",  type="step")
-    dna_annotator = AnnotateDNA()
-    dna_annotator.run_system(topology)
+    AnnotateDNA().run_system(topology)
 
     LOGGER.info("generating system coordinates",  type="step")
     for molecule in topology.molecules:
-        if args.line:
-            coords = line_coords(molecule)
-        elif args.circle:
-            coords = circle_coords(molecule)
+        if args.random_walk:
+            # Perform random walk to build system
+            pass
         else:
-            coords = read_xyz(args.coordpath)
-        for ndx, node in enumerate(molecule.nodes):
-            molecule.nodes[node]['position'] = coords[ndx]
+            if args.line:
+                positions, normals, tangents = line_coords(molecule), [], []
+            elif args.circle:
+                positions, normals, tangents = circle_coords(molecule), [], []
+            else:
+                extension = args.coordpath.suffix.casefold()[1:]
+                try:
+                    parser = getattr(coord_file_parser, f"read_{extension}")
+                    positions, normals, tangents = parser(args.coordpath)
+                except AttributeError:
+                    raise IOError("Cannot read coordinates from file"\
+                                  f"with extension .{extension}")
+
+            for ndx, node in enumerate(molecule.nodes):
+                molecule.nodes[node]["position"] = positions[ndx]
+                if normals != []:
+                    molecule.nodes[node]["normal"] = normals[ndx]
+                if tangents != []:
+                    molecule.nodes[node]["tangent"] = tangents[ndx]
 
     LOGGER.info("backmapping to target resolution",  type="step")
-    Backmap_DNA(fudge_coords=args.bfudge).run_system(topology)
+    backmap = Backmap_DNA(force_field=args.force_field, fudge_coords=args.bfudge)
+    backmap.run_system(topology)
 
     LOGGER.info("writing output",  type="step")
     command = ' '.join(sys.argv)

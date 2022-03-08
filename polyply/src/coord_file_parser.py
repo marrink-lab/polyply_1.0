@@ -18,41 +18,53 @@ a system on a user provided configuration.
 """
 
 import numpy as np
+from itertools import islice
 
-def read_xyz(path):
+def read_dat(path):
     """
-    Read an xyz file and extract molecule's coordinates.
+    Read a configuration (.dat) file and extract molecule coordinates
+    and rotation. The Backbone-base vector and Normal vector are optional,
+    if not assigned they will be generated during the backmapping.
+    Additionally, only the normal can be provided and the corresponding
+    reference frame will be constructed.
+
+    R: Position vector
+    N: Normal vector
+    T: Tangent/backbone-base vector
 
     The file should be in the format::
 
         <number of atoms>
         comment line
-        <element0> <X0> <Y0> <Z0>
-        <element1> <X1> <Y1> <Z1>
+        <Rx> <Ry> <Rz> <Nx> <Ny> <Nz> <Tx> <Ty> <Tz>
         ...
 
     Parameters
     ----------
     path : str
-        Path to the xyz file to read
+        Path to the configuration (.dat) file to read
 
     Returns
     -------
-    coords : np.ndarray
-        array of atom coordinates with shape (len(molecule.nodes), 3)
+    positions : np.ndarray
+        array of position vectors with shape (len(molecule.nodes), 3)
+    normals : np.ndarray
+        array of normal vectors with shape (len(molecule.nodes), 3)
+    tangents : np.ndarray
+        array of tangent/backbone-base vectors with shape (len(molecule.nodes), 3)
     """
 
-    coords = []
-    with open(path, 'r') as xyz_file:
-        num_atoms = int(xyz_file.readline())
-        next(xyz_file)
+    positions, normals, tangents = [], [], []
+    with open(path, 'r') as dat_file:
+        num_atoms = int(dat_file.readline())
 
-        for line in xyz_file:
-            _, x, y, z = line.strip().split()
-            coords.append([float(x), float(y), float(z)])
+        for line in islice(dat_file, 1, None):
+            values = [float(element) for element in line.split()]
+            position, normal, tangent = values[:3], values[3:6], values[6:9]
+            positions.append(position), normals.append(normal), tangents.append(tangent)
 
-        if num_atoms != len(coords):
+        if num_atoms != len(positions):
             raise IOError('<number of atoms> not equal to number'
-                          'of coordinates in xyz file'
+                          'of coordinates in dat file'
                           )
-    return np.array(coords)
+    return np.asarray(positions), np.asarray(normals), np.asarray(tangents)

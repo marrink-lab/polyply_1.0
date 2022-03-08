@@ -142,11 +142,10 @@ def close_frame(curve, tangents, normals, binormals):
         to the reference vectors along cyclic curve
     """
     # Determine the minimal rotating normal vector wrt. last reference frame
-
     target_normal = gen_next_normal((curve[-1], tangents[-1], normals[-1]),
                                     (curve[0], tangents[0]))
     # Calculate rotation needed to match the normals
-    phi = np.arccos(target_normal @ normals[0])
+    phi = np.arccos(target_normal @ normals[0]) - self.rotation_per_bp
 
     # Distribute corrective curvature over curve
     correction_per_base = phi / len(tangents)
@@ -155,6 +154,23 @@ def close_frame(curve, tangents, normals, binormals):
         normals[ndx] = rotate_from_vect(normals[ndx], rotation_vector)
         normals[ndx] = u_vect(normals[ndx])
         binormals[ndx] = np.cross(tangents[ndx], normals[ndx])
+    return tangents, normals, binormals
+
+def dna_frame(meta_molecule, curve, rotation_per_bp):
+    # Generate rotation minimizing frame on curve
+    tangents, normals, binormals = rotation_min_frame(curve)
+
+    # Rotate moving frame to introduce intrinsic DNA twist
+    rotation_vectors = [vec * rotation_per_bp *
+                        i for i, vec in enumerate(tangents, start=1)]
+    for ndx, vector in enumerate(rotation_vectors):
+        normals[ndx] = rotate_from_vect(normals[ndx], vector)
+        binormals[ndx] = rotate_from_vect(binormals[ndx], vector)
+
+    # Comply with boundary conditions if DNA is closed
+    if nx.cycle_basis(meta_molecule):
+        tangents, normals, binormals = close_frame(curve, tangents,
+                                                   normals, binormals)
     return tangents, normals, binormals
 
 
@@ -168,7 +184,8 @@ class ConstructFrame:
 
     def run(self, meta_molecule):
         """
-        Construct the moving frame. First a rotation minimizing frame is
+        Construct the moving frame. If the user provides base orientations,
+        these are used. Otherwise, first a rotation minimizing frame is
         created along the 'meta_molecule' coordinates. An intrinsic twist
         is added to the moving frame to incorporate the DNA double-helix.
         Lastly, if the 'meta_molecule' is cyclical, a corrective twist
@@ -184,25 +201,32 @@ class ConstructFrame:
             ndarray of shape (N, (3, 3))
 
         """
-        # Read meta_molecule coordinates
+        # Read positions from meta_molecule
         curve = np.zeros((len(meta_molecule.nodes), 3))
         for ndx, node in enumerate(meta_molecule.nodes):
             curve[ndx] = meta_molecule.nodes[node]['position']
 
-        # Generate rotation minimizing frame on curve
-        tangents, normals, binormals = rotation_min_frame(curve)
+        if not nx.get_node_attributes(meta_molecule, "normal"):
+            tangents, normals, binormals = dna_frame(meta_molecule, curve,
+                                                     self.rotation_per_bp)
+        else:
+            # Read normals from meta_molecule
+            normals = nx.get_node_attributes(meta_molecule, "normal")
+            normals = np.asarray(list(normals.values()))
+            normals = np.apply_along_axis(u_vect, axis=1, arr=normals)
 
-        # Rotate moving frame to introduce intrinsic DNA twist
-        rotation_vectors = [vec * self.rotation_per_bp *
-                            i for i, vec in enumerate(tangents, start=1)]
-        for ndx, vector in enumerate(rotation_vectors):
-            normals[ndx] = rotate_from_vect(normals[ndx], vector)
-            binormals[ndx] = rotate_from_vect(binormals[ndx], vector)
+            if not nx.get_node_attributes(meta_molecule, "tangent"):
+                tangents = calc_tangents(curve)
+                # Apply Gram–Schmidt orthogonalization
+                tangents -= np.dot(normals, tangents) * normals
+                tangents = np.apply_along_axis(u_vect, axis=1, arr=tangents)
 
-        # Comply with boundary conditions if DNA is closed
-        if nx.cycle_basis(meta_molecule):
-            tangents, normals, binormals = close_frame(curve, tangents,
-                                                       normals, binormals)
+            else:
+                # Read tangents from meta_molecule
+                tangents = nx.get_node_attributes(meta_molecule, "tangent")
+                tangents = np.asarray(list(tangents.values()))
+                tangents = np.apply_along_axis(u_vect, axis=1, arr=tangents)
+            binormals = np.cross(tangents, normals)
 
         # Construct frame out of generated vectors
         moving_frame = [np.stack((i, j, k), axis=1)
