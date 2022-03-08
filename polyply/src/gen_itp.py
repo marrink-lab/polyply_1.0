@@ -33,6 +33,7 @@ from vermouth.graph_utils import make_residue_graph
 from polyply import (MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
 from polyply.src.graph_utils import find_missing_edges
 from .load_library import load_ff_library
+from .gen_dna import complement_dsDNA
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
@@ -96,6 +97,10 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[], lib=None,
         LOGGER.info("reading sequence from file",  type="step")
         meta_molecule = MetaMolecule.from_sequence_file(force_field, seq_file, name)
 
+    # Generate complementary DNA strand
+    if args.dsdna:
+        complement_dsDNA(meta_molecule)
+
     # Do transformationa and apply link
     LOGGER.info("mapping sequence to molecule",  type="step")
     meta_molecule = MapToMolecule(force_field).run_molecule(meta_molecule)
@@ -104,11 +109,12 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[], lib=None,
 
     # Raise warning if molecule is disconnected
     if not nx.is_connected(meta_molecule.molecule):
-        LOGGER.warning("Your molecule consists of disjoint parts."
-                       "Perhaps links were not applied correctly.")
-        msg = "Missing link between residue {idxA} {resA} and residue {idxB} {resB}"
-        for missing in find_missing_edges(meta_molecule, meta_molecule.molecule):
-            LOGGER.warning(msg, **missing)
+        n_components = len(list(nx.connected_components(meta_molecule.molecule)))
+        msg = "You molecule consists of {:d} disjoint parts. Perhaps links were not applied correctly."
+        if dsdna and n_components != 2:
+            LOGGER.warning(msg, (n_components))
+        if not dsdna:
+            LOGGER.warning(msg, (n_components))
 
     with deferred_open(outpath, 'w') as outfile:
         header = [ ' '.join(sys.argv) + "\n" ]
