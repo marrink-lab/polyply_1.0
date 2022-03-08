@@ -30,6 +30,7 @@ from vermouth.file_writer import DeferredFileWriter
 from vermouth.citation_parser import citation_formatter
 from polyply import (MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
 from .load_library import load_library
+from .gen_dna import complement_dsDNA
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
@@ -80,6 +81,10 @@ def gen_params(args):
         except AttributeError:
             raise IOError("Cannot parse file with extension {}.".format(extension))
 
+    # Generate complementary DNA strand
+    if args.dsdna:
+        complement_dsDNA(meta_molecule)
+
     # Do transformationa and apply link
     LOGGER.info("mapping sequence to molecule",  type="step")
     meta_molecule = MapToMolecule(force_field).run_molecule(meta_molecule)
@@ -90,7 +95,10 @@ def gen_params(args):
     if not nx.is_connected(meta_molecule.molecule):
         n_components = len(list(nx.connected_components(meta_molecule.molecule)))
         msg = "You molecule consists of {:d} disjoint parts. Perhaps links were not applied correctly."
-        LOGGER.warning(msg, (n_components))
+        if args.dsdna and n_components != 2:
+            LOGGER.warning(msg, (n_components))
+        if not args.dsdna:
+            LOGGER.warning(msg, (n_components))
 
     with deferred_open(args.outpath, 'w') as outpath:
         header = [ ' '.join(sys.argv) + "\n" ]
