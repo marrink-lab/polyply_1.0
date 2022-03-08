@@ -11,16 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from difflib import SequenceMatcher
-from itertools import permutations
 import numpy as np
 import networkx as nx
 from .processor import Processor
-
-BASE_LIBRARY = {"DA": "DT", "DT": "DA", "DG": "DC", "DC": "DG",
-                "DA5": "DT3", "DT5": "DA3", "DG5": "DC3", "DC5": "DG3",
-                "DA3": "DT5", "DT3": "DA5", "DG3": "DC5", "DC3": "DG5"
-                }
 
 class AnnotateDNA(Processor):
     """
@@ -31,8 +24,8 @@ class AnnotateDNA(Processor):
     building the DNA structure and backmapping to the desired forcefield.
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, BASE_LIBRARY):
+        self.BASE_LIBRARY = BASE_LIBRARY
 
     def _is_nucleobase(self, node_ndx, meta_molecule):
         """
@@ -50,7 +43,7 @@ class AnnotateDNA(Processor):
         bool:
             True if node is nucleobase, False otherwise
         """
-        return meta_molecule.nodes[node_ndx]['resname'] in BASE_LIBRARY
+        return meta_molecule.nodes[node_ndx]['resname'] in self.BASE_LIBRARY
 
     def _find_dna_strands(self, meta_molecule):
         """
@@ -118,7 +111,7 @@ class AnnotateDNA(Processor):
     def _match_ratio(self, ref_sequence, sequence):
         match_ratio = 0
         for ref_base, base in zip(ref_sequence, sequence):
-            if BASE_LIBRARY[ref_base] == base:
+            if self.BASE_LIBRARY[ref_base] == base:
                 match_ratio += 1
         return match_ratio / len(ref_sequence)
 

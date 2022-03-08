@@ -30,13 +30,9 @@ from vermouth.file_writer import DeferredFileWriter
 from vermouth.citation_parser import citation_formatter
 from polyply import (MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
 from .load_library import load_library
+from .gen_dna import BASE_LIBRARY
 
 LOGGER = StyleAdapter(get_logger(__name__))
-
-BASE_LIBRARY = {"DA": "DT", "DT": "DA", "DG": "DC", "DC": "DG",
-                "DA5": "DT3", "DT5": "DA3", "DG5": "DC3", "DC5": "DG3",
-                "DA3": "DT5", "DT3": "DA5", "DG3": "DC5", "DC3": "DG5"
-                }
 
 def split_seq_string(sequence):
     """

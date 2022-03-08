@@ -31,6 +31,11 @@ from . import coord_file_parser
 from .build_system import BuildSystem
 
 LOGGER = StyleAdapter(get_logger(__name__))
+BASE_LIBRARY = {"DA": "DT", "DT": "DA", "DG": "DC", "DC": "DG",
+                "DA5": "DT3", "DT5": "DA3", "DG5": "DC3", "DC5": "DG3",
+                "DA3": "DT5", "DT3": "DA5", "DG3": "DC5", "DC3": "DG5"
+                }
+
 
 def circle_coords(molecule):
     """
@@ -108,7 +113,7 @@ def gen_dna(args):
         _read_templates_from_lib(topology, args.force_field)
 
     LOGGER.info("annotating DNA strands",  type="step")
-    AnnotateDNA().run_system(topology)
+    AnnotateDNA(BASE_LIBRARY).run_system(topology)
 
     LOGGER.info("generating system coordinates",  type="step")
     for molecule in topology.molecules:
