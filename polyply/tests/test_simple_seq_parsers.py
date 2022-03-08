@@ -90,7 +90,7 @@ def test_ig_cirle():
     monomers = ["DA", "DT", "DC", "DG", "DT", "DA", "DC", "DA", "DT"]
     ref_graph = _monomers_to_linear_nx_graph(monomers)
     ref_graph.add_edge(0, 8)
-    assert seq_graph.edges[(0, 8)]["circle"]
+    assert seq_graph.edges[(0, 8)]["linktype"] == "circle"
     assert nx.is_isomorphic(seq_graph,
                             ref_graph,
                             node_match=_node_match)
