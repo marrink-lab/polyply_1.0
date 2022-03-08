@@ -77,6 +77,9 @@ def gen_params(args):
         meta_molecule = MetaMolecule.from_monomer_seq_linear(monomers=monomers,
                                                              force_field=force_field,
                                                              mol_name=args.name)
+        # Disconnect strands
+        num_bp = meta_molecule.number_of_edges()//2
+        meta_molecule.remove_edge(num_bp, num_bp+1)
     #ToDo
     # fix too broad except
     elif args.seq_file:
