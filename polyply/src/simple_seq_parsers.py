@@ -180,7 +180,7 @@ def parse_ig(filehandle):
                 if ter_char == '2':
                     nnodes = len(seq_graph.nodes)
                     seq_graph.add_edge(0, nnodes-1)
-                    seq_graph.edges[(0, nnodes-1)]["circle"] = True
+                    seq_graph.edges[(0, nnodes-1)]["linktype"] = "circle"
                     seq_graph.nodes[0]["resname"] = seq_graph.nodes[0]["resname"][:-1]
                     seq_graph.nodes[nnodes-1]["resname"] = seq_graph.nodes[nnodes-1]["resname"][:-1]
                 break
