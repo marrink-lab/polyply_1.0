@@ -53,6 +53,8 @@ def complement_dsDNA(meta_molecule):
             resid = meta_molecule.nodes[jdx]["resid"]
             raise IOError(msg.format(resname, resid))
         meta_molecule.add_monomer(jdx+incr, resname, [(ndx+incr, jdx+incr)])
+        # make sure that edge attributes are carried over
+        meta_molecule.edges[(ndx+incr, jdx+incr)] = meta_molecule.edges[(ndx, jdx)
 
     return meta_molecule
 
