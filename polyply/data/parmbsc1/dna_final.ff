@@ -3680,43 +3680,6 @@ C5'   -O3' 1
 P     -H3' 1
 
 [ link ]
-[ atoms ]
-+O3' {"resname": "DA5|DG5|DT5|DC5"}
-+C3' {"resname": "DA5|DG5|DT5|DC5"}
-+C4' {"resname": "DA5|DG5|DT5|DC5"}
-+C2' {"resname": "DA5|DG5|DT5|DC5"}
-+H3' {"resname": "DA5|DG5|DT5|DC5"}
-O5' {"resname": "DA|DG|DT|DC"}
-P {"resname": "DA|DG|DT|DC"}
-O1P {"resname": "DA|DG|DT|DC"}
-O2P {"resname": "DA|DG|DT|DC"}
-[ bonds ]
-+O3'     P  1
-[ angles ]
-P  +O3'  +C3'   1
-O1P  P   +O3'   1
-O2P  P   +O3'   1
-O5'  P   +O3'   1
-[ dihedrals ]
-P   +O3'   +C3'  +C4'   9  {"group": "link"}
-O1P  P     +O3'  +C3'   9  {"group": "link"}
-O2P  P     +O3'  +C3'   9  {"group": "link"}
-O5'  P     +O3'  +C3'   9  {"group": "link"}
-P   +O3'   +C3'  +C2'   9  {"group": "link"}
-C5'  O5'     P   +O3'   9  {"group": "link"}
-P   +O3'   +C3'  +H3'   9  {"group": "link"}
-[ pairs ]
-P     +C4' 1
-O1P   +C3' 1
-O2P   +C3' 1
-O5'   +C3' 1
-P     +C2' 1
-C5'   +O3' 1
-P     +H3' 1
-[ non-edges ]
-+P ++O3'
-
-[ link ]
 resname $base_pairs
 [ bonds ]
 O3'     <P  1 {"group": "link-circle"}
