@@ -24,13 +24,13 @@ from polyply.src.gen_dna import complement_dsDNA
     (
     [],
     {0: "DC5", 5: "DG3"},
-    {6: "DG3", 11: "DC5"}
+    {6: "DC5", 11: "DG3"}
     ),
     # circular DNA strand
     (
     [(5, 0)],
     {0: "DC", 5: "DG"},
-    {6: "DG", 11: "DC"}
+    {6: "DC", 11: "DG"}
     )
     ))
 def test_complement_dsDNA(extra_edges, termini, expect_ter):
@@ -47,14 +47,19 @@ def test_complement_dsDNA(extra_edges, termini, expect_ter):
 
     complement_dsDNA(test_DNA_mol)
 
-    resnames.update({7: "DC", 8: "DA", 9: "DG", 10: "DT"})
+    resnames.update({7: "DT", 8: "DG", 9: "DA", 10: "DC"})
     resnames.update(expect_ter)
-    new_edge_attrs = {(6, 7): "A", (7, 8): "B", (8, 9): "C", (9, 10): "D"}
+    new_edge_attrs = {(7, 8): "D", (8, 9): "C", (9, 10): "B", (10, 11): "A"}
     edge_attr.update(new_edge_attrs)
 
     new_resnames = nx.get_node_attributes(test_DNA_mol, "resname")
     assert new_resnames == resnames
 
     new_edge_attrs = nx.get_edge_attributes(test_DNA_mol, "test")
-    assert new_edge_attrs == edge_attr
+    for idx, jdx in new_edge_attrs:
+        if (idx, jdx) in edge_attr:
+            assert new_edge_attrs[(idx, jdx)] == edge_attr[(idx, jdx)]
+        else:
+            assert new_edge_attrs[(idx, jdx)] == edge_attr[(jdx, idx)]
+
     assert len(list(nx.connected_components(test_DNA_mol))) == 2
