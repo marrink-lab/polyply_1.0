@@ -3680,7 +3680,16 @@ C5'   -O3' 1
 P     -H3' 1
 
 [ link ]
-resname $base_pairs
+[ atoms ]
++O3' {"resname": "DA5|DG5|DT5|DC5"}
++C3' {"resname": "DA5|DG5|DT5|DC5"}
++C4' {"resname": "DA5|DG5|DT5|DC5"}
++C2' {"resname": "DA5|DG5|DT5|DC5"}
++H3' {"resname": "DA5|DG5|DT5|DC5"}
+O5' {"resname": "DA|DG|DT|DC"}
+P {"resname": "DA|DG|DT|DC"}
+O1P {"resname": "DA|DG|DT|DC"}
+O2P {"resname": "DA|DG|DT|DC"}
 [ bonds ]
 +O3'     P  1
 [ angles ]
@@ -3704,6 +3713,8 @@ O5'   +C3' 1
 P     +C2' 1
 C5'   +O3' 1
 P     +H3' 1
+[ non-edges ]
++P ++O3'
 
 [ link ]
 resname $base_pairs
