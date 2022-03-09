@@ -3682,6 +3682,32 @@ P     -H3' 1
 [ link ]
 resname $base_pairs
 [ bonds ]
++O3'     P  1
+[ angles ]
+P  +O3'  +C3'   1
+O1P  P   +O3'   1
+O2P  P   +O3'   1
+O5'  P   +O3'   1
+[ dihedrals ]
+P   +O3'   +C3'  +C4'   9  {"group": "link"}
+O1P  P     +O3'  +C3'   9  {"group": "link"}
+O2P  P     +O3'  +C3'   9  {"group": "link"}
+O5'  P     +O3'  +C3'   9  {"group": "link"}
+P   +O3'   +C3'  +C2'   9  {"group": "link"}
+C5'  O5'     P   +O3'   9  {"group": "link"}
+P   +O3'   +C3'  +H3'   9  {"group": "link"}
+[ pairs ]
+P     +C4' 1
+O1P   +C3' 1
+O2P   +C3' 1
+O5'   +C3' 1
+P     +C2' 1
+C5'   +O3' 1
+P     +H3' 1
+
+[ link ]
+resname $base_pairs
+[ bonds ]
 O3'     <P  1 {"group": "link-circle"}
 [ angles ]
 <P  O3'  C3'   1 {"group": "link-circle"}
