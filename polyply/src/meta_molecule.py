@@ -231,7 +231,7 @@ class MetaMolecule(nx.Graph):
 
         Returns
         -------
-        :class:`polyply.src.meta_molecule.MetaMolecule`
+        :class:`polyply.MetaMolecule`
         """
 
         meta_mol_graph = cls(force_field=force_field, mol_name=mol_name)
