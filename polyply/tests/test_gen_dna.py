@@ -42,9 +42,19 @@ def test_complement_dsDNA(extra_edges, termini, expect_ter):
     resnames.update(termini)
     nx.set_node_attributes(test_DNA_mol, resnames, "resname")
     nx.set_node_attributes(test_DNA_mol, dict(zip(nodes, range(1, 7))), "resid")
+    edge_attr = dict(zip(zip(nodes[:-1], nodes[1:]), ["A", "B", "C", "D"]))
+    nx.set_edge_attributes(test_DNA_mol, edge_attr, "test")
+
     complement_dsDNA(test_DNA_mol)
-    new_resnames = nx.get_node_attributes(test_DNA_mol, "resname")
+
     resnames.update({7: "DC", 8: "DA", 9: "DG", 10: "DT"})
     resnames.update(expect_ter)
+    new_edge_attrs = {(6, 7): "A", (7, 8): "B", (8, 9): "C", (9, 10): "D"}
+    edge_attr.update(new_edge_attrs)
+
+    new_resnames = nx.get_node_attributes(test_DNA_mol, "resname")
     assert new_resnames == resnames
+
+    new_edge_attrs = nx.get_edge_attributes(test_DNA_mol, "test")
+    assert new_edge_attrs == edge_attr
     assert len(list(nx.connected_components(test_DNA_mol))) == 2
