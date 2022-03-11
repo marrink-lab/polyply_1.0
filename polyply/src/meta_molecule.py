@@ -106,7 +106,7 @@ class MetaMolecule(nx.Graph):
         self.dfs = False
 
         # add resids to polyply meta-molecule nodes if they are not
-        # present. All algroithm relay on proper resids
+        # present. All algorithms rely on proper resids
         for node in self.nodes:
             if "resid" not in self.nodes[node]:
                 LOGGER.warning("Node {} has no resid. Setting resid to {} + 1.", node, node)
