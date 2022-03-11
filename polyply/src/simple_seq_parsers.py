@@ -197,7 +197,7 @@ def parse_fasta(filehandle):
     Read ig sequence in DNA/AA formatted file. See following link
     for format:
 
-    https://www.animalgenome.org/bioinfo/resources/manuals/seqformats
+    https://www.animalgenome.org/bioinfo/resources/manuals/seqformats#FASTA
     """
     with open(filehandle) as file_:
         lines = file_.readlines()
