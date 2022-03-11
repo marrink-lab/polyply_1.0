@@ -154,7 +154,7 @@ def parse_ig(filehandle):
     Read ig sequence in DNA/AA formatted file. See following link
     for format:
 
-    https://www.animalgenome.org/bioinfo/resources/manuals/seqformats
+    https://www.animalgenome.org/bioinfo/resources/manuals/seqformats#IG
 
     Parameters
     ----------
