@@ -256,7 +256,7 @@ class MetaMolecule(nx.Graph):
         return meta_mol_graph
 
     @classmethod
-    def from_sequence_file(cls, force_field, file_handle, mol_name):
+    def from_sequence_file(cls, force_field, file_path, mol_name):
         """
         Generate a meta_molecule from known sequence file parsers.
         For an up-to-date list of file-parsers see the
@@ -279,9 +279,9 @@ class MetaMolecule(nx.Graph):
         IOError
             if the file format is unkown.
         """
-        extension = file_handle.suffix.casefold()[1:]
+        extension = file_path.suffix.casefold()[1:]
         if extension in cls.parsers:
-            graph = cls.parsers[extension](file_handle)
+            graph = cls.parsers[extension](file_path)
         else:
             msg = f"File format {extension} is unkown."
             raise IOError(msg)
