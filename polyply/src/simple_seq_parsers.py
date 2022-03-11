@@ -89,6 +89,12 @@ def _parse_plain(lines, DNA=False, RNA=False):
     -------
     `:class:nx.Graph`
         the plain residue graph matching the sequence
+
+    Raises
+    ------
+    IOError
+        If the one letter residue codes don't match any
+        kown nucleobase
     """
     monomers = []
     for line in lines:
@@ -130,7 +136,7 @@ def _identify_nucleotypes(comments):
 
     Raises
     ------
-    IOError
+    FileFormatError
         neither RNA nor DNA keywords are found
         both RNA and DNA are found
     """
@@ -144,10 +150,10 @@ def _identify_nucleotypes(comments):
             RNA = True
 
     if RNA and DNA:
-        raise IOError("Found both RNA and DNA keyword in comment. Choose one.")
+        raise FileFormatError("Found both RNA and DNA keyword in comment. Choose one.")
 
     if not RNA and not DNA:
-        raise IOError("Cannot identify if sequence is RNA or DNA from comment.")
+        raise FileFormatError("Cannot identify if sequence is RNA or DNA from comment.")
 
     return DNA, RNA
 
@@ -192,7 +198,7 @@ def parse_ig(filehandle):
         seq_graph.edges[(0, nnodes-1)]["linktype"] = "circle"
         seq_graph.nodes[0]["resname"] = seq_graph.nodes[0]["resname"][:-1]
         seq_graph.nodes[nnodes-1]["resname"] = seq_graph.nodes[nnodes-1]["resname"][:-1]
-    print(idx, len(lines))
+
     if idx < len(lines) - 1 and not lines[idx+1].startswith(";"):
         LOGGER.warning("Found more than 1 sequence. Will only use the first one.")
 
