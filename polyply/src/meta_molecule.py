@@ -258,13 +258,33 @@ class MetaMolecule(nx.Graph):
     @classmethod
     def from_sequence_file(cls, force_field, file_handle, mol_name):
         """
-        Generate a meta_molecule from known sequence file parsers. Currently
-        plain, fasta, IG, as well as csv and txt are known for linear sequences
-        and json files for branched sequences.
+        Generate a meta_molecule from known sequence file parsers.
+        For an up-to-date list of file-parsers see the
+        MetaMolecule.parsers class variable.a
+
+        Parameters
+        ----------
+        force_field: :class:`vermouth.forcefield.ForceField`
+        file_path: :class:`pathlib.Path`
+            the path to the file
+        mol_name: str
+            name of the meta-molecule
+
+        Returns
+        -------
+        :class:`polyply.MetaMolecule`
+
+        Raises
+        ------
+        IOError
+            if the file format is unkown.
         """
         extension = file_handle.suffix.casefold()[1:]
         if extension in cls.parsers:
             graph = cls.parsers[extension](file_handle)
+        else:
+            msg = f"File format {extension} is unkown."
+            raise IOError(msg)
 
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
         return meta_mol
@@ -273,6 +293,22 @@ class MetaMolecule(nx.Graph):
     def from_itp(cls, force_field, itp_file, mol_name):
         """
         Constructs a :class::`MetaMolecule` from an itp file.
+        This will automatically set the MetaMolecule.molecule
+        attribute.
+
+        Parameters
+        ----------
+        force_field: :class:`vermouth.forcefield.ForceField`
+        itp_file: str or :class:`pathlib.Path`
+            the path to the file
+        mol_name: str
+            name of the meta-molecule
+
+        Returns
+        -------
+        :class:`polyply.MetaMolecule`
+
+
         """
         with open(itp_file) as file_:
             lines = file_.readlines()
@@ -288,6 +324,19 @@ class MetaMolecule(nx.Graph):
     def from_block(cls, force_field, mol_name):
         """
         Constructs a :class::`MetaMolecule` from an vermouth.molecule.
+        The force-field must contain the block with mol_name from
+        which to create the MetaMolecule. This function automatically
+        sets the MetaMolecule.molecule attribute.
+
+        Parameters
+        ----------
+        force_field: :class:`vermouth.forcefield.ForceField`
+        mol_name: str
+            name of the meta-molecule
+
+        Returns
+        -------
+        :class:`polyply.MetaMolecule`
         """
         _make_edges(force_field)
         block = force_field[mol_name]
