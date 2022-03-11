@@ -218,7 +218,7 @@ class MetaMolecule(nx.Graph):
     @staticmethod
     def _block_graph_to_res_graph(block):
         """
-        generate a residue graph from the nodes of `block`.
+        Generate a residue graph from the nodes of `block`.
 
         Parameters
         -----------
@@ -234,8 +234,21 @@ class MetaMolecule(nx.Graph):
     @classmethod
     def from_monomer_seq_linear(cls, force_field, monomers, mol_name):
         """
-        Constructs a meta graph for a linear molecule
-        which is the default assumption from
+        Constructs a MetaMolecule from a list of monomers representing
+        a linear molecule.
+
+        Parameters
+        ----------
+        force_field: :class:`vermouth.forcefield.ForceField`
+            the force-field that must contain the block
+        monomers: list[:class:`polyply.meta_molecule.Monomer`]
+            a list of Monomer tuples
+        mol_name: str
+            name of the molecule
+
+        Returns
+        -------
+        :class:`polyply.MetaMolecule`
         """
 
         meta_mol_graph = cls(force_field=force_field, mol_name=mol_name)
@@ -307,8 +320,6 @@ class MetaMolecule(nx.Graph):
         Returns
         -------
         :class:`polyply.MetaMolecule`
-
-
         """
         with open(itp_file) as file_:
             lines = file_.readlines()
@@ -331,15 +342,16 @@ class MetaMolecule(nx.Graph):
         Parameters
         ----------
         force_field: :class:`vermouth.forcefield.ForceField`
+            the force-field that must contain the block
         mol_name: str
-            name of the meta-molecule
+            name of the block matching a key in ForceField.blocks
 
         Returns
         -------
         :class:`polyply.MetaMolecule`
         """
         _make_edges(force_field)
-        block = force_field[mol_name]
+        block = force_field.blocks[mol_name]
         graph = MetaMolecule._block_graph_to_res_graph(block)
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
         meta_mol.molecule = force_field.blocks[mol_name].to_molecule()

@@ -22,6 +22,7 @@ import numpy as np
 import networkx as nx
 import vermouth.forcefield
 import vermouth.molecule
+from vermouth.gmx.itp_read import read_itp
 from polyply import TEST_DATA
 import polyply.src.meta_molecule
 from polyply.src.meta_molecule import (MetaMolecule, Monomer)
@@ -149,6 +150,23 @@ class TestPolyply:
        ff = vermouth.forcefield.ForceField(name='test_ff')
        name = "PEO"
        meta_mol = MetaMolecule.from_itp(ff, file_name, name)
+
+       assert set(meta_mol.nodes) == set(nodes)
+       assert set(meta_mol.edges) == set(edges)
+
+    @staticmethod
+    def test_from_block():
+       file_name = TEST_DATA + "/itp/PEO.itp"
+       edges = [(0,1), (1,2)]
+       nodes = [0, 1, 2]
+       attrs = {0: 'PEO', 1: 'PEO', 2: 'PEO'}
+
+       ff = vermouth.forcefield.ForceField(name='test_ff')
+       name = "PEO"
+       with open(file_name, "r") as _file:
+            lines = _file.readlines()
+       read_itp(lines, ff)
+       meta_mol = MetaMolecule.from_block(ff, name)
 
        assert set(meta_mol.nodes) == set(nodes)
        assert set(meta_mol.edges) == set(edges)
