@@ -70,7 +70,7 @@ def _parse_plain(lines, DNA=False, RNA=False):
     Parse a plain one letter sequence block either for DNA, RNA,
     or amino-acids. Lines can be a list of strings or a string.
     This function also sets the appropiate defaults for the termini
-    of DNA and RNA
+    of DNA and RNA.
 
     For the format see here:
 
