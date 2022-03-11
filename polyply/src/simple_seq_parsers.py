@@ -31,6 +31,9 @@ ONE_LETTER_RNA = {"A": "A",
                   "G": "G",
                   "T": "U"}
 
+class FileFormatError(Exception):
+    """Raised when a parser fails due to invalid file format."""
+
 def _monomers_to_linear_nx_graph(monomers):
     """
     Take a list of monomers and generate a linear
@@ -40,7 +43,7 @@ def _monomers_to_linear_nx_graph(monomers):
     seq_graph = nx.Graph()
     mon_range = range(0, len(monomers))
     seq_graph.add_edges_from(zip(mon_range[:-1], mon_range[1:]))
-    nx.set_node_attributes(seq_graph, {node: resname for node, resname in zip(seq_graph.nodes, monomers)}, "resname")
+    nx.set_node_attributes(seq_graph, dict(zip(seq_graph.nodes, monomers)), "resname")
     nx.set_node_attributes(seq_graph, {node: node+1 for node in seq_graph.nodes}, "resid")
     return seq_graph
 
@@ -62,7 +65,7 @@ def parse_plain_delimited(filehandle, delimiter=" "):
 parse_csv = partial(parse_plain_delimited, delimiter=',')
 parse_txt = parse_plain_delimited
 
-def parse_plain(lines, DNA=False, RNA=False):
+def _parse_plain(lines, DNA=False, RNA=False):
     """
     Parse a plain one letter sequence block either for DNA, RNA,
     or amino-acids. Lines can be a list of strings or a string.
@@ -138,7 +141,6 @@ def _identify_nucleotypes(comments):
             DNA = True
 
         if "RNA" in comment:
-            print("go here")
             RNA = True
 
     if RNA and DNA:
@@ -174,20 +176,24 @@ def parse_ig(filehandle):
                 ter_char = clean_line[-1]
                 clean_line = clean_line[:-1]
                 clean_lines.append(clean_line)
-                DNA, RNA = _identify_nucleotypes(comments)
-                seq_graph = parse_plain(clean_lines[1:], DNA=DNA, RNA=RNA)
-
-                if ter_char == '2':
-                    nnodes = len(seq_graph.nodes)
-                    seq_graph.add_edge(0, nnodes-1)
-                    seq_graph.edges[(0, nnodes-1)]["linktype"] = "circle"
-                    seq_graph.nodes[0]["resname"] = seq_graph.nodes[0]["resname"][:-1]
-                    seq_graph.nodes[nnodes-1]["resname"] = seq_graph.nodes[nnodes-1]["resname"][:-1]
                 break
             else:
                 clean_lines.append(clean_line)
+    else:
+        msg = "The sequence is not complete, it does not end with 1 or 2."
+        raise FileFormatError(msg)
 
-    if idx < len(lines):
+    DNA, RNA = _identify_nucleotypes(comments)
+    seq_graph = _parse_plain(clean_lines[1:], DNA=DNA, RNA=RNA)
+
+    if ter_char == '2':
+        nnodes = len(seq_graph.nodes)
+        seq_graph.add_edge(0, nnodes-1)
+        seq_graph.edges[(0, nnodes-1)]["linktype"] = "circle"
+        seq_graph.nodes[0]["resname"] = seq_graph.nodes[0]["resname"][:-1]
+        seq_graph.nodes[nnodes-1]["resname"] = seq_graph.nodes[nnodes-1]["resname"][:-1]
+    print(idx, len(lines))
+    if idx < len(lines) - 1 and not lines[idx+1].startswith(";"):
         LOGGER.warning("Found more than 1 sequence. Will only use the first one.")
 
     return seq_graph
@@ -203,7 +209,6 @@ def parse_fasta(filehandle):
         lines = file_.readlines()
 
     clean_lines = []
-    count = 0
     # first line must be a comment line
     DNA, RNA =_identify_nucleotypes([lines[0]])
 
@@ -214,7 +219,7 @@ def parse_fasta(filehandle):
 
         clean_lines.append(line)
 
-    seq_graph = parse_plain(clean_lines, RNA=RNA, DNA=DNA)
+    seq_graph = _parse_plain(clean_lines, RNA=RNA, DNA=DNA)
     return seq_graph
 
 def parse_json(filehandle):
