@@ -55,7 +55,7 @@ def parse_plain_delimited(filehandle, delimiter=" "):
     monomers = []
     for line in lines:
         for resname in line.strip().split(delimiter):
-            monomers.append(resname)
+            monomers.append(resname.strip())
     seq_graph =  _monomers_to_linear_nx_graph(monomers)
     return seq_graph
 
