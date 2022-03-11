@@ -128,18 +128,16 @@ class TestPolyply:
         meta_mol = MetaMolecule.from_sequence_file(ff, Path(file_name), name)
 
         assert len(nx.get_node_attributes(meta_mol, "resid")) == len(nodes)
-        #assert nx.get_node_attributes(meta_mol, "resname") == attrs
-        print(meta_mol.edges)
         assert set(meta_mol.nodes) == set(nodes)
         assert set(meta_mol.edges) == set(edges)
 
- #  @staticmethod
- #  def test_from_json_error_resid():
- #      ff = vermouth.forcefield.ForceField(name='test_ff')
- #      name = "test"
- #      file_name = TEST_DATA + "/json/fail.json"
- #      with pytest.raises(IOError):
- #          meta_mol = MetaMolecule.from_json(ff, file_name, name)
+    @staticmethod
+    def test_resid_assignment_error():
+        ff = vermouth.forcefield.ForceField(name='test_ff')
+        plain_graph = nx.Graph()
+        plain_graph.add_edges_from([("A", "B"), ("B", "C"), ("C", "D")])
+        with pytest.raises(IOError):
+            MetaMolecule(plain_graph, force_field=ff, mol_name="test")
 
     @staticmethod
     def test_from_itp():
