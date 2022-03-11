@@ -213,3 +213,11 @@ def test_split_residue_err(example_meta_molecule):
     split_pattern = ["A:A1-BB,BB1:A2-BB1,SC1,SC2"]
     with pytest.raises(IOError):
          example_meta_molecule.split_residue(split_pattern)
+
+def test_unkown_fromat_error():
+    with pytest.raises(IOError):
+        ff = vermouth.forcefield.ForceField(name='test_ff')
+        test_path = Path("random_file.extension")
+        MetaMolecule.from_sequence_file(force_field=ff,
+                                        file_path=test_path,
+                                        mol_name="test")
