@@ -71,7 +71,7 @@ def parse_plain(lines, DNA=False, RNA=False):
 
     For the format see here:
 
-    https://www.animalgenome.org/bioinfo/resources/manuals/seqformats
+    https://www.animalgenome.org/bioinfo/resources/manuals/seqformats#plain
 
     Parameters
     ----------
