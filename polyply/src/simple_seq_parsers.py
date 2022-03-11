@@ -109,10 +109,9 @@ def _parse_plain(lines, DNA=False, RNA=False):
 
             monomers.append(resname)
 
-    # make sure to set the defaults for the DNA terminals
-    if DNA:
-        monomers[0] = monomers[0] + "5"
-        monomers[-1] = monomers[-1] + "3"
+    # make sure to set the defaults for the DNA and RNA terminals
+    monomers[0] = monomers[0] + "5"
+    monomers[-1] = monomers[-1] + "3"
 
     seq_graph =  _monomers_to_linear_nx_graph(monomers)
     return seq_graph

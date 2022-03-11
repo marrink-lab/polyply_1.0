@@ -22,7 +22,8 @@ from polyply.src.meta_molecule import MetaMolecule
 from .example_fixtures import example_meta_molecule
 from polyply.src.simple_seq_parsers import (_identify_nucleotypes,
                                             _monomers_to_linear_nx_graph,
-                                            parse_plain)
+                                            _parse_plain,
+                                            FileFormatError)
 
 @pytest.mark.parametrize('comments, DNA, RNA', (
     # single DNA comment
@@ -58,7 +59,7 @@ def test_identify_nucleotypes(comments, DNA, RNA):
       ["lorem ipsum", "one more line"]
      ))
 def test_identify_nucleotypes_fail(comments):
-    with pytest.raises(IOError):
+    with pytest.raises(FileFormatError):
         _identify_nucleotypes(comments)
 
 def _node_match(nodeA, nodeB):
@@ -102,11 +103,11 @@ def test_ig_cirle():
 def test_sequence_parses_RNA(extension):
     filepath = Path(TEST_DATA + "/simple_seq_files/test_RNA."+ extension)
     seq_graph = MetaMolecule.parsers[extension](filepath)
-    monomers = ["A", "U", "C", "G", "U", "A", "C", "A", "U"]
+    monomers = ["A5", "U", "C", "G", "U", "A", "C", "A", "U3"]
     ref_graph = _monomers_to_linear_nx_graph(monomers)
     assert nx.is_isomorphic(seq_graph, ref_graph, node_match=_node_match)
 
 def test_unkown_nucleotype_error():
     with pytest.raises(IOError):
         lines = ["AABBBCCTG"]
-        parse_plain(lines, DNA=True, RNA=False)
+        _parse_plain(lines, DNA=True, RNA=False)
