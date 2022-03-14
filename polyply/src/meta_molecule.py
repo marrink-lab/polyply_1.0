@@ -17,7 +17,7 @@ from vermouth.graph_utils import make_residue_graph
 from vermouth.log_helpers import StyleAdapter, get_logger
 from .polyply_parser import read_polyply
 from .graph_utils import find_nodes_with_attributes
-from .simple_seq_parsers import parse_txt, parse_csv, parse_ig, parse_fasta, parse_json
+from .simple_seq_parsers import parse_txt, parse_ig, parse_fasta, parse_json
 
 Monomer = namedtuple('Monomer', 'resname, n_blocks')
 LOGGER = StyleAdapter(get_logger(__name__))
