@@ -89,8 +89,7 @@ class MetaMolecule(nx.Graph):
     """
 
     node_dict_factory = OrderedDict
-    parsers = {"csv": parse_csv,
-               "txt": parse_txt,
+    parsers = { "txt": parse_txt,
                "fasta": parse_fasta,
                "ig": parse_ig,
                "json": parse_json,}
