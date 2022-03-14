@@ -62,7 +62,6 @@ def parse_plain_delimited(filehandle, delimiter=" "):
     seq_graph =  _monomers_to_linear_nx_graph(monomers)
     return seq_graph
 
-parse_csv = partial(parse_plain_delimited, delimiter=',')
 parse_txt = parse_plain_delimited
 
 def _parse_plain(lines, DNA=False, RNA=False):
