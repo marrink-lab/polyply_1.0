@@ -74,7 +74,6 @@ def test_monomers_to_linear_nx_graph(example_meta_molecule):
 
 @pytest.mark.parametrize('extension, ', (
       "txt",
-      "csv",
       "ig",
       "fasta"
      ))
