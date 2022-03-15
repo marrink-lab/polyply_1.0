@@ -282,7 +282,17 @@ def parse_json(filepath):
     Read in json file that specifies a molecular
     sequence at the residue level including connectivity.
 
-    
+    Parameters
+    ----------
+    filepath: str or path
+        path to file
+
+    Returns
+    --------
+    :class:`nx.Graph`
+        A plain graph of the molecular sequence with
+        node attributes resname and resid
+
     """
     with open(filepath) as file_:
         data = json.load(file_)
