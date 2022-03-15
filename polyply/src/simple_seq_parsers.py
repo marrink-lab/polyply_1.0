@@ -47,12 +47,27 @@ def _monomers_to_linear_nx_graph(monomers):
     nx.set_node_attributes(seq_graph, {node: node+1 for node in seq_graph.nodes}, "resid")
     return seq_graph
 
-def parse_plain_delimited(filehandle, delimiter=" "):
+def _parse_plain_delimited(filepath, delimiter=" "):
     """
     Parse a plain delimited text file. The delimiter can
-    be any special character.
+    be any special character. Note the current function
+    has only been tested for space delimeted txt files
+    so far. Use other delimiters at own risk or make
+    sure the parsing behaviour is as expected.
+
+    Parameters
+    ----------
+    filepath: str or path
+    delimeter: str
+        any string character that delimits the file
+
+    Returns
+    --------
+    :class:`nx.Graph`
+        A plain graph of the molecular sequence with
+        node attributes resname and resid
     """
-    with open(filehandle) as file_:
+    with open(filepath) as file_:
         lines = file_.readlines()
 
     monomers = []
@@ -62,7 +77,7 @@ def parse_plain_delimited(filehandle, delimiter=" "):
     seq_graph =  _monomers_to_linear_nx_graph(monomers)
     return seq_graph
 
-parse_txt = parse_plain_delimited
+parse_txt = _parse_plain_delimited
 
 def _parse_plain(lines, DNA=False, RNA=False):
     """
@@ -87,7 +102,8 @@ def _parse_plain(lines, DNA=False, RNA=False):
     Returns
     -------
     `:class:nx.Graph`
-        the plain residue graph matching the sequence
+        A plain graph of the molecular sequence with
+        node attributes resname and resid
 
     Raises
     ------
@@ -155,18 +171,35 @@ def _identify_nucleotypes(comments):
 
     return DNA, RNA
 
-def parse_ig(filehandle):
+def parse_ig(filepath):
     """
-    Read ig sequence in DNA/AA formatted file. See following link
-    for format:
+    Read ig sequence in DNA/RNA formatted file.
+
+    The parser automatically translates the one letter code to the
+    double letter nucleobase resnames, sets special residue names
+    for the 5' and 3' end and identifies if it is RNA or DNA. This is
+    done by eading the comments and looking for either term being
+    present in the comments. In addition if a circular sequence is given
+    the linktype circle attribute is set, which is picked up by the
+    :class:`polyply.ApplyLinks` processor for correctly making
+    circular itp files.
+
+    See following link for format:
 
     https://www.animalgenome.org/bioinfo/resources/manuals/seqformats#IG
 
     Parameters
     ----------
-    filehandle: :class:`pathlib.Path`
+    filepath: :class:`pathlib.Path`
+
+
+    Returns
+    --------
+    :class:`nx.Graph`
+        A plain graph of the molecular sequence with
+        node attributes resname and resid
     """
-    with open(filehandle) as file_:
+    with open(filepath) as file_:
         lines = file_.readlines()
 
     clean_lines = []
@@ -197,19 +230,37 @@ def parse_ig(filehandle):
         seq_graph.nodes[0]["resname"] = seq_graph.nodes[0]["resname"][:-1]
         seq_graph.nodes[nnodes-1]["resname"] = seq_graph.nodes[nnodes-1]["resname"][:-1]
 
-    if idx < len(lines) - 1 and not lines[idx+1].startswith(";"):
-        LOGGER.warning("Found more than 1 sequence. Will only use the first one.")
+    if idx < len(lines) - 1:
+        LOGGER.warning("There may be more than one sequence in the file. We will only use the first one.")
 
     return seq_graph
 
-def parse_fasta(filehandle):
+def parse_fasta(filepath):
     """
-    Read ig sequence in DNA/AA formatted file. See following link
-    for format:
+    Read fasta sequence of DNA/RNA.
 
+    The parser automatically translates the one letter code to the
+    double letter nucleobase resnames, sets special residue names
+    for the 5' and 3' end and identifies if it is RNA or DNA. This is
+    done by eading the comments and looking for either term being
+    present in the comments.
+
+
+    See following link for format:
     https://www.animalgenome.org/bioinfo/resources/manuals/seqformats#FASTA
+
+    Parameters
+    ----------
+    filepath: str or path
+        path to file
+
+    Returns
+    --------
+    :class:`nx.Graph`
+        A plain graph of the molecular sequence with
+        node attributes resname and resid
     """
-    with open(filehandle) as file_:
+    with open(filepath) as file_:
         lines = file_.readlines()
 
     clean_lines = []
@@ -226,11 +277,14 @@ def parse_fasta(filehandle):
     seq_graph = _parse_plain(clean_lines, RNA=RNA, DNA=DNA)
     return seq_graph
 
-def parse_json(filehandle):
+def parse_json(filepath):
     """
-    Read in json file.
+    Read in json file that specifies a molecular
+    sequence at the residue level including connectivity.
+
+    
     """
-    with open(filehandle) as file_:
+    with open(filepath) as file_:
         data = json.load(file_)
 
     init_json_graph = nx.Graph(json_graph.node_link_graph(data))
