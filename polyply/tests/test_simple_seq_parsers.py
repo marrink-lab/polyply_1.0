@@ -95,6 +95,11 @@ def test_ig_cirle():
                             ref_graph,
                             node_match=_node_match)
 
+def test_ig_termination_fail():
+    filepath = Path(TEST_DATA + "/simple_seq_files/test_fail.ig")
+    with pytest.raises(FileFormatError):
+        seq_graph = MetaMolecule.parsers["ig"](filepath)
+
 @pytest.mark.parametrize('extension, ', (
       "ig",
       "fasta"
