@@ -183,3 +183,4 @@ def get_all_predecessors(graph, node, start_node=0):
             break
     predecessors.reverse()
     return predecessors
+

@@ -17,6 +17,7 @@ Test that force field files are properly read.
 
 import textwrap
 import pytest
+from pathlib import Path
 import numpy as np
 import networkx as nx
 import vermouth.forcefield
@@ -122,24 +123,22 @@ class TestPolyply:
            {0: 'PEO', 1: 'PEO', 2: 'PEO'}
           ),
            ))
-    def test_from_json(file_name, edges, nodes, attrs):
+    def test_from_seq_file(file_name, edges, nodes, attrs):
         ff = vermouth.forcefield.ForceField(name='test_ff')
         name = "test"
-        meta_mol = MetaMolecule.from_json(ff, file_name, name)
+        meta_mol = MetaMolecule.from_sequence_file(ff, Path(file_name), name)
 
         assert len(nx.get_node_attributes(meta_mol, "resid")) == len(nodes)
-        #assert nx.get_node_attributes(meta_mol, "resname") == attrs
-        print(meta_mol.edges)
         assert set(meta_mol.nodes) == set(nodes)
         assert set(meta_mol.edges) == set(edges)
 
     @staticmethod
-    def test_from_json_error_resid():
+    def test_resid_assignment_error():
         ff = vermouth.forcefield.ForceField(name='test_ff')
-        name = "test"
-        file_name = TEST_DATA + "/json/fail.json"
+        plain_graph = nx.Graph()
+        plain_graph.add_edges_from([("A", "B"), ("B", "C"), ("C", "D")])
         with pytest.raises(IOError):
-            meta_mol = MetaMolecule.from_json(ff, file_name, name)
+            MetaMolecule(plain_graph, force_field=ff, mol_name="test")
 
     @staticmethod
     def test_from_itp():
@@ -232,3 +231,11 @@ def test_split_residue_err(example_meta_molecule):
     split_pattern = ["A:A1-BB,BB1:A2-BB1,SC1,SC2"]
     with pytest.raises(IOError):
          example_meta_molecule.split_residue(split_pattern)
+
+def test_unkown_fromat_error():
+    with pytest.raises(IOError):
+        ff = vermouth.forcefield.ForceField(name='test_ff')
+        test_path = Path("random_file.extension")
+        MetaMolecule.from_sequence_file(force_field=ff,
+                                        file_path=test_path,
+                                        mol_name="test")
