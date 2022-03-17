@@ -109,11 +109,12 @@ def generate_end_end_distances(specs,
                "box to be at least {} nm.")
         raise IOError(msg.format(max(ee_samples)))
 
-    if max(ee_samples) > min(box):
-        msg = ("Your smallest box vector {} is smaller than the largest end-to-end distance {}.\n"
-               "This can lead to artifically oriented chains. You might want to increase the\n"
-               "boxsize to be at least {}")
-        LOGGER.warning(msg, min(box), max(ee_samples), min(box))
+    if max(ee_distances) > min(box):
+        msg = ("Your smallest box vector {} is smaller than the largest end-to-end distance {},\n"
+               "which is dictated by the set persistence length. This can lead to artifically \n"
+               "oriented chains or the algorithm failing to converge. You should increase \n"
+               "the boxsize to be at least {} ideally even a bit larger.")
+        LOGGER.warning(msg, min(box), max(ee_distances), min(box))
 
     return ee_samples
 
