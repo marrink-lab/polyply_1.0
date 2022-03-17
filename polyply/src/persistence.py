@@ -94,20 +94,6 @@ def generate_end_end_distances(specs,
     # filter the end-to-end distances
     ee_distances = ee_distances[probabilities > limit_prob]
     probabilities = probabilities[probabilities > limit_prob]
-    # raise warning if the smallest box vector is smaller than the largest end-to-end
-    # distance
-    if max(ee_distances) > np.sqrt(3*min(box)**2):
-        msg = ("Sampling the end-to-end distance distribution yielded end-to-end distances\n"
-               "that are larger than the box diagonal. This will not work. Please increase the\n"
-               "box to be at least {} nm.")
-        raise IOError(msg.format(max(ee_distances)))
-
-    if max(ee_distances) > min(box):
-        msg = ("Your smallest box vector {} is smaller than the largest end-to-end distance {}.\n"
-               "This can lead to artifically oriented chains. You might want to increase the\n"
-               "boxsize to be at least {}")
-        LOGGER.warning(msg, min(box), max(ee_distances), min(box))
-
     #TODO
     #replace choice by https://numpy.org/doc/stable/reference/random/generated/
     #                          numpy.random.Generator.choice.html#numpy.random.Generator.choice
@@ -115,6 +101,22 @@ def generate_end_end_distances(specs,
     ee_samples = np.random.choice(ee_distances,
                                   p=probabilities/np.sum(probabilities),
                                   size=len(specs.mol_idxs))
+    # raise warning if the smallest box vector is smaller than the largest end-to-end
+    # distance
+    if max(ee_samples) > np.sqrt(3*min(box)**2):
+        msg = ("Sampling the end-to-end distance distribution yielded end-to-end distances\n"
+               "that are larger than the box diagonal. This will not work. Please increase the\n"
+               "box to be at least {} nm.")
+        raise IOError(msg.format(max(ee_samples)))
+
+    if max(ee_distances) > min(box):
+        msg = ("Your smallest box vector {} is smaller than the largest end-to-end distance {},\n"
+               "which is dictated by the set persistence length. This can prevent the algorithm \n"
+               "from converging, since it will not be able to place the molecule in the \n"
+               "relatively small box dimensions. You should increase the boxsize to be at \n"
+               "least {} ideally even a bit larger.")
+        LOGGER.warning(msg, min(box), max(ee_distances), min(box))
+
     return ee_samples
 
 def sample_end_to_end_distances(topology, nonbond_matrix, seed=None):
