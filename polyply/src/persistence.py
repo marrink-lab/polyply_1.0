@@ -111,9 +111,10 @@ def generate_end_end_distances(specs,
 
     if max(ee_distances) > min(box):
         msg = ("Your smallest box vector {} is smaller than the largest end-to-end distance {},\n"
-               "which is dictated by the set persistence length. This can lead to artifically \n"
-               "oriented chains or the algorithm failing to converge. You should increase \n"
-               "the boxsize to be at least {} ideally even a bit larger.")
+               "which is dictated by the set persistence length. This can prevent the algorithm \n"
+               "from converging, since it will not be able to place the molecule in the \n"
+               "relatively small box dimensions. You should increase the boxsize to be at \n"
+               "least {} ideally even a bit larger.")
         LOGGER.warning(msg, min(box), max(ee_distances), min(box))
 
     return ee_samples
