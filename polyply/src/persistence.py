@@ -109,13 +109,14 @@ def generate_end_end_distances(specs,
                "box to be at least {} nm.")
         raise IOError(msg.format(max(ee_samples)))
 
-    if max(ee_distances) > min(box):
+    if max(ee_samples) > min(box):
         msg = ("Your smallest box vector {} is smaller than the largest end-to-end distance {},\n"
                "which is dictated by the set persistence length. This can prevent the algorithm \n"
                "from converging, since it will not be able to place the molecule in the \n"
                "relatively small box dimensions. You should increase the boxsize to be at \n"
                "least {} ideally even a bit larger.")
-        LOGGER.warning(msg, min(box), max(ee_distances), min(box))
+        # add a 10% buffer just to be sure
+        LOGGER.warning(msg, min(box), max(ee_samples), max(ee_samples)*1.1)
 
     return ee_samples
 
