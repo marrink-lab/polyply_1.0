@@ -13,3 +13,15 @@ PEO 3
 3 2 2 gb_18 {"comment":"CHn-OA,OE"}
 [ angles ]
 3 2 1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
+
+[ moleculetype ]
+mPEG 3
+[ atoms ]
+1 CH3 1 mPEG EC1 1 0.29 15.0350
+2 OE  1 mPEG O1 2 -0.58 15.9994
+3 CH3 1 mPEG EC2 3 0.29 15.0350
+[ bonds ]
+1 2 2 gb_18 {"comment":"CHn-OA,OE"}
+3 2 2 gb_18 {"comment":"CHn-OA,OE"}
+[ angles ]
+3 2 1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
