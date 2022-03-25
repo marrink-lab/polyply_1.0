@@ -271,6 +271,7 @@ PMMA 3
 2 6 1
 4 6 1
 5 7 1
+7 6 1
 
 [ moleculetype ]
 PAM 3
@@ -357,6 +358,8 @@ PMAM 3
 2 6 1
 2 7 1
 5 7 1
+8 4 1
+8 5 1
 4 6 1 {"ifndef": "eq_polyply", "version": "1"}
 4 7 1 {"ifndef": "eq_polyply", "version": "1"}
 4 6 1 4.3755200e-04  1.0591530e-07 {"ifdef": "eq_polyply", "version": "2", "comment": "pairtype HC-O"}
