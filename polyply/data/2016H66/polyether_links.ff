@@ -2,7 +2,7 @@
 ;  POLYETHER-BONDS
 ;---------------------------
 [ link ]
-resname "PEO"
+resname "PEO|mPEG"
 [ atoms ]
 EC2 {"replace": {"atype": "CH2", "mass": "14.0270"}}
 +EC1 {"replace": {"atype": "CH2", "mass": "14.0270"}}
@@ -13,11 +13,11 @@ EC2 {"replace": {"atype": "CH2", "mass": "14.0270"}}
 ;  POLYETHER-ANGLES
 ;---------------------------
 [ link ]
-resname "PEO"
+resname "PEO|mPEG"
 [ angles ]
 EC2 +EC1 +O1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
 [ link ]
-resname "PEO"
+resname "PEO|mPEG"
 [ angles ]
 +EC1 EC2 O1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
 
@@ -25,21 +25,21 @@ resname "PEO"
 ;  POLYETHER-DIHEDRALS
 ;---------------------------
 [ link ]
-resname "PEO"
+resname "PEO|mPEG"
 [ dihedrals ]
 EC1 O1 EC2 +EC1 1 gd_42 {"comment":"CHn-CHn-OE-CHn", "version":"1" , "group":"link"}
 EC1 O1 EC2 +EC1 1 gd_43 {"comment":"CHn-CHn-OE-CHn", "version":"2" , "group":"link"}
 EC1 O1 EC2 +EC1 1 gd_44 {"comment":"CHn-CHn-OE-CHn", "version":"3" , "group":"link"}
 
 [ link ]
-resname "PEO"
+resname "PEO|mPEG"
 [ dihedrals ]
 O1 EC2 +EC1 +O1 1 gd_45 {"comment":"OE-CHn-CHn-OE", "version":"1" , "group":"link"}
 O1 EC2 +EC1 +O1 1 gd_46 {"comment":"OE-CHn-CHn-OE", "version":"2" , "group":"link"}
 O1 EC2 +EC1 +O1 1 gd_47 {"comment":"OE-CHn-CHn-OE", "version":"3" , "group":"link"}
 
 [ link ]
-resname "PEO"
+resname "PEO|mPEG"
 [ dihedrals ]
 EC2 +EC1 +O1 +EC2 1 gd_42 {"comment":"CHn-CHn-OE-CHn", "version":"1" , "group":"link"}
 EC2 +EC1 +O1 +EC2 1 gd_43 {"comment":"CHn-CHn-OE-CHn", "version":"2" , "group":"link"}
@@ -49,7 +49,7 @@ EC2 +EC1 +O1 +EC2 1 gd_44 {"comment":"CHn-CHn-OE-CHn", "version":"3" , "group":"
 ;  POLYETHER-PAIRS
 ;---------------------------
 [ link ]
-resname "PEO"
+resname "PEO|mPEG"
 [ atoms ]
 EC1 { }
 O1 { }
@@ -83,7 +83,7 @@ EC2 +EC1
 +EC1 +O1
 +O1 +EC2
 [ link ]
-resname "PEO"
+resname "PEO|mPEG"
 [ atoms ]
 EC1 { }
 O1 { }
