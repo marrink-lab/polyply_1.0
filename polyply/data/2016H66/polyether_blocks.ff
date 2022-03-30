@@ -14,6 +14,9 @@ PEO 3
 [ angles ]
 3 2 1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
 
+; this residue is exclusively intended to be a side-chain
+; substiuent to PMA or PMMA. It is identical in all other
+; ways to PEO
 [ moleculetype ]
 mPEG 3
 [ atoms ]
