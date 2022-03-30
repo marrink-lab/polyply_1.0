@@ -268,6 +268,9 @@ PAM 3
 1 5 1
 2 6 1
 2 7 1
+; pairtypes involving hydrogen are zero by default, which however is bad during the polyply
+; energy minization step because it can happen that the oxygen and hydrogen overlap leading
+; to a undefined gradient. Adding this pair potential helps steering the conformation
 4 6 1 {"ifndef": "eq_polyply", "version": "1"}
 4 7 1 {"ifndef": "eq_polyply", "version": "1"}
 4 6 1 4.3755200e-04  1.0591530e-07 {"ifdef": "eq_polyply", "version": "2", "comment": "pairtype HC-O"}
@@ -320,5 +323,8 @@ PMAM 3
 8 5 1
 4 6 1 {"ifndef": "eq_polyply", "version": "1"}
 4 7 1 {"ifndef": "eq_polyply", "version": "1"}
+; pairtypes involving hydrogen are zero by default, which however is bad during the polyply
+; energy minization step because it can happen that the oxygen and hydrogen overlap leading
+; to a undefined gradient. Adding this pair potential helps steering the conformation
 4 6 1 4.3755200e-04  1.0591530e-07 {"ifdef": "eq_polyply", "version": "2", "comment": "pairtype HC-O"}
 4 7 1 4.3755200e-04  1.0591530e-07 {"ifdef": "eq_polyply", "version": "2", "comment": "pairtype HC-O"}
