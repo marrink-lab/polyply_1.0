@@ -14,6 +14,8 @@
 """
 Test that build files are properly read.
 """
+
+import logging
 import pytest
 import textwrap
 import math
@@ -156,9 +158,9 @@ def topology():
    20    N0  20   GLU    SC2  2 0.00     45
    21    N0  21   GLU    SC2  2 0.00     45
    22    N0  22   GLU    SC2  2 0.00     45
-   23    N0  22   GLU    SC2  2 0.00     45
-   24    N0  22   GLU    SC2  2 0.00     45
-   25    N0  22   GLU    SC2  2 0.00     45
+   23    N0  23   GLU    SC2  2 0.00     45
+   24    N0  24   GLU    SC2  2 0.00     45
+   25    N0  25   GLU    SC2  2 0.00     45
     [ bonds ]
     1     2    1  0.47 2000
     2     3    1  0.47 2000
@@ -299,3 +301,20 @@ def test_error(topology):
                                             box=np.array([1., 1., 1.]))
     with pytest.raises(IOError):
         sample_end_to_end_distances(topology, nb_engine, seed=seed)
+
+def test_warning(caplog, topology):
+    caplog.set_level(logging.WARNING)
+    specs = [PersistenceSpecs(model="WCM", lp=1.5, start=0, stop=21, mol_idxs=list(range(0, 10)))]
+    seed = 63594
+    avg_step = 0.6533
+    topology.persistences = specs
+    nb_engine = NonBondEngine.from_topology(topology.molecules,
+                                            topology,
+                                            box=np.array([9.0, 9., 9.]))
+    with caplog.at_level(logging.WARNING):
+        sample_end_to_end_distances(topology, nb_engine, seed=seed)
+        for record in caplog.records:
+            assert record.levelname == "WARNING"
+            break
+        else:
+            assert False
