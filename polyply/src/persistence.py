@@ -14,7 +14,7 @@
 import numpy as np
 import networkx as nx
 from vermouth.log_helpers import StyleAdapter, get_logger
-from .graph_utils import compute_avg_step_length
+from .graph_utils import compute_avg_step_length, get_all_predecessors
 from .restraints import set_distance_restraint
 
 LOGGER = StyleAdapter(get_logger(__name__))
@@ -109,13 +109,14 @@ def generate_end_end_distances(specs,
                "box to be at least {} nm.")
         raise IOError(msg.format(max(ee_samples)))
 
-    if max(ee_distances) > min(box):
+    if max(ee_samples) > min(box):
         msg = ("Your smallest box vector {} is smaller than the largest end-to-end distance {},\n"
                "which is dictated by the set persistence length. This can prevent the algorithm \n"
                "from converging, since it will not be able to place the molecule in the \n"
                "relatively small box dimensions. You should increase the boxsize to be at \n"
                "least {} ideally even a bit larger.")
-        LOGGER.warning(msg, min(box), max(ee_distances), min(box))
+        # add a 10% buffer just to be sure
+        LOGGER.warning(msg, min(box), max(ee_samples), max(ee_samples)*1.1)
 
     return ee_samples
 
@@ -149,13 +150,15 @@ def sample_end_to_end_distances(topology, nonbond_matrix, seed=None):
 
         # first we initalize the path
         molecule.root = specs.start
-        path = list(molecule.search_tree.edges)
-
+        path = get_all_predecessors(molecule.search_tree,
+                                    start_node=specs.start,
+                                    node=specs.stop)
+        edge_path = list(zip(path[:-1], path[1:]))
         # compute the average step length end-to-end
         avg_step_length, max_length = compute_avg_step_length(molecule,
                                                               specs.mol_idxs[0],
                                                               nonbond_matrix,
-                                                              path)
+                                                              edge_path)
         # generate a distribution of end-to-end distances
         distribution = generate_end_end_distances(specs,
                                                   avg_step_length,
