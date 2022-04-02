@@ -28,6 +28,7 @@ except ImportError:
     deferred_open = open
 from vermouth.file_writer import DeferredFileWriter
 from vermouth.citation_parser import citation_formatter
+from vermouth.graph_utils import make_residue_graph
 from polyply import (MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
 from .load_library import load_library
 
@@ -56,6 +57,29 @@ def split_seq_string(sequence):
         monomers.append(Monomer(resname=resname, n_blocks=n_blocks))
     return monomers
 
+def _are_connected(graph, origin_nodes, target_nodes):
+    for node in origin_nodes:
+        for neigh in graph.neighbors(node):
+            if neigh in target_nodes:
+                return True
+    return False
+
+def find_missing_links(meta_molecule):
+    """
+    Given a connected meta_molecule graph and a disconnected
+    molecule, figure out which residue connections are missing.
+    """
+    for origin, target in meta_molecule.edges:
+        origin_nodes = meta_molecule.nodes[origin]['graph'].nodes
+        target_nodes = meta_molecule.nodes[target]['graph'].nodes
+        if not _are_connected(meta_molecule.molecule, origin_nodes, target_nodes):
+            resA = meta_molecule.nodes[origin]["resname"]
+            resB = meta_molecule.nodes[target]["resname"]
+            idxA = meta_molecule.nodes[origin]["resid"]
+            idxB = meta_molecule.nodes[target]["resid"]
+            yield {"resA": resA, "idxA": idxA, "resB": resB, "idxB": idxB}
+
+
 def gen_params(args):
     # Import of Itp and FF files
     LOGGER.info("reading input and library files",  type="step")
@@ -80,9 +104,9 @@ def gen_params(args):
 
     # Raise warning if molecule is disconnected
     if not nx.is_connected(meta_molecule.molecule):
-        n_components = len(list(nx.connected_components(meta_molecule.molecule)))
-        msg = "You molecule consists of {:d} disjoint parts. Perhaps links were not applied correctly."
-        LOGGER.warning(msg, (n_components))
+        msg = "Missing link between resiude {idxA} {resA} and residue {idxB} {resB}"
+        for missing in find_missing_links(meta_molecule):
+            LOGGER.warning(msg, **missing)
 
     with deferred_open(args.outpath, 'w') as outpath:
         header = [ ' '.join(sys.argv) + "\n" ]
