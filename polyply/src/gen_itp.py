@@ -57,6 +57,10 @@ def split_seq_string(sequence):
         monomers.append(Monomer(resname=resname, n_blocks=n_blocks))
     return monomers
 
+# TODO move the two functions below to meta-molecule
+# and generalize to a function that returns edges
+# replacing the equivalent function in graph_utils
+
 def _are_connected(graph, origin_nodes, target_nodes):
     """
     Given a list of origin nodes check if any of these
