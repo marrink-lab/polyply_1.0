@@ -58,6 +58,10 @@ def split_seq_string(sequence):
     return monomers
 
 def _are_connected(graph, origin_nodes, target_nodes):
+    """
+    Given a list of origin nodes check if any of these
+    nodes is neighbor to any of the target nodes.
+    """
     for node in origin_nodes:
         for neigh in graph.neighbors(node):
             if neigh in target_nodes:
@@ -68,6 +72,16 @@ def find_missing_links(meta_molecule):
     """
     Given a connected meta_molecule graph and a disconnected
     molecule, figure out which residue connections are missing.
+
+    Parameters
+    ----------
+    meta_molecule: `:class:polyply.MetaMolecule`
+
+    Yields:
+    --------
+    dict
+        dict containing the resnams and resids of the
+        nodes corresponding to the missing links
     """
     for origin, target in meta_molecule.edges:
         origin_nodes = meta_molecule.nodes[origin]['graph'].nodes
@@ -104,6 +118,8 @@ def gen_params(args):
 
     # Raise warning if molecule is disconnected
     if not nx.is_connected(meta_molecule.molecule):
+        LOGGER.warning("Your molecule consists of disjoint parts."
+                       "Perhaps links were not applied correctly.")
         msg = "Missing link between resiude {idxA} {resA} and residue {idxB} {resB}"
         for missing in find_missing_links(meta_molecule):
             LOGGER.warning(msg, **missing)
