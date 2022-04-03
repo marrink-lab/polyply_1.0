@@ -20,7 +20,8 @@ import networkx as nx
 import vermouth.forcefield
 import vermouth.molecule
 import vermouth.gmx.itp_read
-from polyply import gen_params, TEST_DATA
+from polyply import gen_params, TEST_DATA, MetaMolecule
+from polyply.src.gen_itp import find_missing_links
 
 class TestGenParams():
     @staticmethod
@@ -112,7 +113,19 @@ class TestGenParams():
         assert int_types_ref == int_types_new
 
         for key in force_field.blocks[ref_name].interactions:
-            print(key)
             for term in force_field.blocks[ref_name].interactions[key]:
-                print(term)
                 assert term in force_field.blocks[args.name].interactions[key]
+
+def test_find_missing_links():
+    fname = TEST_DATA + "/gen_params/ref/P3HT_10.itp"
+    ff = vermouth.forcefield.ForceField("test")
+    meta_mol = MetaMolecule.from_itp(ff, fname, "P3HTref")
+    meta_mol.molecule.remove_edge(39, 45) # resid 7,8
+    meta_mol.molecule.remove_edge(15, 21) # resid 3,4
+    missing = list(find_missing_links(meta_mol))
+    assert len(missing) == 2
+    for edge in missing:
+        assert edge["resA"] == "P3HTref"
+        assert edge["resB"] == "P3HTref"
+        assert edge["idxA"] in [3, 4, 7, 8]
+        assert edge["idxB"] in [3, 4, 7, 8]
