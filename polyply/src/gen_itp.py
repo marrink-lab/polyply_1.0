@@ -124,7 +124,7 @@ def gen_params(args):
     if not nx.is_connected(meta_molecule.molecule):
         LOGGER.warning("Your molecule consists of disjoint parts."
                        "Perhaps links were not applied correctly.")
-        msg = "Missing link between resiude {idxA} {resA} and residue {idxB} {resB}"
+        msg = "Missing link between residue {idxA} {resA} and residue {idxB} {resB}"
         for missing in find_missing_links(meta_molecule):
             LOGGER.warning(msg, **missing)
 
