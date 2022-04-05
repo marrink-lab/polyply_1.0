@@ -29,6 +29,8 @@ from .annotate_dna import AnnotateDNA
 from .build_file_parser import read_build_file
 from . import coord_file_parser
 from .build_system import BuildSystem
+from .meta_molecule import MetaMolecule
+from .load_library import load_library
 
 LOGGER = StyleAdapter(get_logger(__name__))
 BASE_LIBRARY = {"DA": "DT", "DT": "DA", "DG": "DC", "DC": "DG",
@@ -98,7 +100,19 @@ def _read_templates_from_lib(topology, force_field):
 
 def gen_dna(args):
     LOGGER.info("reading topology",  type="step")
-    topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
+    extension = args.toppath.suffix.casefold()[1:]
+    if extension == "top":
+        topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
+    elif extension == 'json':
+        force_field = load_library(args.name, ['martini2'], None)
+        topology = Topology(force_field=force_field)
+        meta_molecule = MetaMolecule.from_json(json_file=args.seqf,
+                                               force_field=force_field,
+                                               mol_name=args.name)
+        topology.molecules = [meta_molecule]
+    else:
+        raise IOError("Cannot read coordinates from file"\
+                      f"with extension .{extension}")
 
     LOGGER.info("reading build file",  type="step")
     if args.build:
@@ -106,7 +120,7 @@ def gen_dna(args):
             lines = build_file.readlines()
             read_build_file(lines, topology.molecules, topology)
 
-    LOGGER.info("generating/load templates",  type="step")
+    LOGGER.info("generate/load templates",  type="step")
     if args.generate_templates:
         GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
     else:
