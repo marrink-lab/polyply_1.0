@@ -38,6 +38,7 @@ def split_seq_string(sequence):
     """
     Split a string definition for a linear sequence into monomer
     blocks and raise errors if the sequence is not valid.
+
     Parameters
     -----------
     sequence: str
@@ -68,18 +69,9 @@ def gen_params(args):
         meta_molecule = MetaMolecule.from_monomer_seq_linear(monomers=monomers,
                                                              force_field=force_field,
                                                              mol_name=args.name)
-    #ToDo
-    # fix too broad except
     elif args.seq_file:
         LOGGER.info("reading sequence from file",  type="step")
-        extension = args.seq_file.suffix.casefold()[1:]
-        try:
-            parser = getattr(MetaMolecule, 'from_{}'.format(extension))
-            meta_molecule = parser(json_file=args.seq_file,
-                                  force_field=force_field,
-                                  mol_name=args.name)
-        except AttributeError:
-            raise IOError("Cannot parse file with extension {}.".format(extension))
+        meta_molecule = MetaMolecule.from_sequence_file(force_field, args.seq_file, args.name)
 
     # Generate complementary DNA strand
     if args.dsdna:

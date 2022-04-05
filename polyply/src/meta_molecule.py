@@ -12,13 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from collections import (namedtuple, OrderedDict)
-import json
 import networkx as nx
-from networkx.readwrite import json_graph
 from vermouth.graph_utils import make_residue_graph
 from vermouth.log_helpers import StyleAdapter, get_logger
 from .polyply_parser import read_polyply
 from .graph_utils import find_nodes_with_attributes
+from .simple_seq_parsers import parse_txt, parse_ig, parse_fasta, parse_json
 
 Monomer = namedtuple('Monomer', 'resname, n_blocks')
 LOGGER = StyleAdapter(get_logger(__name__))
@@ -28,7 +27,7 @@ def _make_edges(force_field):
         inter_types = list(block.interactions.keys())
         for inter_type in inter_types:
             if inter_type in ["bonds", "constraints" "angles"]:
-               block.make_edges_from_interaction_type(type_=inter_type)
+                block.make_edges_from_interaction_type(type_=inter_type)
 
     for link in force_field.links:
         inter_types = list(link.interactions.keys())
@@ -90,6 +89,10 @@ class MetaMolecule(nx.Graph):
     """
 
     node_dict_factory = OrderedDict
+    parsers = { "txt": parse_txt,
+               "fasta": parse_fasta,
+               "ig": parse_ig,
+               "json": parse_json,}
 
     def __init__(self, *args, **kwargs):
         self.force_field = kwargs.pop('force_field', None)
@@ -100,6 +103,19 @@ class MetaMolecule(nx.Graph):
         self.__search_tree = None
         self.root = None
         self.dfs = False
+
+        # add resids to polyply meta-molecule nodes if they are not
+        # present. All algorithms rely on proper resids
+        for node in self.nodes:
+            if "resid" not in self.nodes[node]:
+                LOGGER.warning("Node {} has no resid. Setting resid to {} + 1.", node, node)
+
+                try:
+                    self.nodes[node]["resid"] = node + 1
+                except TypeError:
+                    msg = "Couldn't add 1 to node. Either provide resids or use integers as node keys."
+                    raise IOError(msg)
+
 
     def add_monomer(self, current, resname, connections):
         """
@@ -201,7 +217,7 @@ class MetaMolecule(nx.Graph):
     @staticmethod
     def _block_graph_to_res_graph(block):
         """
-        generate a residue graph from the nodes of `block`.
+        Generate a residue graph from the nodes of `block`.
 
         Parameters
         -----------
@@ -217,8 +233,21 @@ class MetaMolecule(nx.Graph):
     @classmethod
     def from_monomer_seq_linear(cls, force_field, monomers, mol_name):
         """
-        Constructs a meta graph for a linear molecule
-        which is the default assumption from
+        Constructs a MetaMolecule from a list of monomers representing
+        a linear molecule.
+
+        Parameters
+        ----------
+        force_field: :class:`vermouth.forcefield.ForceField`
+            the force-field that must contain the block
+        monomers: list[:class:`polyply.meta_molecule.Monomer`]
+            a list of Monomer tuples
+        mol_name: str
+            name of the molecule
+
+        Returns
+        -------
+        :class:`polyply.MetaMolecule`
         """
 
         meta_mol_graph = cls(force_field=force_field, mol_name=mol_name)
@@ -239,31 +268,36 @@ class MetaMolecule(nx.Graph):
         return meta_mol_graph
 
     @classmethod
-    def from_json(cls, force_field, json_file, mol_name):
+    def from_sequence_file(cls, force_field, file_path, mol_name):
         """
-        Constructs a :class::`MetaMolecule` from a json file
-        using the networkx json package.
+        Generate a meta_molecule from known sequence file parsers.
+        For an up-to-date list of file-parsers see the
+        MetaMolecule.parsers class variable.a
+
+        Parameters
+        ----------
+        force_field: :class:`vermouth.forcefield.ForceField`
+        file_path: :class:`pathlib.Path`
+            the path to the file
+        mol_name: str
+            name of the meta-molecule
+
+        Returns
+        -------
+        :class:`polyply.MetaMolecule`
+
+        Raises
+        ------
+        IOError
+            if the file format is unkown.
         """
-        with open(json_file) as file_:
-            data = json.load(file_)
+        extension = file_path.suffix.casefold()[1:]
+        if extension in cls.parsers:
+            graph = cls.parsers[extension](file_path)
+        else:
+            msg = f"File format {extension} is unkown."
+            raise IOError(msg)
 
-        init_graph = nx.Graph(json_graph.node_link_graph(data))
-        graph = nx.Graph(node_dict_factory=OrderedDict)
-        nodes = list(init_graph.nodes)
-        nodes.sort()
-
-        for node in nodes:
-            attrs = init_graph.nodes[node]
-            if "resid" not in attrs:
-                LOGGER.warning("Node {} has no resid. Setting resid to {} + 1.", node, node)
-                try:
-                    attrs["resid"] = node + 1
-                except TypeError:
-                    msg = "Couldn't add 1 to node. Either provide resids or use integers as node keys."
-                    raise IOError(msg)
-            graph.add_node(node, **attrs)
-
-        graph.add_edges_from(init_graph.edges(data=True))
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
         return meta_mol
 
@@ -271,6 +305,20 @@ class MetaMolecule(nx.Graph):
     def from_itp(cls, force_field, itp_file, mol_name):
         """
         Constructs a :class::`MetaMolecule` from an itp file.
+        This will automatically set the MetaMolecule.molecule
+        attribute.
+
+        Parameters
+        ----------
+        force_field: :class:`vermouth.forcefield.ForceField`
+        itp_file: str or :class:`pathlib.Path`
+            the path to the file
+        mol_name: str
+            name of the meta-molecule
+
+        Returns
+        -------
+        :class:`polyply.MetaMolecule`
         """
         with open(itp_file) as file_:
             lines = file_.readlines()
@@ -286,9 +334,23 @@ class MetaMolecule(nx.Graph):
     def from_block(cls, force_field, mol_name):
         """
         Constructs a :class::`MetaMolecule` from an vermouth.molecule.
+        The force-field must contain the block with mol_name from
+        which to create the MetaMolecule. This function automatically
+        sets the MetaMolecule.molecule attribute.
+
+        Parameters
+        ----------
+        force_field: :class:`vermouth.forcefield.ForceField`
+            the force-field that must contain the block
+        mol_name: str
+            name of the block matching a key in ForceField.blocks
+
+        Returns
+        -------
+        :class:`polyply.MetaMolecule`
         """
         _make_edges(force_field)
-        block = force_field[mol_name]
+        block = force_field.blocks[mol_name]
         graph = MetaMolecule._block_graph_to_res_graph(block)
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
         meta_mol.molecule = force_field.blocks[mol_name].to_molecule()
