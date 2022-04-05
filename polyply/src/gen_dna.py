@@ -69,7 +69,7 @@ def complement_dsDNA(meta_molecule):
     """
     last_node = list(meta_molecule.nodes)[-1]
     resname = BASE_LIBRARY[meta_molecule.nodes[last_node]["resname"]]
-    meta_molecule.add_monomer(last_node+1, resname, [], last_node+2)
+    meta_molecule.add_monomer(last_node+1, resname, [])
 
     correspondance = {last_node: last_node+1}
     total = last_node+1
@@ -91,7 +91,7 @@ def complement_dsDNA(meta_molecule):
 
         if next_node not in correspondance:
             new_node = total + 1
-            meta_molecule.add_monomer(total+1, resname, [(correspondance[prev_node], total+1)], resid=total+2)
+            meta_molecule.add_monomer(total+1, resname, [(correspondance[prev_node], total+1)])
             correspondance[next_node] = new_node
         else:
             new_node = correspondance[next_node]

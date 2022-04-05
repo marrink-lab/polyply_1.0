@@ -84,6 +84,9 @@ class TestGenParams():
         ff_group = parser.add_argument_group('Force field selection')
         ff_group.add_argument('-lib', dest='lib', required=False, type=str,
                               help='force-fields to include from library', nargs='*')
+        dna_group = parser.add_argument_group('DNA specifc options')
+        dna_group.add_argument('-dsdna', dest='dsdna', action='store_true',
+                               help='complement single sequence to dsDNA sequence')
 
         args = parser.parse_args(args_in)
         gen_params(**vars(args))
