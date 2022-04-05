@@ -30,7 +30,6 @@ from vermouth.file_writer import DeferredFileWriter
 from vermouth.citation_parser import citation_formatter
 from polyply import (MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
 from .load_library import load_library
-from .gen_dna import BASE_LIBRARY
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
@@ -63,23 +62,11 @@ def gen_params(args):
 
     # Generate the MetaMolecule
     if args.seq:
-        if args.type == "dsDNA":
-            # Append complementary sequence
-            comp_seq = []
-            for monomer in args.seq:
-                resname, n_blocks = monomer.split(":")
-                resname = BASE_LIBRARY[resname]
-                comp_seq.append(":".join([resname, n_blocks]))
-            args.seq += comp_seq
-
         LOGGER.info("reading sequence from command",  type="step")
         monomers = split_seq_string(args.seq)
         meta_molecule = MetaMolecule.from_monomer_seq_linear(monomers=monomers,
                                                              force_field=force_field,
                                                              mol_name=args.name)
-        # Disconnect strands
-        num_bp = meta_molecule.number_of_edges()//2
-        meta_molecule.remove_edge(num_bp, num_bp+1)
     #ToDo
     # fix too broad except
     elif args.seq_file:

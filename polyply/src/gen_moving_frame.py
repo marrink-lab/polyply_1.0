@@ -117,7 +117,7 @@ def rotation_min_frame(curve):
     binormals = np.cross(tangents, normals)
     return tangents, normals, binormals
 
-def close_frame(curve, tangents, normals, binormals):
+def close_frame(curve, tangents, normals, binormals, rotation_per_bp):
     """
     Uniformly distribute the corrective twist needed to close
     the moving frame on a cyclic curve. The Uniform distribution
@@ -145,7 +145,7 @@ def close_frame(curve, tangents, normals, binormals):
     target_normal = gen_next_normal((curve[-1], tangents[-1], normals[-1]),
                                     (curve[0], tangents[0]))
     # Calculate rotation needed to match the normals
-    phi = np.arccos(target_normal @ normals[0]) - self.rotation_per_bp
+    phi = np.arccos(target_normal @ normals[0]) - rotation_per_bp
 
     # Distribute corrective curvature over curve
     correction_per_base = phi / len(tangents)
@@ -170,7 +170,8 @@ def dna_frame(meta_molecule, curve, rotation_per_bp):
     # Comply with boundary conditions if DNA is closed
     if nx.cycle_basis(meta_molecule):
         tangents, normals, binormals = close_frame(curve, tangents,
-                                                   normals, binormals)
+                                                   normals, binormals,
+                                                   rotation_per_bp)
     return tangents, normals, binormals
 
 
