@@ -103,6 +103,7 @@ class MetaMolecule(nx.Graph):
         self.__search_tree = None
         self.root = None
         self.dfs = False
+        self.max_resid = 0
 
         # add resids to polyply meta-molecule nodes if they are not
         # present. All algorithms rely on proper resids
@@ -116,6 +117,13 @@ class MetaMolecule(nx.Graph):
                     msg = "Couldn't add 1 to node. Either provide resids or use integers as node keys."
                     raise IOError(msg)
 
+            if self.max_resid < self.nodes[node]["resid"]:
+                self.max_resid = self.nodes[node]["resid"]
+
+    def add_node(self, *args, **kwargs):
+        self.max_resid = self.max_resid + 1
+        kwargs["resid"] = self.max_resid
+        super().add_node(*args, **kwargs)
 
     def add_monomer(self, current, resname, connections):
         """
@@ -124,14 +132,7 @@ class MetaMolecule(nx.Graph):
         that matches may only refer to already existing nodes.
         But connections can be an empty list.
         """
-        resids = nx.get_node_attributes(self, "resid")
-
-        if resids:
-           resid = max(resids.values()) + 1
-        else:
-           resid = 1
-
-        self.add_node(current, resname=resname, resid=resid, build=True)
+        self.add_node(current, resname=resname, build=True)
         for edge in connections:
             if self.has_node(edge[0]) and self.has_node(edge[1]):
                 self.add_edge(edge[0], edge[1])
@@ -154,7 +155,7 @@ class MetaMolecule(nx.Graph):
             mapping of node-key to new residue name
         """
         # find the maximum resiude id
-        max_resid = max(nx.get_node_attributes(self.molecule, "resid").values())
+        max_resid = self.max_resid
         # resname the residues and increase with pseudo-resid
         for node, resname in mapping.items():
             self.molecule.nodes[node]["resname"] = resname

@@ -86,6 +86,9 @@ class TestGenParams():
         ff_group.add_argument('-list-links', action='store_true', dest='list_links',
                               help='List all Links known to the'
                               ' force field, and exit.')
+        dna_group = parser.add_argument_group('DNA specifc options')
+        dna_group.add_argument('-dsdna', dest='dsdna', action='store_true',
+                               help='complement single sequence to dsDNA sequence')
 
         args = parser.parse_args(args_in)
         gen_params(args)
