@@ -49,13 +49,12 @@ def gen_template_frame(template, base, force_field):
                                           [["SC1"],["SC4"]]],
                                    "DA": [[["SC3", "SC2"], ["SC1", "SC4"]],
                                           [["SC1"],["SC4"]]],
-                                   "DT": [[["SC1"], ["SC3", "SC2"]],
+                                   "DT": [[["SC1"], ["SC3", "SC2", "SC2", "SC2"]],
                                           [["SC2"],["SC3"]]],
-                                   "DC": [[["SC1"], ["SC3", "SC2"]],
+                                   "DC": [[["SC1"], ["SC3", "SC2", "SC2", "SC2"]],
                                           [["SC2"],["SC3"]]]
                                    }
                     }
-    # TODO: Find bug creating DC Base Template???
     try:
         base_type = base[:2]
         anch1, anch2 = anchor_library[force_field][base_type]
@@ -67,14 +66,16 @@ def gen_template_frame(template, base, force_field):
     ref_vec2 =  sum(template[key] for key in anch2[0])\
                 - sum(template[key] for key in anch2[1])
 
-    binormal = u_vect(ref_vec1)
     normal = u_vect(ref_vec2)
+    binormal = u_vect(ref_vec1)
+    binormal -= np.dot(binormal, normal) * normal
+    binormal = u_vect(binormal)
     tangent = u_vect(np.cross(normal, binormal))
-
     frame = np.stack((normal, binormal, tangent), axis=1)
+
     return frame
 
-def orient_template(template, target_frame, strand,
+def orient_template(template, target_frame, strand_dir,
                     base, force_field, strand_separation):
     """
     Align the base template frame with the local reference frame defined
@@ -93,7 +94,7 @@ def orient_template(template, target_frame, strand,
         dict of positions referring to the high resolution (pseudo)atoms
     target_frame: numpy.ndarray
         local reference frame on meta_molecule
-    strand: str
+    strand_dir: str
         specify if base on forward or backward strand
     base: str
        base type
@@ -130,7 +131,7 @@ def orient_template(template, target_frame, strand,
     template_rotated_arr = rot_target_frame @ (inv_rot_template_frame @ template_arr)
 
     # Move rotated template frames to position on helix
-    if strand == "forward":
+    if strand_dir == "forward":
         template_final_arr = (template_rotated_arr.T -
                               target_frame[:, 1] * strand_separation).T
     else:
@@ -179,35 +180,35 @@ class Backmap_DNA(Processor):
         moving_frame = construct_frame.run(meta_molecule)
 
         # Place base templates on reference frames
-        for ndx, node in enumerate(meta_molecule.nodes):
-            residue = meta_molecule.nodes[node]
-            if residue["build"] and residue["restype"] == "DNA":
-                basepair = residue["resname"]
-                cg_coord = residue["position"]
-                forward_base, backward_base = basepair.split(",")
+        strands = {"forward": meta_molecule.nodes,
+                  "backward": reversed(list(meta_molecule.nodes))}
+        for strand_dir in ["forward", "backward"]:
+            for node in strands[strand_dir]:
+                residue = meta_molecule.nodes[node]
+                basepair, cg_coord = residue["resname"], residue["position"]
+
+                if strand_dir == "forward":
+                    nucleobase, resid = basepair.split(",")[0], node + 1
+                else:
+                    num_bps = len(meta_molecule.nodes)
+                    nucleobase, resid = basepair.split(",")[1], 2 * num_bps - node
 
                 # Correctly orientate base strand
-                forward_template = orient_template(meta_molecule.templates[forward_base],
-                                                   moving_frame[ndx], "forward",
-                                                   forward_base, self.force_field,
-                                                   self.strand_separation)
-                backward_template = orient_template(meta_molecule.templates[backward_base],
-                                                    moving_frame[ndx], "backward",
-                                                    backward_base, self.force_field,
-                                                    self.strand_separation)
+                template = orient_template(meta_molecule.templates[nucleobase],
+                                           moving_frame[node], strand_dir,
+                                           nucleobase, self.force_field,
+                                           self.strand_separation)
 
-
-                # Place the molecule atoms according to the backmapping
-                high_res_atoms = residue["graph"].nodes
-                for atom_ndx in high_res_atoms:
-                    atomname = residue["graph"].nodes[atom_ndx]["atomname"]
-                    strand = residue["graph"].nodes[atom_ndx]["strand"]
-                    if strand == "forward":
-                        vector = forward_template[atomname]
-                    else:
-                        vector = backward_template[atomname]
+                # Write corresponding high resolution molecule to meta_molecule
+                num_atoms = len(meta_molecule.molecule)
+                for atom_ndx, atomname in enumerate(template):
+                    vector = template[atomname]
                     new_coords = cg_coord + vector * self.fudge_coords
-                    meta_molecule.molecule.nodes[atom_ndx]["position"] = new_coords
+                    meta_molecule.molecule.add_nodes_from([(num_atoms + atom_ndx,
+                                                            {"position": new_coords,
+                                                             "atomname": atomname,
+                                                             "resname": nucleobase,
+                                                             "resid": resid})])
 
     def run_molecule(self, meta_molecule):
         """

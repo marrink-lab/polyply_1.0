@@ -13,6 +13,7 @@
 # limitations under the License.
 import numpy as np
 import networkx as nx
+import vermouth
 from .processor import Processor
 
 class AnnotateDNA(Processor):
@@ -85,7 +86,7 @@ class AnnotateDNA(Processor):
                     meta_mol.nodes[current_node]['restype'] = 'non-DNA'
 
                 # Determine neighbor nodes
-                NBRs= meta_molecule.neighbors(current_node)
+                NBRs = meta_molecule.neighbors(current_node)
                 new_NBRs = [node for node in NBRs if node not in queue + visited]
                 # update queue
                 queue = new_NBRs + queue
@@ -99,13 +100,17 @@ class AnnotateDNA(Processor):
 
     def _determine_sequence(self, strand):
         sequence = []
-        if nx.cycle_basis(strand):
-            start_base = list(strand.nodes.keys())[0]
+        strand_is_cyclic = nx.cycle_basis(strand)
+        if strand_is_cyclic:
+            start_base = list(strand.nodes)[0]
         else:
             condition = lambda node: strand.degree(node) == 1
             start_base = next(filter(condition, strand.nodes), None)
-        for node_ndx in nx.dfs_tree(strand, source=start_base):
+        for node_ndx in nx.dfs_postorder_nodes(strand, source=start_base):
             sequence.append(strand.nodes[node_ndx]['resname'])
+
+        if strand_is_cyclic:
+            sequence.insert(0, sequence.pop())
         return sequence
 
     def _match_ratio(self, ref_sequence, sequence):
@@ -149,7 +154,7 @@ class AnnotateDNA(Processor):
         """
 
         while len(strands) > 1:
-            ref_strand = strands.pop()
+            ref_strand = strands.pop(0)
             match_strand = self._find_complementary_strands(ref_strand, strands)
 
             for findex, bindex in zip(ref_strand, sorted(match_strand)):
@@ -158,20 +163,13 @@ class AnnotateDNA(Processor):
                 bbase = match_strand.nodes[bindex]
                 current_node = fbase
 
-                # Add strand indication to high_res_atom graph
-                nx.set_node_attributes(fbase['graph'], "forward", "strand")
-                nx.set_node_attributes(bbase['graph'], "backward", "strand")
-
                 # Combine attribute of strands
                 current_node['resid'] = findex
                 current_node['restype'] = 'DNA'
                 current_node['build'] = fbase['build'] | bbase['build']
-                current_node['nnodes'] = fbase['nnodes'] + bbase['nnodes']
-                current_node['nedges'] = fbase['nedges'] + bbase['nedges']
-                current_node['graph'] = nx.compose(fbase['graph'], bbase['graph'])
-                current_node['density'] = (fbase['density'] + bbase['density']) / 2
                 current_node['resname'] = f"{fbase['resname']},{bbase['resname']}"
 
+            meta_molecule.molecule = vermouth.molecule.Molecule()
             meta_molecule.remove_nodes_from(list(match_strand))
 
     def run_molecule(self, meta_molecule):
