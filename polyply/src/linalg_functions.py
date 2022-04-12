@@ -279,7 +279,7 @@ def _finite_difference_O1(X):
     Returns
     ---------
     dX: numpy.ndarray
-        Derivatives, a ndarray of shape (N-1, 3)
+        Derivatives, a ndarray of shape (N, 3)
     """
     dX = np.zeros_like(X)
     # Calculate tangent boundary points
@@ -288,7 +288,8 @@ def _finite_difference_O1(X):
 
     # Calculate tangent interior points
     for i in range(1, len(X) - 1):
-        dX[i] = X[i-1] - X[i+1]
+        dX[i] = (X[i+1] - X[i-1])/2
+    return dX
 
 finite_difference_O1 = jit(_finite_difference_O1)
 
@@ -305,7 +306,7 @@ def _finite_difference_O5(X):
     Returns
     ---------
     dX: numpy.ndarray
-        Derivatives, a ndarray of shape (N-1, 3)
+        Derivatives, a ndarray of shape (N, 3)
     """
     dX = np.zeros_like(X)
     # Calculate tangent boundary points
@@ -317,6 +318,6 @@ def _finite_difference_O5(X):
     # Calculate tangent interior points
     for i in range(2, len(X) - 2):
         dX[i] = X[i-2] - 8 * X[i-1] + 8 * X[i+1] - X[i+2]
-    return dX
+    return dX / 12
 
 finite_difference_O5 = jit(_finite_difference_O5)
