@@ -286,7 +286,7 @@ PMAM 3
 5  N   1 PMAM SC3 5 -0.76 14.0067
 6  H   1 PMAM SC4 6  0.38 1.0080
 7  H   1 PMAM SC5 7  0.38 1.0080
-8  CH3 1 PMMA SB1 6  0.00 15.0350
+8  CH3 1 PMAM SB1 6  0.00 15.0350
 [ bonds ]
 1 2 2 gb_27 {"comment":"C,CHn-CHn,C"}
 2 3 2 gb_27 {"comment":"C,CHn-CHn,C"}
@@ -318,7 +318,6 @@ PMAM 3
 1 5 1
 2 6 1
 2 7 1
-5 7 1
 8 4 1
 8 5 1
 4 6 1 {"ifndef": "eq_polyply", "version": "1"}
