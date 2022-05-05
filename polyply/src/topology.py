@@ -211,20 +211,78 @@ class Topology(System):
         A dictionary of all typed parameter
     defines: list
         A list of everything that is defined
+    defaults: dict
+        A dict with default entries of GMX topfile
+    atom_types: dict
     """
 
     def __init__(self, force_field, name=None):
         super().__init__(force_field)
         self.name = name
+        # simple dict attributes
         self.defaults = {}
         self.defines = {}
-        self.description = []
         self.atom_types = {}
-        self.types = defaultdict(dict)
         self.nonbond_params = {}
-        self.mol_idx_by_name = defaultdict(list)
+        # list attributes
+        self.description = []
         self.persistences = []
+        self.molecules = []
+        # default dict list
+        self.mol_idx_by_name = defaultdict(list)
+        # default_dict dict
         self.distance_restraints = defaultdict(dict)
+        self.types = defaultdict(dict)
+
+    def merge(self, other_top, check_dublicates=True):
+        """
+        Merge two topologies updating their attribute dictionaries.
+        If check_dublicates is True attribute value combinations
+        already existent in self will be overwritten by those in
+        the to be merged topology. An error will raise otherwise if
+        there are any conflicting dublicate entries.
+
+        Parameters
+        ----------
+        other_top: :class:`polyply.src.topology.Topology`
+            the topology to be merged
+        check_dublicates: bool
+            check for conflicting attribute value pairs
+
+        """
+        for attribute in ["defaults", "defines", "atom_types", "nonbond_params"]:
+            self_dict = getattr(self, attribute)
+            if check_dublicates:
+                for key, value in getattr(other_top, attribute):
+                    if key in self_dict and self_dict[key] != value:
+                        msg = f"Conflicting entry in {attribute} with key {key}"
+                        raise MergeError(msg)
+                    self_dict[key] = value
+            else:
+                getattr(self, attribute).update(getattr(other_top, attribute))
+
+        self.description.append(other_top.description)
+        self.persistences.append(other_top.persistences)
+
+        for molecule in other_top.molecules:
+            seelf.append_molecules(molecule, molecule.molname)
+
+        for inter_type in other_top.types:
+            for atoms, type_params in other_top.types[inter_type].values():
+                if atoms in self.types[inter_type] and self.types[inter_type][atoms] == type_params:
+                    typestring = inter_type[:-1]
+                    msg = f"Conflicting entry in {typestring}types with key {key}"
+                    raise MergeError(msg)
+                self.types[inter_type] = type_params
+
+    def append_molecules(self, new_molecule, molname):
+        """
+        Add a new molecule to molecule list and update
+        the mol_idx_by_name dictionary.
+        """
+        mol_idx = len(self.molecules)
+        self.molecules.append(new_molecule)
+        self.mol_idx_by_name[molname].append(mol_idx)
 
     def preprocess(self):
         """
@@ -393,6 +451,11 @@ class Topology(System):
                     meta_mol.nodes[node]["build"] = True
 
     def convert_to_vermouth_system(self):
+        """
+        Create a vermouth system by setting the force-field
+        attribute and the molecule list appending the molecule
+        part of the meta-molecules.
+        """
         system = System()
         system.molecules = []
         system.force_field = self.force_field
