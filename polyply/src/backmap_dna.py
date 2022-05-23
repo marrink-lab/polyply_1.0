@@ -49,10 +49,10 @@ def gen_template_frame(template, base, force_field):
                                           [["SC1"],["SC4"]]],
                                    "DA": [[["SC3", "SC2"], ["SC1", "SC4"]],
                                           [["SC1"],["SC4"]]],
-                                   "DT": [[["SC1"], ["SC3", "SC2"]],
+                                   "DT": [[["SC3", "SC2"], ["SC1"]],
                                           [["SC2"],["SC3"]]],
                                    "DC": [[["SC3", "SC2"], ["SC1"]],
-                                          [["SC2"],["SC3"]]]
+                                          [["SC2"],["SC3"]]],
                                    }
                     }
     try:
@@ -61,16 +61,16 @@ def gen_template_frame(template, base, force_field):
     except :
         raise Exception('No reference frame available for nucleobase type.')
 
-    ref_vec1 = sum(template[key] for key in anch1[0])\
-               - sum(template[key] for key in anch1[1])
-    ref_vec2 = sum(template[key] for key in anch2[0])\
-               - sum(template[key] for key in anch2[1])
+    ref_vec1 = sum(template[key] for key in anch1[0]) / len(anch1[0])\
+               - sum(template[key] for key in anch1[1]) / len(anch1[1])
+    ref_vec2 = sum(template[key] for key in anch2[0]) / len(anch2[0])\
+               - sum(template[key] for key in anch2[1]) / len(anch2[1])
 
     normal = u_vect(ref_vec2)
     binormal  = u_vect(ref_vec1)
     binormal -= np.dot(binormal, normal) * normal
     binormal  = u_vect(binormal)
-    tangent = u_vect(np.cross(normal, binormal))
+    tangent = np.cross(normal, binormal)
 
     return np.stack((normal, binormal, tangent), axis=1)
 
