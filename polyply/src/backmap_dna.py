@@ -49,9 +49,9 @@ def gen_template_frame(template, base, force_field):
                                           [["SC1"],["SC4"]]],
                                    "DA": [[["SC3", "SC2"], ["SC1", "SC4"]],
                                           [["SC1"],["SC4"]]],
-                                   "DT": [[["SC1"], ["SC3", "SC2", "SC2", "SC2"]],
+                                   "DT": [[["SC1"], ["SC3", "SC2"]],
                                           [["SC2"],["SC3"]]],
-                                   "DC": [[["SC1"], ["SC3", "SC2", "SC2", "SC2"]],
+                                   "DC": [[["SC3", "SC2"], ["SC1"]],
                                           [["SC2"],["SC3"]]]
                                    }
                     }
@@ -63,17 +63,16 @@ def gen_template_frame(template, base, force_field):
 
     ref_vec1 = sum(template[key] for key in anch1[0])\
                - sum(template[key] for key in anch1[1])
-    ref_vec2 =  sum(template[key] for key in anch2[0])\
-                - sum(template[key] for key in anch2[1])
+    ref_vec2 = sum(template[key] for key in anch2[0])\
+               - sum(template[key] for key in anch2[1])
 
     normal = u_vect(ref_vec2)
-    binormal = u_vect(ref_vec1)
+    binormal  = u_vect(ref_vec1)
     binormal -= np.dot(binormal, normal) * normal
-    binormal = u_vect(binormal)
+    binormal  = u_vect(binormal)
     tangent = u_vect(np.cross(normal, binormal))
-    frame = np.stack((normal, binormal, tangent), axis=1)
 
-    return frame
+    return np.stack((normal, binormal, tangent), axis=1)
 
 def orient_template(template, target_frame, strand_dir,
                     base, force_field, strand_separation):

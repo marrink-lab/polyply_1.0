@@ -105,8 +105,13 @@ def rotation_min_frame(curve):
     normals = np.zeros_like(curve)
     if np.any(tangents[0, :2]):
         normals[0] = [tangents[0, 1], -tangents[0, 0], 0.0]
-    else:
+    elif np.any(tangents[0, 2:]):
         normals[0] = [0.0, tangents[0, 2], -tangents[0, 1]]
+    else:
+            msg = ('\n Not able to create DNA strands'
+                   'Check the provided DNA coordinates')
+            raise IOError(msg)
+    normals[0] = u_vect(normals[0])
 
     # Construct reference vectors along curve using double reflection
     for i in range(len(tangents) - 1):
@@ -148,11 +153,10 @@ def close_frame(curve, tangents, normals, binormals, rotation_per_bp):
     phi = np.arccos(target_normal @ normals[0]) - rotation_per_bp
 
     # Distribute corrective curvature over curve
-    correction_per_base = phi / len(tangents)
+    correction_per_base = phi / (len(tangents) - 1)
     for ndx in range(1, len(tangents)):
         rotation_vector = correction_per_base * ndx * tangents[ndx]
         normals[ndx] = rotate_from_vect(normals[ndx], rotation_vector)
-        normals[ndx] = u_vect(normals[ndx])
         binormals[ndx] = np.cross(tangents[ndx], normals[ndx])
     return tangents, normals, binormals
 
@@ -203,9 +207,8 @@ class ConstructFrame:
 
         """
         # Read positions from meta_molecule
-        curve = np.zeros((len(meta_molecule.nodes), 3))
-        for ndx, node in enumerate(meta_molecule.nodes):
-            curve[ndx] = meta_molecule.nodes[node]['position']
+        position_dictionary = nx.get_node_attributes(meta_molecule, "position")
+        curve = np.array(list(position_dictionary.values()))
 
         if not nx.get_node_attributes(meta_molecule, "normal"):
             tangents, normals, binormals = dna_frame(meta_molecule, curve,
@@ -221,13 +224,19 @@ class ConstructFrame:
                 # Apply Gram–Schmidt orthogonalization
                 tangents -= np.dot(normals, tangents) * normals
                 tangents = np.apply_along_axis(u_vect, axis=1, arr=tangents)
-
             else:
                 # Read tangents from meta_molecule
                 tangents = nx.get_node_attributes(meta_molecule, "tangent")
                 tangents = np.asarray(list(tangents.values()))
                 tangents = np.apply_along_axis(u_vect, axis=1, arr=tangents)
-            binormals = np.cross(tangents, normals)
+
+            if not nx.get_node_attributes(meta_molecule, "binormals"):
+                binormals = np.cross(tangents, normals)
+            else:
+                # Read binormals from meta_molecule
+                binormals = nx.get_node_attributes(meta_molecule, "binormals")
+                binormals = np.asarray(list(binormals.values()))
+                binormals = np.apply_along_axis(u_vect, axis=1, arr=binormals)
 
         # Construct frame out of generated vectors
         moving_frame = [np.stack((i, j, k), axis=1)

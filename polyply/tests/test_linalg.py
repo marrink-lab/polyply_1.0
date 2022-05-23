@@ -121,3 +121,96 @@ def test_rotation_matrix(vectors, angles, expected):
         result = polyply.src.linalg_functions._rotate_xyz(vectors, *np.deg2rad(angles))
         assert result.shape == expected.shape
         assert np.allclose(expected, result)
+
+@pytest.mark.parametrize('object_xyz, vect, expected',(
+                        # rotate Id. matrix 2pi around z-axis
+                        (np.array([[1., 0., 0.],
+                                   [0., 1., 0.],
+                                   [0., 0., 1.]]),
+                         np.array([0., 0., 2 * np.pi]),
+                         np.array([[1., 0., 0.],
+                                   [0., 1., 0.],
+                                   [0., 0., 1.]])),
+                        # rotate unit x-vector pi radian around z-axis
+                        (np.array([[1., 0., 0.],
+                                   [0., 0., 0.],
+                                   [0., 0., 0.]]),
+                         np.array([0., 0., np.pi]),
+                         np.array([[-1., 0., 0.],
+                                   [0., 0., 0.],
+                                   [0., 0., 0.]])),
+                        # rotate rotate random matrix around vector
+                        (np.array([[1., 2., 3.],
+                                   [4., 5., 6.],
+                                   [7., 8., 9.]]),
+                         np.array([np.pi, np.pi, np.pi]),
+                         np.array([[0.70978341, 1.70978341, 2.70978341],
+                                   [6.58364764, 7.58364764, 8.58364764],
+                                   [4.70656895, 5.70656895, 6.70656895]])),
+                        ))
+def test_rotate_from_vect(object_xyz, vect, expected):
+        result = polyply.src.linalg_functions._rotate_from_vect(object_xyz, vect)
+        assert result.shape == expected.shape
+        assert np.allclose(expected, result)
+
+        inv_results = polyply.src.linalg_functions._rotate_from_vect(result, -vect)
+        assert np.allclose(inv_results, object_xyz)
+
+
+@pytest.mark.parametrize('coords, expected',(
+                        # Points on straight line
+                        (np.array([[0., 0., 0.],
+                                   [1., 1., 1.],
+                                   [2., 2., 2.],
+                                   [3., 3., 3.]]),
+                         np.array([[1. ,1., 1.],
+                                   [1., 1., 1.],
+                                   [1., 1., 1.],
+                                   [1., 1., 1.]])),
+                        # Points on circle
+                        (np.array([[ 1.0000000e+00,  0.0000000e+00, 0],
+                                   [ 6.1232340e-17,  1.0000000e+00, 0],
+                                   [-1.0000000e+00,  1.2246468e-16, 0],
+                                   [-1.8369702e-16, -1.0000000e+00, 0]]),
+                         np.array([[-1. ,1., 0.],
+                                   [-1., 0., 0],
+                                   [ 0., -1, 0],
+                                   [1., -1., 0.]])),
+                        ))
+def test_finite_difference_O1(coords, expected):
+        result = polyply.src.linalg_functions._finite_difference_O1(coords)
+        assert result.shape == expected.shape
+        assert np.allclose(expected, result)
+
+@pytest.mark.parametrize('coords, expected',(
+                        # Points on straight line
+                        (np.array([[0., 0., 0.],
+                                   [1., 1., 1.],
+                                   [2., 2., 2.],
+                                   [3., 3., 3.],
+                                   [4., 4., 4.],
+                                   [5., 5., 5.]]),
+                         np.array([[1. ,1., 1.],
+                                   [1., 1., 1.],
+                                   [1., 1., 1.],
+                                   [1., 1., 1.],
+                                   [1., 1., 1.],
+                                   [1., 1., 1.]])),
+                        # Points on circle
+                        (np.array([[ 1.00000000e+00,  0.00000000e+00],
+                                   [ 5.00000000e-01,  8.66025404e-01],
+                                   [-5.00000000e-01,  8.66025404e-01],
+                                   [-1.00000000e+00,  1.22464680e-16],
+                                   [-5.00000000e-01, -8.66025404e-01],
+                                   [ 5.00000000e-01, -8.66025404e-01]]),
+                         np.array([[ 0.20833333,  1.08253175],
+                                   [-0.95833333,  0.50518149],
+                                   [-0.875     , -0.50518149],
+                                   [ 0.        , -1.01036297],
+                                   [ 0.91666667, -0.57735027],
+                                   [ 0.83333333,  0.72168784]])),
+                        ))
+def test_finite_difference_O5(coords, expected):
+        result = polyply.src.linalg_functions._finite_difference_O5(coords)
+        assert result.shape == expected.shape
+        assert np.allclose(expected, result)
