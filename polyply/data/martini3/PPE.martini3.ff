@@ -21,63 +21,32 @@ PPE    4
      
 [ bonds ]
 ;  ai  aj   funct
-   3    4   1   0.234 9000 {"comment": "bond aromatic ring-triple bond"}
+   3    4   1   0.234 9000 		{"comment": "bond aromatic ring-triple bond"}
 
 [ constraints ]
 ;  ai  aj   funct
-    1   2   1    0.325   {"comment": "constr. aromatic ring"}
-    1   3   1    0.325   {"comment": "constr. aromatic ring"}
-    2   3   1    0.325   {"comment": "constr. aromatic ring"}
+    1   2   1    0.325   		{"comment": "constr. aromatic ring"}
+    1   3   1    0.325   		{"comment": "constr. aromatic ring"}
+    2   3   1    0.325   		{"comment": "constr. aromatic ring"}
     
 [ angles ]
-   1    3    4     1    143    550   {"comment": "angle aromatic ring-triple bond"}
-   2    3    4     2     83    650   {"comment": "angle aromatic ring-triple bond"}
+   1    3    4     1    143    550  	{"comment": "angle aromatic ring-triple bond"}
+   2    3    4     2     83    650   	{"comment": "angle aromatic ring-triple bond"}
    
 [ dihedrals ]
-    4    2    1   3    2  0    50   {"comment": "improper aromatic ring-triple bond-left"}
+    4    2    1   3    2  0    50   	{"comment": "improper dihedral left turn"}
     
 [ link ]
 resname "PPE"
-[ atoms ]
-BB4 { }
-+BB1 { }
+
 [ bonds ]
-+BB1  BB4  1 0.234  9000   {"comment": "angle aromatic ring-triple bond"}
++BB1  BB4  1 0.234  9000   		{"comment": "bond aromatic ring-triple bond"}
 
-[ link ]
-resname "PPE"
-[ atoms ]
-BB4 { }
-+BB1 { }
-+BB2 { }
 [ angles ] 
-BB4 +BB1 +BB2  2   83  650   {"comment": "angle aromatic ring-triple bond"}
+BB4 +BB1 +BB2  2   83  650   		{"comment": "angle aromatic ring-triple bond"}
+BB4 +BB1 +BB3  1  143  550   		{"comment": "angle aromatic ring-triple bond"}
+BB4 +BB4 ++BB4  1 180   50   		{"comment": "stiffness between triple bond beads" }
 
-[ link ]
-resname "PPE"
-[ atoms ]
-BB4 { }
-+BB1 { }
-+BB3 { }
-[ angles ]
-BB4 +BB1 +BB3  1  143  550   {"comment": "angle aromatic ring-triple bond"}
-
-[ link ]
-resname "PPE"
-[ atoms ]
-BB4 { }
-+BB4 { }
-++BB4 { }
-[ angles ]
-BB4 +BB4 ++BB4  1 180   50   {"comment": "triple bond-triple bond-triple bond" }
-
-[ link ]
-resname "PPE"
-[ atoms ]
-BB4 { }
-+BB1 { }
-+BB2 { }
-+BB3 { }
 [ dihedrals ]
-BB4 +BB2 +BB3 +BB1  2  0   50   {"comment": "improper aromatic ring-triple bond-right"}
+BB4 +BB2 +BB3 +BB1  2  0   50   		{"comment": "improper dihedral right turn"}
 
