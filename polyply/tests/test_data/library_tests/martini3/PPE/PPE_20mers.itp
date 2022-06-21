@@ -1,0 +1,442 @@
+[   moleculetype   ]
+PPE   1
+[      atoms       ]
+1     TC5   1     PPE   BB  1 0.0000   ;     
+2     TC5   1     PPE   BB  2 0.0000   ;     
+3     TC5   1     PPE   BB  3 0.0000   ;     
+4     TC4   1     PPE   BB  4 0.0000   ;     
+5     TC5   2     PPE   BB  5 0.0000   ;     
+6     TC5   2     PPE   BB  6 0.0000   ;     
+7     TC5   2     PPE   BB  7 0.0000   ;     
+8     TC4   2     PPE   BB  8 0.0000   ;     
+9     TC5   3     PPE   BB  9 0.0000   ;     
+10    TC5   3     PPE   BB  10 0.0000   ;     
+11    TC5   3     PPE   BB  11 0.0000   ;     
+12    TC4   3     PPE   BB  12 0.0000   ;     
+13    TC5   4     PPE   BB  13 0.0000   ;     
+14    TC5   4     PPE   BB  14 0.0000   ;     
+15    TC5   4     PPE   BB  15 0.0000   ;     
+16    TC4   4     PPE   BB  16 0.0000   ;     
+17    TC5   5     PPE   BB  17 0.0000   ;     
+18    TC5   5     PPE   BB  18 0.0000   ;     
+19    TC5   5     PPE   BB  19 0.0000   ;     
+20    TC4   5     PPE   BB  20 0.0000   ;     
+21    TC5   6     PPE   BB  21 0.0000   ;     
+22    TC5   6     PPE   BB  22 0.0000   ;     
+23    TC5   6     PPE   BB  23 0.0000   ;     
+24    TC4   6     PPE   BB  24 0.0000   ;     
+25    TC5   7     PPE   BB  25 0.0000   ;     
+26    TC5   7     PPE   BB  26 0.0000   ;     
+27    TC5   7     PPE   BB  27 0.0000   ;     
+28    TC4   7     PPE   BB  28 0.0000   ;     
+29    TC5   8     PPE   BB  29 0.0000   ;     
+30    TC5   8     PPE   BB  30 0.0000   ;     
+31    TC5   8     PPE   BB  31 0.0000   ;     
+32    TC4   8     PPE   BB  32 0.0000   ;     
+33    TC5   9     PPE   BB  33 0.0000   ;     
+34    TC5   9     PPE   BB  34 0.0000   ;     
+35    TC5   9     PPE   BB  35 0.0000   ;     
+36    TC4   9     PPE   BB  36 0.0000   ;     
+37    TC5   10    PPE   BB  37 0.0000   ;     
+38    TC5   10    PPE   BB  38 0.0000   ;     
+39    TC5   10    PPE   BB  39 0.0000   ;     
+40    TC4   10    PPE   BB  40 0.0000   ;     
+41    TC5   11    PPE   BB  41 0.0000   ;     
+42    TC5   11    PPE   BB  42 0.0000   ;     
+43    TC5   11    PPE   BB  43 0.0000   ;     
+44    TC4   11    PPE   BB  44 0.0000   ;     
+45    TC5   12    PPE   BB  45 0.0000   ;     
+46    TC5   12    PPE   BB  46 0.0000   ;     
+47    TC5   12    PPE   BB  47 0.0000   ;     
+48    TC4   12    PPE   BB  48 0.0000   ;     
+49    TC5   13    PPE   BB  49 0.0000   ;     
+50    TC5   13    PPE   BB  50 0.0000   ;     
+51    TC5   13    PPE   BB  51 0.0000   ;     
+52    TC4   13    PPE   BB  52 0.0000   ;     
+53    TC5   14    PPE   BB  53 0.0000   ;     
+54    TC5   14    PPE   BB  54 0.0000   ;     
+55    TC5   14    PPE   BB  55 0.0000   ;     
+56    TC4   14    PPE   BB  56 0.0000   ;     
+57    TC5   15    PPE   BB  57 0.0000   ;     
+58    TC5   15    PPE   BB  58 0.0000   ;     
+59    TC5   15    PPE   BB  59 0.0000   ;     
+60    TC4   15    PPE   BB  60 0.0000   ;     
+61    TC5   16    PPE   BB  61 0.0000   ;     
+62    TC5   16    PPE   BB  62 0.0000   ;     
+63    TC5   16    PPE   BB  63 0.0000   ;     
+64    TC4   16    PPE   BB  64 0.0000   ;     
+65    TC5   17    PPE   BB  65 0.0000   ;     
+66    TC5   17    PPE   BB  66 0.0000   ;     
+67    TC5   17    PPE   BB  67 0.0000   ;     
+68    TC4   17    PPE   BB  68 0.0000   ;     
+69    TC5   18    PPE   BB  69 0.0000   ;     
+70    TC5   18    PPE   BB  70 0.0000   ;     
+71    TC5   18    PPE   BB  71 0.0000   ;     
+72    TC4   18    PPE   BB  72 0.0000   ;     
+73    TC5   19    PPE   BB  73 0.0000   ;     
+74    TC5   19    PPE   BB  74 0.0000   ;     
+75    TC5   19    PPE   BB  75 0.0000   ;     
+76    TC4   19    PPE   BB  76 0.0000   ;     
+77    TC5   20    PPE   BB  77 0.0000   ;     
+78    TC5   20    PPE   BB  78 0.0000   ;     
+79    TC5   20    PPE   BB  79 0.0000   ;     
+80    TC4   20    PPE   BB  80 0.0000   ;     
+81    TC5   21    PPE   BB  81 0.0000   ;     
+82    TC5   21    PPE   BB  82 0.0000   ;     
+83    TC5   21    PPE   BB  83 0.0000   ;     
+84    TC4   21    PPE   BB  84 0.0000   ;     
+85    TC5   22    PPE   BB  85 0.0000   ;     
+86    TC5   22    PPE   BB  86 0.0000   ;     
+87    TC5   22    PPE   BB  87 0.0000   ;     
+[        bonds         ]
+3     4    1  0.23400  9000    
+4     5    1  0.23400  9000    
+7     8    1  0.23400  9000    
+8     9    1  0.23400  9000    
+11    12   1  0.23400  9000    
+12    13   1  0.23400  9000    
+15    16   1  0.23400  9000    
+16    17   1  0.23400  9000    
+19    20   1  0.23400  9000    
+20    21   1  0.23400  9000    
+23    24   1  0.23400  9000    
+24    25   1  0.23400  9000    
+27    28   1  0.23400  9000    
+28    29   1  0.23400  9000    
+31    32   1  0.23400  9000    
+32    33   1  0.23400  9000    
+35    36   1  0.23400  9000    
+36    37   1  0.23400  9000    
+39    40   1  0.23400  9000    
+40    41   1  0.23400  9000    
+43    44   1  0.23400  9000    
+44    45   1  0.23400  9000    
+47    48   1  0.23400  9000    
+48    49   1  0.23400  9000    
+51    52   1  0.23400  9000    
+52    53   1  0.23400  9000    
+55    56   1  0.23400  9000    
+56    57   1  0.23400  9000    
+59    60   1  0.23400  9000    
+60    61   1  0.23400  9000    
+63    64   1  0.23400  9000    
+64    65   1  0.23400  9000    
+67    68   1  0.23400  9000    
+68    69   1  0.23400  9000    
+71    72   1  0.23400  9000    
+72    73   1  0.23400  9000    
+75    76   1  0.23400  9000    
+76    77   1  0.23400  9000    
+79    80   1  0.23400  9000    
+80    81   1  0.23400  9000    
+83    84   1  0.23400  9000    
+84    85   1  0.23400  9000       
+[        angles        ]
+1     3     4     1  143      550     
+2     3     4     2  83       650     
+4     5     6     2  83       650     
+4     5     7     1  143      550     
+4     8     12    1  180      50      
+5     7     8     1  143      550     
+6     7     8     2  83       650     
+8     9     10    2  83       650     
+8     9     11    1  143      550     
+8     12    16    1  180      50      
+9     11    12    1  143      550     
+10    11    12    2  83       650     
+12    13    14    2  83       650     
+12    13    15    1  143      550     
+12    16    20    1  180      50      
+13    15    16    1  143      550     
+14    15    16    2  83       650     
+16    17    18    2  83       650     
+16    17    19    1  143      550     
+16    20    24    1  180      50      
+17    19    20    1  143      550     
+18    19    20    2  83       650     
+20    21    22    2  83       650     
+20    21    23    1  143      550     
+20    24    28    1  180      50      
+21    23    24    1  143      550     
+22    23    24    2  83       650     
+24    25    26    2  83       650     
+24    25    27    1  143      550     
+24    28    32    1  180      50      
+25    27    28    1  143      550     
+26    27    28    2  83       650     
+28    29    30    2  83       650     
+28    29    31    1  143      550     
+28    32    36    1  180      50      
+29    31    32    1  143      550     
+30    31    32    2  83       650     
+32    33    34    2  83       650     
+32    33    35    1  143      550     
+32    36    40    1  180      50      
+33    35    36    1  143      550     
+34    35    36    2  83       650     
+36    37    38    2  83       650     
+36    37    39    1  143      550     
+36    40    44    1  180      50      
+37    39    40    1  143      550     
+38    39    40    2  83       650     
+40    41    42    2  83       650     
+40    41    43    1  143      550     
+40    44    48    1  180      50      
+41    43    44    1  143      550     
+42    43    44    2  83       650     
+44    45    46    2  83       650     
+44    45    47    1  143      550     
+44    48    52    1  180      50      
+45    47    48    1  143      550     
+46    47    48    2  83       650     
+48    49    50    2  83       650     
+48    49    51    1  143      550     
+48    52    56    1  180      50      
+49    51    52    1  143      550     
+50    51    52    2  83       650     
+52    53    54    2  83       650     
+52    53    55    1  143      550     
+52    56    60    1  180      50      
+53    55    56    1  143      550     
+54    55    56    2  83       650     
+56    57    58    2  83       650     
+56    57    59    1  143      550     
+56    60    64    1  180      50      
+57    59    60    1  143      550     
+58    59    60    2  83       650     
+60    61    62    2  83       650     
+60    61    63    1  143      550     
+60    64    68    1  180      50      
+61    63    64    1  143      550     
+62    63    64    2  83       650     
+64    65    66    2  83       650     
+64    65    67    1  143      550     
+64    68    72    1  180      50      
+65    67    68    1  143      550     
+66    67    68    2  83       650     
+68    69    70    2  83       650     
+68    69    71    1  143      550     
+68    72    76    1  180      50      
+69    71    72    1  143      550     
+70    71    72    2  83       650     
+72    73    74    2  83       650     
+72    73    75    1  143      550     
+72    76    80    1  180      50      
+73    75    76    1  143      550     
+74    75    76    2  83       650     
+76    77    78    2  83       650     
+76    77    79    1  143      550     
+76    80    84    1  180      50      
+77    79    80    1  143      550     
+78    79    80    2  83       650     
+80    81    82    2  83       650     
+80    81    83    1  143      550     
+81    83    84    1  143      550     
+82    83    84    2  83       650     
+84    85    86    2  83       650     
+84    85    87    1  143      550     
+1      4     7    1  165      50
+80    84    87    1  165      50
+[      dihedrals       ]
+4     2     1     3     2  0.0        50.0       
+4     6     7     5     2  0.0        50.0       
+8     6     5     7     2  0.0        50.0       
+8     10    11    9     2  0.0        50.0       
+12    10    9     11    2  0.0        50.0       
+12    14    15    13    2  0.0        50.0       
+16    14    13    15    2  0.0        50.0       
+16    18    19    17    2  0.0        50.0       
+20    18    17    19    2  0.0        50.0       
+20    22    23    21    2  0.0        50.0       
+24    22    21    23    2  0.0        50.0       
+24    26    27    25    2  0.0        50.0       
+28    26    25    27    2  0.0        50.0       
+28    30    31    29    2  0.0        50.0       
+32    30    29    31    2  0.0        50.0       
+32    34    35    33    2  0.0        50.0       
+36    34    33    35    2  0.0        50.0       
+36    38    39    37    2  0.0        50.0       
+40    38    37    39    2  0.0        50.0       
+40    42    43    41    2  0.0        50.0       
+44    42    41    43    2  0.0        50.0       
+44    46    47    45    2  0.0        50.0       
+48    46    45    47    2  0.0        50.0       
+48    50    51    49    2  0.0        50.0       
+52    50    49    51    2  0.0        50.0       
+52    54    55    53    2  0.0        50.0       
+56    54    53    55    2  0.0        50.0       
+56    58    59    57    2  0.0        50.0       
+60    58    57    59    2  0.0        50.0       
+60    62    63    61    2  0.0        50.0       
+64    62    61    63    2  0.0        50.0       
+64    66    67    65    2  0.0        50.0       
+68    66    65    67    2  0.0        50.0       
+68    70    71    69    2  0.0        50.0       
+72    70    69    71    2  0.0        50.0       
+72    74    75    73    2  0.0        50.0       
+76    74    73    75    2  0.0        50.0       
+76    78    79    77    2  0.0        50.0       
+80    78    77    79    2  0.0        50.0       
+80    82    83    81    2  0.0        50.0       
+84    82    81    83    2  0.0        50.0       
+84    86    87    85    2  0.0        50.0       
+[     constraints      ]
+1     2     1 0.32500 
+1     3     1 0.32500 
+2     3     1 0.32500 
+5     6     1 0.32500 
+5     7     1 0.32500 
+6     7     1 0.32500 
+9     10    1 0.32500 
+9     11    1 0.32500 
+10    11    1 0.32500 
+13    14    1 0.32500 
+13    15    1 0.32500 
+14    15    1 0.32500 
+17    18    1 0.32500 
+17    19    1 0.32500 
+18    19    1 0.32500 
+21    22    1 0.32500 
+21    23    1 0.32500 
+22    23    1 0.32500 
+25    26    1 0.32500 
+25    27    1 0.32500 
+26    27    1 0.32500 
+29    30    1 0.32500 
+29    31    1 0.32500 
+30    31    1 0.32500 
+33    34    1 0.32500 
+33    35    1 0.32500 
+34    35    1 0.32500 
+37    38    1 0.32500 
+37    39    1 0.32500 
+38    39    1 0.32500 
+41    42    1 0.32500 
+41    43    1 0.32500 
+42    43    1 0.32500 
+45    46    1 0.32500 
+45    47    1 0.32500 
+46    47    1 0.32500 
+49    50    1 0.32500 
+49    51    1 0.32500 
+50    51    1 0.32500 
+53    54    1 0.32500 
+53    55    1 0.32500 
+54    55    1 0.32500 
+57    58    1 0.32500 
+57    59    1 0.32500 
+58    59    1 0.32500 
+61    62    1 0.32500 
+61    63    1 0.32500 
+62    63    1 0.32500 
+65    66    1 0.32500 
+65    67    1 0.32500 
+66    67    1 0.32500 
+69    70    1 0.32500 
+69    71    1 0.32500 
+70    71    1 0.32500 
+73    74    1 0.32500 
+73    75    1 0.32500 
+74    75    1 0.32500 
+77    78    1 0.32500 
+77    79    1 0.32500 
+78    79    1 0.32500 
+81    82    1 0.32500 
+81    83    1 0.32500 
+82    83    1 0.32500 
+85    86    1 0.32500 
+85    87    1 0.32500 
+86    87    1 0.32500 
+#ifdef POSRES 
+#define POSRES_FC 150.00 
+#ifndef POSRES_FC 
+#endif 
+[ position_restraints  ]
+1     1  POSRES_FC POSRES_FC POSRES_FC
+2     1  POSRES_FC POSRES_FC POSRES_FC
+3     1  POSRES_FC POSRES_FC POSRES_FC
+4     1  POSRES_FC POSRES_FC POSRES_FC
+5     1  POSRES_FC POSRES_FC POSRES_FC
+6     1  POSRES_FC POSRES_FC POSRES_FC
+7     1  POSRES_FC POSRES_FC POSRES_FC
+8     1  POSRES_FC POSRES_FC POSRES_FC
+9     1  POSRES_FC POSRES_FC POSRES_FC
+10    1  POSRES_FC POSRES_FC POSRES_FC
+11    1  POSRES_FC POSRES_FC POSRES_FC
+12    1  POSRES_FC POSRES_FC POSRES_FC
+13    1  POSRES_FC POSRES_FC POSRES_FC
+14    1  POSRES_FC POSRES_FC POSRES_FC
+15    1  POSRES_FC POSRES_FC POSRES_FC
+16    1  POSRES_FC POSRES_FC POSRES_FC
+17    1  POSRES_FC POSRES_FC POSRES_FC
+18    1  POSRES_FC POSRES_FC POSRES_FC
+19    1  POSRES_FC POSRES_FC POSRES_FC
+20    1  POSRES_FC POSRES_FC POSRES_FC
+21    1  POSRES_FC POSRES_FC POSRES_FC
+22    1  POSRES_FC POSRES_FC POSRES_FC
+23    1  POSRES_FC POSRES_FC POSRES_FC
+24    1  POSRES_FC POSRES_FC POSRES_FC
+25    1  POSRES_FC POSRES_FC POSRES_FC
+26    1  POSRES_FC POSRES_FC POSRES_FC
+27    1  POSRES_FC POSRES_FC POSRES_FC
+28    1  POSRES_FC POSRES_FC POSRES_FC
+29    1  POSRES_FC POSRES_FC POSRES_FC
+30    1  POSRES_FC POSRES_FC POSRES_FC
+31    1  POSRES_FC POSRES_FC POSRES_FC
+32    1  POSRES_FC POSRES_FC POSRES_FC
+33    1  POSRES_FC POSRES_FC POSRES_FC
+34    1  POSRES_FC POSRES_FC POSRES_FC
+35    1  POSRES_FC POSRES_FC POSRES_FC
+36    1  POSRES_FC POSRES_FC POSRES_FC
+37    1  POSRES_FC POSRES_FC POSRES_FC
+38    1  POSRES_FC POSRES_FC POSRES_FC
+39    1  POSRES_FC POSRES_FC POSRES_FC
+40    1  POSRES_FC POSRES_FC POSRES_FC
+41    1  POSRES_FC POSRES_FC POSRES_FC
+42    1  POSRES_FC POSRES_FC POSRES_FC
+43    1  POSRES_FC POSRES_FC POSRES_FC
+44    1  POSRES_FC POSRES_FC POSRES_FC
+45    1  POSRES_FC POSRES_FC POSRES_FC
+46    1  POSRES_FC POSRES_FC POSRES_FC
+47    1  POSRES_FC POSRES_FC POSRES_FC
+48    1  POSRES_FC POSRES_FC POSRES_FC
+49    1  POSRES_FC POSRES_FC POSRES_FC
+50    1  POSRES_FC POSRES_FC POSRES_FC
+51    1  POSRES_FC POSRES_FC POSRES_FC
+52    1  POSRES_FC POSRES_FC POSRES_FC
+53    1  POSRES_FC POSRES_FC POSRES_FC
+54    1  POSRES_FC POSRES_FC POSRES_FC
+55    1  POSRES_FC POSRES_FC POSRES_FC
+56    1  POSRES_FC POSRES_FC POSRES_FC
+57    1  POSRES_FC POSRES_FC POSRES_FC
+58    1  POSRES_FC POSRES_FC POSRES_FC
+59    1  POSRES_FC POSRES_FC POSRES_FC
+60    1  POSRES_FC POSRES_FC POSRES_FC
+61    1  POSRES_FC POSRES_FC POSRES_FC
+62    1  POSRES_FC POSRES_FC POSRES_FC
+63    1  POSRES_FC POSRES_FC POSRES_FC
+64    1  POSRES_FC POSRES_FC POSRES_FC
+65    1  POSRES_FC POSRES_FC POSRES_FC
+66    1  POSRES_FC POSRES_FC POSRES_FC
+67    1  POSRES_FC POSRES_FC POSRES_FC
+68    1  POSRES_FC POSRES_FC POSRES_FC
+69    1  POSRES_FC POSRES_FC POSRES_FC
+70    1  POSRES_FC POSRES_FC POSRES_FC
+71    1  POSRES_FC POSRES_FC POSRES_FC
+72    1  POSRES_FC POSRES_FC POSRES_FC
+73    1  POSRES_FC POSRES_FC POSRES_FC
+74    1  POSRES_FC POSRES_FC POSRES_FC
+75    1  POSRES_FC POSRES_FC POSRES_FC
+76    1  POSRES_FC POSRES_FC POSRES_FC
+77    1  POSRES_FC POSRES_FC POSRES_FC
+78    1  POSRES_FC POSRES_FC POSRES_FC
+79    1  POSRES_FC POSRES_FC POSRES_FC
+80    1  POSRES_FC POSRES_FC POSRES_FC
+81    1  POSRES_FC POSRES_FC POSRES_FC
+82    1  POSRES_FC POSRES_FC POSRES_FC
+83    1  POSRES_FC POSRES_FC POSRES_FC
+84    1  POSRES_FC POSRES_FC POSRES_FC
+85    1  POSRES_FC POSRES_FC POSRES_FC
+86    1  POSRES_FC POSRES_FC POSRES_FC
+87    1  POSRES_FC POSRES_FC POSRES_FC
+#endif 
