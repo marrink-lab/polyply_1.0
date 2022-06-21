@@ -11,7 +11,7 @@ polyply
 PPEs
 
 [ moleculetype ]
-PPE    4
+PPE    3
 
 [ atoms ]
 ;  nr    type       resnr  residu    atom    cgnr        charge   
@@ -41,13 +41,12 @@ PPE    4
 resname "PPE"
 
 [ bonds ]
-+BB1  BB4  1 0.234  9000   		{"comment": "bond aromatic ring-triple bond"}
+BB4 +BB1  1 0.234  9000   		{"comment": "bond aromatic ring-triple bond"}
 
 [ angles ] 
 BB4 +BB1 +BB2  2   83  650   		{"comment": "angle aromatic ring-triple bond"}
 BB4 +BB1 +BB3  1  143  550   		{"comment": "angle aromatic ring-triple bond"}
-BB4 +BB4 ++BB4  1 180   50   		{"comment": "stiffness between triple bond beads" }
+BB4 +BB4 ++BB4  1 180   50   		{"comment": "bending stiffness backbone" }
 
 [ dihedrals ]
-BB4 +BB2 +BB3 +BB1  2  0   50   		{"comment": "improper dihedral right turn"}
-
+BB4 +BB2 +BB3 +BB1  2  0   50           {"comment": "improper dihedral right turn"}
