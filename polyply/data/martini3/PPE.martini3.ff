@@ -38,10 +38,10 @@ PPE    3
     4    2    1   3    2  0    50   	{"comment": "improper dihedral left turn"}
     
 [ link ]
-resname "PPE"
+resname "PPE|PPEter"
 
 [ bonds ]
-BB4 +BB1  1 0.234  9000   		{"comment": "bond aromatic ring-triple bond"}
+BB4 +BB1  1    0.234  9000   		{"comment": "bond aromatic ring-triple bond"}
 
 [ angles ] 
 BB4 +BB1 +BB2  2   83  650   		{"comment": "angle aromatic ring-triple bond"}
