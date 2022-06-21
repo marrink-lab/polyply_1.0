@@ -174,6 +174,7 @@ def _interaction_equal(interaction1, interaction2, inter_type):
      ['2016H66', 'C12E4'],
      ['2016H66', 'PE'],
      ['2016H66', 'PVA'],
+     ['2016H66', 'PPE'],
      ['2016H66', 'PMA'],
      ['2016H66', 'PS'],
      ['gromos53A6', 'P3HT'],
