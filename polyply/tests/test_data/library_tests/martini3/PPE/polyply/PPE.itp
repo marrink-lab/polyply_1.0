@@ -38,10 +38,10 @@ PPE   3
 34    TC5   8     PPE  BB2  34 0.0000   ;     
 35    TC5   8     PPE  BB3  35 0.0000   ;     
 36    TC4   8     PPE  BB4  36 0.0000   ;     
-37    TC5   9    PPE  BB1  37 0.0000   ;     
-38    TC5   9    PPE  BB2  38 0.0000   ;     
-39    TC5   9    PPE  BB3  39 0.0000   ;     
-40    TC4   9    PPE  BB4  40 0.0000   ;     
+37    TC5   9     PPE  BB1  37 0.0000   ;     
+38    TC5   9     PPE  BB2  38 0.0000   ;     
+39    TC5   9     PPE  BB3  39 0.0000   ;     
+40    TC4   9     PPE  BB4  40 0.0000   ;     
 41    TC5   10    PPE  BB1  41 0.0000   ;     
 42    TC5   10    PPE  BB2  42 0.0000   ;     
 43    TC5   10    PPE  BB3  43 0.0000   ;     
