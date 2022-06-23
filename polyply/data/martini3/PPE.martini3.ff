@@ -54,10 +54,10 @@ resname "PPEinit|PPE"
 BB8  +BB1    1     0.234    9000   		{"comment": "bond aromatic ring-triple bond"}
 
 [ angles ] 
-BB8 +BB1 +BB2    2     83    650   		{"comment": "angle aromatic ring-triple bond"}
+BB8 +BB1 +BB2    1     83    650   		{"comment": "angle aromatic ring-triple bond"}
 BB8 +BB1 +BB3    1    143    550   		{"comment": "angle aromatic ring-triple bond"}
-BB4  BB8 +BB4    2    180     50   		{"comment": "bending stiffness backbone" }
-BB8 +BB4 ++BB4   2    180     50                {"comment": "bending stiffness backbone" }
+BB4  BB8 +BB4    1    180     50   		{"comment": "bending stiffness backbone" }
+BB8 +BB4 ++BB4   1    180     50                  {"comment": "bending stiffness backbone" }
 
 [ dihedrals ]
 BB8 +BB2 +BB3 +BB1  2   0     50   		{"comment": "improper dihedral right turn"}
@@ -97,8 +97,8 @@ resname "PPE"
 BB4 +BB1  1    0.234  9000   		{"comment": "bond aromatic ring-triple bond"}
 
 [ angles ] 
-BB4 +BB1 +BB2  1   83  650   		{"comment": "angle aromatic ring-triple bond"}
-BB4 +BB1 +BB3  1  143  550   		{"comment": "angle aromatic ring-triple bond"}
+BB4 +BB1 +BB2   1   83  650   		{"comment": "angle aromatic ring-triple bond"}
+BB4 +BB1 +BB3   1  143  550   		{"comment": "angle aromatic ring-triple bond"}
 BB4 +BB4 ++BB4  1 180   50   		{"comment": "bending stiffness backbone" }
 
 [ dihedrals ]
@@ -146,14 +146,18 @@ PPEter    3
 resname "PPE|PPEter"
 
 [ bonds ]
--BB4  BB1  1 0.234  9000   		{"comment": "bond aromatic ring-triple bond"}
--BB3 -BB4  1 0.234  9000
+-BB4  BB1   1 0.234  9000   		{"comment": "bond aromatic ring-triple bond"}
+--BB4 -BB1  1 0.234  9000                {"comment": "bond aromatic ring-triple bond"}
 
 [ angles ] 
--BB4 BB1 BB2      1    83  650   	{"comment": "angle aromatic ring-triple bond"}
--BB4 BB1 BB3      1   143  550   	{"comment": "angle aromatic ring-triple bond"}
--BB4 BB4 BB7      1   165   50   	{"comment": "prevent end from bending over" }
---BB4 -BB4 BB4    1   180   50            {"comment": "bending stiffness backbone" }
+--BB4 -BB1 -BB2   1    83  650          {"comment": "angle aromatic ring-triple bond"}
+--BB4 -BB1 -BB3   1   143  550          {"comment": "angle aromatic ring-triple bond"}
+--BB4 -BB4 BB4    1   180   50          {"comment": "bending stiffness backbone" }
+-BB4 BB1 BB2      1    83  650          {"comment": "angle aromatic ring-triple bond"}
+-BB4 BB1 BB3      1   143  550          {"comment": "angle aromatic ring-triple bond"}
+-BB4 BB4 BB7      1   165   50          {"comment": "prevent end from bending over" }
+--BB4 -BB4 BB4    1   180   50          {"comment": "bending stiffness backbone" }
 
 [ dihedrals ]
--BB4 BB2 BB3 BB1   2  0   50   		{"comment": "improper dihedral right turn"}
+-BB4 BB2 BB3 BB1    2  0   50   		{"comment": "improper dihedral right turn"}
+--BB4 -BB2 -BB3 -BB1 2  0   50             {"comment": "improper dihedral right turn"}
