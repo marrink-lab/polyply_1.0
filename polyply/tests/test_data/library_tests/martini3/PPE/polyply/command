@@ -1,0 +1,1 @@
+polyply gen_params -lib martini3 -seq PPEinit:1 PPE:18 PPEter:1 -o PPE.itp -name PPE
