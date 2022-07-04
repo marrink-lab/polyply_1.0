@@ -141,7 +141,7 @@ def gen_coords(toppath,
     cycles: list[str]
         List of cyclic molecule names
     cycle_tol: float
-        Tolarance in nm for cycles to be closed
+        Tolerance in nm for cycles to be closed
     split: list[str]
         Split single residue into more residues. The syntax is
         <resname>:<new_resname>-<atom1>,<atom2><etc>:<new_resname>
