@@ -160,7 +160,7 @@ def find_missing_edges(res_graph, molecule):
     """
     for origin, target in res_graph.edges:
         connecting_edges = find_connecting_edges(res_graph, molecule, (origin, target))
-        if len(connecting_edges) == 0:
+        if not connecting_edges:
             resA = res_graph.nodes[origin]["resname"]
             resB = res_graph.nodes[target]["resname"]
             idxA = res_graph.nodes[origin]["resid"]
