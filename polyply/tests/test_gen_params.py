@@ -75,20 +75,9 @@ class TestGenParams():
         ff_group = parser.add_argument_group('Force field selection')
         ff_group.add_argument('-lib', dest='lib', required=False, type=str,
                               help='force-fields to include from library', nargs='*')
-        ff_group.add_argument('-ff-dir', dest='extra_ff_dir', action='append',
-                              type=Path, default=[],
-                              help='Additional repository for custom force fields.')
-        ff_group.add_argument('-list-lib', action='store_true', dest='list_ff',
-                              help='List all known force fields, and exit.')
-        ff_group.add_argument('-list-blocks', action='store_true', dest='list_blocks',
-                              help='List all Blocks known to the'
-                              ' force field, and exit.')
-        ff_group.add_argument('-list-links', action='store_true', dest='list_links',
-                              help='List all Links known to the'
-                              ' force field, and exit.')
 
         args = parser.parse_args(args_in)
-        gen_params(args)
+        gen_params(**vars(args))
 
         force_field = vermouth.forcefield.ForceField(name='test_ff')
 
