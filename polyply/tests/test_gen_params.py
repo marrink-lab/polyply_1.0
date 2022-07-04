@@ -124,8 +124,8 @@ def test_find_missing_links():
     meta_mol.molecule.remove_edge(15, 21) # resid 3,4
     missing = list(find_missing_edges(meta_mol, meta_mol.molecule))
     assert len(missing) == 2
-    for edge in missing:
+    for edge, ref in zip(missing, [(3, 4), (7, 8)]):
         assert edge["resA"] == "P3HTref"
         assert edge["resB"] == "P3HTref"
-        assert edge["idxA"] in [3, 4, 7, 8]
-        assert edge["idxB"] in [3, 4, 7, 8]
+        assert edge["idxA"] == ref[0]
+        assert edge["idxB"] == ref[1]
