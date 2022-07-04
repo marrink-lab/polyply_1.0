@@ -15,7 +15,7 @@ from collections import (namedtuple, OrderedDict)
 import networkx as nx
 from vermouth.graph_utils import make_residue_graph
 from vermouth.log_helpers import StyleAdapter, get_logger
-from .polyply_parser import read_polyply
+from vermouth.gmx.itp_read import read_itp
 from .graph_utils import find_nodes_with_attributes
 from .simple_seq_parsers import parse_txt, parse_ig, parse_fasta, parse_json
 
@@ -322,7 +322,9 @@ class MetaMolecule(nx.Graph):
         """
         with open(itp_file) as file_:
             lines = file_.readlines()
-            read_polyply(lines, force_field)
+            read_itp(lines, force_field)
+
+        _make_edges(force_field)
 
         graph = MetaMolecule._block_graph_to_res_graph(force_field.blocks[mol_name])
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)

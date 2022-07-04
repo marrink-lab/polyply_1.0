@@ -28,7 +28,9 @@ except ImportError:
     deferred_open = open
 from vermouth.file_writer import DeferredFileWriter
 from vermouth.citation_parser import citation_formatter
+from vermouth.graph_utils import make_residue_graph
 from polyply import (MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
+from polyply.src.graph_utils import find_missing_edges
 from .load_library import load_library
 
 LOGGER = StyleAdapter(get_logger(__name__))
@@ -80,9 +82,11 @@ def gen_params(args):
 
     # Raise warning if molecule is disconnected
     if not nx.is_connected(meta_molecule.molecule):
-        n_components = len(list(nx.connected_components(meta_molecule.molecule)))
-        msg = "You molecule consists of {:d} disjoint parts. Perhaps links were not applied correctly."
-        LOGGER.warning(msg, (n_components))
+        LOGGER.warning("Your molecule consists of disjoint parts."
+                       "Perhaps links were not applied correctly.")
+        msg = "Missing link between residue {idxA} {resA} and residue {idxB} {resB}"
+        for missing in find_missing_edges(meta_molecule, meta_molecule.molecule):
+            LOGGER.warning(msg, **missing)
 
     with deferred_open(args.outpath, 'w') as outpath:
         header = [ ' '.join(sys.argv) + "\n" ]
