@@ -56,7 +56,7 @@ def split_seq_string(sequence):
         monomers.append(Monomer(resname=resname, n_blocks=n_blocks))
     return monomers
 
-def gen_params(name, inpath, lib, seq, seq_file, outpath):
+def gen_params(name, outpath, inpath=None, lib=None, seq=None, seq_file=None):
     """
     Top level function for running the polyply parameter generation.
     Parameters seq and seq_file are mutually exclusive. Set the other
@@ -67,6 +67,8 @@ def gen_params(name, inpath, lib, seq, seq_file, outpath):
     ----------
     name: str
         name of the molecule in the itp file
+    outpath: :class:`pathlib.Path`
+        file path for output file
     inpath: list[:class:pathlib.Path]
         list of paths to files with input definitions
     library: str
@@ -75,8 +77,6 @@ def gen_params(name, inpath, lib, seq, seq_file, outpath):
         list of strings with format "resname:#monomers"
     seqf: :class:`pathlib.Path`
         file path to valid sequence file (.json/.fasta/.ig/.txt)
-    outpath: :class:`pathlib.Path`
-        file path for output file
     """
     # Import of Itp and FF files
     LOGGER.info("reading input and library files",  type="step")
