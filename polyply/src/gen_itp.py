@@ -30,6 +30,7 @@ from vermouth.file_writer import DeferredFileWriter
 from vermouth.citation_parser import citation_formatter
 from vermouth.graph_utils import make_residue_graph
 from polyply import (MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
+from polyply.src.graph_utils import find_missing_edges
 from .load_library import load_library
 
 LOGGER = StyleAdapter(get_logger(__name__))
@@ -56,47 +57,6 @@ def split_seq_string(sequence):
         n_blocks = int(n_blocks)
         monomers.append(Monomer(resname=resname, n_blocks=n_blocks))
     return monomers
-
-# TODO move the two functions below to meta-molecule
-# and generalize to a function that returns edges
-# replacing the equivalent function in graph_utils
-
-def _are_connected(graph, origin_nodes, target_nodes):
-    """
-    Given a list of origin nodes check if any of these
-    nodes is neighbor to any of the target nodes.
-    """
-    for node in origin_nodes:
-        for neigh in graph.neighbors(node):
-            if neigh in target_nodes:
-                return True
-    return False
-
-def find_missing_links(meta_molecule):
-    """
-    Given a connected meta_molecule graph and a disconnected
-    molecule, figure out which residue connections are missing.
-
-    Parameters
-    ----------
-    meta_molecule: `:class:polyply.MetaMolecule`
-
-    Yields:
-    --------
-    dict
-        dict containing the resnams and resids of the
-        nodes corresponding to the missing links
-    """
-    for origin, target in meta_molecule.edges:
-        origin_nodes = meta_molecule.nodes[origin]['graph'].nodes
-        target_nodes = meta_molecule.nodes[target]['graph'].nodes
-        if not _are_connected(meta_molecule.molecule, origin_nodes, target_nodes):
-            resA = meta_molecule.nodes[origin]["resname"]
-            resB = meta_molecule.nodes[target]["resname"]
-            idxA = meta_molecule.nodes[origin]["resid"]
-            idxB = meta_molecule.nodes[target]["resid"]
-            yield {"resA": resA, "idxA": idxA, "resB": resB, "idxB": idxB}
-
 
 def gen_params(args):
     # Import of Itp and FF files
@@ -125,7 +85,7 @@ def gen_params(args):
         LOGGER.warning("Your molecule consists of disjoint parts."
                        "Perhaps links were not applied correctly.")
         msg = "Missing link between residue {idxA} {resA} and residue {idxB} {resB}"
-        for missing in find_missing_links(meta_molecule):
+        for missing in find_missing_edges(meta_molecule, meta_molecule.molecule):
             LOGGER.warning(msg, **missing)
 
     with deferred_open(args.outpath, 'w') as outpath:
