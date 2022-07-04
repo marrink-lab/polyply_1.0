@@ -95,10 +95,11 @@ def _check_molecules(molecules):
 
 def gen_coords(toppath,
                outpath,
+               name,
                coordpath=None,
                build=None,
                build_res=[],
-               ign=[],
+               ignore=[],
                cycles=[],
                cycle_tol=0.0,
                split=[],
@@ -107,13 +108,13 @@ def gen_coords(toppath,
                grid=None,
                maxiter=800,
                start=[],
-               dens=None,
+               density=None,
                box=None,
                maxiter_random=100,
                step_fudge=1.0,
                max_force=5*10**4.0,
                nrewind=5,
-               back_fudge=0.4):
+               bfudge=0.4):
     """
     Subprogram for coordinate generation which implements the default
     polyply workflow for structure generation. In general a topology
@@ -129,11 +130,13 @@ def gen_coords(toppath,
         Path to topology file
     outpath: :class:pathlib.Path
         Path to coordinate file
+    name: str
+        Name of the molecule
     build: :class:pathlib.Path
         Path to build file
     build_res: list[str]
         List of resnames to build
-    ign: list[str]
+    ignore: list[str]
         List of molecule names to ignore
     cycles: list[str]
         List of cyclic molecule names
@@ -164,7 +167,7 @@ def gen_coords(toppath,
         specification may be omitted.
         Note mol_name and resname cannot contain the characters #
         and -.
-    dens: float
+    density: float
         Density of the system (kg/m3)
     box: np.ndarray(1,3)
         Rectangular box x, y, z in nm
@@ -180,7 +183,7 @@ def gen_coords(toppath,
     nrewind: int
         Number of residues to trace back when RW step fails in first
         attempt. The default is 5.
-    back_fudge: float
+    bfudge: float
         Fudge factor by which to scale the coordinates of the residues
         during the backmapping step. 1 will result in to-scale coordinates
         but likely generate overlaps.
