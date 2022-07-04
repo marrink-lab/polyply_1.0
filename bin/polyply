@@ -125,7 +125,7 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
                                       '# and -.'))
 
     system_group = parser_gen_coords.add_argument_group('Options for system generation')
-    system_group.add_argument('-gs', dest='grid_spacing', type=int,
+    system_group.add_argument('-gs', dest='grid_spacing', type=float,
                               help='grid spacing (nm)', default=0.2)
     system_group.add_argument('-grid', dest='grid', type=str,
                               help='file with grid-points', default=None)
