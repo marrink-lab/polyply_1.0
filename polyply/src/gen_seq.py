@@ -322,7 +322,7 @@ def gen_seq(name,
     ----------
     name: str
         name of the sequence
-    inpath: list[:class:pathlib.Path]
+    inpath: list[pathlib.Path]
         list of paths to files with input definitions
     outpath: :class:`pathlib.Path`
         file path for output file
