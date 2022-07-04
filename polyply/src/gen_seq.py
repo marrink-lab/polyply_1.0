@@ -305,12 +305,12 @@ def _tag_nodes(graph, tags, seed=None):
 
 def gen_seq(name,
             outpath,
-            inpath=None,
             seq,
-            macros=[],
+            inpath=None,
+            macro_strings=[],
             from_file=None,
-            connects=[]
-            modifications=[]
+            connects=[],
+            modifications=[],
             tags=[],
             ):
     """
@@ -332,7 +332,7 @@ def gen_seq(name,
         to combine three blocks called A, B, which are defined by the
         macro syntax use <A, B, A> and define how they are connected
         using the connects flag.
-    macors:
+    macro_strings: list[str]
         Define small polymer fragments by a string:
         the format is <tag>:<#blocks>:<#branches>:<residues>
         where residues has the format <resname-probability>.
@@ -340,6 +340,8 @@ def gen_seq(name,
         or a random copolymer of PS-PEG <A:10:1:PS-0.5,PEG-0.5>.
         But we can also generate branched polymer with 3 generations
         using <A:3:3:NR3-1.>.
+    from_file: list[pathlib.Path]
+        Paths to files which to take as macro.
     connects: list[str]
         Provide connect records for sequence.
         The format is <seq-index:seq-index:res_id-res_id>.
@@ -362,21 +364,21 @@ def gen_seq(name,
     """
     macros = {}
 
-    if args.from_file:
-        force_field = load_library("seq", None, args.inpath)
-        for tag_name in args.from_file:
+    if from_file:
+        force_field = load_library("seq", None, inpath)
+        for tag_name in from_file:
             tag, name = tag_name.split(":")
             macros[tag] = MacroFile(name, force_field)
 
-    for macro_string in args.macros:
+    for macro_string in macro_strings:
         macro = MacroString(macro_string)
         macros[macro.name] = macro
 
-    seq_graph = generate_seq_graph(args.seq, macros, args.connects)
+    seq_graph = generate_seq_graph(seq, macros, connects)
 
-    _apply_termini_modifications(seq_graph, args.modifications)
-    _tag_nodes(seq_graph, args.tags)
+    _apply_termini_modifications(seq_graph, modifications)
+    _tag_nodes(seq_graph, tags)
 
     g_json = json_graph.node_link_data(seq_graph)
-    with open(args.outpath, "w") as file_handle:
+    with open(outpath, "w") as file_handle:
         json.dump(g_json, file_handle, indent=2)

@@ -96,24 +96,24 @@ def _check_molecules(molecules):
 def gen_coords(toppath,
                outpath,
                coordpath=None,
-               build=None
-               build_res=[]
-               ign=[]
+               build=None,
+               build_res=[],
+               ign=[],
                cycles=[],
-               cycle_tol=0.0
-               split=[]
-               ligands=[]
-               grid_spacing=0.2
-               grid=None
-               maxiter=800
+               cycle_tol=0.0,
+               split=[],
+               ligands=[],
+               grid_spacing=0.2,
+               grid=None,
+               maxiter=800,
                start=[],
-               dens=None
-               box=None
-               maxiter_random=100
-               step_fudge=1.0
-               max_force=5*10**4.0
+               dens=None,
+               box=None,
+               maxiter_random=100,
+               step_fudge=1.0,
+               max_force=5*10**4.0,
                nrewind=5,
-               back_fudge):
+               back_fudge=0.4):
     """
     Subprogram for coordinate generation which implements the default
     polyply workflow for structure generation. In general a topology
