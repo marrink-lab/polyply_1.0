@@ -120,7 +120,7 @@ def gen_coords(toppath,
     polyply workflow for structure generation. In general a topology
     file is read, all molecules are extracted. Subsequently for each
     residue in the system a template is built. Afterwards a random-walk
-    is performed for ecah residue based on a volume estimated from
+    is performed for each residue based on a volume estimated from
     the templates. Once the RW residue coordinates are generated, they
     are backmapped.
 
