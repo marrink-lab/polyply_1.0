@@ -61,3 +61,15 @@ def test_find_connecting_edges(example_meta_molecule, nodes, expected):
                                                             example_meta_molecule.molecule,
                                                             nodes)
     assert result == expected
+
+
+@pytest.mark.parametrize('del_edge, expected',(
+                        ({"u":1, "v":4}, [{"resA": "A", "idxA": 1, "resB": "B", "idxB": 2}]),
+                        # central residue
+                        ({"u":6, "v":9}, [{"resA": "B", "idxA": 2, "resB": "A", "idxB": 3}]),
+                        ))
+def test_find_missing_edges(example_meta_molecule, del_edge, expected):
+    example_meta_molecule.molecule.remove_edge(**del_edge)
+    for idx, missing in enumerate(polyply.src.graph_utils.find_missing_edges(example_meta_molecule,
+                                                                             example_meta_molecule.molecule)):
+        assert missing == expected[idx]
