@@ -69,7 +69,7 @@ def gen_params(name, outpath, inpath=None, lib=None, seq=None, seq_file=None):
         name of the molecule in the itp file
     outpath: :class:`pathlib.Path`
         file path for output file
-    inpath: list[:class:pathlib.Path]
+    inpath: list[pathlib.Path]
         list of paths to files with input definitions
     library: str
         name of the library to use
