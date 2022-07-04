@@ -350,7 +350,7 @@ def gen_seq(name,
         and third residue in these blocks respectively the input
         would be <1:3:2-3>.
     modifications: list[str]
-        Change the resname of terminii of a specific block
+        Change the resname of termini of a specific block
         in the sequence. The format of the strings is
         <SeqID:new_resname>
     tags: list[str]
