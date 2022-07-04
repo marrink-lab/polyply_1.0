@@ -137,6 +137,36 @@ def find_connecting_edges(res_graph, molecule, nodes):
 
     return edges
 
+def find_missing_edges(res_graph, molecule):
+    """
+    Given a molecular residue graph find all those nodes
+    that are connected in the residue graph but have no
+    connection in the molecule graph.
+
+    Parameters
+    ----------
+    res_graph: :class:`nx.Graph`
+        residue graph; must have the attribute "graph" and
+        "resid", where graph is the fragment the node describes
+        in the mol_graph
+    molecule: :class:`vermouth.molecule.Molecule`
+        vermouth molecule underlying the residue graph
+
+    Yields:
+    --------
+    dict
+        dict containing the resnams and resids of the
+        nodes corresponding to the missing links
+    """
+    for origin, target in res_graph.edges:
+        connecting_edges = find_connecting_edges(res_graph, molecule, (origin, target))
+        if len(connecting_edges) == 0:
+            resA = res_graph.nodes[origin]["resname"]
+            resB = res_graph.nodes[target]["resname"]
+            idxA = res_graph.nodes[origin]["resid"]
+            idxB = res_graph.nodes[target]["resid"]
+            yield {"resA": resA, "idxA": idxA, "resB": resB, "idxB": idxB}
+
 def _compute_path_length_cartesian(mol_idx, path, nonbond_matrix):
     """
     Computes the maximum length a graph path based on the super-CG model
