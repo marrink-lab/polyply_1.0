@@ -21,7 +21,7 @@ import vermouth.forcefield
 import vermouth.molecule
 import vermouth.gmx.itp_read
 from polyply import gen_params, TEST_DATA, MetaMolecule
-from polyply.src.gen_itp import find_missing_links
+from polyply.src.graph_utils import find_missing_edges
 
 class TestGenParams():
     @staticmethod
@@ -122,7 +122,7 @@ def test_find_missing_links():
     meta_mol = MetaMolecule.from_itp(ff, fname, "P3HTref")
     meta_mol.molecule.remove_edge(39, 45) # resid 7,8
     meta_mol.molecule.remove_edge(15, 21) # resid 3,4
-    missing = list(find_missing_links(meta_mol))
+    missing = list(find_missing_edges(meta_mol, meta_mol.molecule))
     assert len(missing) == 2
     for edge in missing:
         assert edge["resA"] == "P3HTref"
