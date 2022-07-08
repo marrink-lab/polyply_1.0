@@ -27,6 +27,9 @@ from vermouth.pdb import read_pdb
 from .top_parser import read_topology
 from .linalg_functions import center_of_geometry
 
+class MergeError(Exception):
+    """ Raised when two objects cannot be merged"""
+
 COORD_PARSERS = {"pdb": read_pdb,
                  "gro": read_gro}
 
@@ -191,7 +194,7 @@ def match_dihedral_interaction_types(atoms, interaction_dict):
 class Topology(System):
     """
     Ties together vermouth molecule definitions, and
-    Gromacs topology information.
+    Gromacs or other programs topology information.
 
     Parameters
     ----------
@@ -217,6 +220,8 @@ class Topology(System):
     """
 
     def __init__(self, force_field, name=None):
+        # self.molecules with super
+        # self.foce_field with super
         super().__init__(force_field)
         self.name = name
         # simple dict attributes
@@ -234,7 +239,7 @@ class Topology(System):
         self.distance_restraints = defaultdict(dict)
         self.types = defaultdict(dict)
 
-    def merge(self, other_top, check_dublicates=True):
+    def merge(self, other_top, check_duplicates=True):
         """
         Merge two topologies updating their attribute dictionaries.
         If check_dublicates is True attribute value combinations
@@ -242,17 +247,21 @@ class Topology(System):
         the to be merged topology. An error will raise otherwise if
         there are any conflicting dublicate entries.
 
+        Note distance restraints are not checked for possibly
+        conflicting definitions.
+
         Parameters
         ----------
         other_top: :class:`polyply.src.topology.Topology`
             the topology to be merged
-        check_dublicates: bool
+
+        check_duplicates: bool
             check for conflicting attribute value pairs
 
         """
         for attribute in ["defaults", "defines", "atom_types", "nonbond_params"]:
             self_dict = getattr(self, attribute)
-            if check_dublicates:
+            if check_duplicates:
                 for key, value in getattr(other_top, attribute):
                     if key in self_dict and self_dict[key] != value:
                         msg = f"Conflicting entry in {attribute} with key {key}"
@@ -264,14 +273,17 @@ class Topology(System):
         self.description.append(other_top.description)
         self.persistences.append(other_top.persistences)
 
+        for atoms, dist_restr in other_top.distance_restraints:
+            self.distance_restraints[atoms].append(dist_restr)
+
         for molecule in other_top.molecules:
-            seelf.append_molecules(molecule, molecule.molname)
+            self.append_molecules(molecule, molecule.molname)
 
         for inter_type in other_top.types:
             for atoms, type_params in other_top.types[inter_type].values():
                 if atoms in self.types[inter_type] and self.types[inter_type][atoms] == type_params:
                     typestring = inter_type[:-1]
-                    msg = f"Conflicting entry in {typestring}types with key {key}"
+                    msg = f"Conflicting entry in {typestring}types for atoms {atoms}"
                     raise MergeError(msg)
                 self.types[inter_type] = type_params
 

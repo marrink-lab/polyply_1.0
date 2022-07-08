@@ -25,6 +25,12 @@ import polyply.src.meta_molecule
 from polyply import TEST_DATA
 from polyply.src.topology import Topology
 
+def _lines_to_topology(top, lines):
+    new_lines = textwrap.dedent(lines)
+    new_lines = new_lines.splitlines()
+    polyply.src.top_parser.read_topology(new_lines, top)
+    return top
+
 class TestTopology:
 
     @staticmethod
@@ -605,3 +611,73 @@ class TestTopology:
         polyply.src.top_parser.read_topology(new_lines, top)
         with pytest.raises(OSError):
              top.gen_bonded_interactions()
+
+    @staticmethod
+    @pytest.mark.parametrize('target_lines, other_lines', (
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ bondtypes ]
+        C       C       1       0.1335  502080.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 C   1 test C1 1   0.0 14.0
+        2 C   1 test C2 2   0.0 12.0
+        [ bonds ]
+        1 2  1
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ bondtypes ]
+        P       P       1       0.1335  502080.0
+        [ moleculetype ]
+        other 3
+        [ atoms ]
+        1 P   1 other  C1 1   0.0 14.0
+        2 P   1 other  C2 2   0.0 12.0
+        [ bonds ]
+        1 2  1
+        [ system ]
+        other title
+        [ molecules ]
+        other 1
+        """,
+        ),))
+    def test_merge_topologies(target_lines, other_lines):
+        force_field = vermouth.forcefield.ForceField(name='test_ff')
+        target_top =  Topology(force_field, name="target")
+        n_mols_target = len(target_top.molecules)
+        other_top =  Topology(force_field, name="other")
+        _lines_to_topology(target_top, target_lines)
+        _lines_to_topology(other_top, other_lines)
+        target_top.merge(other_top)
+        # check if the attributes have both topologies values
+        for attribute in ["defaults", "defines", "atom_types", "nonbond_params"]:
+            target_dict = getattr(self, attribute)
+            other_dict = getattr(self, attribute)
+            for key, value in getattr(other_top, attribute):
+                assert other_dict[key] = target_dict[key]
+        # check that all descriptions and persistences are in the target
+        # topology
+        for descr in other_top.description:
+            assert descre in target_top.description
+
+        for persis in other_top.persistences:
+            assert persis in target_top.persistences
+
+        for atoms, dist_restr in other_top.distance_restraints:
+            assert dist_restr in self.distance_restraints[atoms]
+
+        for idx, molecule in enumerate(other_top.molecules):
+            assert molecule == target_top.molecules[idx+n_mols_target_top]
+
+        for inter_type in other_top.types:
+            for atoms, type_params in other_top.types[inter_type].values():
+                assert target_top.types[inter_type] = type_params
