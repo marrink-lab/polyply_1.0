@@ -186,7 +186,7 @@ def gen_coords(toppath,
     bfudge: float
         Fudge factor by which to scale the coordinates of the residues
         during the backmapping step. 1 will result in to-scale coordinates
-        but likely generate overlaps.
+        but will likely generate overlaps.
     """
 
     # Read in the topology
