@@ -119,7 +119,7 @@ def gen_coords(toppath,
     Subprogram for coordinate generation which implements the default
     polyply workflow for structure generation. In general, a topology
     file is read from which all molecules are extracted. Subsequently for each
-    residue in the system a template is built. Afterwards a random-walk
+    residue in the system a template is built. Afterwards a random walk
     is performed for each residue based on a volume estimated from
     the templates. Once the random walk residue coordinates are generated, they
     are backmapped.
