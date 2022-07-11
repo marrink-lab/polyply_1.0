@@ -181,7 +181,7 @@ def gen_coords(toppath,
         Maximum force under which placement of a residue is accepted.
         The default is 5x10^4 kJ/(mol*nm).
     nrewind: int
-        Number of residues to trace back when RW step fails in first
+        Number of residues to trace back when random walk step fails in first
         attempt. The default is 5.
     bfudge: float
         Fudge factor by which to scale the coordinates of the residues
