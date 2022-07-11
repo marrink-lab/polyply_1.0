@@ -72,7 +72,7 @@ def gen_params(name, outpath, inpath=None, lib=None, seq=None, seq_file=None):
     inpath: list[pathlib.Path]
         list of paths to files with input definitions
     library: str
-        name of the library to use
+        name of the force field library to use
     seq: list[str]
         list of strings with format "resname:#monomers"
     seqf: :class:`pathlib.Path`
