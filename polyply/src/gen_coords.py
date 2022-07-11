@@ -159,7 +159,7 @@ def gen_coords(toppath,
     grid: str
         Path to file with grid-points
     maxiter: int
-        Maximum number of trys to generate coordinates for a molecule.
+        Maximum number of tries to generate coordinates for a molecule.
         The default is 800.
     start: list[str]
         Specify which residue to build first. The syntax is
