@@ -335,7 +335,7 @@ def gen_seq(name,
     macro_strings: list[str]
         Define small polymer fragments by a string:
         the format is <tag>:<#blocks>:<#branches>:<residues>
-        where residues has the format <resname-probability>.
+        where residues have the format <resname-probability>.
         Examples are linear PEG of length 10 <A:10:1:PEG-1.0>
         or a random copolymer of PS-PEG <A:10:1:PS-0.5,PEG-0.5>.
         But we can also generate branched polymer with 3 generations
