@@ -117,7 +117,7 @@ def gen_coords(toppath,
                bfudge=0.4):
     """
     Subprogram for coordinate generation which implements the default
-    polyply workflow for structure generation. In general a topology
+    polyply workflow for structure generation. In general, a topology
     file is read, all molecules are extracted. Subsequently for each
     residue in the system a template is built. Afterwards a random-walk
     is performed for each residue based on a volume estimated from
