@@ -359,7 +359,7 @@ def gen_seq(name,
         for applying links. See the workflow documentation for
         more information. Labels can also be applied statistically.
         The syntax is <SeqID:label:value-probability,value-probability>
-        For example setting the chirality on PS could be done this way
+        For example setting the chirality on PS could be done in this way
         <0:chiral:R-0.5,S-0.5>
     """
     macros = {}
