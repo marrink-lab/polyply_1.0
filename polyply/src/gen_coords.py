@@ -172,7 +172,7 @@ def gen_coords(toppath,
     box: np.ndarray(1,3)
         Rectangular box x, y, z in nm
     maxiter_random: int
-        Maximum number of trys to place a residue with
+        Maximum number of tries to place a residue with
         the random walk module.
     step_fudge: float
         Scale the step length in random walk by this fudge factor.
