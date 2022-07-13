@@ -303,29 +303,82 @@ def _tag_nodes(graph, tags, seed=None):
                                         weights, attr,
                                         nodes=idx_nodes, seed=seed)
 
-def gen_seq(args):
+def gen_seq(name,
+            outpath,
+            seq,
+            inpath=None,
+            macro_strings=[],
+            from_file=None,
+            connects=[],
+            modifications=[],
+            tags=[],
+            ):
     """
     Given a sequence definition and macros defining smaller
     building blocks of the sequence, create a residue graph
     and write it to a .json file to be used with gen_itp.
+
+    Parameters
+    ----------
+    name: str
+        name of the sequence
+    inpath: list[pathlib.Path]
+        list of paths to files with input definitions
+    outpath: :class:`pathlib.Path`
+        file path for output file
+    seq: str
+        Define the sequence order in which to combine macros.
+        The format is <macro_tag, macro_tag, ...>. For example,
+        to combine three blocks called A, B, which are defined by the
+        macro syntax use <A, B, A> and define how they are connected
+        using the connects flag.
+    macro_strings: list[str]
+        Define small polymer fragments by a string:
+        the format is <tag>:<#blocks>:<#branches>:<residues>
+        where residues have the format <resname-probability>.
+        Examples are linear PEG of length 10 <A:10:1:PEG-1.0>
+        or a random copolymer of PS-PEG <A:10:1:PS-0.5,PEG-0.5>.
+        But we can also generate branched polymer with 3 generations
+        using <A:3:3:NR3-1.>.
+    from_file: list[pathlib.Path]
+        Paths to files which to take as macro.
+    connects: list[str]
+        Provide connect records for sequence.
+        The format is <seq-index:seq-index:res_id-res_id>.
+        For example if we want to connect the first and third
+        block in a sequence, using a connection between the second
+        and third residue in these blocks respectively the input
+        would be <1:3:2-3>.
+    modifications: list[str]
+        Change the resname of termini of a specific block
+        in the sequence. The format of the strings is
+        <SeqID:new_resname>
+    tags: list[str]
+        Set one or more labels for the residues. Labels can be
+        referred to in the ff input files and used as a selector
+        for applying links. See the workflow documentation for
+        more information. Labels can also be applied statistically.
+        The syntax is <SeqID:label:value-probability,value-probability>
+        For example setting the chirality on PS could be done in this way
+        <0:chiral:R-0.5,S-0.5>
     """
     macros = {}
 
-    if args.from_file:
-        force_field = load_library("seq", None, args.inpath)
-        for tag_name in args.from_file:
+    if from_file:
+        force_field = load_library("seq", None, inpath)
+        for tag_name in from_file:
             tag, name = tag_name.split(":")
             macros[tag] = MacroFile(name, force_field)
 
-    for macro_string in args.macros:
+    for macro_string in macro_strings:
         macro = MacroString(macro_string)
         macros[macro.name] = macro
 
-    seq_graph = generate_seq_graph(args.seq, macros, args.connects)
+    seq_graph = generate_seq_graph(seq, macros, connects)
 
-    _apply_termini_modifications(seq_graph, args.modifications)
-    _tag_nodes(seq_graph, args.tags)
+    _apply_termini_modifications(seq_graph, modifications)
+    _tag_nodes(seq_graph, tags)
 
     g_json = json_graph.node_link_data(seq_graph)
-    with open(args.outpath, "w") as file_handle:
+    with open(outpath, "w") as file_handle:
         json.dump(g_json, file_handle, indent=2)
