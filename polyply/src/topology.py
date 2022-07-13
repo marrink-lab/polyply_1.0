@@ -20,6 +20,7 @@ from pathlib import Path
 from collections import defaultdict
 from itertools import combinations
 import numpy as np
+import networkx as nx
 from vermouth.system import System
 from vermouth.forcefield import ForceField
 from vermouth.gmx.gro import read_gro
@@ -44,8 +45,8 @@ def _coord_parser(path, extension):
             molecule.merge_molecule(new_mol)
     else:
         molecule = molecules
-
-    return molecule
+    positions = np.array(list(nx.get_node_attributes(molecule, "position").values()))
+    return positions
 
 
 def replace_defined_interaction(interaction, defines):
@@ -356,41 +357,68 @@ class Topology(System):
 
             self.nonbond_params.update({atom_pair: {"nb1": sig, "nb2": eps}})
 
-    def add_positions_from_file(self, path, build_res=[]):
+    def add_positions_from_file(self, path, skip_res=[], resolution='mol'):
         """
-        Add positions to topology from coordinate file.
+        Add positions to molecules in topology from coordinate file.
+        Depending on the resolution set they are either added to the
+        meta_molecule or the molecules. With `skip_res` residues can
+        be skipped by name.
+
+        Note that molecule coordinates will also set the meta_molecule
+        coordinates. Coordinates for a single residue must be complete.
+
+        Currently .gro and .pdb file parsers are supoprted for the
+        coordinate reading. See `_coord_parsers` for more information.
+
+        Parameters
+        ----------
+        path: :class:`pathlib.Path`
+            path to coordinate file
+        skip_res: list[str]
+            list of resnames to skip
+        resolution: str
+            choice of meta_mol or mol
         """
         path = Path(path)
         extension = path.suffix.casefold()[1:]
-        molecules = _coord_parser(path, extension)
+        positions = _coord_parser(path, extension)
+        max_coords = len(positions)
         total = 0
         for meta_mol in self.molecules:
-            no_coords = []
-            for node in meta_mol.molecule.nodes:
-                resname = meta_mol.molecule.nodes[node]["resname"]
-                if resname in build_res:
-                    no_coords.append(node)
+            for meta_node in meta_mol.nodes:
+                resname = meta_mol.nodes[meta_node]["resname"]
+                mol_nodes = meta_mol.nodes[meta_node]['graph'].nodes
+                # skip residue if resname is to be skipped or
+                # if the no more coordinates are available
+                # in that case we want to build the node and
+                # backmap it
+                if resname in skip_res or total >= max_coords:
+                    meta_mol.nodes[meta_node]["build"] = True
+                    meta_mol.nodes[meta_node]["backmap"] = True
                     continue
-                try:
-                    position = molecules.nodes[total]["position"]
-                except KeyError:
-                    no_coords.append(node)
-                else:
-                    meta_mol.molecule.nodes[node]["position"] = position
+                # here we only add meta_molecule coordiantes
+                # in that case we only want to backmap
+                if resolution == 'meta_mol':
+                    meta_mol.nodes[meta_node]["position"] = positions[total]
+                    meta_mol.nodes[meta_node]["backmap"] = True
                     total += 1
-
-            for node in meta_mol:
-                resid = meta_mol.nodes[node]["resid"]
-                atoms_in_res = list(meta_mol.nodes[node]["graph"].nodes)
-
-                if all(atom not in no_coords for atom in atoms_in_res):
-                    positions = np.array([meta_mol.molecule.nodes[atom]["position"] for
-                                          atom in atoms_in_res])
-                    center = center_of_geometry(positions)
-                    meta_mol.nodes[node]["position"] = center
-                    meta_mol.nodes[node]["build"] = False
+                # here we set molecule coordinates in that case we neither
+                # want to backmap nor build these nodes
                 else:
-                    meta_mol.nodes[node]["build"] = True
+                    start = total
+                    for mol_node in mol_nodes:
+                        # of the coordinates for a single residue are incomplete
+                        # we raise an error because otherwise we would set them
+                        # based on a non-complete residue
+                        try:
+                            meta_mol.molecule.nodes[mol_node]["position"] = positions[total]
+                        except IndexError:
+                            raise IOError from IndexError
+                        total += 1
+
+                    meta_mol.nodes[meta_node]["position"] = center_of_geometry(positions[start:total])
+                    meta_mol.nodes[meta_node]["build"] = False
+                    meta_mol.nodes[meta_node]["backmap"] = False
 
     def convert_to_vermouth_system(self):
         system = System()
