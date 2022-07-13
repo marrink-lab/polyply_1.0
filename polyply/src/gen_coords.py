@@ -93,39 +93,134 @@ def _check_molecules(molecules):
                    'connected by bonds, constraints or virual-sites')
             raise IOError(msg.format(molecule.name))
 
-def gen_coords(args):
+def gen_coords(toppath,
+               outpath,
+               name,
+               coordpath=None,
+               build=None,
+               build_res=[],
+               ignore=[],
+               cycles=[],
+               cycle_tol=0.0,
+               split=[],
+               ligands=[],
+               grid_spacing=0.2,
+               grid=None,
+               maxiter=800,
+               start=[],
+               density=None,
+               box=None,
+               maxiter_random=100,
+               step_fudge=1.0,
+               max_force=5*10**4.0,
+               nrewind=5,
+               bfudge=0.4):
+    """
+    Subprogram for coordinate generation which implements the default
+    polyply workflow for structure generation. In general, a topology
+    file is read from which all molecules are extracted. Subsequently for each
+    residue in the system a template is built. Afterwards a random walk
+    is performed for each residue based on a volume estimated from
+    the templates. Once the random walk residue coordinates are generated, they
+    are backmapped.
+
+    Parameters
+    ----------
+    toppath: :class:pathlib.Path
+        Path to topology file
+    outpath: :class:pathlib.Path
+        Path to coordinate file
+    name: str
+        Name of the molecule
+    build: :class:pathlib.Path
+        Path to build file
+    build_res: list[str]
+        List of resnames to build
+    ignore: list[str]
+        List of molecule names to ignore
+    cycles: list[str]
+        List of cyclic molecule names
+    cycle_tol: float
+        Tolerance in nm for cycles to be closed
+    split: list[str]
+        Split single residue into more residues. The syntax is
+        <resname>:<new_resname>-<atom1>,<atom2><etc>:<new_resname>
+        Note that all atoms of the old residues need to be in at
+        most one new residue and must all be accounted for.
+    ligands: list[str]
+        Specify ligands of molecules which should be placed close
+        to a specific molecule. The format is as follows:
+        <mol_name>#<mol_idx>-<resname>#<resid>:<mol_name>#<mol_idx>-<resname>#<resid>.
+        Elements of the specification can be omitted as required.
+        Note mol_name and resname cannot contain the characters
+        # and -.
+    grid_spacing: float
+        Grid spacing in nm
+    grid: str
+        Path to file with grid-points
+    maxiter: int
+        Maximum number of tries to generate coordinates for a molecule.
+        The default is 800.
+    start: list[str]
+        Specify which residue to build first. The syntax is
+        <mol_name>#<mol_idx>-<resname>#<resid>. Parts of this
+        specification may be omitted.
+        Note mol_name and resname cannot contain the characters #
+        and -.
+    density: float
+        Density of the system (kg/m3)
+    box: np.ndarray(1,3)
+        Rectangular box x, y, z in nm
+    maxiter_random: int
+        Maximum number of tries to place a residue with
+        the random walk module.
+    step_fudge: float
+        Scale the step length in random walk by this fudge factor.
+        The default is 1.
+    max_force: float
+        Maximum force under which placement of a residue is accepted.
+        The default is 5x10^4 kJ/(mol*nm).
+    nrewind: int
+        Number of residues to trace back when random walk step fails in first
+        attempt. The default is 5.
+    bfudge: float
+        Fudge factor by which to scale the coordinates of the residues
+        during the backmapping step. 1 will result in to-scale coordinates
+        but will likely generate overlaps.
+    """
+
     # Read in the topology
     LOGGER.info("reading topology",  type="step")
-    topology = Topology.from_gmx_topfile(name=args.name, path=args.toppath)
+    topology = Topology.from_gmx_topfile(name=name, path=toppath)
 
     LOGGER.info("processing topology",  type="step")
     topology.preprocess()
     _check_molecules(topology.molecules)
 
-    if args.split:
+    if split:
         LOGGER.info("splitting residues",  type="step")
         for molecule in topology.molecules:
-            molecule.split_residue(args.split)
+            molecule.split_residue(split)
 
     # read in coordinates if there are any
-    if args.coordpath:
+    if coordpath:
         LOGGER.info("loading coordinates",  type="step")
-        topology.add_positions_from_file(args.coordpath, args.build_res)
+        topology.add_positions_from_file(coordpath, build_res)
 
     # load in built file
-    if args.build:
+    if build:
         LOGGER.info("reading build file",  type="step")
-        with open(args.build) as build_file:
+        with open(build) as build_file:
             lines = build_file.readlines()
             read_build_file(lines, topology.molecules, topology)
 
     # collect all starting points for the molecules
-    start_dict = find_starting_node_from_spec(topology, args.start)
+    start_dict = find_starting_node_from_spec(topology, start)
 
     # handle grid input
-    if args.grid:
+    if grid:
         LOGGER.info("loading grid",  type="step")
-        args.grid = np.loadtxt(args.grid)
+        grid = np.loadtxt(grid)
 
     # do a sanity check
     LOGGER.info("checking residue integrity",  type="step")
@@ -134,29 +229,29 @@ def gen_coords(args):
     LOGGER.info("generating templates",  type="step")
     GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
     LOGGER.info("annotating ligands",  type="step")
-    ligand_annotator = AnnotateLigands(topology, args.ligands)
+    ligand_annotator = AnnotateLigands(topology, ligands)
     ligand_annotator.run_system(topology)
     LOGGER.info("generating system coordinates",  type="step")
-    _initialize_cylces(topology, args.cycles, args.cycle_tol)
+    _initialize_cylces(topology, cycles, cycle_tol)
     BuildSystem(topology,
                 start_dict=start_dict,
-                density=args.density,
-                max_force=args.max_force,
-                grid_spacing=args.grid_spacing,
-                maxiter=args.maxiter,
-                box=args.box,
-                step_fudge=args.step_fudge,
-                ignore=args.ignore,
-                grid=args.grid,
-                cycles=args.cycles,
-                nrewind=args.nrewind).run_system(topology.molecules)
+                density=density,
+                max_force=max_force,
+                grid_spacing=grid_spacing,
+                maxiter=maxiter,
+                box=box,
+                step_fudge=step_fudge,
+                ignore=ignore,
+                grid=grid,
+                cycles=cycles,
+                nrewind=nrewind).run_system(topology.molecules)
     ligand_annotator.split_ligands()
     LOGGER.info("backmapping to target resolution",  type="step")
-    Backmap(fudge_coords=args.bfudge).run_system(topology)
+    Backmap(fudge_coords=bfudge).run_system(topology)
     # Write output
     LOGGER.info("writing output",  type="step")
     command = ' '.join(sys.argv)
     system = topology.convert_to_vermouth_system()
-    vermouth.gmx.gro.write_gro(system, args.outpath, precision=7,
+    vermouth.gmx.gro.write_gro(system, outpath, precision=7,
                                title=command, box=topology.box)
     DeferredFileWriter().write()
