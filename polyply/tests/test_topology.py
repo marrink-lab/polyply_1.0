@@ -34,6 +34,9 @@ class TestTopology:
 
     @staticmethod
     def test_add_positions_from_gro():
+        """
+        The last residue has no coordinates defined.
+        """
         top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/system.top", "test")
         top.add_positions_from_file(TEST_DATA + "/topology_test/test.gro")
         for node in top.molecules[0].molecule.nodes:
