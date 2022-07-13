@@ -80,6 +80,7 @@ class TestTopology:
             for node in meta_mol.nodes:
                     assert "position" in meta_mol.nodes[node].keys()
                     assert meta_mol.nodes[node]["build"] == False
+                    assert meta_mol.nodes[node]["backmap"] == False
 
     @staticmethod
     def test_convert_to_vermouth_system():
