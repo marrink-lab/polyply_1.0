@@ -39,6 +39,10 @@ class TestPolyply:
         assert nx.get_node_attributes(meta_mol, "resname") == {0: 'PEO', 1: 'PEO'}
         assert list(meta_mol.nodes) == [0, 1]
         assert list(meta_mol.edges) == [(0, 1)]
+        assert meta_mol.nodes[0]["build"]
+        assert meta_mol.nodes[1]["build"]
+        assert meta_mol.nodes[0]["backmap"]
+        assert meta_mol.nodes[1]["backmap"]
 
     @staticmethod
     def test_add_monomer_fail():
