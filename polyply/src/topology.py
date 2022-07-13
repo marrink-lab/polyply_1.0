@@ -401,6 +401,7 @@ class Topology(System):
                 if resolution == 'meta_mol':
                     meta_mol.nodes[meta_node]["position"] = positions[total]
                     meta_mol.nodes[meta_node]["backmap"] = True
+                    meta_mol.nodes[meta_node]["build"] = False
                     total += 1
                 # here we set molecule coordinates in that case we neither
                 # want to backmap nor build these nodes
