@@ -47,8 +47,26 @@ class TestTopology:
             if node != 2:
                 assert "position" in top.molecules[0].nodes[node].keys()
                 assert top.molecules[0].nodes[node]["build"] == False
+                assert top.molecules[0].nodes[node]["backmap"] == False
             else:
                 assert top.molecules[0].nodes[node]["build"] == True
+                assert top.molecules[0].nodes[node]["backmap"] == True
+
+    @staticmethod
+    def test_add_meta_positions_from_gro():
+        """
+        The last residue has no coordinates defined.
+        """
+        top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/system.top", "test")
+        top.add_positions_from_file(TEST_DATA + "/topology_test/meta.gro", resolution="meta_mol")
+        for node in top.molecules[0].nodes:
+            if node != 2:
+                assert "position" in top.molecules[0].nodes[node].keys()
+                assert top.molecules[0].nodes[node]["build"] == False
+                assert top.molecules[0].nodes[node]["backmap"] == True
+            else:
+                assert top.molecules[0].nodes[node]["build"] == True
+                assert top.molecules[0].nodes[node]["backmap"] == True
 
     @staticmethod
     def test_add_positions_from_pdb():
