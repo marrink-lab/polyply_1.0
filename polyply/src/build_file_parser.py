@@ -13,6 +13,7 @@
 # limitations under the License.
 from collections import defaultdict, namedtuple
 import numpy as np
+import vermouth
 from vermouth.parser_utils import SectionLineParser
 from vermouth.log_helpers import StyleAdapter, get_logger
 
@@ -34,8 +35,10 @@ class BuildDirector(SectionLineParser):
         self.current_molidxs = []
         self.build_options = defaultdict(list)
         self.current_molname = None
-        self.rw_options = dict()
+        self.rw_options = {}
         self.persistence_length = {}
+        self.templates = {}
+        self.volumes = {}
 
     @SectionLineParser.section_parser('molecule')
     def _molecule(self, line, lineno=0):
@@ -125,11 +128,55 @@ class BuildDirector(SectionLineParser):
         specs = PersistenceSpecs(*[model, persistence_length, start, stop, self.current_molidxs])
         self.topology.persistences.append(specs)
 
+    @SectionLineParser.section_parser('template')
+    def _template(self, line, lineno=0):
+        """
+        Parses the lines in the '[template]'
+        directive and stores it.
+        """
+        name = line.split()[1]
+        self.templates[name] = vermouth.molecule.Block()
+        self.templates[name].name = name
+        self.template_name = name
+
+    @SectionLineParser.section_parser('template', 'atoms')
+    def _template_atoms(self, line, lineno=0):
+        """
+        Parses the lines in the '[atoms]'
+        directive of the '[template]' section
+        """
+        tokens = line.split()
+        node_name = tokens[0]
+        position = np.array(tokens[1:], dtype=float)
+        self.templates[self.template_name].add_node(node_name, position=position)
+
+    @SectionLineParser.section_parser('template', 'bonds')
+    def _template_bonds(self, line, lineno=0):
+        """
+        Parses the lines in the '[bonds]'
+        directive of the '[template]' section
+        """
+        tokens = line.split()
+        nodeA = tokens[0]
+        nodeB = tokens[1]
+        self.templates[self.template_name].add_edge(nodeA, nodeB)
+        print("go here")
+
+    @SectionLineParser.section_parser('volumes')
+    def _volume(self, line, lineno=0):
+        """
+        Parses the lines in the '[volumes]'
+        directive and stores it.
+        """
+        resname, volume = line.split()
+        self.topology.volume[resname] = float(volume)
+
     def finalize(self, lineno=0):
         """
         Tag each molecule node with the chirality and build options
         if that molecule is mentioned in the build file by name.
         """
+        print("go here")
         for mol_idx, molecule in enumerate(self.molecules):
 
             if (molecule.mol_name, mol_idx) in self.build_options:
@@ -140,6 +187,7 @@ class BuildDirector(SectionLineParser):
                 self._tag_nodes(molecule, "rw_options",
                                 self.rw_options[(molecule.mol_name, mol_idx)],
                                 molecule.mol_name)
+            molecule.templates = self.templates
 
         super().finalize
 
