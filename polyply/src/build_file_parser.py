@@ -38,7 +38,7 @@ class BuildDirector(SectionLineParser):
         self.rw_options = {}
         self.persistence_length = {}
         self.templates = {}
-        self.volumes = {}
+        self.topology.volumes = {}
 
     @SectionLineParser.section_parser('molecule')
     def _molecule(self, line, lineno=0):
@@ -160,7 +160,6 @@ class BuildDirector(SectionLineParser):
         nodeA = tokens[0]
         nodeB = tokens[1]
         self.templates[self.template_name].add_edge(nodeA, nodeB)
-        print("go here")
 
     @SectionLineParser.section_parser('volumes')
     def _volume(self, line, lineno=0):
@@ -169,7 +168,7 @@ class BuildDirector(SectionLineParser):
         directive and stores it.
         """
         resname, volume = line.split()
-        self.topology.volume[resname] = float(volume)
+        self.topology.volumes[resname] = float(volume)
 
     def finalize(self, lineno=0):
         """
