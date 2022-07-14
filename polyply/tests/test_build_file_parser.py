@@ -322,3 +322,24 @@ def test_template_parsing(test_system, line, names, edges, positions):
             for node_pos in positions[idx]:
                 node = node_pos[0]
                 assert all(np.array(node_pos[1:], dtype=float) == template.nodes[node]["position"])
+
+@pytest.mark.parametrize('line, expected', (
+   (("""
+     [ volumes ]
+     PEO 0.47
+     """,
+     {"PEO": 0.47}),
+    ("""
+     [ volumes ]
+     PEO 0.47
+     P3HT 0.61
+     """,
+     {"PEO": 0.47, "P3HT": 0.61}),
+)))
+def test_template_parsing(test_system, line, expected):
+    lines = textwrap.dedent(line)
+    lines = lines.splitlines()
+    polyply.src.build_file_parser.read_build_file(lines,
+                                                  test_system.molecules,
+                                                  test_system)
+    assert test_system.volumes == expected
