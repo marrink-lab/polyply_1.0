@@ -1,0 +1,1 @@
+polyply gen_itp -lib martini3 -seq CEL:50 -o CEL.itp -name CEL
