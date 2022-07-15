@@ -13,7 +13,6 @@
 # limitations under the License.
 import networkx as nx
 import numpy as np
-import scipy
 import vermouth
 from vermouth.log_helpers import StyleAdapter, get_logger
 from .minimizer import optimize_geometry
@@ -89,10 +88,9 @@ def find_interaction_involving(block, current_node, prev_node):
                     return False, interaction, inter_type
                 elif prev_node in interaction.atoms and inter_type.split("_")[0] == "virtual":
                     return True, interaction, inter_type
-    else:
-        msg = '''Cannot build template for residue {}. No constraint, bond, virtual-site
-                 linking atom {} and atom {}.'''
-        raise IOError(msg.format(block.nodes[0]["resname"], prev_node, current_node))
+    msg = '''Cannot build template for residue {}. No constraint, bond, virtual-site
+             linking atom {} and atom {}.'''
+    raise IOError(msg.format(block.nodes[0]["resname"], prev_node, current_node))
 
 def _expand_inital_coords(block, max_count=50000):
     """
@@ -180,9 +178,8 @@ def compute_volume(molecule, block, coords, nonbond_params, treshold=1e-18):
         rad = float(nonbond_params[frozenset([atom_key, atom_key])]["nb1"])
         diff = coord - res_center_of_geometry
         if np.linalg.norm(diff) < treshold:
-           continue
-        else:
-           geom_vects[idx, :] = diff + u_vect(diff) * rad
+            continue
+        geom_vects[idx, :] = diff + u_vect(diff) * rad
         idx += 1
 
     if geom_vects.shape[0] > 1:
@@ -302,9 +299,12 @@ class GenerateTemplates(Processor):
         super().__init__(*args, **kwargs)
         self.templates = {}
         self.resnames = []
-        self.volumes = {}
         self.max_opt = max_opt
         self.topology = topology
+        if "volumes" in self.topology:
+            self.volumes = self.topology.volumes
+        else:
+            self.volumes = {}
 
     def _gen_templates(self, meta_molecule):
         """
@@ -325,10 +325,8 @@ class GenerateTemplates(Processor):
         """
         resnames = set(nx.get_node_attributes(meta_molecule.molecule,
                                               "resname").values())
-        templates = {}
-        volumes = {}
         for resname in resnames:
-            if not resname in self.resnames:
+            if not resname in self.resnames and resname not in meta_molecule.templates:
                 self.resnames.append(resname)
                 block = extract_block(meta_molecule.molecule, resname,
                                       self.topology.defines)
@@ -337,8 +335,13 @@ class GenerateTemplates(Processor):
                 while True:
 
                     coords = _expand_inital_coords(block)
-                    success, coords = optimize_geometry(block, coords, ["bonds", "constraints", "angles"])
-                    success, coords = optimize_geometry(block, coords, ["bonds", "constraints", "angles", "dihedrals"])
+                    success, coords = optimize_geometry(block,
+                                                        coords,
+                                                        ["bonds", "constraints", "angles"])
+
+                    success, coords = optimize_geometry(block,
+                                                        coords,
+                                                        ["bonds", "constraints", "angles", "dihedrals"])
 
                     if success:
                         break
@@ -349,19 +352,24 @@ class GenerateTemplates(Processor):
                         break
                     else:
                         opt_counter += 1
-
-                self.volumes[resname] = compute_volume(meta_molecule, block, coords, self.topology.nonbond_params)
                 coords = map_from_CoG(coords)
                 self.templates[resname] = coords
+            elif resname in meta_molecule.templates:
+                coords = meta_molecule.templates[resname]
+                coords = map_from_CoG(coords)
+                self.templates[resname] = coords
+            else:
+                coords = None
 
-        return templates, volumes
+            if coords and resname not in self.volumes:
+                self.volumes[resname] = compute_volume(meta_molecule, block, coords, self.topology.nonbond_params)
 
     def run_molecule(self, meta_molecule):
         """
         Execute the generation of templates and set the template
         and volume attribute.
         """
-        templates, volumes = self._gen_templates(meta_molecule)
+        self._gen_templates(meta_molecule)
         meta_molecule.templates = self.templates
         self.topology.volumes = self.volumes
         return meta_molecule
