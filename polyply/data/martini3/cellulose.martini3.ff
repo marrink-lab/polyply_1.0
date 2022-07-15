@@ -45,6 +45,7 @@ C  { }
 [ bonds ]
 ; i  j  funct  length  force constant
   C  +A   1      0.355  8500 {"group": "b14"}
+; residue internal bonds
   A   B   1    0.320 10000 {"ifdef": "FLEXIBLE"}
   A   C   1    0.470 10000 {"ifdef": "FLEXIBLE"}
   B   C   1    0.390 10000 {"ifdef": "FLEXIBLE"}
@@ -53,9 +54,12 @@ C  { }
  +B  +C   1    0.390 10000 {"ifdef": "FLEXIBLE"}
 [ constraints ]
 ; i  j  funct length
- +A +B    1    0.320 {"ifndef": "FLEXIBLE"}
- +A +C    1    0.470 {"ifndef": "FLEXIBLE"}
- +B +C    1    0.390 {"ifndef": "FLEXIBLE"}
+  A   B   1    0.320 {"ifndef": "FLEXIBLE"}
+  A   C   1    0.470 {"ifndef": "FLEXIBLE"}
+  B   C   1    0.390 {"ifndef": "FLEXIBLE"}
+ +A  +B   1    0.320 {"ifndef": "FLEXIBLE"}
+ +A  +C   1    0.470 {"ifndef": "FLEXIBLE"}
+ +B  +C   1    0.390 {"ifndef": "FLEXIBLE"}
 
 [ angles ]
 ; i  j  k funct angle force con.
