@@ -336,7 +336,7 @@ def test_template_parsing(test_system, line, names, edges, positions):
      """,
      {"PEO": 0.47, "P3HT": 0.61}),
 )))
-def test_template_parsing(test_system, line, expected):
+def test_volume_parsing(test_system, line, expected):
     lines = textwrap.dedent(line)
     lines = lines.splitlines()
     polyply.src.build_file_parser.read_build_file(lines,
