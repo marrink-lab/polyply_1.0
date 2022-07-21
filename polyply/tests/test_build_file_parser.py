@@ -321,7 +321,7 @@ def test_template_parsing(test_system, line, names, edges, positions):
             assert edges[idx] == list(template.edges)
             for node_pos in positions[idx]:
                 node = node_pos[0]
-                assert all(np.array(node_pos[1:], dtype=float) == template.nodes[node]["position"])
+                assert np.all(np.array(node_pos[1:], dtype=float) == template.nodes[node]["position"])
 
 @pytest.mark.parametrize('line, expected', (
    (("""
