@@ -16,6 +16,7 @@ import numpy as np
 import vermouth
 from vermouth.parser_utils import SectionLineParser
 from vermouth.log_helpers import StyleAdapter, get_logger
+from .generate_templates import map_from_CoG
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
@@ -38,6 +39,7 @@ class BuildDirector(SectionLineParser):
         self.rw_options = {}
         self.persistence_length = {}
         self.templates = {}
+        self.current_template = None
         self.topology.volumes = {}
 
     @SectionLineParser.section_parser('molecule')
@@ -132,12 +134,13 @@ class BuildDirector(SectionLineParser):
     def _template(self, line, lineno=0):
         """
         Parses the lines in the '[template]'
-        directive and stores it.
+        directive and stores it. The line should be
+        'resname ALA' for example.
         """
+        # we only need the residue name
         name = line.split()[1]
-        self.templates[name] = vermouth.molecule.Block()
-        self.templates[name].name = name
-        self.template_name = name
+        self.current_template = vermouth.molecule.Block()
+        self.current_template.name = name
 
     @SectionLineParser.section_parser('template', 'atoms')
     def _template_atoms(self, line, lineno=0):
@@ -148,7 +151,7 @@ class BuildDirector(SectionLineParser):
         tokens = line.split()
         node_name = tokens[0]
         position = np.array(tokens[1:], dtype=float)
-        self.templates[self.template_name].add_node(node_name, position=position)
+        self.current_template.add_node(node_name, position=position)
 
     @SectionLineParser.section_parser('template', 'bonds')
     def _template_bonds(self, line, lineno=0):
@@ -159,7 +162,7 @@ class BuildDirector(SectionLineParser):
         tokens = line.split()
         nodeA = tokens[0]
         nodeB = tokens[1]
-        self.templates[self.template_name].add_edge(nodeA, nodeB)
+        self.current_template.add_edge(nodeA, nodeB)
 
     @SectionLineParser.section_parser('volumes')
     def _volume(self, line, lineno=0):
@@ -170,12 +173,24 @@ class BuildDirector(SectionLineParser):
         resname, volume = line.split()
         self.topology.volumes[resname] = float(volume)
 
+    def finalize_section(self, previous_section, ended_section):
+        """
+        Called once a section has finished. Here we perform all
+        operations that are required when a section has ended.
+        """
+        if previous_section == "templates":
+            # internally a template is defined as vectors from the
+            # center of geometry
+            coords = nx.get_node_attributes(self.current_template, "position")
+            mapped_coords = map_from_CoG(coords)
+            self.template[self.current_template.name] = mapped_coords
+            self.current_template = None
+
     def finalize(self, lineno=0):
         """
         Tag each molecule node with the chirality and build options
         if that molecule is mentioned in the build file by name.
         """
-        print("go here")
         for mol_idx, molecule in enumerate(self.molecules):
 
             if (molecule.mol_name, mol_idx) in self.build_options:
