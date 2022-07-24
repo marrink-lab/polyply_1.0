@@ -414,7 +414,13 @@ class Topology(System):
                         try:
                             meta_mol.molecule.nodes[mol_node]["position"] = positions[total]
                         except IndexError:
-                            raise IOError from IndexError
+                            resid = meta_mol.nodes[meta_node]['resid']
+                            mol_name = meta_mol.mol_name
+                            msg = (f"Trying to {resname}{resid} of molecule {mol_name}, "
+                                  "but missing coordinates. Coordinates of residues "
+                                  "must be complete or build from scratch. Partial  "
+                                  "reconstruction is not supported.")
+                            raise IOError(msg) from IndexError
                         total += 1
 
                     meta_mol.nodes[meta_node]["position"] = center_of_geometry(positions[start:total])
