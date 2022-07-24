@@ -35,7 +35,12 @@ class TestTopology:
     @staticmethod
     def test_add_positions_from_gro():
         """
-        The last residue has no coordinates defined.
+        This test checks if coordinates are supplied at the molecule level that
+        coordinates are transfered to the meta_mol.molecule nodes and that the
+        meta_molecule nodes have the COG coordinates of the positions. Furthermore,
+        the last residue has no coordinates defined. In this case these nodes have
+        no coordinates defined and require the build and backmap attribute to be True.
+        In all other cases they need to be False.
         """
         top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/system.top", "test")
         top.add_positions_from_file(TEST_DATA + "/topology_test/test.gro")
@@ -55,7 +60,11 @@ class TestTopology:
     @staticmethod
     def test_add_meta_positions_from_gro():
         """
-        The last residue has no coordinates defined.
+        This test checks if coordinates are supplied at the meta_molecule level that
+        coordinates are transfered to the meta_mol nodes, but not the molecule nodes.
+        Furthermore, the last residue has no coordinates defined. In this case these nodes
+        have no coordinates defined at either level and require the build and backmap attribute
+        to be True. In all other cases the build attribute is False and backmap is True.
         """
         top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/system.top", "test")
         top.add_positions_from_file(TEST_DATA + "/topology_test/meta.gro", resolution="meta_mol")
@@ -70,6 +79,12 @@ class TestTopology:
 
     @staticmethod
     def test_add_positions_from_pdb():
+        """
+        This test checks, if coordinates are supplied at the molecule level and no residues
+        are missing or skipped, that all molecule nodes have coordinates defined and that
+        the meta_molecule positions are defined as well. In addition all build and backmap
+        attributes have to be False.
+        """
         top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/pdb.top", "test")
         top.add_positions_from_file(TEST_DATA + "/topology_test/test.pdb")
         for meta_mol in top.molecules:
@@ -81,6 +96,16 @@ class TestTopology:
                     assert "position" in meta_mol.nodes[node].keys()
                     assert meta_mol.nodes[node]["build"] == False
                     assert meta_mol.nodes[node]["backmap"] == False
+
+    @staticmethod
+    def test_add_positions_from_file_fail():
+        """
+        This test checks if coordinates for a residue at the molecule level
+        are incomplete the appropiate error is raised.
+        """
+        top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/system.top", "test")
+        with pytest.raises(IOError):
+            top.add_positions_from_file(TEST_DATA + "/topology_test/fail.gro")
 
     @staticmethod
     def test_convert_to_vermouth_system():
