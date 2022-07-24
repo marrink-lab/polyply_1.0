@@ -415,10 +415,11 @@ class Topology(System):
                         except IndexError:
                             resid = meta_mol.nodes[meta_node]['resid']
                             mol_name = meta_mol.mol_name
-                            msg = (f"Trying to {resname}{resid} of molecule {mol_name}, "
-                                  "but missing coordinates. Coordinates of residues "
-                                  "must be complete or build from scratch. Partial  "
-                                  "reconstruction is not supported.")
+                            msg = (f"Trying to add position to {resname}{resid} of "
+                                    "molecule {mol_name}, but missing coordinates. "
+                                    "Coordinates of residues must be complete or "
+                                    "build from scratch. Partial reconstruction is "
+                                    "not supported.")
                             raise IOError(msg) from IndexError
                         total += 1
 
