@@ -21,6 +21,7 @@ import pytest
 import numpy as np
 import networkx as nx
 from vermouth.gmx.gro import read_gro
+from vermouth.graph_utils import make_residue_graph
 import polyply
 from polyply import TEST_DATA, gen_coords
 
@@ -44,3 +45,33 @@ def test_no_positions_generated(tmp_path, monkeypatch):
     for node in molecule_out.nodes:
         assert np.all(molecule_out.nodes[node]['position'] ==
                       molecule_in.nodes[node]['position'])
+
+def test_backmap_only(tmp_path, monkeypatch):
+    """
+    Only meta_mol positions are defined so others have to be backmapped.
+    Should run through without errors and COG of residues should be the
+    same as they have been put in.
+    """
+    monkeypatch.chdir(tmp_path)
+    top_file = TEST_DATA + "/topology_test/system.top"
+    pos_file = TEST_DATA + "/topology_test/cog.gro"
+    out_file = tmp_path / "out.gro"
+    gen_coords(toppath=top_file,
+               coordpath_meta=pos_file,
+               outpath=out_file,
+               name="test",
+               box=np.array([11, 11, 11])
+               )
+    molecule_out = read_gro(out_file, exclude=())
+    for node in molecule_out.nodes:
+        assert "position" in molecule_out.nodes[node]
+
+    meta_in = read_gro(pos_file, exclude=())
+    meta_out = make_residue_graph(molecule_out)
+    for node in meta_out.nodes:
+        nodes_pos = nx.get_node_attributes(meta_out.nodes[node]['graph'], 'position')
+        nodes_pos = np.array(list(nodes_pos.values()))
+        res_pos = np.average(nodes_pos, axis=0)
+        ref_pos = meta_in.nodes[node]['position']
+        # tolerance comes from finite tolerance in gro file
+        assert np.allclose(res_pos, ref_pos, atol=0.0009)
