@@ -395,10 +395,9 @@ class Topology(System):
                 if resname in skip_res or total >= max_coords:
                     meta_mol.nodes[meta_node]["build"] = True
                     meta_mol.nodes[meta_node]["backmap"] = True
-                    continue
                 # here we only add meta_molecule coordiantes
                 # in that case we only want to backmap
-                if resolution == 'meta_mol':
+                elif resolution == 'meta_mol':
                     meta_mol.nodes[meta_node]["position"] = positions[total]
                     meta_mol.nodes[meta_node]["backmap"] = True
                     meta_mol.nodes[meta_node]["build"] = False
