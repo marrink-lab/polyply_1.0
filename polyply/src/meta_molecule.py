@@ -26,7 +26,7 @@ def _make_edges(force_field):
     for block in force_field.blocks.values():
         inter_types = list(block.interactions.keys())
         for inter_type in inter_types:
-            if inter_type in ["bonds", "constraints" "angles"]:
+            if inter_type in ["bonds", "constraints"]:
                 block.make_edges_from_interaction_type(type_=inter_type)
 
     for link in force_field.links:
