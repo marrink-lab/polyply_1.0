@@ -225,6 +225,7 @@ class Topology(System):
         self.mol_idx_by_name = defaultdict(list)
         self.persistences = []
         self.distance_restraints = defaultdict(dict)
+        self.volumes = {}
 
     def preprocess(self):
         """
