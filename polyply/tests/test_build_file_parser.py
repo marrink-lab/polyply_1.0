@@ -121,6 +121,9 @@ def test_system():
   top = Topology(force_field=force_field)
   top.molecules = molecules
   top.mol_idx_by_name = {"AA":[0, 1], "BB": [2], "NA":[3, 4, 5, 6]}
+  top.nonbond_params = {frozenset(["O"]): {"nb1": 0.30},
+                        frozenset(["C"]): {"nb1": 0.36},
+                        frozenset(["H"]): {"nb1": 0.04}}
   return top
 
 @pytest.mark.parametrize('line, expected', (
@@ -266,63 +269,6 @@ def test_persistence_parsers(test_system, lines, expected):
             assert info_ref == info_new
         assert all(ref[-1] == new[-1])
 
-@pytest.mark.parametrize('line, names, edges, positions', (
-   (("""[ template ]
-    resname PEO
-    [ atoms ]
-    EC1  0.000 0.000 0.000
-    O1   0.000 0.000 0.150
-    EC2  0.000 0.000 0.300
-    [ bonds ]
-    EC1 O1
-    O1 EC2
-    """,
-    ["PEO"],
-    [[("EC1", "O1"), ("O1", "EC2")]],
-    [[("EC1", 0.0, 0.0, 0.0),
-      ("O1", 0.000, 0.000, 0.150),
-      ("EC2", 0.000, 0.000, 0.300)]]),
-    ("""[ template ]
-    resname PEO
-    [ atoms ]
-    EC1  0.000 0.000 0.000
-    O1   0.000 0.000 0.150
-    EC2  0.000 0.000 0.300
-    [ bonds ]
-    EC1 O1
-    O1 EC2
-    [ template ]
-    resname OH
-    [ atoms ]
-    O1 0.0000 0.000 0.000
-    H1 0.0000 0.000 0.100
-    [ bonds ]
-    O1 H1
-    """,
-    ["PEO", "OH"],
-    [[("EC1", "O1"), ("O1", "EC2")], [("O1", "H1")]],
-    [[("EC1", 0.0, 0.0, 0.0),
-      ("O1", 0.000, 0.000, 0.150),
-      ("EC2", 0.000, 0.000, 0.300)],
-     [("O1", 0.0000, 0.000, 0.000),
-      ("H1", 0.0000, 0.000, 0.100)]
-    ]),
-)))
-def test_template_parsing(test_system, line, names, edges, positions):
-    lines = textwrap.dedent(line)
-    lines = lines.splitlines()
-    polyply.src.build_file_parser.read_build_file(lines,
-                                                  test_system.molecules,
-                                                  test_system)
-    for mol in test_system.molecules:
-        assert len(mol.templates) == len(names)
-        for idx, name in enumerate(names):
-            template = mol.templates[name]
-            assert edges[idx] == list(template.edges)
-            for node_pos in positions[idx]:
-                node = node_pos[0]
-                assert np.all(np.array(node_pos[1:], dtype=float) == template.nodes[node]["position"])
-
 @pytest.mark.parametrize('line, expected', (
    (("""
      [ volumes ]
@@ -343,3 +289,126 @@ def test_volume_parsing(test_system, line, expected):
                                                   test_system.molecules,
                                                   test_system)
     assert test_system.volumes == expected
+
+@pytest.mark.parametrize('line, names, edges, positions, out_vol', (
+   (
+    # 1 - template but volume are provided before
+    ("""[ volumes ]
+    PEO 0.43
+    [ template ]
+    resname PEO
+    [ atoms ]
+    EC1 C 0.000 0.000 0.000
+    O1  O 0.000 0.000 0.150
+    EC2 C 0.000 0.000 0.300
+    [ bonds ]
+    EC1 O1
+    O1 EC2
+    """,
+    ["PEO"],
+    [[("EC1", "O1"), ("O1", "EC2")]],
+    # template positions are defined as vectors
+    # from the center of geometry internally
+    [[("EC1", 0.0, 0.0, -0.150),
+      ("O1", 0.000, 0.000, 0.000),
+      ("EC2", 0.000, 0.000, 0.150)]],
+    {"PEO": 0.43}),
+    # 2 - template but volume are provided after
+    ("""[ template ]
+    resname PEO
+    [ atoms ]
+    EC1 C  0.000 0.000 0.000
+    O1  O 0.000 0.000 0.150
+    EC2 C 0.000 0.000 0.300
+    [ bonds ]
+    EC1 O1
+    O1 EC2
+    [ volumes ]
+    PEO 0.43
+    """,
+    ["PEO"],
+    [[("EC1", "O1"), ("O1", "EC2")]],
+    # template positions are defined as vectors
+    # from the center of geometry internally
+    [[("EC1", 0.0, 0.0, -0.150),
+      ("O1", 0.000, 0.000, 0.000),
+      ("EC2", 0.000, 0.000, 0.150)]],
+    {"PEO": 0.43}),
+
+    # 3 - two templates and volumes are provided before
+    ("""[ volumes ]
+    PEO 0.43
+    OH 0.22
+    [ template ]
+    resname PEO
+    [ atoms ]
+    EC1 C 0.000 0.000 0.000
+    O1  O 0.000 0.000 0.150
+    EC2 C 0.000 0.000 0.300
+    [ bonds ]
+    EC1 O1
+    O1 EC2
+    [ template ]
+    resname OH
+    [ atoms ]
+    O1 O 0.0000 0.000 0.000
+    H1 H 0.0000 0.000 0.100
+    [ bonds ]
+    O1 H1
+    """,
+    ["PEO", "OH"],
+    [[("EC1", "O1"), ("O1", "EC2")], [("O1", "H1")]],
+    # template positions are defined as vectors
+    # from the center of geometry internally
+    [[("EC1", 0.0, 0.0, -0.150),
+      ("O1", 0.000, 0.000, 0.000),
+      ("EC2", 0.000, 0.000, 0.150)],
+     [("O1", 0.0000, 0.000, -0.050),
+      ("H1", 0.0000, 0.000, 0.050)]],
+    {"PEO": 0.43, "OH": 0.22}),
+    # 4 - two templates but only 1 volume are provided
+    ("""[ template ]
+    resname PEO
+    [ atoms ]
+    EC1 C 0.000 0.000 0.000
+    O1  O 0.000 0.000 0.150
+    EC2 C 0.000 0.000 0.300
+    [ bonds ]
+    EC1 O1
+    O1 EC2
+    [ template ]
+    resname OH
+    [ atoms ]
+    O1 O 0.0000 0.000 0.000
+    H1 H 0.0000 0.000 0.100
+    [ bonds ]
+    O1 H1
+    [ volumes ]
+    OH 0.22
+    """,
+    ["PEO", "OH"],
+    [[("EC1", "O1"), ("O1", "EC2")], [("O1", "H1")]],
+    # template positions are defined as vectors
+    # from the center of geometry internally
+    [[("EC1", 0.0, 0.0, -0.150),
+      ("O1", 0.000, 0.000, 0.000),
+      ("EC2", 0.000, 0.000, 0.150)],
+     [("O1", 0.0000, 0.000, -0.050),
+      ("H1", 0.0000, 0.000, 0.050)]],
+    {"PEO": 0.4164132562731403, "OH": 0.22}),
+)))
+def test_template_volume_parsing(test_system, line, names, edges, positions, out_vol):
+    lines = textwrap.dedent(line)
+    lines = lines.splitlines()
+    polyply.src.build_file_parser.read_build_file(lines,
+                                                  test_system.molecules,
+                                                  test_system)
+    for mol in test_system.molecules:
+        assert len(mol.templates) == len(names)
+        for idx, name in enumerate(names):
+            template = mol.templates[name]
+            for node_pos in positions[idx]:
+                node = node_pos[0]
+                assert np.all(np.array(node_pos[1:], dtype=float) == template[node])
+
+    assert test_system.volumes == out_vol
