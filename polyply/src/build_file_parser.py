@@ -16,7 +16,7 @@ import numpy as np
 import vermouth
 from vermouth.parser_utils import SectionLineParser
 from vermouth.log_helpers import StyleAdapter, get_logger
-from .generate_templates import map_from_CoG
+from .generate_templates import map_from_CoG, compute_volume
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
@@ -40,7 +40,6 @@ class BuildDirector(SectionLineParser):
         self.persistence_length = {}
         self.templates = {}
         self.current_template = None
-        self.topology.volumes = {}
 
     @SectionLineParser.section_parser('molecule')
     def _molecule(self, line, lineno=0):
@@ -177,11 +176,23 @@ class BuildDirector(SectionLineParser):
         """
         Called once a section has finished. Here we perform all
         operations that are required when a section has ended.
+        Here comes a list of end-section wrap ups:
+
+        Templates
+        ---------
+        - compute volume from template if it is not defined yet
+        - store coordinates as vectors from center of geometry
         """
         if previous_section == "templates":
+            coords = nx.get_node_attributes(self.current_template, "position")
+            # if the volume is not defined yet compute the volume, this still
+            # can be overwritten by an explicit volume directive later
+            if resname not in self.volumes:
+                self.topology.volumes[resname] = compute_volume(self.current_template,
+                                                                coords,
+                                                                self.top.nonbond_params,)
             # internally a template is defined as vectors from the
             # center of geometry
-            coords = nx.get_node_attributes(self.current_template, "position")
             mapped_coords = map_from_CoG(coords)
             self.template[self.current_template.name] = mapped_coords
             self.current_template = None
