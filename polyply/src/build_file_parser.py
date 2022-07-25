@@ -13,6 +13,7 @@
 # limitations under the License.
 from collections import defaultdict, namedtuple
 import numpy as np
+import networkx as nx
 import vermouth
 from vermouth.parser_utils import SectionLineParser
 from vermouth.log_helpers import StyleAdapter, get_logger
@@ -148,9 +149,11 @@ class BuildDirector(SectionLineParser):
         directive of the '[template]' section
         """
         tokens = line.split()
-        node_name = tokens[0]
-        position = np.array(tokens[1:], dtype=float)
-        self.current_template.add_node(node_name, position=position)
+        node_name, atype = tokens[0], tokens[1]
+        position = np.array(tokens[2:], dtype=float)
+        self.current_template.add_node(node_name,
+                                       atype=atype,
+                                       position=position)
 
     @SectionLineParser.section_parser('template', 'bonds')
     def _template_bonds(self, line, lineno=0):
@@ -183,18 +186,19 @@ class BuildDirector(SectionLineParser):
         - compute volume from template if it is not defined yet
         - store coordinates as vectors from center of geometry
         """
-        if previous_section == "templates":
+        if previous_section == ["template", "bonds"]:
             coords = nx.get_node_attributes(self.current_template, "position")
             # if the volume is not defined yet compute the volume, this still
             # can be overwritten by an explicit volume directive later
-            if resname not in self.volumes:
+            resname = self.current_template.name
+            if resname not in self.topology.volumes:
                 self.topology.volumes[resname] = compute_volume(self.current_template,
                                                                 coords,
-                                                                self.top.nonbond_params,)
+                                                                self.topology.nonbond_params,)
             # internally a template is defined as vectors from the
             # center of geometry
             mapped_coords = map_from_CoG(coords)
-            self.template[self.current_template.name] = mapped_coords
+            self.templates[resname] = mapped_coords
             self.current_template = None
 
     def finalize(self, lineno=0):
@@ -214,7 +218,7 @@ class BuildDirector(SectionLineParser):
                                 molecule.mol_name)
             molecule.templates = self.templates
 
-        super().finalize
+        super().finalize(lineno=lineno)
 
     @staticmethod
     def _tag_nodes(molecule, keyword, option, molname=""):
