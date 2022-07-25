@@ -299,43 +299,30 @@ class GenerateTemplates(Processor):
     """
     def __init__(self, topology, max_opt, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.templates = {}
-        self.resnames = []
         self.max_opt = max_opt
         self.topology = topology
-        if hasattr(self.topology, "volumes"):
-            self.volumes = self.topology.volumes
-        else:
-            self.volumes = {}
+        self.volumes = self.topology.volumes
+        self.templates = {}
 
-    def _update_templates_volumes(self, meta_molecule):
-        for resname, block in meta_molecule.template_blocks.items():
-            coords = nx.get_node_attributes(block, "positions")
-            coords = map_from_CoG(coords)
-            self.volumes[resname] = compute_volume(meta_molecule,
-                                                   block, coords,
-                                                   self.topology.nonbond_params)
-            self.templates[resname] = coords
-
-    def _gen_templates(self, meta_molecule):
+    def gen_templates(self, meta_molecule):
         """
         Generate blocks for each unique residue by extracting the
         block information, placing initial coordinates, and geometry
-        optimizing those coordinates. Subsequently compute volume
+        optimizing those coordinates. Subsequently compute the volume
+        for each block unless they are already given in the volumes
+        class variable.
 
         Parameters
         ----------
         meta_molecule: :class:`polyply.src.meta_molecule.MetaMolecule`
 
-        Returns
+        Updates
         ---------
-        templates:  dict
-           dict of resname: block
-        volumes:    dict
-           dict of name: volume
+        self.templates
+        self.volumes
         """
-        resnames = set(nx.get_node_attributes(meta_molecule.molecule,
-                                              "resname").values())
+        resnames = set(nx.get_node_attributes(meta_molecule, "resname").values())
+
         for resname in resnames:
             if resname not in self.templates:
                 block = extract_block(meta_molecule.molecule, resname,
@@ -363,22 +350,20 @@ class GenerateTemplates(Processor):
                     else:
                         opt_counter += 1
 
+                if resname not in self.volumes:
+                    self.volumes[resname] = compute_volume(block,
+                                                           coords,
+                                                           self.topology.nonbond_params)
                 coords = map_from_CoG(coords)
                 self.templates[resname] = coords
-
-                if resname not in self.volumes:
-                    self.volumes[resname] = compute_volume(meta_molecule,
-                                                           block, coords,
-                                                           self.topology.nonbond_params)
 
     def run_molecule(self, meta_molecule):
         """
         Execute the generation of templates and set the template
         and volume attribute.
         """
-        if hasattr(meta_molecule, "template_blocks"):
-            self._update_templates_volumes(meta_molecule)
+        if hasattr(meta_molecule, "templates"):
+            self.templates.update(meta_molecule.templates)
         self._gen_templates(meta_molecule)
         meta_molecule.templates = self.templates
-        self.topology.volumes = self.volumes
         return meta_molecule
