@@ -364,6 +364,6 @@ class GenerateTemplates(Processor):
         """
         if hasattr(meta_molecule, "templates"):
             self.templates.update(meta_molecule.templates)
-        self._gen_templates(meta_molecule)
+        self.gen_templates(meta_molecule)
         meta_molecule.templates = self.templates
         return meta_molecule
