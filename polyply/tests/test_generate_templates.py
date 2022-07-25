@@ -101,7 +101,7 @@ class TestGenTemps:
           polyply.src.polyply_parser.read_polyply(lines, ff)
           block = ff.blocks['GLY']
           coords = _expand_inital_coords(block)
-          vol = compute_volume(meta_mol, block, coords, nonbond_params)
+          vol = compute_volume(block, coords, nonbond_params)
           assert vol > 0.
 
       @staticmethod
