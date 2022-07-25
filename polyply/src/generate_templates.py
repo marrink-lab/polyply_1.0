@@ -144,20 +144,22 @@ def _good_impropers(coords, block):
                 return False
     return True
 
-def compute_volume(molecule, block, coords, nonbond_params, treshold=1e-18):
+def compute_volume(block, coords, nonbond_params, treshold=1e-18):
     """
-    Given a `block`, which is part of `molecule` and
-    has the coordinates `coord` compute the radius
-    of gyration taking into account the volume of each
-    particle. The volume of a particle is considered to be
-    the sigma value of it's LJ self interaction parameter.
+    Given a `block`, which has the coordinates `coords`,
+    compute the radius of gyration taking into account
+    the volume of each particle. The volume of a particle
+    is considered to be the sigma value of it's LJ self-
+    interaction parameter.
 
     Parameters
     ----------
-    molecule:  :class:vermouth.molecule.Molecule
-    block:     :class:vermouth.molecule.Block
-    coords:    :class:dict
+    block:     :class:`vermouth.molecule.Block`
+    coords:    dict[abc.hashable]
         dictionary of positions in from node_idx: np.array
+    nonbond_params: dict[frozenset(abc.hashable, abc.hashable)]
+        dictionary of nonbonded parameters with atom-types as
+        keys and sigma, epsilon LJ parameters
     treshold: float
         distance from center of geometry at which the
         particle is not taken into account for the volume
