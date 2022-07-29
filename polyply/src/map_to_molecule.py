@@ -166,7 +166,12 @@ class MapToMolecule(Processor):
                 n_blocks = len_frag//len_block
             else:
                 # if it is not raise an error
-                raise IOError
+                molname = restart_attr[frag_nodes[0]]
+                msg = (f"When mapping the molecule {molname} onto the residue graph "
+                        "nodes labeled with from_itp, a mismatch in the length between "
+                        "the provided molecule and the residue graph is found. Make "
+                        "sure that all residues are in the residue graph and input itp-file.")
+                raise IOError(msg)
 
             for fdx in range(0, n_blocks):
                 current_frag_nodes = frag_nodes[fdx*len_block: (fdx+1)*len_block]
