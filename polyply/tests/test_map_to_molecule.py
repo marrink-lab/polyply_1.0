@@ -353,3 +353,62 @@ def test_riase_multiresidue_error(lines, monomers, bonds, edges, nnodes, from_it
     nx.set_node_attributes(meta_mol, from_itp, "from_itp")
     with pytest.raises(IOError):
         new_meta_mol = polyply.src.map_to_molecule.MapToMolecule(ff).run_molecule(meta_mol)
+
+@pytest.mark.parametrize('lines, monomers, from_itp', (
+    # we are missing one residue in the multiblock graph
+    ("""
+    [ moleculetype ]
+    ; name nexcl.
+    MIX         1
+    ;
+    [ atoms ]
+    1  SN1a    1   R1   C1  1   0.000  45
+    2  SN1a    1   R1   C2  1   0.000  45
+    3  SC1     2   R2   C1  2   0.000  45
+    4  SC1     2   R2   C2  2   0.000  45
+    [ bonds ]
+    ; back bone bonds
+    1  2   1   0.37 7000
+    2  3   1   0.37 7000
+    3  4   1   0.37 8000
+    """,
+    ["R1", "R2", "R1"],
+    {0: "MIX", 1: "MIX", 2: "MIX"}),
+    # we have a residue too many in the residue graph provided
+    ("""
+    [ moleculetype ]
+    ; name nexcl.
+    MIX         1
+    ;
+    [ atoms ]
+    1  SN1a    1   R1   C1  1   0.000  45
+    2  SN1a    1   R1   C2  1   0.000  45
+    3  SC1     2   R2   C1  2   0.000  45
+    4  SC1     2   R2   C2  2   0.000  45
+    [ bonds ]
+    ; back bone bonds
+    1  2   1   0.37 7000
+    2  3   1   0.37 7000
+    3  4   1   0.37 8000
+    """,
+    ["R1", "R2", "R3", "R1", "R2"],
+    {0: "MIX", 1: "MIX", 2: "MIX", 3:"MIX"})
+    ))
+def test_error_missing_residues_multi(lines, monomers, from_itp):
+    """
+    It can happen that there is a length mismatch between a multiblock as identified
+    from the residue graph sequence and provided in the blocks file. We check that
+    an error is raised.
+    """
+    lines = textwrap.dedent(lines).splitlines()
+    ff = vermouth.forcefield.ForceField(name='test_ff')
+    polyply.src.polyply_parser.read_polyply(lines, ff)
+    # build the meta-molecule
+    meta_mol = MetaMolecule(name="test", force_field=ff)
+    meta_mol.add_monomer(0, monomers[0], [])
+    for node, monomer in enumerate(monomers[1:]):
+        meta_mol.add_monomer(node+1, monomer, [(node, node+1)])
+    nx.set_node_attributes(meta_mol, from_itp, "from_itp")
+    # map to molecule
+    with pytest.raises(IOError):
+        polyply.src.map_to_molecule.MapToMolecule(ff).run_molecule(meta_mol)
