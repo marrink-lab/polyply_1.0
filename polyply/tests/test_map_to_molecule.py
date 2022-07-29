@@ -147,7 +147,34 @@ from vermouth.molecule import Interaction
      Interaction(atoms=(7, 8), parameters=['1', '0.37', '8000'], meta={})],
     [(0, 1), (1, 2), (2, 3), (5, 6), (6, 7), (7, 8)],
     9,
-    {0: "MIX", 1: "MIX", 3: "MIX", 4:"MIX"})
+    {0: "MIX", 1: "MIX", 3: "MIX", 4:"MIX"}),
+    # test two consecutive multiblock fragments
+    ("""
+    [ moleculetype ]
+    ; name nexcl.
+    MIX         1
+    ;
+    [ atoms ]
+    1  SN1a    1   R1   C1  1   0.000  45
+    2  SN1a    1   R1   C2  1   0.000  45
+    3  SC1     2   R2   C1  2   0.000  45
+    4  SC1     2   R2   C2  2   0.000  45
+    [ bonds ]
+    ; back bone bonds
+    1  2   1   0.37 7000
+    2  3   1   0.37 7000
+    3  4   1   0.37 8000
+    """,
+    ["R1", "R2", "R1", "R2"],
+    [Interaction(atoms=(0, 1), parameters=['1', '0.37', '7000'], meta={}),
+     Interaction(atoms=(1, 2), parameters=['1', '0.37', '7000'], meta={}),
+     Interaction(atoms=(2, 3), parameters=['1', '0.37', '8000'], meta={}),
+     Interaction(atoms=(4, 5), parameters=['1', '0.37', '7000'], meta={}),
+     Interaction(atoms=(5, 6), parameters=['1', '0.37', '7000'], meta={}),
+     Interaction(atoms=(6, 7), parameters=['1', '0.37', '8000'], meta={})],
+    [(0, 1), (1, 2), (2, 3), (4, 5), (5, 6), (6, 7)],
+    8,
+    {0: "MIX", 1: "MIX", 2: "MIX", 3:"MIX"})
     ))
 def test_multiresidue_block(lines, monomers, bonds, edges, nnodes, from_itp):
     """
@@ -166,7 +193,6 @@ def test_multiresidue_block(lines, monomers, bonds, edges, nnodes, from_itp):
     # map to molecule
     new_meta_mol = polyply.src.map_to_molecule.MapToMolecule(ff).run_molecule(meta_mol)
     # check that the disconnected molecule is properly done
-    #print(new_meta_mol.nodes)
     for node in new_meta_mol.nodes:
         assert len(new_meta_mol.nodes[node]['graph'].nodes) != 0
 
