@@ -147,7 +147,6 @@ class MapToMolecule(Processor):
             else:
                 regular_graph.add_edge(idx, jdx)
 
-        print(restart_graph.nodes)
         # regular nodes have to match a block in the force-field by resname
         for node in regular_graph.nodes:
             self.node_to_block[node] = meta_molecule.nodes[node]["resname"]
@@ -301,7 +300,6 @@ class MapToMolecule(Processor):
         # a block which consists of multiple residues. This
         # gets entangled here
         self.match_nodes_to_blocks(meta_molecule)
-        print(self.node_to_block)
         # raise an error if a block is not known to the library
         _assert_blocks_in_FF(self.node_to_block.values(),
                              self.force_field)
