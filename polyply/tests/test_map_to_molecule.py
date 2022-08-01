@@ -174,7 +174,37 @@ from vermouth.molecule import Interaction
      Interaction(atoms=(6, 7), parameters=['1', '0.37', '8000'], meta={})],
     [(0, 1), (1, 2), (2, 3), (4, 5), (5, 6), (6, 7)],
     8,
-    {0: "MIX", 1: "MIX", 2: "MIX", 3:"MIX"})
+    {0: "MIX", 1: "MIX", 2: "MIX", 3:"MIX"}),
+    # test two consecutive multiblock fragments with single residues
+    # and different mol-name
+    ("""
+    [ moleculetype ]
+    ; name nexcl.
+    OTR         1
+    ;
+    [ atoms ]
+    1  SN1a    1   R2   C1  1   0.000  45
+    2  SN1a    1   R2   C2  1   0.000  45
+    [ bonds ]
+    ; back bone bonds
+    1  2   1   0.4 7000
+    [ moleculetype ]
+    ; name nexcl.
+    MIX         1
+    ;
+    [ atoms ]
+    1  SN1a    1   R1   C1  1   0.000  45
+    2  SN1a    1   R1   C2  1   0.000  45
+    [ bonds ]
+    ; back bone bonds
+    1  2   1   0.37 7000
+    """,
+    ["R1", "R2"],
+    [Interaction(atoms=(0, 1), parameters=['1', '0.37', '7000'], meta={}),
+     Interaction(atoms=(2, 3), parameters=['1', '0.4', '7000'], meta={}),],
+    [(0, 1), (2, 3),],
+    4,
+    {0: "MIX", 1: "OTR"})
     ))
 def test_multiresidue_block(lines, monomers, bonds, edges, nnodes, from_itp):
     """
