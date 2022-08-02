@@ -173,8 +173,8 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
     replica_group = subparser_gen_replicas.add_argument_group('Options for replica generation')
     replica_group.add_argument("-nrepl", dest='nrepl', type=int, 
                                 help="number of system replicas to generate")
-    replica_group.add_argument("-mdp", dest='mdppath', type=Path, default=Path("md.mdp"),
-                                help="mdp file (.mdp)")
+    replica_group.add_argument("-mdp", dest='mdppaths', type=Path, default=[Path("md.mdp")],
+                                help="mdp file (.mdp)", nargs="*")
     replica_group.add_argument("-log", dest='logpath', type=Path, default=Path("polyply.log"),
                                 help="logfile name")
     replica_group.add_argument("-wdir", dest='workdir', type=Path, default=os.path.curdir,
