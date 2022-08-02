@@ -28,7 +28,6 @@ from .build_system import BuildSystem
 from .annotate_ligands import AnnotateLigands, parse_residue_spec, _find_nodes
 from .build_file_parser import read_build_file
 from .check_residue_equivalence import check_residue_equivalence
-from .gmx_wrapper.workflow import TopologyGMXRunner
 
 LOGGER = StyleAdapter(get_logger(__name__))
 

@@ -3,12 +3,12 @@ Useful classes for integrating workflows with gromacs wrapper.
 """
 import os
 from pathlib import Path
-import vermouth
 import gromacs as gmx
 from gromacs.run import MDrunner
+import gromacs.environment
+gromacs.environment.flags['capture_output'] = "file"
 
-
-class TopologyGMXRunner(MDrunner):
+class GMXRunner(MDrunner):
     """
     Run energy minization on a polyply topology.
     To use this method instantiate the class and
@@ -18,7 +18,7 @@ class TopologyGMXRunner(MDrunner):
     object will be updated in place.
     """
     def __init__(self,
-                 topology,
+                 coordpath,
                  toppath,
                  mdppath,
                  dirname=os.path.curdir,
@@ -26,12 +26,14 @@ class TopologyGMXRunner(MDrunner):
         """
         Set some enviroment variables for the run.
         """
-        self.topology = topology
+        self.coordpath = coordpath
         self.toppath = toppath
         self.mdppath = mdppath
+        self.success = False
         self.startpath = dirname / Path("start.gro")
         self.outpath = dirname / Path(kwargs.get('deffnm', 'confout') + ".gro")
         self.tprname = dirname / Path(kwargs.get('deffnm', 'topol') + ".tpr")
+        self.deffnm = kwargs.get('deffnm', None)
         kwargs['s'] = self.tprname
         super().__init__(dirname=dirname, **kwargs)
 
@@ -40,19 +42,27 @@ class TopologyGMXRunner(MDrunner):
         Write the coordinates of the current system and grompp
         the input parameters.
         """
-        # write the system coordinates to file
-        system = self.topology.convert_to_vermouth_system()
-        vermouth.gmx.gro.write_gro(system, self.startpath, precision=7,
-                                   title="starting coordinates",
-                                   box=self.topology.box, defer_writing=False)
         # grompp everything in the directory
         gmx.grompp(f=self.mdppath,
-                   c=self.startpath,
+                   c=self.coordpath,
                    p=self.toppath,
                    o=self.tprname)
 
     def posthook(self, **kwargs):
         """
-        Read in the new coordinates from the completed run.
+        Make sure that the energy minization did not result into
+        infinite forces.
         """
-        self.topology.add_positions_from_file(self.outpath)
+        if self.deffnm:
+            logpath = Path(self.deffnm + ".log")
+        else:
+            logpath = Path("md.log")
+
+        with open(logpath, "r") as logfile:
+            for line in logfile.readlines():
+                if "Norm" in line:
+                    maxforce = line.strip().split()[-1]
+                    if maxforce == "inf":
+                        self.success = False
+                    else:
+                        self.success = True
