@@ -210,7 +210,7 @@ def gen_coords(toppath,
                                          skip_res=build_res,
                                          resolution='mol')
 
-    # read in meta-molecule coordaintes of there are any
+    # read in meta-molecule coordinates of there are any
     if coordpath_meta:
         LOGGER.info("loading meta_molecule coordinates",  type="step")
         topology.add_positions_from_file(coordpath_meta,
