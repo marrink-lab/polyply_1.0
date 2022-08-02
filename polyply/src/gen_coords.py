@@ -216,6 +216,12 @@ def gen_coords(toppath,
         topology.add_positions_from_file(coordpath_meta,
                                          skip_res=build_res,
                                          resolution='meta_mol')
+        last_node = len(topology.molecules[-1].nodes) - 1
+        if topology.molecules[-1].nodes[last_node]["build"]:
+            msg = ("You provided metamolecule coordiantes. However, "
+                   "there were not enough coordinates for all metamolecule "
+                   "residues. Polyply will built the missing residues.")
+            LOGGER.warning(msg)
 
     # load in built file
     if build:
