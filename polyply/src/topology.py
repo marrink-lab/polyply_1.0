@@ -367,7 +367,7 @@ class Topology(System):
         Note that molecule coordinates will also set the meta_molecule
         coordinates. Coordinates for a single residue must be complete.
 
-        Currently .gro and .pdb file parsers are supoprted for the
+        Currently .gro and .pdb file parsers are supported for the
         coordinate reading. See `_coord_parsers` for more information.
 
         Parameters

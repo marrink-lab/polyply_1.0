@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-This collection of tests check some basic I/O workflows of the gen_coords
+This collection of tests checks some basic I/O workflows of the gen_coords
 function. For example, that it runs through when no coordinates are requested
 to be generated.
 """
