@@ -16,6 +16,7 @@ This collection of tests checks some basic I/O workflows of the gen_coords
 function. For example, that it runs through when no coordinates are requested
 to be generated.
 """
+import logging
 import pathlib
 import pytest
 import numpy as np
@@ -75,3 +76,23 @@ def test_backmap_only(tmp_path, monkeypatch):
         ref_pos = meta_in.nodes[node]['position']
         # tolerance comes from finite tolerance in gro file
         assert np.allclose(res_pos, ref_pos, atol=0.0009)
+
+def test_warning_partial_metamol_coords(tmp_path, monkeypatch, caplog):
+    caplog.set_level(logging.WARNING)
+    top_file = TEST_DATA + "/topology_test/system.top"
+    pos_file = TEST_DATA + "/topology_test/cog_missing.gro"
+    out_file = tmp_path / "out.gro"
+
+    with caplog.at_level(logging.WARNING):
+        gen_coords(toppath=top_file,
+                   coordpath_meta=pos_file,
+                   outpath=out_file,
+                   name="test",
+                   box=np.array([11, 11, 11])
+                   )
+        print(caplog.records)
+        for record in caplog.records:
+            assert record.levelname == "WARNING"
+            break
+        else:
+            assert False
