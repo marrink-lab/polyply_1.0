@@ -69,6 +69,7 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
                             help='Input file (ITP|FF)', nargs="*")
     file_group.add_argument('-o', dest='outpath', type=Path,
                             help='Output ITP (ITP)')
+
     seq_group = file_group.add_mutually_exclusive_group(required=True)
     seq_group.add_argument('-seq', dest='seq', type=str, nargs='+',
                            help='A linear sequence of residue names.')

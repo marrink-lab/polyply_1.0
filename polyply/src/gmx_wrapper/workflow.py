@@ -3,9 +3,10 @@ Useful classes for integrating workflows with gromacs wrapper.
 """
 import os
 from pathlib import Path
+import vermouth
 import gromacs as gmx
 from gromacs.run import MDrunner
-import vermouth
+
 
 class TopologyGMXRunner(MDrunner):
     """
