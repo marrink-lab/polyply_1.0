@@ -327,6 +327,20 @@ def test_match_link_and_residue_atoms_fail(example_meta_molecule,
                          [[(1, 4, 1)], [(6, 9, 1)], [(1, 4, 5, 6, 1)]],
                          [[(0, 0)], [(1, 0)], [(2, 0)]]
                         ),
+                        # 8 - simple check single residue but both nodes are the same
+                        ([[(0, {'name': 'BB'}),
+                           (1, {'name': 'BB1'}),
+                           (2, {'name': 'SC1'})]],
+                         [{0: 0, 1: 0, 2:0}],
+                         ['angles'],
+                         [[vermouth.molecule.Interaction(atoms=(0, 1, 2),
+                                                        parameters=['1', '124', '500'],
+                                                        meta={})]],
+                         [[]],
+                         [[]],
+                         [[(0, 1, 2, 1)]],
+                         [[(0, 0)]]
+                        ),
                         ))
 def test_apply_link_to_residue(example_meta_molecule,
                                link_defs,
