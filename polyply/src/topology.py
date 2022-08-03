@@ -262,7 +262,7 @@ class Topology(System):
         for attribute in ["defaults", "defines", "atom_types", "nonbond_params"]:
             self_dict = getattr(self, attribute)
             if check_duplicates:
-                for key, value in getattr(other_top, attribute):
+                for key, value in getattr(other_top, attribute).items():
                     if key in self_dict and self_dict[key] != value:
                         msg = f"Conflicting entry in {attribute} with key {key}"
                         raise MergeError(msg)
@@ -270,17 +270,17 @@ class Topology(System):
             else:
                 getattr(self, attribute).update(getattr(other_top, attribute))
 
-        self.description.append(other_top.description)
-        self.persistences.append(other_top.persistences)
+        self.description += other_top.description
+        self.persistences += other_top.persistences
 
         for atoms, dist_restr in other_top.distance_restraints:
             self.distance_restraints[atoms].append(dist_restr)
 
         for molecule in other_top.molecules:
-            self.append_molecules(molecule, molecule.molname)
+            self.append_molecules(molecule, molecule.mol_name)
 
         for inter_type in other_top.types:
-            for atoms, type_params in other_top.types[inter_type].values():
+            for atoms, type_params in other_top.types[inter_type].items():
                 if atoms in self.types[inter_type] and self.types[inter_type][atoms] == type_params:
                     typestring = inter_type[:-1]
                     msg = f"Conflicting entry in {typestring}types for atoms {atoms}"

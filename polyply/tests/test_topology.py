@@ -660,14 +660,14 @@ class TestTopology:
         target_top.merge(other_top)
         # check if the attributes have both topologies values
         for attribute in ["defaults", "defines", "atom_types", "nonbond_params"]:
-            target_dict = getattr(self, attribute)
-            other_dict = getattr(self, attribute)
-            for key, value in getattr(other_top, attribute):
-                assert other_dict[key] = target_dict[key]
+            target_dict = getattr(target_top, attribute)
+            other_dict = getattr(other_top, attribute)
+            for key in other_dict:
+                assert other_dict[key] == target_dict[key]
         # check that all descriptions and persistences are in the target
         # topology
         for descr in other_top.description:
-            assert descre in target_top.description
+            assert descr in target_top.description
 
         for persis in other_top.persistences:
             assert persis in target_top.persistences
@@ -676,8 +676,9 @@ class TestTopology:
             assert dist_restr in self.distance_restraints[atoms]
 
         for idx, molecule in enumerate(other_top.molecules):
-            assert molecule == target_top.molecules[idx+n_mols_target_top]
+            assert list(molecule.nodes) == list(target_top.molecules[idx+n_mols_target].nodes)
+            assert list(molecule.edges) == list(target_top.molecules[idx+n_mols_target].edges)
 
         for inter_type in other_top.types:
-            for atoms, type_params in other_top.types[inter_type].values():
-                assert target_top.types[inter_type] = type_params
+            for atoms, type_params in other_top.types[inter_type].items():
+                assert target_top.types[inter_type] == type_params
