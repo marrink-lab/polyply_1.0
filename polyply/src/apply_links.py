@@ -341,6 +341,29 @@ class ApplyLinks(Processor):
         super().__init__(*args, **kwargs)
         self.applied_links = defaultdict(dict)
 
+    def _update_applied_links(self, interactions_dict, molecule, citations, mapping=None):
+        """
+        Helper function for adding links to the applied links dictionary.
+        If mapping is given the interaction atoms are mapped to the molecule
+        atoms using mapping. Otherwise interactions are assumed to be written
+        in terms of molecule nodes.
+        """
+        for inter_type, interactions in interactions_dict.items():
+            for interaction in interactions:
+                # it is not guaranteed that interaction.atoms is a tuple
+                # the key is the atoms involved in the interaction and the version type so
+                # that multiple versions are kept and not overwritten
+                if mapping:
+                    new_interaction = _build_link_interaction_from(molecule,
+                                                                   interaction,
+                                                                   mapping)
+                else:
+                    new_interaction = interaction
+
+                interaction_key = tuple(new_interaction.atoms) +\
+                                  tuple([new_interaction.meta.get("version", 1)])
+                self.applied_links[inter_type][interaction_key] = (new_interaction, citations)
+
     def apply_link_between_residues(self, meta_molecule, link, link_to_resid):
         """
         Applies a link between specific residues, if and only if
@@ -387,15 +410,11 @@ class ApplyLinks(Processor):
             molecule.nodes[link_to_mol[node]].update(link.nodes[node].get('replace', {}))
 
         # based on the match we build the link interaction
-        for inter_type in link.interactions:
-            for interaction in link.interactions[inter_type]:
-                new_interaction = _build_link_interaction_from(molecule, interaction, link_to_mol)
-                # it is not guaranteed that interaction.atoms is a tuple
-                # the key is the atoms involved in the interaction and the version type so
-                # that multiple versions are kept and not overwritten
-                interaction_key = tuple(new_interaction.atoms) +\
-                                  tuple([new_interaction.meta.get("version",1)])
-                self.applied_links[inter_type][interaction_key] = (new_interaction, link.citations)
+        self._update_applied_links(link.interactions,
+                                   molecule,
+                                   link.citations,
+                                   mapping=link_to_mol)
+
         # now we already add the edges of this link
         # links can overwrite each other but the edges must be the same
         # this is safer than using the make_edge method because it accounts
@@ -423,6 +442,9 @@ class ApplyLinks(Processor):
         """
         molecule = meta_molecule.molecule
         force_field = meta_molecule.force_field
+        # we need to update the temporary interactions dict
+        self._update_applied_links(molecule.interactions, molecule, molecule.citations, mapping=None)
+
         resnames = set(nx.get_node_attributes(molecule, "resname").values())
         for link in tqdm(force_field.links):
             link_resnames = _get_link_resnames(link)
