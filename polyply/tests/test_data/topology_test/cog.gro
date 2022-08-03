@@ -1,0 +1,6 @@
+/coarse/fabian/current-projects/polymer_itp_builder/vermouth_dev/venv_py38/bin/polyply gen_coords -p system.top -o complete.gro -c test.gro -box 11 11 11 -name test
+3
+    1PMMA    C     1   0.000   0.000   0.250
+    2PMMA    C     2   0.000   0.000   0.500
+    3PMMA    C     3   0.000   0.000   0.750
+11.0 11.0 11.0

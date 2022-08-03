@@ -45,13 +45,13 @@ def test_backmapping():
 
     nx.set_node_attributes(meta_molecule, {0: {"resname": "test",
                                                "position": np.array([0, 0, 0]),
-                                               "resid": 1, "build": True},
+                                               "resid": 1, "backmap": True},
                                            1: {"resname": "test",
                                                "position": np.array([0, 0, 1.0]),
-                                               "resid": 2, "build": True},
+                                               "resid": 2, "backmap": True},
                                            2: {"resname": "test",
                                                "position": np.array([0, 0, 2.0]),
-                                               "resid": 3, "build": False}})
+                                               "resid": 3, "backmap": False}})
     # test if disordered template works
     meta_molecule.templates = {"test": {"B": np.array([0, 0, 0]),
                                         "A": np.array([0, 0, 0.5]),

@@ -100,6 +100,7 @@ class MetaMolecule(nx.Graph):
         super().__init__(*args, **kwargs)
         self.molecule = None
         nx.set_node_attributes(self, True, "build")
+        nx.set_node_attributes(self, True, "backmap")
         self.__search_tree = None
         self.root = None
         self.dfs = False
@@ -131,7 +132,7 @@ class MetaMolecule(nx.Graph):
         else:
            resid = 1
 
-        self.add_node(current, resname=resname, resid=resid, build=True)
+        self.add_node(current, resname=resname, resid=resid, build=True, backmap=True)
         for edge in connections:
             if self.has_node(edge[0]) and self.has_node(edge[1]):
                 self.add_edge(edge[0], edge[1])
@@ -161,6 +162,7 @@ class MetaMolecule(nx.Graph):
             old_resid = self.molecule.nodes[node]["resid"]
             self.molecule.nodes[node]["resid"] = old_resid + max_resid
             self.molecule.nodes[node]["build"] = True
+            self.molecule.nodes[node]["backmap"] = True
 
         # make a new residue graph and overwrite the old one
         new_meta_graph = make_residue_graph(self.molecule, attrs=('resid', 'resname'))

@@ -94,7 +94,9 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
     file_group.add_argument('-o', dest='outpath', type=Path,
                             help='output GRO (.gro)')
     file_group.add_argument('-c', dest='coordpath', type=Path,
-                            help='input file (.gro)', default=None)
+                            help='input file molecules (.gro)', default=None)
+    file_group.add_argument('-mc', dest='coordpath_meta', type=Path,
+                            help='input file meta-molecule (.gro)', default=None)
     file_group.add_argument('-b', dest='build', type=Path, default=None,
                             help=('input file; specify molecule specific building options'))
 
