@@ -341,6 +341,21 @@ def test_match_link_and_residue_atoms_fail(example_meta_molecule,
                          [[(0, 1, 2, 1)]],
                          [[(0, 0)]]
                         ),
+                        # 9 - test node get scheduled for removal
+                        ([[(0, {'name': 'BB'}),
+                           (1, {'name': 'BB1'}),
+                           (2, {'name': 'SC1'}),
+                           (3, {'name': 'SC2', 'replace': {'atomname': None}})]],
+                         [{0: 0, 1: 0, 2:0, 3:0}],
+                         ['angles'],
+                         [[vermouth.molecule.Interaction(atoms=(0, 1, 2),
+                                                        parameters=['1', '124', '500'],
+                                                        meta={})]],
+                         [[]],
+                         [[]],
+                         [[(0, 1, 2, 1)]],
+                         [[(0, 0)]]
+                        ),
                         ))
 def test_apply_link_to_residue(example_meta_molecule,
                                link_defs,
@@ -366,8 +381,14 @@ def test_apply_link_to_residue(example_meta_molecule,
         link.patterns = patterns
         link.make_edges_from_interaction_type(inter_type)
         processor.apply_link_between_residues(example_meta_molecule,
-                                                  link,
-                                                  link_to_resid)
+                                              link,
+                                              link_to_resid)
+
+    for node in processor.nodes_to_remove:
+        node_name = example_meta_molecule.molecule.nodes[node]['name']
+        for node in link.nodes:
+            if link.nodes[node]['name'] == node_name:
+                assert link.nodes[node]['replace']['atomname'] is None
 
     for nodes, inter_idxs, inter_type in zip(expected_nodes, expected_inters, inter_types):
         for inter_nodes, inter_idx in zip(nodes, inter_idxs):
