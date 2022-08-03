@@ -179,10 +179,9 @@ def compute_volume(block, coords, nonbond_params, treshold=1e-18):
         atom_key = block.nodes[node]["atype"]
         rad = float(nonbond_params[frozenset([atom_key, atom_key])]["nb1"])
         diff = coord - res_center_of_geometry
-        if np.linalg.norm(diff) < treshold:
-            continue
-        geom_vects[idx, :] = diff + u_vect(diff) * rad
-        idx += 1
+        if np.linalg.norm(diff) > treshold:
+            geom_vects[idx, :] = diff + u_vect(diff) * rad
+            idx += 1
 
     if geom_vects.shape[0] > 1:
         radgyr = radius_of_gyration(geom_vects)
