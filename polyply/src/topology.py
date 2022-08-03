@@ -281,11 +281,11 @@ class Topology(System):
 
         for inter_type in other_top.types:
             for atoms, type_params in other_top.types[inter_type].items():
-                if atoms in self.types[inter_type] and self.types[inter_type][atoms] == type_params:
+                if atoms in self.types[inter_type] and self.types[inter_type][atoms] != type_params:
                     typestring = inter_type[:-1]
                     msg = f"Conflicting entry in {typestring}types for atoms {atoms}"
                     raise MergeError(msg)
-                self.types[inter_type] = type_params
+                self.types[inter_type][atoms] = type_params
 
     def append_molecules(self, new_molecule, molname):
         """
