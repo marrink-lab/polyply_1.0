@@ -409,7 +409,7 @@ class ApplyLinks(Processor):
         # replace any attributes from the link node section
         for node in link.nodes:
             # if the atomname is set to null we schedule the node to be removed
-            if "null" in link.nodes[node].get('replace', {}).get('atomname', {}):
+            if link.nodes[node].get('replace', {}).get('atomname', False) is None:
                 self.nodes_to_remove.append(link_to_mol[node])
             else:
                 molecule.nodes[link_to_mol[node]].update(link.nodes[node].get('replace', {}))
@@ -492,9 +492,9 @@ class ApplyLinks(Processor):
             if link.molecule_meta.get('by_atom_id'):
                 apply_explicit_link(molecule, link)
 
+        print(molecule.interactions)
         # take care to remove nodes if there are any scheduled for removal
-        for node in self.nodes_to_remove:
-            molecule.remove_nodes(node)
+        molecule.remove_nodes_from(self.nodes_to_remove)
 
         expand_excl(molecule)
         return meta_molecule
