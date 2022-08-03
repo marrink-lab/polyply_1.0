@@ -682,3 +682,51 @@ class TestTopology:
         for inter_type in other_top.types:
             for atoms, type_params in other_top.types[inter_type].items():
                 assert target_top.types[inter_type] == type_params
+
+    @staticmethod
+    @pytest.mark.parametrize('target_lines, other_lines', (
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  1.0     1.0
+        [ bondtypes ]
+        C       C       1       0.1335  502080.0
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        1 C   1 test C1 1   0.0 14.0
+        2 C   1 test C2 2   0.0 12.0
+        [ bonds ]
+        1 2  1
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        """
+        [ defaults ]
+        1.0   2.0   yes  1.0     1.0
+        [ bondtypes ]
+        P       P       1       0.1335  502080.0
+        [ moleculetype ]
+        other 3
+        [ atoms ]
+        1 P   1 other  C1 1   0.0 14.0
+        2 P   1 other  C2 2   0.0 12.0
+        [ bonds ]
+        1 2  1
+        [ system ]
+        other title
+        [ molecules ]
+        other 1
+        """,
+        ),))
+    def test_merge_topologies_fail(target_lines, other_lines):
+        force_field = vermouth.forcefield.ForceField(name='test_ff')
+        target_top =  Topology(force_field, name="target")
+        n_mols_target = len(target_top.molecules)
+        other_top =  Topology(force_field, name="other")
+        _lines_to_topology(target_top, target_lines)
+        _lines_to_topology(other_top, other_lines)
+        with pytest.raises(polyply.src.topology.MergeError):
+            target_top.merge(other_top)
