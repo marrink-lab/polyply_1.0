@@ -340,6 +340,7 @@ class ApplyLinks(Processor):
         self.debug = debug
         super().__init__(*args, **kwargs)
         self.applied_links = defaultdict(dict)
+        self.nodes_to_remove = []
 
     def _update_applied_links(self, interactions_dict, molecule, citations, mapping=None):
         """
@@ -407,7 +408,11 @@ class ApplyLinks(Processor):
         # if all atoms have a match the link applies and we first
         # replace any attributes from the link node section
         for node in link.nodes:
-            molecule.nodes[link_to_mol[node]].update(link.nodes[node].get('replace', {}))
+            # if the atomname is set to null we schedule the node to be removed
+            if "null" in link.nodes[node].get('replace', {}).get('atomname', {}):
+                self.nodes_to_remove.append(link_to_mol[node])
+            else:
+                molecule.nodes[link_to_mol[node]].update(link.nodes[node].get('replace', {}))
 
         # based on the match we build the link interaction
         self._update_applied_links(link.interactions,
@@ -444,6 +449,8 @@ class ApplyLinks(Processor):
         force_field = meta_molecule.force_field
         # we need to update the temporary interactions dict
         self._update_applied_links(molecule.interactions, molecule, molecule.citations, mapping=None)
+        # now we can clear the molecule dict
+        molecule.interactions = defaultdict(list)
 
         resnames = set(nx.get_node_attributes(molecule, "resname").values())
         for link in tqdm(force_field.links):
@@ -484,6 +491,10 @@ class ApplyLinks(Processor):
         for link in force_field.links:
             if link.molecule_meta.get('by_atom_id'):
                 apply_explicit_link(molecule, link)
+
+        # take care to remove nodes if there are any scheduled for removal
+        for node in self.nodes_to_remove:
+            molecule.remove_nodes(node)
 
         expand_excl(molecule)
         return meta_molecule
