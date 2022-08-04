@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import networkx as nx
+from vermouth.graph_utils import make_residue_graph
 from polyply.src.processor import Processor
 
 def tag_exclusions(node_to_block, force_field):
@@ -128,6 +129,7 @@ class MapToMolecule(Processor):
         regular_graph = nx.Graph()
         restart_graph = nx.Graph()
         restart_attr = nx.get_node_attributes(meta_molecule, "from_itp")
+        restart_graph.add_nodes_from(restart_attr.keys())
 
         # in case we only have a single residue
         # we assume the user is sane and that residue is not from
@@ -135,14 +137,13 @@ class MapToMolecule(Processor):
         if len(meta_molecule.nodes) == 1:
             regular_graph.add_nodes_from(meta_molecule.nodes)
 
-        # this breaks down when to proteins are directly linked
-        # because they would appear as one connected component
-        # and not two seperate components referring to two molecules
-        # but that is an edge-case we can worry about later
+        # this will falsely also connect two molecules with the
+        # same molecule name, if they are from_itp and consecutively
+        # we deal with that below
         for idx, jdx in nx.dfs_edges(meta_molecule):
-            # the two nodes are restart nodes
             if idx in restart_attr and jdx in restart_attr:
-                restart_graph.add_edge(idx, jdx)
+                if restart_attr[idx] == restart_attr[jdx]:
+                    restart_graph.add_edge(idx, jdx)
             else:
                 regular_graph.add_edge(idx, jdx)
 
@@ -151,16 +152,36 @@ class MapToMolecule(Processor):
             self.node_to_block[node] = meta_molecule.nodes[node]["resname"]
 
         # fragment nodes match parts of blocks, which describe molecules
-        # with more than one residue
+        # with more than one residue. Sometimes multiple molecules come
+        # after each other in that case the connected component needs to
+        # be an integer multiple of the block
+        n_fragments = 0
         for fragment in nx.connected_components(restart_graph):
-            block_name = restart_attr[list(fragment)[0]]
-            if all([restart_attr[node] == block_name  for node in fragment]):
-                self.fragments.append(fragment)
-                for node in fragment:
-                    self.node_to_block[node] = block_name
-                    self.node_to_fragment[node] = len(self.fragments) - 1
+            frag_nodes = list(fragment)
+            block = self.force_field.blocks[restart_attr[frag_nodes[0]]]
+            block_res = make_residue_graph(block, attrs=('resid', 'resname'))
+            len_block = len(block_res)
+            len_frag = len(fragment)
+            # here we check if the fragment is an integer multiple
+            # of the multiresidue block
+            if len_frag%len_block == 0:
+                n_blocks = len_frag//len_block
             else:
-                raise IOError
+                # if it is not raise an error
+                molname = restart_attr[frag_nodes[0]]
+                msg = (f"When mapping the molecule {molname} onto the residue graph "
+                        "nodes labeled with from_itp, a mismatch in the length between "
+                        "the provided molecule and the residue graph is found. Make "
+                        "sure that all residues are in the residue graph and input itp-file.")
+                raise IOError(msg)
+
+            for fdx in range(0, n_blocks):
+                current_frag_nodes = frag_nodes[fdx*len_block: (fdx+1)*len_block]
+                self.fragments.append(current_frag_nodes)
+                for node in current_frag_nodes:
+                    self.node_to_block[node] = restart_attr[frag_nodes[0]]
+                    self.node_to_fragment[node] = n_fragments
+                n_fragments += 1
 
     def add_blocks(self, meta_molecule):
         """
