@@ -482,19 +482,21 @@ class ApplyLinks(Processor):
                     except MatchError as error:
                         LOGGER.debug(str(error), type='step')
 
+        # take care to remove nodes if there are any scheduled for removal
+        # we do this here becuase that's more efficent
+        molecule.remove_nodes_from(self.nodes_to_remove)
+        # now we add all interactions but not the ones that contain the removed
+        # nodes
         for inter_type in self.applied_links:
-            for interaction, citation in self.applied_links[inter_type].values():
-                meta_molecule.molecule.interactions[inter_type].append(interaction)
-                if citation:
-                    meta_molecule.molecule.citations.update(citation)
+            for atoms, (interaction, citation) in self.applied_links[inter_type].items():
+                if not any([atom in self.nodes_to_remove for atom in atoms]):
+                    meta_molecule.molecule.interactions[inter_type].append(interaction)
+                    if citation:
+                        meta_molecule.molecule.citations.update(citation)
 
         for link in force_field.links:
             if link.molecule_meta.get('by_atom_id'):
                 apply_explicit_link(molecule, link)
-
-        print(molecule.interactions)
-        # take care to remove nodes if there are any scheduled for removal
-        molecule.remove_nodes_from(self.nodes_to_remove)
 
         expand_excl(molecule)
         return meta_molecule
