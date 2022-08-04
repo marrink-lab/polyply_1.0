@@ -137,7 +137,7 @@ class MapToMolecule(Processor):
         if len(meta_molecule.nodes) == 1:
             regular_graph.add_nodes_from(meta_molecule.nodes)
 
-        # this will falesly also connect two molecules with the
+        # this will falsely also connect two molecules with the
         # same molecule name, if they are from_itp and consecutively
         # we deal with that below
         for idx, jdx in nx.dfs_edges(meta_molecule):
@@ -155,6 +155,7 @@ class MapToMolecule(Processor):
         # with more than one residue. Sometimes multiple molecules come
         # after each other in that case the connected component needs to
         # be an integer multiple of the block
+        n_fragments = 0
         for fragment in nx.connected_components(restart_graph):
             frag_nodes = list(fragment)
             block = self.force_field.blocks[restart_attr[frag_nodes[0]]]
@@ -179,7 +180,8 @@ class MapToMolecule(Processor):
                 self.fragments.append(current_frag_nodes)
                 for node in current_frag_nodes:
                     self.node_to_block[node] = restart_attr[frag_nodes[0]]
-                    self.node_to_fragment[node] = len(self.fragments) - 1
+                    self.node_to_fragment[node] = n_fragments
+                n_fragments += 1
 
     def add_blocks(self, meta_molecule):
         """
