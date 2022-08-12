@@ -71,12 +71,9 @@ def read_ff_from_files(paths, force_field):
         path = pathlib.Path(path)
         file_extension = path.suffix.casefold()[1:]
 
-        try:
+        if file_extension in FORCE_FIELD_PARSERS.keys():
             parser = FORCE_FIELD_PARSERS[file_extension]
             wrapper(parser, path, force_field)
-        except KeyError:
-            raise IOError(
-                "Cannot parse file with extension {}.".format(file_extension))
 
     return force_field
 
