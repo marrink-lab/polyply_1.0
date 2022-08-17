@@ -245,7 +245,7 @@ class Topology(System):
         If `check_duplicates` is True attribute value combinations
         that already exist will be overwritten by those in
         the to be merged topology. An error will raise otherwise if
-        there are any conflicting dublicate entries.
+        there are any conflicting duplicate entries.
 
         Note distance restraints are not checked for possibly
         conflicting definitions.
