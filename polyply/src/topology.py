@@ -266,9 +266,7 @@ class Topology(System):
                     if key in self_dict and self_dict[key] != value:
                         msg = f"Conflicting entry in {attribute} with key {key}"
                         raise MergeError(msg)
-                    self_dict[key] = value
-            else:
-                getattr(self, attribute).update(getattr(other_top, attribute))
+            getattr(self, attribute).update(getattr(other_top, attribute))
 
         self.description += other_top.description
         self.persistences += other_top.persistences
