@@ -15,7 +15,7 @@ from collections import (namedtuple, OrderedDict)
 import networkx as nx
 from vermouth.graph_utils import make_residue_graph
 from vermouth.log_helpers import StyleAdapter, get_logger
-from .polyply_parser import read_polyply
+from vermouth.gmx.itp_read import read_itp
 from .graph_utils import find_nodes_with_attributes
 from .simple_seq_parsers import parse_txt, parse_ig, parse_fasta, parse_json
 
@@ -26,7 +26,7 @@ def _make_edges(force_field):
     for block in force_field.blocks.values():
         inter_types = list(block.interactions.keys())
         for inter_type in inter_types:
-            if inter_type in ["bonds", "constraints" "angles"]:
+            if inter_type in ["bonds", "constraints"]:
                 block.make_edges_from_interaction_type(type_=inter_type)
 
     for link in force_field.links:
@@ -100,6 +100,7 @@ class MetaMolecule(nx.Graph):
         super().__init__(*args, **kwargs)
         self.molecule = None
         nx.set_node_attributes(self, True, "build")
+        nx.set_node_attributes(self, True, "backmap")
         self.__search_tree = None
         self.root = None
         self.dfs = False
@@ -131,7 +132,7 @@ class MetaMolecule(nx.Graph):
         else:
            resid = 1
 
-        self.add_node(current, resname=resname, resid=resid, build=True)
+        self.add_node(current, resname=resname, resid=resid, build=True, backmap=True)
         for edge in connections:
             if self.has_node(edge[0]) and self.has_node(edge[1]):
                 self.add_edge(edge[0], edge[1])
@@ -161,6 +162,7 @@ class MetaMolecule(nx.Graph):
             old_resid = self.molecule.nodes[node]["resid"]
             self.molecule.nodes[node]["resid"] = old_resid + max_resid
             self.molecule.nodes[node]["build"] = True
+            self.molecule.nodes[node]["backmap"] = True
 
         # make a new residue graph and overwrite the old one
         new_meta_graph = make_residue_graph(self.molecule, attrs=('resid', 'resname'))
@@ -322,7 +324,9 @@ class MetaMolecule(nx.Graph):
         """
         with open(itp_file) as file_:
             lines = file_.readlines()
-            read_polyply(lines, force_field)
+            read_itp(lines, force_field)
+
+        _make_edges(force_field)
 
         graph = MetaMolecule._block_graph_to_res_graph(force_field.blocks[mol_name])
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)

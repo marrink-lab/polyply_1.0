@@ -20,7 +20,8 @@ import networkx as nx
 import vermouth.forcefield
 import vermouth.molecule
 import vermouth.gmx.itp_read
-from polyply import gen_params, TEST_DATA
+from polyply import gen_params, TEST_DATA, MetaMolecule
+from polyply.src.graph_utils import find_missing_edges
 
 class TestGenParams():
     @staticmethod
@@ -75,20 +76,9 @@ class TestGenParams():
         ff_group = parser.add_argument_group('Force field selection')
         ff_group.add_argument('-lib', dest='lib', required=False, type=str,
                               help='force-fields to include from library', nargs='*')
-        ff_group.add_argument('-ff-dir', dest='extra_ff_dir', action='append',
-                              type=Path, default=[],
-                              help='Additional repository for custom force fields.')
-        ff_group.add_argument('-list-lib', action='store_true', dest='list_ff',
-                              help='List all known force fields, and exit.')
-        ff_group.add_argument('-list-blocks', action='store_true', dest='list_blocks',
-                              help='List all Blocks known to the'
-                              ' force field, and exit.')
-        ff_group.add_argument('-list-links', action='store_true', dest='list_links',
-                              help='List all Links known to the'
-                              ' force field, and exit.')
 
         args = parser.parse_args(args_in)
-        gen_params(args)
+        gen_params(**vars(args))
 
         force_field = vermouth.forcefield.ForceField(name='test_ff')
 
@@ -112,7 +102,19 @@ class TestGenParams():
         assert int_types_ref == int_types_new
 
         for key in force_field.blocks[ref_name].interactions:
-            print(key)
             for term in force_field.blocks[ref_name].interactions[key]:
-                print(term)
                 assert term in force_field.blocks[args.name].interactions[key]
+
+def test_find_missing_links():
+    fname = TEST_DATA + "/gen_params/ref/P3HT_10.itp"
+    ff = vermouth.forcefield.ForceField("test")
+    meta_mol = MetaMolecule.from_itp(ff, fname, "P3HTref")
+    meta_mol.molecule.remove_edge(39, 45) # resid 7,8
+    meta_mol.molecule.remove_edge(15, 21) # resid 3,4
+    missing = list(find_missing_edges(meta_mol, meta_mol.molecule))
+    assert len(missing) == 2
+    for edge, ref in zip(missing, [(3, 4), (7, 8)]):
+        assert edge["resA"] == "P3HTref"
+        assert edge["resB"] == "P3HTref"
+        assert edge["idxA"] == ref[0]
+        assert edge["idxB"] == ref[1]

@@ -167,64 +167,36 @@ def test_tag_nodes(tags, expected, seed):
     _tag_nodes(graph, tags, seed)
     assert nx.get_node_attributes(graph, "chiral") == expected
 
-class Args:
-    """
-    Inpute Arguments for the sequence generator.
-    """
-
-    def __init__(self,
-                 name=None,
-                 ffpath=None,
-                 outpath=None,
-                 macros=None,
-                 file_macros=None,
-                 seq=None,
-                 connects=None,
-                 lib=None,
-                 modifications=[],
-                 inpath=None,
-                 tags=[]):
-
-        self.name = name
-        self.lib = lib
-        self.ffpath = ffpath
-        self.outpath = outpath
-        self.macros = macros
-        self.from_file = file_macros
-        self.seq = seq
-        self.connects = connects
-        self.inpath = inpath
-        self.modifications = modifications
-        self.tags = []
-
-@pytest.mark.parametrize('_input, ref_file', (
+@pytest.mark.parametrize('args, ref_file', (
     (dict(outpath=TEST_DATA + "/gen_seq/output/PPI.json",
-          macros=["A:3:2:N1-1.0"],
+          macro_strings=["A:3:2:N1-1.0"],
           seq=["A", "A"],
+          name="test",
           connects=["0:1:0-0"]),
      TEST_DATA + "/gen_seq/ref/PPI_ref.json"),
     (dict(outpath=TEST_DATA + "/gen_seq/output/PEO_PS.json",
-          macros=["A:11:1:PEO-1", "B:11:1:PS-1"],
+          macro_strings=["A:11:1:PEO-1", "B:11:1:PS-1"],
           connects=["0:1:10-0"],
+          name="test",
           seq=["A", "B"]),
      TEST_DATA + "/gen_seq/ref/PEO_PS_ref.json"),
     (dict(outpath=TEST_DATA + "/gen_seq/output/lysoPEG.json",
           inpath=[TEST_DATA + "/gen_seq/input/molecule_0.itp"],
-          macros=["A:5:1:PEG-1.0"],
-          file_macros=["PROT:molecule_0"],
+          macro_strings=["A:5:1:PEG-1.0"],
+          from_file=["PROT:molecule_0"],
+          name="test",
           seq=["PROT", "A"],
           connects=["0:1:0-0"]),
      TEST_DATA + "/gen_seq/ref/lyso_PEG.json")
 ))
-def test_gen_seq(_input, ref_file):
-    arguments = Args(**_input)
-    gen_seq(arguments)
+def test_gen_seq(args, ref_file):
+    gen_seq(**args)
 
     with open(ref_file) as _file:
         js_graph = json.load(_file)
         ref_graph = json_graph.node_link_graph(js_graph)
 
-    with open(_input["outpath"]) as _file:
+    with open(args["outpath"]) as _file:
         js_graph = json.load(_file)
         out_graph = json_graph.node_link_graph(js_graph)
 

@@ -94,7 +94,9 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
     file_group.add_argument('-o', dest='outpath', type=Path,
                             help='output GRO (.gro)')
     file_group.add_argument('-c', dest='coordpath', type=Path,
-                            help='input file (.gro)', default=None)
+                            help='input file molecules (.gro)', default=None)
+    file_group.add_argument('-mc', dest='coordpath_meta', type=Path,
+                            help='input file meta-molecule (.gro)', default=None)
     file_group.add_argument('-b', dest='build', type=Path, default=None,
                             help=('input file; specify molecule specific building options'))
 
@@ -125,7 +127,7 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
                                       '# and -.'))
 
     system_group = parser_gen_coords.add_argument_group('Options for system generation')
-    system_group.add_argument('-gs', dest='grid_spacing', type=int,
+    system_group.add_argument('-gs', dest='grid_spacing', type=float,
                               help='grid spacing (nm)', default=0.2)
     system_group.add_argument('-grid', dest='grid', type=str,
                               help='file with grid-points', default=None)
@@ -180,7 +182,7 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
                             help='output file (.json)', required=True)
 
     macro_group = parser_gen_seq.add_argument_group('Definitions of macros')
-    macro_group.add_argument('-from_string', dest='macros', nargs='+', type=str,
+    macro_group.add_argument('-from_string', dest='macro_strings', nargs='+', type=str,
                              help=("Define small polymer fragments: "
                                    "the format is <tag>:<#blocks>:<#branches>:<residues> "
                                    "where residues has the format <resname-probability>. "
@@ -242,14 +244,14 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
         for block in force_field.blocks:
             print(block)
         parser.exit()
-#    if args.list_links:
-#        print('The following Links are known to force field {}:'.format(args.list_links))
-#        print(', '.join(known_force_fields[args.list_links]))
-#        parser.exit()
 
     LOGGER.setLevel(LOGLEVELS[args.verbosity])
+    args_dict = vars(args)
+    subprogram = args_dict['func']
+    for remove_args in ['list_ff', 'list_blocks', 'verbosity', 'func']:
+        del args_dict[remove_args]
 
-    args.func(args)
+    subprogram(**args_dict)
 
 
 if __name__ == '__main__':

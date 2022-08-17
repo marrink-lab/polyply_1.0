@@ -13,7 +13,6 @@
 # limitations under the License.
 import networkx as nx
 import numpy as np
-import scipy
 import vermouth
 from vermouth.log_helpers import StyleAdapter, get_logger
 from .minimizer import optimize_geometry
@@ -89,10 +88,9 @@ def find_interaction_involving(block, current_node, prev_node):
                     return False, interaction, inter_type
                 elif prev_node in interaction.atoms and inter_type.split("_")[0] == "virtual":
                     return True, interaction, inter_type
-    else:
-        msg = '''Cannot build template for residue {}. No constraint, bond, virtual-site
-                 linking atom {} and atom {}.'''
-        raise IOError(msg.format(block.nodes[0]["resname"], prev_node, current_node))
+    msg = '''Cannot build template for residue {}. No constraint, bond, virtual-site
+             linking atom {} and atom {}.'''
+    raise IOError(msg.format(block.nodes[0]["resname"], prev_node, current_node))
 
 def _expand_inital_coords(block, max_count=50000):
     """
@@ -146,20 +144,22 @@ def _good_impropers(coords, block):
                 return False
     return True
 
-def compute_volume(molecule, block, coords, nonbond_params, treshold=1e-18):
+def compute_volume(block, coords, nonbond_params, treshold=1e-18):
     """
-    Given a `block`, which is part of `molecule` and
-    has the coordinates `coord` compute the radius
-    of gyration taking into account the volume of each
-    particle. The volume of a particle is considered to be
-    the sigma value of it's LJ self interaction parameter.
+    Given a `block`, which has the coordinates `coords`,
+    compute the radius of gyration taking into account
+    the volume of each particle. The volume of a particle
+    is considered to be the sigma value of it's LJ self-
+    interaction parameter.
 
     Parameters
     ----------
-    molecule:  :class:vermouth.molecule.Molecule
-    block:     :class:vermouth.molecule.Block
-    coords:    :class:dict
+    block:     :class:`vermouth.molecule.Block`
+    coords:    dict[abc.hashable]
         dictionary of positions in from node_idx: np.array
+    nonbond_params: dict[frozenset(abc.hashable, abc.hashable)]
+        dictionary of nonbonded parameters with atom-types as
+        keys and sigma, epsilon LJ parameters
     treshold: float
         distance from center of geometry at which the
         particle is not taken into account for the volume
@@ -179,11 +179,9 @@ def compute_volume(molecule, block, coords, nonbond_params, treshold=1e-18):
         atom_key = block.nodes[node]["atype"]
         rad = float(nonbond_params[frozenset([atom_key, atom_key])]["nb1"])
         diff = coord - res_center_of_geometry
-        if np.linalg.norm(diff) < treshold:
-           continue
-        else:
-           geom_vects[idx, :] = diff + u_vect(diff) * rad
-        idx += 1
+        if np.linalg.norm(diff) > treshold:
+            geom_vects[idx, :] = diff + u_vect(diff) * rad
+            idx += 1
 
     if geom_vects.shape[0] > 1:
         radgyr = radius_of_gyration(geom_vects)
@@ -300,36 +298,32 @@ class GenerateTemplates(Processor):
     """
     def __init__(self, topology, max_opt, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.templates = {}
-        self.resnames = []
-        self.volumes = {}
         self.max_opt = max_opt
         self.topology = topology
+        self.volumes = self.topology.volumes
+        self.templates = {}
 
-    def _gen_templates(self, meta_molecule):
+    def gen_templates(self, meta_molecule):
         """
         Generate blocks for each unique residue by extracting the
         block information, placing initial coordinates, and geometry
-        optimizing those coordinates. Subsequently compute volume
+        optimizing those coordinates. Subsequently compute the volume
+        for each block unless they are already given in the volumes
+        class variable.
 
         Parameters
         ----------
         meta_molecule: :class:`polyply.src.meta_molecule.MetaMolecule`
 
-        Returns
+        Updates
         ---------
-        templates:  dict
-           dict of resname: block
-        volumes:    dict
-           dict of name: volume
+        self.templates
+        self.volumes
         """
-        resnames = set(nx.get_node_attributes(meta_molecule.molecule,
-                                              "resname").values())
-        templates = {}
-        volumes = {}
+        resnames = set(nx.get_node_attributes(meta_molecule, "resname").values())
+
         for resname in resnames:
-            if not resname in self.resnames:
-                self.resnames.append(resname)
+            if resname not in self.templates:
                 block = extract_block(meta_molecule.molecule, resname,
                                       self.topology.defines)
 
@@ -337,8 +331,13 @@ class GenerateTemplates(Processor):
                 while True:
 
                     coords = _expand_inital_coords(block)
-                    success, coords = optimize_geometry(block, coords, ["bonds", "constraints", "angles"])
-                    success, coords = optimize_geometry(block, coords, ["bonds", "constraints", "angles", "dihedrals"])
+                    success, coords = optimize_geometry(block,
+                                                        coords,
+                                                        ["bonds", "constraints", "angles"])
+
+                    success, coords = optimize_geometry(block,
+                                                        coords,
+                                                        ["bonds", "constraints", "angles", "dihedrals"])
 
                     if success:
                         break
@@ -350,18 +349,20 @@ class GenerateTemplates(Processor):
                     else:
                         opt_counter += 1
 
-                self.volumes[resname] = compute_volume(meta_molecule, block, coords, self.topology.nonbond_params)
+                if resname not in self.volumes:
+                    self.volumes[resname] = compute_volume(block,
+                                                           coords,
+                                                           self.topology.nonbond_params)
                 coords = map_from_CoG(coords)
                 self.templates[resname] = coords
-
-        return templates, volumes
 
     def run_molecule(self, meta_molecule):
         """
         Execute the generation of templates and set the template
         and volume attribute.
         """
-        templates, volumes = self._gen_templates(meta_molecule)
+        if hasattr(meta_molecule, "templates"):
+            self.templates.update(meta_molecule.templates)
+        self.gen_templates(meta_molecule)
         meta_molecule.templates = self.templates
-        self.topology.volumes = self.volumes
         return meta_molecule

@@ -13,8 +13,11 @@
 # limitations under the License.
 from collections import defaultdict, namedtuple
 import numpy as np
+import networkx as nx
+import vermouth
 from vermouth.parser_utils import SectionLineParser
 from vermouth.log_helpers import StyleAdapter, get_logger
+from .generate_templates import map_from_CoG, compute_volume
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
@@ -34,8 +37,10 @@ class BuildDirector(SectionLineParser):
         self.current_molidxs = []
         self.build_options = defaultdict(list)
         self.current_molname = None
-        self.rw_options = dict()
+        self.rw_options = {}
         self.persistence_length = {}
+        self.templates = {}
+        self.current_template = None
 
     @SectionLineParser.section_parser('molecule')
     def _molecule(self, line, lineno=0):
@@ -125,6 +130,77 @@ class BuildDirector(SectionLineParser):
         specs = PersistenceSpecs(*[model, persistence_length, start, stop, self.current_molidxs])
         self.topology.persistences.append(specs)
 
+    @SectionLineParser.section_parser('template')
+    def _template(self, line, lineno=0):
+        """
+        Parses the lines in the '[template]'
+        directive and stores it. The line should be
+        'resname ALA' for example.
+        """
+        # we only need the residue name
+        name = line.split()[1]
+        self.current_template = vermouth.molecule.Block()
+        self.current_template.name = name
+
+    @SectionLineParser.section_parser('template', 'atoms')
+    def _template_atoms(self, line, lineno=0):
+        """
+        Parses the lines in the '[atoms]'
+        directive of the '[template]' section
+        """
+        tokens = line.split()
+        node_name, atype = tokens[0], tokens[1]
+        position = np.array(tokens[2:], dtype=float)
+        self.current_template.add_node(node_name,
+                                       atype=atype,
+                                       position=position)
+
+    @SectionLineParser.section_parser('template', 'bonds')
+    def _template_bonds(self, line, lineno=0):
+        """
+        Parses the lines in the '[bonds]'
+        directive of the '[template]' section
+        """
+        tokens = line.split()
+        nodeA = tokens[0]
+        nodeB = tokens[1]
+        self.current_template.add_edge(nodeA, nodeB)
+
+    @SectionLineParser.section_parser('volumes')
+    def _volume(self, line, lineno=0):
+        """
+        Parses the lines in the '[volumes]'
+        directive and stores it.
+        """
+        resname, volume = line.split()
+        self.topology.volumes[resname] = float(volume)
+
+    def finalize_section(self, previous_section, ended_section):
+        """
+        Called once a section has finished. Here we perform all
+        operations that are required when a section has ended.
+        Here comes a list of end-section wrap ups:
+
+        Templates
+        ---------
+        - compute volume from template if it is not defined yet
+        - store coordinates as vectors from center of geometry
+        """
+        if previous_section == ["template", "bonds"]:
+            coords = nx.get_node_attributes(self.current_template, "position")
+            # if the volume is not defined yet compute the volume, this still
+            # can be overwritten by an explicit volume directive later
+            resname = self.current_template.name
+            if resname not in self.topology.volumes:
+                self.topology.volumes[resname] = compute_volume(self.current_template,
+                                                                coords,
+                                                                self.topology.nonbond_params,)
+            # internally a template is defined as vectors from the
+            # center of geometry
+            mapped_coords = map_from_CoG(coords)
+            self.templates[resname] = mapped_coords
+            self.current_template = None
+
     def finalize(self, lineno=0):
         """
         Tag each molecule node with the chirality and build options
@@ -140,8 +216,9 @@ class BuildDirector(SectionLineParser):
                 self._tag_nodes(molecule, "rw_options",
                                 self.rw_options[(molecule.mol_name, mol_idx)],
                                 molecule.mol_name)
+            molecule.templates = self.templates
 
-        super().finalize
+        super().finalize(lineno=lineno)
 
     @staticmethod
     def _tag_nodes(molecule, keyword, option, molname=""):

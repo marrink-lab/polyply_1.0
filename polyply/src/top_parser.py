@@ -435,8 +435,9 @@ class TOPDirector(SectionLineParser):
 
         if not os.path.exists(filename):
             msg = ("Cannot find file {}. This can happen when you "
+                  "1) typed the path to the file wrongly or 2) when you "
                   "try to include force-field files from the GMX "
-                  "library (e.g. #incldue \"gromos\"). Instead provide "
+                  "library (e.g. #include \"gromos\"). Instead provide "
                   "the full path. Another source for this error can be "
                   "that you have a #ifdef section with an #include but "
                   "your include file does not exist. In that case if you "

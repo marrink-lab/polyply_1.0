@@ -36,6 +36,7 @@ force-field, molecule parameters and this program.
 
 ## News 
 - (Feb 8) **Featured Research Article in Nature Communcations.** Our article on the polyply software suite is now featured on the [Editors' Highlights](https://www.nature.com/collections/hhfigaahch) for Structural biology, biochemistry and biophysics in Nature Communications. The Editors’ Highlights pages aims to showcase the 50 best papers recently published in an area. The development team is beyond happy to receive this honor.   
+- (May 23) **Fighting Cancer with polyply.** Dane et al. used polyply to setup simulations of vesicles and lipid nanodiscs (LNDs) containing PEGylated lipids, which are used as nanocarriers for cancer therapeutics. They find that LNDs are more effective in delivery likely due to their higher flexibility.  Check it out in [Nature Materials](https://www.nature.com/articles/s41563-022-01251-z). 
 
 ## Contributions & Support
 We are happy to accept submissions of polymer parameters to the polyply library. To submit parameters simply 
