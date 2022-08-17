@@ -243,7 +243,7 @@ class Topology(System):
         """
         Merge two topologies updating their attribute dictionaries.
         If `check_duplicates` is True attribute value combinations
-        already existent in self will be overwritten by those in
+        that already exist will be overwritten by those in
         the to be merged topology. An error will raise otherwise if
         there are any conflicting dublicate entries.
 
