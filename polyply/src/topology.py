@@ -247,7 +247,7 @@ class Topology(System):
         the to be merged topology. An error will raise otherwise if
         there are any conflicting duplicate entries.
 
-        Note distance restraints are not checked for possibly
+        Note distance restraints are not checked for possible
         conflicting definitions.
 
         Parameters
