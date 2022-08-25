@@ -73,7 +73,7 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
     seq_group.add_argument('-seq', dest='seq', type=str, nargs='+',
                            help='A linear sequence of residue names.')
     seq_group.add_argument('-seqf', dest='seq_file', type=Path,
-                           help='A graph input file (JSON|ITP)')
+                           help='A graph input file (JSON|TXT|FASTA|IG)')
 
     parser_gen_itp.set_defaults(func=gen_itp)
 
