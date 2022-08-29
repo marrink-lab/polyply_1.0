@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import inspect
 import random
 import numpy as np
 from numpy.linalg import norm
@@ -24,6 +24,22 @@ from .meta_molecule import _find_starting_node
 """
 Conditionals for all polyply builders.
 """
+# list of all condition functions for builders
+CONDITIONALS = []
+
+def condition_wrapper(condition):
+    """
+    Wraps a condition function and registers it in the CONDITIONALS
+    list, which is picked up by the builder classes.
+    """
+    args_list = inspect.getfullargspec(condition).args
+    name = condition.__name__
+    if args_list != ['nobond_matrix', 'molecule', 'mol_idx', 'current_node', 'current_position']:
+        msg = "Condition function with name {name} does not have the correct signature."
+        raise SignatureError(msg)
+
+    CONDITIONALS.append(condition)
+
 def in_cylinder(point, parameters):
     """
     Assert if a point is within a cylinder or outside a
@@ -108,7 +124,7 @@ RESTRAINT_METHODS = {"cylinder": in_cylinder,
                      "rectangle": in_rectangle,
                      "sphere":  in_sphere}
 
-
+@condition_wrapper()
 def fulfill_geometrical_constraints(nobond_matrix, molecule, mol_idx, current_node, current_position):
     """
     Assert if a point fulfills a geometrical constraint
@@ -138,6 +154,7 @@ def fulfill_geometrical_constraints(nobond_matrix, molecule, mol_idx, current_no
     return True
 
 
+@condition_wrapper()
 def not_is_overlap(nobond_matrix, molecule, mol_idx, current_node, current_position):
     neighbours = neighborhood(molecule, current_node, molecule.nrexcl)
     force_vect = nonbond_matrix.compute_force_point(current_position,
@@ -148,6 +165,7 @@ def not_is_overlap(nobond_matrix, molecule, mol_idx, current_node, current_posit
     return norm(force_vect) < self.max_force
 
 
+@condition_wrapper()
 def checks_milestones(nonbond_matrix, molecule, mol_idx, current_node, current_position):
 
     if 'distance_restraints' in molecule.nodes[current_node]:
@@ -163,6 +181,7 @@ def checks_milestones(nonbond_matrix, molecule, mol_idx, current_node, current_p
 
         return True
 
+@condition_wrapper()
 def is_restricted(nonbond_matrix, molecule, mol_idx, current_node, current_position):
     """
     The function checks, if the step `old_point` to
