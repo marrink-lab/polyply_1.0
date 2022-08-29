@@ -179,7 +179,7 @@ def checks_milestones(nonbond_matrix, molecule, mol_idx, current_node, current_p
            if current_distance < lower_bound:
                return False
 
-        return True
+    return True
 
 @condition_wrapper()
 def is_restricted(nonbond_matrix, molecule, mol_idx, current_node, current_position):
