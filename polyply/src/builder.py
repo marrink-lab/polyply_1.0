@@ -17,6 +17,8 @@ class Builder():
     new positions and automatically checks conditionals that define
     extra build options such as geometrical constraints.
     """
+    self.conditions = CONDITIONALS
+
     def __init__(self,
                  nonbond_matrix,
                  maxiter):
@@ -48,7 +50,7 @@ class Builder():
         Checks that the new point fullfills every conditon
         as dictated by the conditional functions.
         """
-        for conditional in CONDITIONALS:
+        for conditional in self.conditions:
             if not conditional(new_point, molecule, node):
                 return False
         return True
