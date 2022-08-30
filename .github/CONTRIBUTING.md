@@ -20,4 +20,4 @@ Polyply curates a library of polymer parameters for different force-fields, espe
 
 #### Contributing code
 
-To contribute code simply open a pull request. The dev-tream will try it’s best to assist with tips, tricks, and guidance to make a PR as successful as possible. If you are in doubt as to whether your code addition/project would be accepted simply open an issue and let us help you. 
+To contribute code simply open a pull request. The dev-tream will try its best to assist with tips, tricks, and guidance to make a PR as successful as possible. If you are in doubt as to whether your code addition/project would be accepted simply open an issue and let us help you. 
