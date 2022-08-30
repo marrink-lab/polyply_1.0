@@ -8,7 +8,7 @@ Everyone is welcome to contribute to the polyply package as described below.
 
 If you've found something going wrong with polyply let us know by opening an [issue](https://github.com/marrink-lab/polyply_1.0/issues). This way we can fix it as fast as possible. 
 
-If your issue isn't a problem with the code and instead you would like some help using polyply for your project, let us know on the [discussion forum]( https://github.com/marrink-lab/polyply_1.0/discussions).
+If your issue isn't a problem with the code and instead you would like some help using polyply for your project, let us know on the [discussion forum](https://github.com/marrink-lab/polyply_1.0/discussions).
 
 As a rule of thumb give a quick look to the [FAQs]( https://github.com/marrink-lab/polyply_1.0/wiki/FAQs) and [discussion forum]( https://github.com/marrink-lab/polyply_1.0/discussions), 
 if you’re in doubt as to whether you are experiencing an actual bug or if the usage of polyply is unclear. In any case we’d love to know, so we can improve the situation. 
