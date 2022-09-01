@@ -118,15 +118,16 @@ def load_ff_library(name, lib_names, extra_files):
     return force_field
 
 
-def read_from_build_files(paths, topology):
+def read_build_options_from_files(paths, topology):
     """
-    read the input files for the build file options.
+    read the input files for the build options and
+    molecule templates.
 
     Parameters
     ----------
     paths: list[`os.path`]
            List of valid file paths
-    force_field: class:`vermouth.force_field.ForceField`
+    topology: :class:`polyply.src.topology`
 
     Returns
     -------
@@ -154,7 +155,7 @@ def load_build_options(topology, build_file, lib_names):
     -------
 
     """
-    if lib_names and build_files:
+    if lib_names and build_file:
         lib_files = _resolve_lib_paths(lib_names, DATA_PATH, ['bld'])
         all_files = lib_files + [build_file]
     elif lib_names:
@@ -164,4 +165,4 @@ def load_build_options(topology, build_file, lib_names):
     else:
         return
 
-    read_from_build_files(all_files, topology)
+    read_build_options_from_files(all_files, topology)
