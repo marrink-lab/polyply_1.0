@@ -25,11 +25,12 @@ import polyply
 from polyply import TEST_DATA
 from polyply.src.load_library import _resolve_lib_paths
 from polyply.src.load_library import read_ff_from_files
+from polyply.src.load_library import FORCE_FIELD_PARSERS
 
 def test_read_ff_from_files():
     name = "ff"
     force_field = vermouth.forcefield.ForceField(name)
-    lib_files = _resolve_lib_paths([name], TEST_DATA)
+    lib_files = _resolve_lib_paths([name], TEST_DATA, FORCE_FIELD_PARSERS.keys())
     read_ff_from_files(lib_files, force_field)
 
     # Check if .ff files were parsed
