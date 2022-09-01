@@ -138,14 +138,14 @@ def read_from_build_files(paths, topology):
             read_build_file(lines, topology.molecules, topology)
 
 
-def load_build_options(topology, build_files, lib_names):
+def load_build_options(topology, build_file, lib_names):
     """
     Load build file options and molecule templates into topology.
 
     Parameters
     ----------
     topology: :class:`polyply.src.topology`
-    build_files: list[str]
+    build_file: str
         List of build files to parse
     lib_names: list[str]
         List of library names for which to load templates
@@ -156,11 +156,11 @@ def load_build_options(topology, build_files, lib_names):
     """
     if lib_names and build_files:
         lib_files = _resolve_lib_paths(lib_names, DATA_PATH, ['bld'])
-        all_files = lib_files + build_files
+        all_files = lib_files + [build_file]
     elif lib_names:
         all_files = _resolve_lib_paths(lib_names, DATA_PATH, ['bld'])
-    elif build_files:
-        all_files = build_files
+    elif build_file:
+        all_files = [build_file]
     else:
         return
 
