@@ -47,7 +47,7 @@ def _resolve_lib_paths(lib_names, data_path, allowed_extensions):
         directory = os.path.join(data_path, name)
         for _file in os.listdir(directory):
             _, file_extension = os.path.splitext(_file)
-            if file_extension in allowed_extensions:
+            if file_extension[1:] in allowed_extensions:
                 _file = os.path.join(directory, _file)
                 files.append(_file)
     return files
