@@ -24,7 +24,7 @@ from pathlib import Path
 import numpy as np
 import polyply
 from polyply import (gen_itp, gen_coords, gen_seq, DATA_PATH)
-from polyply.src.load_library import load_library
+from polyply.src.load_library import load_ff_library
 from polyply.src.logging import LOGGER, LOGLEVELS
 
 VERSION = 'polyply version {}'.format(polyply.__version__) # pylint: disable=consider-using-f-string
@@ -238,7 +238,7 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
         parser.exit()
 
     if args.list_blocks:
-        force_field = load_library("libs", args.list_blocks, [])
+        force_field = load_ff_library("libs", args.list_blocks, [])
         msg = 'The following Blocks are present in the following libraries: {}:'
         print(msg.format(args.list_blocks))
         for block in force_field.blocks:
