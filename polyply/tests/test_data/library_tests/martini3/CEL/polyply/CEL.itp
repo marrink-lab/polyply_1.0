@@ -8,8 +8,8 @@
 
 [ atoms ]
 ; nr type resnr residue atom cgnr charge mass
-  1  SN6   1     DP50     A   1   0.0   54.0
-  2  SP4r  1     DP50     B   2   0.0   54.0
+  1  SP4r   1     DP50    A   1   0.0   54.0
+  2  SP1r  1     DP50     B   2   0.0   54.0
   3  SP1r  1     DP50     C   3   0.0   54.0
   4  TC4   1     DP50    VS   4   0.0   0     ;VS 1
 
@@ -253,8 +253,8 @@
 195  SP1r  1     DP50     C 195   0.0   54.0
 196  TC4   1     DP50    VS 196   0.0   0     ;VS 49
 
-197  SP4r  1     DP50     A 197   0.0   36.0
-198  SP1r  1     DP50     B 198   0.0   54.0
+197  SN6   1     DP50     A 197   0.0   36.0
+198  SP4r  1     DP50     B 198   0.0   54.0
 199  SP1r  1     DP50     C 199   0.0   54.0
 200  TC4   1     DP50    VS 200   0.0    0    ;VS 50
 

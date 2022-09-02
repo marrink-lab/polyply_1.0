@@ -37,11 +37,11 @@ A VS
 ; beta 1->4
 resname "CEL"
 [ atoms ]
-A  {"replace": {"atype": "SN6", "mass": "36"} }
-B  { }
+A  { }
+B  {"replace": {"atype": "SP1r"} }
 C  { }
-+A { }
-+B {"replace": {"atype": "SP1r"}}
++A {"replace": {"atype": "SN6", "mass": "36"} }
++B { }
 +C { }
 
 [ bonds ]
