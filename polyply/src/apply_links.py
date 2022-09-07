@@ -342,7 +342,7 @@ class ApplyLinks(Processor):
         self.applied_links = defaultdict(dict)
         self.nodes_to_remove = []
 
-    def _update_applied_links(self, interactions_dict, molecule, citations, mapping=None):
+    def _update_interactions_dict(self, interactions_dict, molecule, citations, mapping=None):
         """
         Helper function for adding links to the applied links dictionary.
         If mapping is given the interaction atoms are mapped to the molecule
@@ -414,10 +414,10 @@ class ApplyLinks(Processor):
                 molecule.nodes[link_to_mol[node]].update(link.nodes[node].get('replace', {}))
 
         # based on the match we build the link interaction
-        self._update_applied_links(link.interactions,
-                                   molecule,
-                                   link.citations,
-                                   mapping=link_to_mol)
+        self._update_interactions_dict(link.interactions,
+                                       molecule,
+                                       link.citations,
+                                       mapping=link_to_mol)
 
         # now we already add the edges of this link
         # links can overwrite each other but the edges must be the same
@@ -447,7 +447,7 @@ class ApplyLinks(Processor):
         molecule = meta_molecule.molecule
         force_field = meta_molecule.force_field
         # we need to update the temporary interactions dict
-        self._update_applied_links(molecule.interactions, molecule, molecule.citations, mapping=None)
+        self._update_interactions_dict(molecule.interactions, molecule, molecule.citations, mapping=None)
         # now we can clear the molecule dict
         molecule.interactions = defaultdict(list)
 
@@ -490,8 +490,7 @@ class ApplyLinks(Processor):
             for atoms, (interaction, citation) in self.applied_links[inter_type].items():
                 if not any(atom in self.nodes_to_remove for atom in atoms):
                     meta_molecule.molecule.interactions[inter_type].append(interaction)
-                    if citation:
-                        meta_molecule.molecule.citations.update(citation)
+                    meta_molecule.molecule.citations.update(citation)
 
         for link in force_field.links:
             if link.molecule_meta.get('by_atom_id'):
