@@ -14,6 +14,7 @@
 """
 Test that build files are properly read.
 """
+import logging
 import textwrap
 import pytest
 import numpy as np
@@ -50,6 +51,29 @@ def test_base_parser_geometry(tokens, _type, expected):
             assert all(result[key][1] == expected[key][1])
             for result_param, expected_param in zip(result[key][2:], expected[key][2:]):
                 assert result_param == expected_param
+
+@pytest.mark.parametrize('tokens, _type', (
+   # for cylinder z is not covered
+   (["PEO", "63", "154", "in", "8", "8", "6", "6", "7"],
+    "cylinder",),
+   # for cylinder z is not covered
+   (["PEO", "63", "154", "in", "2", "2", "8", "6", "7"],
+    "cylinder",),
+   # for recangle one of the sides is out
+   (["PEO", "0", "10", "out", "11", "0", "13", "1", "2", "3"],
+    "rectangle",),
+   # for sphere radius is to large/small
+   (["PEO", "0", "10", "in", "0", "12", "13", "5"],
+    "sphere",),
+   ))
+def test_base_parser_geometry_warning(caplog, tokens, _type):
+    with caplog.at_level(logging.WARNING):
+        result = polyply.src.build_file_parser.BuildDirector._base_parser_geometry(tokens, _type)
+        for record in caplog.records:
+            assert record.levelname == "WARNING"
+            break
+        else:
+            assert False
 
 @pytest.fixture
 def test_molecule():

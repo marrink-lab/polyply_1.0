@@ -53,8 +53,9 @@ class BuildDirector(SectionLineParser):
         self.current_molidxs = np.arange(float(tokens[1]), float(tokens[2]), 1., dtype=int)
         for idx in self.current_molidxs:
             if idx not in self.topology.mol_idx_by_name[tokens[0]]:
-                LOGGER.warning("parsing build file: could not find molecule with name {name} and index {index}.",
-                              **{"index": idx, "name": tokens[0]})
+                msg = ("parsing build file: could not find molecule with "
+                       "name {name} and index {index}.")
+                LOGGER.warning(msg, **{"index": idx, "name": tokens[0]})
 
     @SectionLineParser.section_parser('molecule', 'cylinder', geom_type="cylinder")
     @SectionLineParser.section_parser('molecule', 'sphere', geom_type="sphere")
@@ -231,18 +232,17 @@ class BuildDirector(SectionLineParser):
                                                 [option['parameters']]
             # broadcast warning if we find the resid but it doesn't match the resname
             elif molecule.nodes[node]["resid"] in resids and not\
-                 molecule.nodes[node]["resname"] == resname:
-                 msg = "parsing build file: could not find resid {resid} with resname {resname} in molecule {molname}."
-                 LOGGER.warning(msg, **{"resid": molecule.nodes[node]["resid"], "resname": resname,
-                                          "molname": molname})
+                molecule.nodes[node]["resname"] == resname:
+                msg = "parsing build file: could not find resid {resid} with resname {resname} in molecule {molname}."
+                LOGGER.warning(msg, **{"resid": molecule.nodes[node]["resid"], "resname": resname,
+                                       "molname": molname})
 
             # broadcast warning if we find the resname but it doesn't match the resid
             elif molecule.nodes[node]["resname"] == resname and not\
-                 molecule.nodes[node]["resid"]:
-                 msg = "parsing build file: could not find residue {resname} with resid {resid} in molecule {molname}."
-                 LOGGER.warning(msg, **{"resid": molecule.nodes[node]["resid"], "resname": resname,
-                                        "molname": molname})
-
+                molecule.nodes[node]["resid"]:
+                msg = "parsing build file: could not find residue {resname} with resid {resid} in molecule {molname}."
+                LOGGER.warning(msg, **{"resid": molecule.nodes[node]["resid"], "resname": resname,
+                                       "molname": molname})
     @staticmethod
     def _base_parser_geometry(tokens, _type):
         geometry_def = {}
@@ -258,7 +258,43 @@ class BuildDirector(SectionLineParser):
 
         parameters.append(_type)
         geometry_def["parameters"] = parameters
+
+        _check_geometry_def(geometry_def, _type)
         return geometry_def
+
+def _check_geometry_def(geom_def, geom_type):
+    """
+    Raise a warning if the point of reference
+    for the geometry type is too close to the
+    origin.
+
+    Parameters
+    ----------
+    geom_def: dict
+        dict with entries: resname, start, stop, point, parameters
+    geom_type: str
+        one of sphere, cylinder, rectangle
+    """
+    msg = ("Geometry restriction {geom_def} extends beyond definite "
+           "positive coordiantes relative to the center point "
+           "{x:.3f} {y:.3f} {z:.3f}. Be aware polyply only builds "
+           "in positive coordinate space.")
+
+    point = geom_def['parameters'][1]
+    if geom_type == "sphere":
+        radius = geom_def['parameters'][2]
+        if any( i < j for i, j in zip([radius, radius, radius], point)):
+            LOGGER.warning(msg, geom_def=geom_def, x=point[0], y=point[1], z=point[2])
+
+    if geom_type == "rectangle":
+        a, b, c = geom_def['parameters'][2:5]
+        if any( i < j for i, j in zip([a, b, c], point)):
+            LOGGER.warning(msg, geom_def=geom_def, x=point[0], y=point[1], z=point[2])
+
+    if geom_type == "cylinder":
+        z, r = geom_def['parameters'][2:4]
+        if z < point[2] or r < np.linalg.norm(point[:2]):
+            LOGGER.warning(msg, geom_def=geom_def, x=point[0], y=point[1], z=point[2])
 
 def read_build_file(lines, molecules, topology):
     """
