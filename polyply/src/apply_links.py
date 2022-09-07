@@ -361,8 +361,7 @@ class ApplyLinks(Processor):
                 else:
                     new_interaction = interaction
 
-                interaction_key = tuple(new_interaction.atoms) +\
-                                  tuple([new_interaction.meta.get("version", 1)])
+                interaction_key = (*new_interaction.atoms, new_interaction.meta.get("version", 1))
                 self.applied_links[inter_type][interaction_key] = (new_interaction, citations)
 
     def apply_link_between_residues(self, meta_molecule, link, link_to_resid):
