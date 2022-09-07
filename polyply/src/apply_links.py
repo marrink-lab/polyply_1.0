@@ -488,7 +488,7 @@ class ApplyLinks(Processor):
         # nodes
         for inter_type in self.applied_links:
             for atoms, (interaction, citation) in self.applied_links[inter_type].items():
-                if not any([atom in self.nodes_to_remove for atom in atoms]):
+                if not any(atom in self.nodes_to_remove for atom in atoms):
                     meta_molecule.molecule.interactions[inter_type].append(interaction)
                     if citation:
                         meta_molecule.molecule.citations.update(citation)
