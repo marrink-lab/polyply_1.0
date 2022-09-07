@@ -20,4 +20,3 @@ If you want us to implement the parameters please provide the following files. H
 
 - reference itp file
 - link to force-field definition if it is a new force-field not part of the library 
--
