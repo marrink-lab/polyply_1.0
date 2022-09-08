@@ -18,9 +18,11 @@ Test that force field files are properly read.
 import textwrap
 import pytest
 import math
+import numpy as np
 import vermouth.forcefield
 import vermouth.molecule
 from vermouth.molecule import Interaction
+from vermouth.pdb.pdb import read_pdb
 import polyply.src.meta_molecule
 from polyply import TEST_DATA
 from polyply.src.topology import Topology
@@ -87,9 +89,12 @@ class TestTopology:
         """
         top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/pdb.top", "test")
         top.add_positions_from_file(TEST_DATA + "/topology_test/test.pdb")
-        for meta_mol in top.molecules:
+
+        pdb_mols = read_pdb(TEST_DATA + "/topology_test/test.pdb")
+        for idx, meta_mol in enumerate(top.molecules):
             for node in meta_mol.molecule.nodes:
-                assert "position" in meta_mol.molecule.nodes[node].keys()
+                ref_pos = pdb_mols[idx].nodes[node]['position']
+                assert np.all(ref_pos == meta_mol.molecule.nodes[node]['position'])
 
         for meta_mol in top.molecules:
             for node in meta_mol.nodes:

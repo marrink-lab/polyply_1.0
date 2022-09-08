@@ -414,7 +414,6 @@ class Topology(System):
                         # based on a non-complete residue
                         try:
                             meta_mol.molecule.nodes[mol_node]["position"] = positions[total]
-                            print(mol_node, positions[total])
                         except IndexError:
                             resid = meta_mol.nodes[meta_node]['resid']
                             mol_name = meta_mol.mol_name
