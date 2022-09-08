@@ -388,7 +388,8 @@ class Topology(System):
         for meta_mol in self.molecules:
             for meta_node in meta_mol.nodes:
                 resname = meta_mol.nodes[meta_node]["resname"]
-                mol_nodes = meta_mol.nodes[meta_node]['graph'].nodes
+                # the fragment graph nodes are not sorted
+                mol_nodes = sorted(meta_mol.nodes[meta_node]['graph'].nodes)
                 # skip residue if resname is to be skipped or
                 # if the no more coordinates are available
                 # in that case we want to build the node and
@@ -413,6 +414,7 @@ class Topology(System):
                         # based on a non-complete residue
                         try:
                             meta_mol.molecule.nodes[mol_node]["position"] = positions[total]
+                            print(mol_node, positions[total])
                         except IndexError:
                             resid = meta_mol.nodes[meta_node]['resid']
                             mol_name = meta_mol.mol_name
