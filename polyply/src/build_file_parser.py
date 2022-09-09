@@ -234,8 +234,7 @@ class BuildDirector(SectionLineParser):
             elif molecule.nodes[node]["resid"] in resids and not\
                 molecule.nodes[node]["resname"] == resname:
                 msg = "parsing build file: could not find resid {resid} with resname {resname} in molecule {molname}."
-                LOGGER.warning(msg, **{"resid": molecule.nodes[node]["resid"], "resname": resname,
-                                       "molname": molname})
+                LOGGER.warning(msg, resid=molecule.nodes[node]["resid"], resname=resname, molname=molname)
 
             # broadcast warning if we find the resname but it doesn't match the resid
             elif molecule.nodes[node]["resname"] == resname and not\
