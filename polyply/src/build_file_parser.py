@@ -240,8 +240,7 @@ class BuildDirector(SectionLineParser):
             elif molecule.nodes[node]["resname"] == resname and not\
                 molecule.nodes[node]["resid"]:
                 msg = "parsing build file: could not find residue {resname} with resid {resid} in molecule {molname}."
-                LOGGER.warning(msg, **{"resid": molecule.nodes[node]["resid"], "resname": resname,
-                                       "molname": molname})
+                LOGGER.warning(msg, resid=molecule.nodes[node]["resid"], resname=resname, molname=molname)
     @staticmethod
     def _base_parser_geometry(tokens, _type):
         geometry_def = {}
