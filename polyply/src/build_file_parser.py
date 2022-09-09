@@ -55,7 +55,7 @@ class BuildDirector(SectionLineParser):
             if idx not in self.topology.mol_idx_by_name[tokens[0]]:
                 msg = ("parsing build file: could not find molecule with "
                        "name {name} and index {index}.")
-                LOGGER.warning(msg, **{"index": idx, "name": tokens[0]})
+                LOGGER.warning(msg, index=idx, name=tokens[0])
 
     @SectionLineParser.section_parser('molecule', 'cylinder', geom_type="cylinder")
     @SectionLineParser.section_parser('molecule', 'sphere', geom_type="sphere")
