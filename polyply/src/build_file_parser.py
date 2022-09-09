@@ -274,7 +274,7 @@ def _check_geometry_def(geom_def, geom_type):
         one of sphere, cylinder, rectangle
     """
     msg = ("Geometry restriction {geom_def} extends beyond definite "
-           "positive coordiantes relative to the center point "
+           "positive coordinates relative to the center point "
            "{x:.3f} {y:.3f} {z:.3f}. Be aware polyply only builds "
            "in positive coordinate space.")
 
