@@ -289,17 +289,17 @@ def _check_geometry_def(geom_def, geom_type):
     point = geom_def['parameters'][1]
     if geom_type == "sphere":
         radius = geom_def['parameters'][2]
-        if any( i < j for i, j in zip([radius, radius, radius], point)):
+        if any( i >= j for i, j in zip([radius, radius, radius], point)):
             return False
 
     if geom_type == "rectangle":
         a, b, c = geom_def['parameters'][2:5]
-        if any( i < j for i, j in zip([a, b, c], point)):
+        if any( i >= j for i, j in zip([a, b, c], point)):
             return False
 
     if geom_type == "cylinder":
         z, r = geom_def['parameters'][2:4]
-        if z < point[2] or r < np.linalg.norm(point[:2]):
+        if z >= point[2] or any(r >= j for j in point[:2]):
             return False
 
     return True
