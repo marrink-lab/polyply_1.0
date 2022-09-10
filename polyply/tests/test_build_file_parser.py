@@ -273,13 +273,13 @@ def test_parser(test_system, lines, tagged_mols, tagged_nodes):
    ALA   2    4  in  5  5  5  5  5
    PEG   1    2  in  5  5  5  5  5
    """,
-   # resids don't match all resnames
+   # resids don't match resnames
    """
    [ molecule ]
    BB  2  3
    [ rectangle ]
    ; resname start stop  inside-out  x  y  z a b c
-   ALA   1    6  in  5  5  5  5  5  5
+   ALA   1    2  in  5  5  5  5  5  5
    """,
    # test nothing is tagged based on the molname
    """
