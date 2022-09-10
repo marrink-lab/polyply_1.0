@@ -51,6 +51,11 @@ class BuildDirector(SectionLineParser):
         tokens = line.split()
         self.current_molname = tokens[0]
         self.current_molidxs = np.arange(float(tokens[1]), float(tokens[2]), 1., dtype=int)
+        # raise error if molname not in system
+        if tokens[0] not in self.topology.mol_idx_by_name:
+            msg = "Molecule with name {name} is not part of the system."
+            raise IOError(msg.format(name=tokens[0]))
+
         for idx in self.current_molidxs:
             if idx not in self.topology.mol_idx_by_name[tokens[0]]:
                 msg = ("parsing build file: could not find molecule with "
@@ -208,7 +213,8 @@ class BuildDirector(SectionLineParser):
         if that molecule is mentioned in the build file by name.
         """
         for mol_idx, molecule in enumerate(self.molecules):
-
+            print(mol_idx, molecule.mol_name)
+            print(self.build_options)
             if (molecule.mol_name, mol_idx) in self.build_options:
                 for option in self.build_options[(molecule.mol_name, mol_idx)]:
                     self._tag_nodes(molecule, "restraints", option, molecule.mol_name)
@@ -239,6 +245,7 @@ class BuildDirector(SectionLineParser):
             # broadcast warning if we find the resname but it doesn't match the resid
             elif molecule.nodes[node]["resname"] == resname and not\
                 molecule.nodes[node]["resid"]:
+                print("go here")
                 msg = "parsing build file: could not find residue {resname} with resid {resid} in molecule {molname}."
                 LOGGER.warning(msg, resid=molecule.nodes[node]["resid"], resname=resname, molname=molname)
 

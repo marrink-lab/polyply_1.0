@@ -152,7 +152,7 @@ def test_system():
   NA = MetaMolecule()
   NA.add_monomer(current=0, resname="NA", connections=[])
   molecules = [meta_mol_A, meta_mol_A.copy(),
-               meta_mol_B.copy(), NA, NA.copy(),
+               meta_mol_B, NA, NA.copy(),
                NA.copy(), NA.copy()]
   top = Topology(force_field=force_field)
   top.molecules = molecules
@@ -223,7 +223,7 @@ def test_distance_restraints_error(test_system, line):
    ;
    [ cylinder ]
    ; resname start stop  inside-out  x  y  z  r   z
-   ALA   2    4  in  5  5  5  5  5
+   ALA   2    4  in  5  5  5  4 4
    """,
    [0, 1],
    [0, 1, 2, 3]),
@@ -233,28 +233,28 @@ def test_distance_restraints_error(test_system, line):
    BB  2  3
    [ rectangle ]
    ; resname start stop  inside-out  x  y  z a b c
-   ALA   3    6  in  5  5  5  5  5 5
+   ALA   3    6  in  5  5  5  4  4 4
    """,
    [2],
    [2, 3, 4, 5]),
    # test nothing is tagged based on the molname
+   # combo with mol-idx; molname must be part of
+   # the system though
    ("""
    [ molecule ]
-   CC 1 6
+   BB 0 1
    [ sphere ]
    ; resname start stop  inside-out  x  y  z r
-   ALA   2    4  in  5  5  5  5
+   ALA   2    4  in  5  5  5 4
    """,
    [],
    []),
    ))
 def test_parser(test_system, lines, tagged_mols, tagged_nodes):
    lines = textwrap.dedent(lines).splitlines()
-   ff = vermouth.forcefield.ForceField(name='test_ff')
-   top = Topology(ff)
    polyply.src.build_file_parser.read_build_file(lines,
                                                  test_system.molecules,
-                                                 top)
+                                                 test_system)
    for idx, mol in enumerate(test_system.molecules):
        for node in mol.nodes:
            if "restraints" in mol.nodes[node]:
@@ -270,8 +270,8 @@ def test_parser(test_system, lines, tagged_mols, tagged_nodes):
    ;
    [ cylinder ]
    ; resname start stop  inside-out  x  y  z  r   z
-   ALA   2    4  in  5  5  5  5  5
-   PEG   1    2  in  5  5  5  5  5
+   ALA   2    4  in  5  5  5  4  4
+   PEG   1    2  in  5  5  5  4  4
    """,
    # resids don't match resnames
    """
@@ -279,31 +279,28 @@ def test_parser(test_system, lines, tagged_mols, tagged_nodes):
    BB  2  3
    [ rectangle ]
    ; resname start stop  inside-out  x  y  z a b c
-   ALA   1    2  in  5  5  5  5  5  5
+   GLU   3    6  in  5  5  5  4  4 4
    """,
    # test nothing is tagged based on the molname
    """
    [ molecule ]
-   CC 1 6
+   BB 0 1
    [ sphere ]
    ; resname start stop  inside-out  x  y  z r
-   ALA   2    4  in  5  5  5  5
+   ALA   2    4  in  5  5  5  4
    """,
    ))
 def test_parser_warnings(caplog, test_system, lines):
     lines = textwrap.dedent(lines).splitlines()
-    ff = vermouth.forcefield.ForceField(name='test_ff')
-    top = Topology(ff)
     with caplog.at_level(logging.WARNING):
         polyply.src.build_file_parser.read_build_file(lines,
                                                       test_system.molecules,
-                                                      top)
+                                                      test_system)
         for record in caplog.records:
             assert record.levelname == "WARNING"
             break
         else:
             assert False
-
 
 @pytest.mark.parametrize('lines, expected', (
    # basic test
@@ -337,12 +334,10 @@ def test_parser_warnings(caplog, test_system, lines):
    )))
 def test_persistence_parsers(test_system, lines, expected):
    lines = textwrap.dedent(lines).splitlines()
-   ff = vermouth.forcefield.ForceField(name='test_ff')
-   top = Topology(ff)
    polyply.src.build_file_parser.read_build_file(lines,
                                                  test_system.molecules,
-                                                 top)
-   for ref, new in zip(expected, top.persistences):
+                                                 test_system)
+   for ref, new in zip(expected, test_system.persistences):
         print(ref, new)
         for info_ref, info_new in zip(ref[:-1], new[:-1]):
             assert info_ref == info_new
