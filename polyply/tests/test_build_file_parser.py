@@ -261,6 +261,49 @@ def test_parser(test_system, lines, tagged_mols, tagged_nodes):
                assert node in tagged_nodes
                assert idx in tagged_mols
 
+@pytest.mark.parametrize('lines', (
+   # resname not found
+   """
+   [ molecule ]
+   ; name from to
+   AA    0  2
+   ;
+   [ cylinder ]
+   ; resname start stop  inside-out  x  y  z  r   z
+   ALA   2    4  in  5  5  5  5  5
+   PEG   1    2  in  5  5  5  5  5
+   """,
+   # resids don't match all resnames
+   """
+   [ molecule ]
+   BB  2  3
+   [ rectangle ]
+   ; resname start stop  inside-out  x  y  z a b c
+   ALA   1    6  in  5  5  5  5  5  5
+   """,
+   # test nothing is tagged based on the molname
+   """
+   [ molecule ]
+   CC 1 6
+   [ sphere ]
+   ; resname start stop  inside-out  x  y  z r
+   ALA   2    4  in  5  5  5  5
+   """,
+   ))
+def test_parser_warnings(caplog, test_system, lines):
+    lines = textwrap.dedent(lines).splitlines()
+    ff = vermouth.forcefield.ForceField(name='test_ff')
+    top = Topology(ff)
+    with caplog.at_level(logging.WARNING):
+        polyply.src.build_file_parser.read_build_file(lines,
+                                                      test_system.molecules,
+                                                      top)
+        for record in caplog.records:
+            assert record.levelname == "WARNING"
+            break
+        else:
+            assert False
+
 
 @pytest.mark.parametrize('lines, expected', (
    # basic test
