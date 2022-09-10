@@ -56,7 +56,13 @@ class TestGenParams():
          "-seqf", TEST_DATA + "/gen_params/input/test_edge_attr.json",
          "-name", "test",
          "-o", TEST_DATA + "/gen_params/output/test_edge_attr_out.itp"],
-         TEST_DATA + "/gen_params/ref/test_edge_attr_ref.itp")
+         TEST_DATA + "/gen_params/ref/test_edge_attr_ref.itp"),
+        # check if nodes can be removed
+        (["-f", TEST_DATA+"/gen_params/input/removal.ff",
+         "-seq", "PEO:3",
+         "-name", "test",
+         "-o", TEST_DATA + "/gen_params/output/removal.itp"],
+         TEST_DATA + "/gen_params/ref/removal.itp")
         ))
     def test_gen_params(args_in, ref_file):
         parser = argparse.ArgumentParser(
