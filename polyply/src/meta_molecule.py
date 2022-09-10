@@ -203,6 +203,24 @@ class MetaMolecule(nx.Graph):
         self.relabel_and_redo_res_graph(mapping)
         return mapping
 
+    def copy(self, as_view=False):
+        """
+        Overwrites the networkx copy method. This is needed to
+        correcly set all attributes.
+        """
+        if as_view is True:
+            return nx.graphviews.generic_graph_view(self)
+        G = self.__class__(force_field=self.force_field,
+                           mol_name=self.mol_name)
+        G.molecule = self.molecule
+        G.graph.update(self.graph)
+        G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
+        G.add_edges_from(
+            (u, v, datadict.copy())
+            for u, nbrs in self._adj.items()
+            for v, datadict in nbrs.items())
+        return G
+
     @property
     def search_tree(self):
 
