@@ -264,3 +264,19 @@ def test_copy():
     for node in meta_mol.nodes:
         for key, attr in meta_mol.nodes[node].items():
             assert attr == copy_mol.nodes[node][key]
+
+def test_copy_as_view():
+    """
+    Test if a MetaMol copy as view raises Error.
+    """
+    file_name = TEST_DATA + "/itp/PEO.itp"
+    edges = [(0,1), (1,2)]
+    nodes = [0, 1, 2]
+    attrs = {0: 'PEO', 1: 'PEO', 2: 'PEO'}
+
+    ff = vermouth.forcefield.ForceField(name='test_ff')
+    name = "PEO"
+    meta_mol = MetaMolecule.from_itp(ff, file_name, name)
+
+    with pytest.raises(NotImplementedError):
+        copy_mol = meta_mol.copy(as_view=True)

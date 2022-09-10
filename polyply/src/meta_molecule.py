@@ -209,7 +209,8 @@ class MetaMolecule(nx.Graph):
         correcly set all attributes.
         """
         if as_view is True:
-            return nx.graphviews.generic_graph_view(self)
+            msg = "Polyply currently does not implement copy as nx graph-views."
+            raise NotImplementedError(msg)
         G = self.__class__(force_field=self.force_field,
                            mol_name=self.mol_name)
         G.molecule = self.molecule
