@@ -213,8 +213,6 @@ class BuildDirector(SectionLineParser):
         if that molecule is mentioned in the build file by name.
         """
         for mol_idx, molecule in enumerate(self.molecules):
-            print(mol_idx, molecule.mol_name)
-            print(self.build_options)
             if (molecule.mol_name, mol_idx) in self.build_options:
                 for option in self.build_options[(molecule.mol_name, mol_idx)]:
                     self._tag_nodes(molecule, "restraints", option, molecule.mol_name)
