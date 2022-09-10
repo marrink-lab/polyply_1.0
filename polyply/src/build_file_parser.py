@@ -242,8 +242,7 @@ class BuildDirector(SectionLineParser):
 
             # broadcast warning if we find the resname but it doesn't match the resid
             elif molecule.nodes[node]["resname"] == resname and not\
-                molecule.nodes[node]["resid"]:
-                print("go here")
+                molecule.nodes[node]["resid"] in resids:
                 msg = "parsing build file: could not find residue {resname} with resid {resid} in molecule {molname}."
                 LOGGER.warning(msg, resid=molecule.nodes[node]["resid"], resname=resname, molname=molname)
 
