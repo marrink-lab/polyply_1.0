@@ -53,17 +53,29 @@ def test_base_parser_geometry(tokens, _type, expected):
                 assert result_param == expected_param
 
 @pytest.mark.parametrize('tokens, _type', (
+   # for cylinder radius is not box
+   (["PEO", "63", "154", "in", "4", "8", "8", "6", "7"],
+    "cylinder",),
+   # for cylinder radius is equal
+   (["PEO", "63", "154", "in", "6", "8", "8", "6", "7"],
+    "cylinder",),
    # for cylinder z is not covered
    (["PEO", "63", "154", "in", "8", "8", "6", "6", "7"],
     "cylinder",),
-   # for cylinder z is not covered
-   (["PEO", "63", "154", "in", "2", "2", "8", "6", "7"],
+   # for cylinder z is equal
+   (["PEO", "63", "154", "in", "8", "8", "7", "6", "7"],
     "cylinder",),
    # for recangle one of the sides is out
    (["PEO", "0", "10", "out", "11", "0", "13", "1", "2", "3"],
     "rectangle",),
+   # for recangle one of the sides is equal
+   (["PEO", "0", "10", "out", "1", "10", "10", "1", "2", "3"],
+    "rectangle",),
    # for sphere radius is to large/small
    (["PEO", "0", "10", "in", "0", "12", "13", "5"],
+    "sphere",),
+   # for sphere radius is to equal
+   (["PEO", "0", "10", "in", "5", "12", "13", "5"],
     "sphere",),
    ))
 def test_base_parser_geometry_warning(caplog, tokens, _type):

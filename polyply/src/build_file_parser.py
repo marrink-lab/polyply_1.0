@@ -298,7 +298,7 @@ def _check_geometry_def(geom_def, geom_type):
             return False
 
     if geom_type == "cylinder":
-        z, r = geom_def['parameters'][2:4]
+        r, z = geom_def['parameters'][2:4]
         if z >= point[2] or any(r >= j for j in point[:2]):
             return False
 
