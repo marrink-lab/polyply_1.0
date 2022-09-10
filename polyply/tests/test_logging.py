@@ -22,7 +22,7 @@ LOGGER.setLevel(LOGLEVELS[1])
    ("sphere",
     {"resname": "ALA", "start": 9, "stop": 12, "parameters":["in", np.array([10.0, 10.0, 10.0]), 5.0]},
     [],
-    "parsing build file: could not find resid {} with resname ALA in molecule AA.",
+    "parsing build file: could not find residue ALA with resids 9.0,10.0,11.0 in molecule AA.",
     range(9, 12)),
    ))
 def test_tag_nodes_logging(caplog, test_molecule, _type, option, expected, warning, idxs):
