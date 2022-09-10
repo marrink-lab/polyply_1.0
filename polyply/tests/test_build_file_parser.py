@@ -151,6 +151,7 @@ def test_system():
                                                     "BB")
   NA = MetaMolecule()
   NA.add_monomer(current=0, resname="NA", connections=[])
+
   molecules = [meta_mol_A, meta_mol_A.copy(),
                meta_mol_B, NA, NA.copy(),
                NA.copy(), NA.copy()]
@@ -223,10 +224,10 @@ def test_distance_restraints_error(test_system, line):
    ;
    [ cylinder ]
    ; resname start stop  inside-out  x  y  z  r   z
-   ALA   2    4  in  5  5  5  4 4
+   ALA   1    4  in  5  5  5  4 4
    """,
    [0, 1],
-   [0, 1, 2, 3]),
+   [0, 1, 2]),
    # test that a different molecule is tagged
    ("""
    [ molecule ]
@@ -236,7 +237,7 @@ def test_distance_restraints_error(test_system, line):
    ALA   3    6  in  5  5  5  4  4 4
    """,
    [2],
-   [2, 3, 4, 5]),
+   [2, 3, 4]),
    # test nothing is tagged based on the molname
    # combo with mol-idx; molname must be part of
    # the system though
@@ -251,15 +252,14 @@ def test_distance_restraints_error(test_system, line):
    []),
    ))
 def test_parser(test_system, lines, tagged_mols, tagged_nodes):
-   lines = textwrap.dedent(lines).splitlines()
-   polyply.src.build_file_parser.read_build_file(lines,
+    lines = textwrap.dedent(lines).splitlines()
+    polyply.src.build_file_parser.read_build_file(lines,
                                                  test_system.molecules,
                                                  test_system)
-   for idx, mol in enumerate(test_system.molecules):
-       for node in mol.nodes:
-           if "restraints" in mol.nodes[node]:
-               assert node in tagged_nodes
-               assert idx in tagged_mols
+    for idx in tagged_mols:
+        mol = test_system.molecules[idx]
+        restr_nodes = nx.get_node_attributes(mol, "restraints")
+        assert list(restr_nodes.keys()) == tagged_nodes
 
 @pytest.mark.parametrize('lines', (
    # resname not found
@@ -284,10 +284,10 @@ def test_parser(test_system, lines, tagged_mols, tagged_nodes):
    # test nothing is tagged based on the molname
    """
    [ molecule ]
-   BB 0 1
+   BB 2 3
    [ sphere ]
    ; resname start stop  inside-out  x  y  z r
-   ALA   2    4  in  5  5  5  4
+   ALA   0    2  in  5  5  5  4
    """,
    ))
 def test_parser_warnings(caplog, test_system, lines):
@@ -301,6 +301,19 @@ def test_parser_warnings(caplog, test_system, lines):
             break
         else:
             assert False
+
+def test_molname_error(test_system):
+    lines = """
+    [ molecule ]
+    CC 0 1
+    [ sphere ]
+    ALA   0    2  in  5  5  5  4
+    """
+    lines = textwrap.dedent(lines).splitlines()
+    with pytest.raises(IOError):
+        polyply.src.build_file_parser.read_build_file(lines,
+                                                      test_system.molecules,
+                                                      test_system)
 
 @pytest.mark.parametrize('lines, expected', (
    # basic test
@@ -338,7 +351,6 @@ def test_persistence_parsers(test_system, lines, expected):
                                                  test_system.molecules,
                                                  test_system)
    for ref, new in zip(expected, test_system.persistences):
-        print(ref, new)
         for info_ref, info_new in zip(ref[:-1], new[:-1]):
             assert info_ref == info_new
         assert all(ref[-1] == new[-1])
