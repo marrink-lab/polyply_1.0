@@ -241,6 +241,7 @@ class BuildDirector(SectionLineParser):
                 molecule.nodes[node]["resid"]:
                 msg = "parsing build file: could not find residue {resname} with resid {resid} in molecule {molname}."
                 LOGGER.warning(msg, resid=molecule.nodes[node]["resid"], resname=resname, molname=molname)
+
     @staticmethod
     def _base_parser_geometry(tokens, _type):
         geometry_def = {}
@@ -257,7 +258,14 @@ class BuildDirector(SectionLineParser):
         parameters.append(_type)
         geometry_def["parameters"] = parameters
 
-        _check_geometry_def(geometry_def, _type)
+        is_good_geometry = _check_geometry_def(geometry_def, _type)
+        if not is_good_geometry:
+            msg = ("Geometry restriction {_type} {resname} {start} {stop} "
+                   "extends beyond definite positive coordinates relative "
+                   "to the center point {x:.3f} {y:.3f} {z:.3f}. Be aware "
+                   "polyply only builds in positive coordinate space.")
+            LOGGER.warning(msg, _type=_type, x=point[0], y=point[1], z=point[2],
+                           resname=tokens[0], start=tokens[1], stop=tokens[2])
         return geometry_def
 
 def _check_geometry_def(geom_def, geom_type):
@@ -282,17 +290,19 @@ def _check_geometry_def(geom_def, geom_type):
     if geom_type == "sphere":
         radius = geom_def['parameters'][2]
         if any( i < j for i, j in zip([radius, radius, radius], point)):
-            LOGGER.warning(msg, geom_def=geom_def, x=point[0], y=point[1], z=point[2])
+            return False
 
     if geom_type == "rectangle":
         a, b, c = geom_def['parameters'][2:5]
         if any( i < j for i, j in zip([a, b, c], point)):
-            LOGGER.warning(msg, geom_def=geom_def, x=point[0], y=point[1], z=point[2])
+            return False
 
     if geom_type == "cylinder":
         z, r = geom_def['parameters'][2:4]
         if z < point[2] or r < np.linalg.norm(point[:2]):
-            LOGGER.warning(msg, geom_def=geom_def, x=point[0], y=point[1], z=point[2])
+            return False
+
+    return True
 
 def read_build_file(lines, molecules, topology):
     """
