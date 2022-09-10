@@ -287,7 +287,7 @@ def test_parser(test_system, lines, tagged_mols, tagged_nodes):
    BB 2 3
    [ sphere ]
    ; resname start stop  inside-out  x  y  z r
-   ALA   0    2  in  5  5  5  4
+   GLU   5    6  in  5  5  5  4
    """,
    ))
 def test_parser_warnings(caplog, test_system, lines):
