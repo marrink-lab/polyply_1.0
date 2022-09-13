@@ -392,7 +392,7 @@ class Topology(System):
                 # as defined in the itp-file to capture cases, where the molecule
                 # graph nodes are permuted with respect to the index
                 idx_nodes = nx.get_node_attributes(meta_mol.nodes[meta_node]['graph'], "index")
-                mol_nodes = sorted(meta_mol, key=idx_nodex.get)
+                mol_nodes = sorted(meta_mol, key=idx_nodes.get)
                 # skip residue if resname is to be skipped or
                 # if the no more coordinates are available
                 # in that case we want to build the node and
