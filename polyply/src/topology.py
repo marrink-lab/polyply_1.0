@@ -28,6 +28,9 @@ from vermouth.pdb import read_pdb
 from .top_parser import read_topology
 from .linalg_functions import center_of_geometry
 
+class MergeError(Exception):
+    """ Raised when two objects cannot be merged"""
+
 COORD_PARSERS = {"pdb": read_pdb,
                  "gro": read_gro}
 
@@ -192,7 +195,7 @@ def match_dihedral_interaction_types(atoms, interaction_dict):
 class Topology(System):
     """
     Ties together vermouth molecule definitions, and
-    Gromacs topology information.
+    Gromacs or other programs topology information.
 
     Parameters
     ----------
@@ -212,21 +215,86 @@ class Topology(System):
         A dictionary of all typed parameter
     defines: list
         A list of everything that is defined
+    defaults: dict
+        A dict with default entries of GMX topfile
+    atom_types: dict
     """
 
     def __init__(self, force_field, name=None):
+        # self.molecules with super
+        # self.foce_field with super
         super().__init__(force_field)
         self.name = name
+        # simple dict attributes
         self.defaults = {}
         self.defines = {}
-        self.description = []
         self.atom_types = {}
-        self.types = defaultdict(dict)
         self.nonbond_params = {}
-        self.mol_idx_by_name = defaultdict(list)
-        self.persistences = []
-        self.distance_restraints = defaultdict(dict)
         self.volumes = {}
+        # list attributes
+        self.description = []
+        self.persistences = []
+        self.molecules = []
+        # default dict list
+        self.mol_idx_by_name = defaultdict(list)
+        # default_dict dict
+        self.distance_restraints = defaultdict(dict)
+        self.types = defaultdict(dict)
+
+    def merge(self, other_top, check_duplicates=True):
+        """
+        Merge two topologies updating their attribute dictionaries.
+        If `check_duplicates` is True attribute value combinations
+        that already exist will be overwritten by those in
+        the to be merged topology. An error will raise otherwise if
+        there are any conflicting duplicate entries.
+
+        Note distance restraints are not checked for possible
+        conflicting definitions.
+
+        Parameters
+        ----------
+        other_top: :class:`polyply.src.topology.Topology`
+            the topology to be merged
+
+        check_duplicates: bool
+            check for conflicting attribute value pairs
+
+        """
+        for attribute in ["defaults", "defines", "atom_types", "nonbond_params", "volumes"]:
+            self_dict = getattr(self, attribute)
+            if check_duplicates:
+                for key, value in getattr(other_top, attribute).items():
+                    if key in self_dict and self_dict[key] != value:
+                        msg = f"Conflicting entry in {attribute} with key {key}"
+                        raise MergeError(msg)
+            getattr(self, attribute).update(getattr(other_top, attribute))
+
+        self.description += other_top.description
+        self.persistences += other_top.persistences
+
+        for atoms, dist_restr in other_top.distance_restraints:
+            self.distance_restraints[atoms].append(dist_restr)
+
+        for molecule in other_top.molecules:
+            self.append_molecules(molecule, molecule.mol_name)
+
+        for inter_type in other_top.types:
+            for atoms, type_params in other_top.types[inter_type].items():
+                if atoms in self.types[inter_type] and self.types[inter_type][atoms] != type_params:
+                    typestring = inter_type[:-1]
+                    msg = f"Conflicting entry in {typestring}types for atoms {atoms}"
+                    raise MergeError(msg)
+                self.types[inter_type][atoms] = type_params
+
+    def append_molecules(self, new_molecule, molname):
+        """
+        Add a new molecule to molecule list and update
+        the mol_idx_by_name dictionary.
+        """
+        mol_idx = len(self.molecules)
+        self.molecules.append(new_molecule)
+        self.mol_idx_by_name[molname].append(mol_idx)
 
     def preprocess(self):
         """
@@ -433,6 +501,11 @@ class Topology(System):
                     meta_mol.nodes[meta_node]["backmap"] = False
 
     def convert_to_vermouth_system(self):
+        """
+        Create a vermouth system by setting the force-field
+        attribute and the molecule list appending the molecule
+        part of the meta-molecules.
+        """
         system = System()
         system.molecules = []
         system.force_field = self.force_field
