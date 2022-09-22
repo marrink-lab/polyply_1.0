@@ -131,6 +131,8 @@ def gen_coords(toppath,
         Path to topology file
     outpath: :class:pathlib.Path
         Path to coordinate file
+    mdppath: :class:pathlib.Path
+        Path to mdp file default None
     name: str
         Name of the molecule
     build: :class:pathlib.Path

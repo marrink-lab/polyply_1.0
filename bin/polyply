@@ -23,7 +23,7 @@ import argparse
 from pathlib import Path
 import numpy as np
 import polyply
-from polyply import (gen_itp, gen_coords, gen_seq, DATA_PATH)
+from polyply import (gen_itp, gen_coords, gen_seq, gen_replicas, DATA_PATH)
 from polyply.src.load_library import load_library
 from polyply.src.logging import LOGGER, LOGLEVELS
 
@@ -49,7 +49,9 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
 
     # List of Subparsers for the different tools
     parser_gen_itp = subparsers.add_parser('gen_params', aliases=['gen_itp'])
-    parser_gen_coords = subparsers.add_parser('gen_coords')
+    # Make this a parent parser so we can later wrap replica around it and
+    # get all the arguments we need
+    parser_gen_coords = argparse.ArgumentParser(add_help=False)
     parser_gen_seq = subparsers.add_parser('gen_seq')
 
     # =============================================================================
@@ -69,6 +71,7 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
                             help='Input file (ITP|FF)', nargs="*")
     file_group.add_argument('-o', dest='outpath', type=Path,
                             help='Output ITP (ITP)')
+
     seq_group = file_group.add_mutually_exclusive_group(required=True)
     seq_group.add_argument('-seq', dest='seq', type=str, nargs='+',
                            help='A linear sequence of residue names.')
@@ -163,7 +166,25 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
     backmap_group.add_argument('-back_fudge', dest='bfudge', type=float, default=0.4,
                                help='factor by which to scale the coordinates when backmapping.')
 
-    parser_gen_coords.set_defaults(func=gen_coords)
+    # gen_coords specific arguments
+    subparser_gen_coords = subparsers.add_parser('gen_coords', parents=[parser_gen_coords])
+    subparser_gen_coords.set_defaults(func=gen_coords)
+
+    # gen_replica specific arguments
+    subparser_gen_replicas = subparsers.add_parser('gen_replicas', parents=[parser_gen_coords])
+    replica_group = subparser_gen_replicas.add_argument_group('Options for replica generation')
+    replica_group.add_argument("-nrepl", dest='nrepl', type=int, 
+                                help="number of system replicas to generate")
+    replica_group.add_argument("-mdp", dest='mdppaths', type=Path, default=[Path("md.mdp")],
+                                help="mdp file (.mdp)", nargs="*")
+    replica_group.add_argument("-log", dest='logpath', type=Path, default=Path("polyply.log"),
+                                help="logfile name")
+    replica_group.add_argument("-wdir", dest='workdir', type=Path, default=os.path.curdir,
+                                help="logfile name")
+    replica_group.add_argument("-timeout", dest='timeout', type=float, default=None,
+                                help="time after which to timeout gen_coords")
+
+    subparser_gen_replicas.set_defaults(func=gen_replicas)
 
     # ============================================================================
     #           Input Arguments for the sequence generation tool
