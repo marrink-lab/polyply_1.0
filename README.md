@@ -29,6 +29,7 @@ force-field, molecule parameters and this program.
 ## Quick references
 [Installation Guide](https://github.com/marrink-lab/polyply_1.0/wiki/Installation)\
 [FAQs](https://github.com/marrink-lab/polyply_1.0/wiki/FAQs)\
+[Current Polyply Polymer Library](./LIBRARY.md)\
 [Submissions to Martini Polymer Library](https://github.com/marrink-lab/polyply_1.0/wiki/Submit-polymer-parameters)\
 [Tutorial: Martini Polymers](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-martini-polymer-melts)\
 [Tutorial: GROMOS Polymers](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-GROMOS-polymer-melts)\
