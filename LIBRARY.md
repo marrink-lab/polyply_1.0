@@ -10,7 +10,7 @@
 |Polymethyl methacrylate        |PMMA                     |[gromos2016H66](polyply/data/2016H66/polyvinyl_blocks.ff)              |[martini3](polyply/data/martini3/PMMA.martini3.ff)    |
 |Polyethylene                   |PE                       |[gromos2016H66](polyply/data/2016H66/polyvinyl_blocks.ff)              |[martini3](polyply/data/martini3/PE.martini3.ff)      |
 |                               |                         |                                                                       |[martini2](polyply/data/martini2/PE.martini.2.itp)    |
-|Polypropylene                  |PP                       |                                                                       |[martini2](polyply/data/martini2/PP.martini.2.itp)    |
+|Polypropylene                  |PP                       |[gromos2016H66](polyply/data/2016H66/polyvinyl_blocks.ff)              |[martini2](polyply/data/martini2/PP.martini.2.itp)    |
 |Poly(3-hexylthiophene)         |P3HT                     |[gromos53A6](polyply/data/gromos53A6/P3HT.gromos.53A6.ff)              |[martini2](polyply/data/martini2/P3HT.martini.2.itp)  |
 |                               |                         |                                                                       |[martini3](polyply/data/martini3/P3HT.martini3.ff)    |
 |Polyvinyl alcohol              |PVA                      |[gromos2016H66](polyply/data/2016H66/polyvinyl_blocks.ff)              |[martini3](polyply/data/martini3/PVA.martini3.ff)     |
