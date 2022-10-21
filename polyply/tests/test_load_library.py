@@ -62,15 +62,16 @@ def test_read_ff_from_files():
 
 def test_read_build_options_from_files():
 
-    topfile = 'struc_build/system.top'
-    bldfile = 'struc_build/PEO.bld'
-    lib_names = ['martini2']
+    topfile = 'topology_test/system.top'
+    bldfile = 'topology_test/test.bld'
+    lib_names = ['2016H66']
     toppath = os.path.join(TEST_DATA, topfile)
     topology = Topology.from_gmx_topfile(name='test', path=toppath)
+    topology.preprocess()
     bldpath = os.path.join(TEST_DATA, bldfile)
     load_build_options(topology, lib_names, bldpath)
 
     # check if build files are parsed
+    assert topology.volumes == {'PMMA': 1.0}
     molecule = topology.molecules[0]
     assert molecule.templates
-    assert molecule.volume

@@ -1,0 +1,22 @@
+[ template ]
+resname PMMA
+
+[ atoms ]
+C1 CH2 1 1 1
+C2 C 2 2 2
+C3 CH3 3 3 3
+C4 C 4 4 4
+O1 O 5 5 5
+O2 OE 5 5 5
+C5 CH3 6 6 6
+
+[ bonds ]
+C1 C2
+C2 C3
+C2 C4
+C4 O1
+C4 O2
+O2 C5
+
+[ volumes ]
+PMMA 1
