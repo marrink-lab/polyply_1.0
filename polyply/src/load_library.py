@@ -168,7 +168,7 @@ def read_build_options_from_files(paths, topology):
     for path in paths:
         with open(path, 'r') as file_:
             lines = file_.readlines()
-            read_build_file(lines, topology.molecules, topology)
+        read_build_file(lines, topology.molecules, topology)
 
 
 def load_build_options(topology, lib_names, build_file):
