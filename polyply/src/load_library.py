@@ -28,6 +28,38 @@ LOGGER = StyleAdapter(get_logger(__name__))
 FORCE_FIELD_PARSERS = {'rtp': read_rtp, 'ff': read_ff, 'itp': read_polyply, 'bib': read_bib}
 
 
+def check_extensions_bld(bld_files):
+    """
+    check the extensions of the
+    user provided build files
+
+    Parameters
+    ----------
+    bld_files: list[`pathlib.PosixPath`]
+        list of build files
+    """
+    for _file in bld_files:
+        file_extension = _file.suffix[1:]
+        if file_extension != 'bld':
+            msg = "Cannot parse build file with extension {}".format(file_extension)
+            raise IOError(msg)
+
+def check_extensions_ff(ff_files):
+    """
+    check the extensions of the
+    user provided forcefield files
+
+    Parameters
+    ----------
+    ff_files: list[`pathlib.PosixPath`]
+        list of forcefield files
+    """
+    for _file in ff_files:
+        file_extension = _file.suffix[1:]
+        if file_extension not in FORCE_FIELD_PARSERS:
+            msg = "Cannot parse forcefield file with extension {}".format(file_extension)
+            raise IOError(msg)
+
 def _resolve_lib_paths(lib_names, data_path, allowed_extensions):
     """
     select the appropiate files from data_path
@@ -139,7 +171,7 @@ def read_build_options_from_files(paths, topology):
             read_build_file(lines, topology.molecules, topology)
 
 
-def load_build_options(topology, build_file, lib_names):
+def load_build_options(topology, lib_names, build_file):
     """
     Load build file options and molecule templates into topology.
 
