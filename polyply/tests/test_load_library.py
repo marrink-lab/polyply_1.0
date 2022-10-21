@@ -17,15 +17,38 @@ Test linear algebra aux functions.
 
 import textwrap
 import pytest
+from contextlib import nullcontext as does_not_raise
+from pathlib import Path
 import numpy as np
+import os
 import math
 import networkx as nx
 import vermouth
 import polyply
 from polyply import TEST_DATA
+from polyply.src.topology import Topology
+from polyply.src.load_library import FORCE_FIELD_PARSERS
 from polyply.src.load_library import _resolve_lib_paths
 from polyply.src.load_library import read_ff_from_files
-from polyply.src.load_library import FORCE_FIELD_PARSERS
+from polyply.src.load_library import load_build_options
+from polyply.src.load_library import check_extensions_ff
+from polyply.src.load_library import check_extensions_bld
+
+@pytest.mark.parametrize("ff_file, expectation", [
+    [[Path('forcefield.ff')], does_not_raise()],
+    [[Path('forcefield.bld')], pytest.raises(IOError)],
+])
+def test_check_extensions_ff(ff_file, expectation):
+    with expectation as e:
+        check_extensions_ff(ff_file)
+
+@pytest.mark.parametrize("bld_file, expectation", [
+    [[Path('forcefield.ff')], pytest.raises(IOError)],
+    [[Path('forcefield.bld')], does_not_raise()],
+])
+def test_check_extensions_bld(bld_file, expectation):
+    with expectation as e:
+        check_extensions_bld(bld_file)
 
 def test_read_ff_from_files():
     name = "ff"
@@ -37,3 +60,17 @@ def test_read_ff_from_files():
     assert force_field.blocks
     assert force_field.links
 
+def test_read_build_options_from_files():
+
+    topfile = 'struc_build/system.top'
+    bldfile = 'struc_build/PEO.bld'
+    lib_names = ['martini2']
+    toppath = os.path.join(TEST_DATA, topfile)
+    topology = Topology.from_gmx_topfile(name='test', path=toppath)
+    bldpath = os.path.join(TEST_DATA, bldfile)
+    load_build_options(topology, lib_names, bldpath)
+
+    # check if build files are parsed
+    molecule = topology.molecules[0]
+    assert molecule.templates
+    assert molecule.volume
