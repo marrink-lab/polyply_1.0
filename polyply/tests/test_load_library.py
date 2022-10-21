@@ -17,11 +17,11 @@ Test linear algebra aux functions.
 
 import textwrap
 import pytest
-from contextlib import nullcontext as does_not_raise
 from pathlib import Path
 import numpy as np
 import os
 import math
+from contextlib import contextmanager
 import networkx as nx
 import vermouth
 import polyply
@@ -34,8 +34,13 @@ from polyply.src.load_library import load_build_options
 from polyply.src.load_library import check_extensions_ff
 from polyply.src.load_library import check_extensions_bld
 
+
+@contextmanager
+def nullcontext(enter_result=None):
+    yield enter_result
+
 @pytest.mark.parametrize("ff_file, expectation", [
-    [[Path('forcefield.ff')], does_not_raise()],
+    [[Path('forcefield.ff')], nullcontext()],
     [[Path('forcefield.bld')], pytest.raises(IOError)],
 ])
 def test_check_extensions_ff(ff_file, expectation):
@@ -44,7 +49,7 @@ def test_check_extensions_ff(ff_file, expectation):
 
 @pytest.mark.parametrize("bld_file, expectation", [
     [[Path('forcefield.ff')], pytest.raises(IOError)],
-    [[Path('forcefield.bld')], does_not_raise()],
+    [[Path('forcefield.bld')], nullcontext()],
 ])
 def test_check_extensions_bld(bld_file, expectation):
     with expectation as e:
