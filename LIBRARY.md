@@ -14,6 +14,9 @@
 |Poly(3-hexylthiophene)         |P3HT                     |[gromos53A6](polyply/data/gromos53A6/P3HT.gromos.53A6.ff)              |[martini2](polyply/data/martini2/P3HT.martini.2.itp)  |
 |                               |                         |                                                                       |[martini3](polyply/data/martini3/P3HT.martini3.ff)    |
 |Polyvinyl alcohol              |PVA                      |[gromos2016H66](polyply/data/2016H66/polyvinyl_blocks.ff)              |[martini3](polyply/data/martini3/PVA.martini3.ff)     |
+|Poly(2-hydroxyethyl acrylate)  |HEA                      |[gromos2016H66](polyply/data/2016H66/polyvinyl_blocks.ff)              |                                                      |
+|Polyacrylamide                 |PAM                      |[gromos2016H66](polyply/data/2016H66/polyvinyl_blocks.ff)              |                                                      |
+|Poly(methacrylamide)           |PMAM                     |[gromos2016H66](polyply/data/2016H66/polyvinyl_blocks.ff)              |                                                      |
 |Poly(diallyldimethylammonium)  |PDADMA                   |                                                                       |[martini2](polyply/data/martini2/PDADMA.martini.2.itp)|
 |Polystyrene sulfonate          |PSS                      |                                                                       |[martini2](polyply/data/martini2/PSS.martini.2.itp)   |
 |                               |                         |                                                                       |[martini3](polyply/data/martini3/PSS.martini3.ff)     |
