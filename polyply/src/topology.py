@@ -25,6 +25,7 @@ from vermouth.system import System
 from vermouth.forcefield import ForceField
 from vermouth.gmx.gro import read_gro
 from vermouth.pdb import read_pdb
+from vermouth.molecule import Interaction
 from .top_parser import read_topology
 from .linalg_functions import center_of_geometry
 
@@ -221,7 +222,7 @@ class Topology(System):
         self.defines = {}
         self.description = []
         self.atom_types = {}
-        self.types = defaultdict(dict)
+        self.types = defaultdict(lambda: defaultdict(list))
         self.nonbond_params = {}
         self.mol_idx_by_name = defaultdict(list)
         self.persistences = []
@@ -288,19 +289,38 @@ class Topology(System):
 
     def gen_bonded_interactions(self):
         """
-        Check for each interaction if there is
-        no parameter for an interaction if that
-        parameter is defined in the bonded directive
-        of the topology.
+        Check for each interaction, if the parameter list is empty. If it is
+        check if the parameters are defined in the bonded types directive
+        of the topology. This essentially does part of the step done by
+        grompp.
+
+        Updates
+        -------
+        self.molecules.interactions
+        self.blocks.interactions
+
+        Raises
+        ------
+        OSError
+            no match for an interaction in the bonded types provided
         """
-        for block in self.force_field.blocks.values():
+        # We loop over blocks not molecules, because there is only
+        # one unique block per molecule, whereas there cab be a large number of
+        # duplicate molecules in the topology.molecules list. As the interactions
+        # in those molecules are still references to the blocks updating them here
+        # will propagate into the molecules. This works except for one case where
+        # a single dihedral directive is expanded into multiple ones. Updating the
+        # block dict will not propagate into the molecules.
+        for mol_name, block in self.force_field.blocks.items():
+            additional_interactions = defaultdict(list)
             for inter_type, interactions in block.interactions.items():
+                # these interactions have no types associated
                 if inter_type in ["pairs", "exclusions", "virtual_sitesn",
                                   "virtual_sites2", "virtual_sites3", "virtual_sites4"]:
                     continue
+
                 for interaction in interactions:
                     if len(interaction.parameters) == 1:
-
                         # Some force-fields - in GMX library only OPLS - use bond-type
                         # definitions. Each atomtype matches one bond-type, which
                         # in turn matches an expression in the bondedtypes section
@@ -312,14 +332,17 @@ class Topology(System):
                         else:
                             atoms = tuple(block.nodes[node]["atype"] for node in interaction.atoms)
 
+                        # now we match the atom or bondtypes to the types defined in the topology
                         if atoms in self.types[inter_type]:
-                            new_params, meta = self.types[inter_type][atoms]
+                            new_params = self.types[inter_type][atoms]
                         elif atoms[::-1] in self.types[inter_type]:
-                            new_params, meta = self.types[inter_type][atoms[::-1]]
+                            new_params  = self.types[inter_type][atoms[::-1]]
+                        # dihedrals are more complicated because they are treated as symmetric and
+                        # can have wild-cards
                         elif inter_type in "dihedrals":
                             match = match_dihedral_interaction_types(atoms, self.types[inter_type])
                             if match:
-                                new_params, meta = self.types[inter_type][match]
+                                new_params = self.types[inter_type][match]
                             else:
                                 msg = ("In section dihedrals interaction of atoms {} has no "
                                        "corresponding bonded type.")
@@ -332,9 +355,22 @@ class Topology(System):
                             atoms = " ".join(list(map(lambda x: str(x), interaction.atoms)))
                             raise OSError(msg.format(inter_type, atoms))
 
-                        interaction.parameters[:] = new_params[:]
-                        if meta:
-                            interaction.meta.update(meta)
+                        for idx, (new_param, meta) in enumerate(new_params):
+                            if not meta:
+                                meta = {}
+                            if idx > 0:
+                                new_interaction = Interaction(atoms=tuple(interaction.atoms),
+                                                              parameters=new_param,
+                                                              meta=meta)
+                                additional_interactions[inter_type].append(new_interaction)
+                            else:
+                                interaction.parameters[:] = new_param[:]
+                                interaction.meta.update(meta)
+
+            # here we add the expanded interactions into the molecules
+            for mol_idx in self.mol_idx_by_name[mol_name]:
+                for inter_type, new_inters in additional_interactions.items():
+                    self.molecules[mol_idx].molecule.interactions[inter_type] += new_inters
 
     def convert_nonbond_to_sig_eps(self):
         """
