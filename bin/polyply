@@ -56,8 +56,8 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
     # Input Arguments for the itp generation tool
     # =============================================================================
 
-    parser_gen_itp.add_argument('-name', required=True, type=str, dest="name",
-                                help="name of the final molecule")
+    parser_gen_itp.add_argument('-name', required=False, type=str, dest="name",
+                                help="name of the final molecule", default='polymer')
     parser_gen_itp.add_argument('-v', dest='verbosity', action='count',
                                 help='Enable debug logging output. Can be given '
                                 'multiple times.', default=0)
@@ -68,7 +68,7 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
     file_group.add_argument('-f', dest='inpath', required=False, type=Path,
                             help='Input file (ITP|FF)', nargs="*")
     file_group.add_argument('-o', dest='outpath', type=Path,
-                            help='Output ITP (ITP)')
+                            help='Output ITP (ITP)', default=Path('polymer.itp'))
     seq_group = file_group.add_mutually_exclusive_group(required=True)
     seq_group.add_argument('-seq', dest='seq', type=str, nargs='+',
                            help='A linear sequence of residue names.')
