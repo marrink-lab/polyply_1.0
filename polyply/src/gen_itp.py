@@ -17,6 +17,7 @@ High level API for the polyply itp generator
 """
 import sys
 import networkx as nx
+from pathlib import Path
 import vermouth
 import vermouth.forcefield
 from vermouth.log_helpers import StyleAdapter, get_logger
@@ -58,7 +59,7 @@ def split_seq_string(sequence):
         monomers.append(Monomer(resname=resname, n_blocks=n_blocks))
     return monomers
 
-def gen_params(name, outpath, inpath=None, lib=None, seq=None, seq_file=None):
+def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=None, lib=None, seq=None, seq_file=None):
     """
     Top level function for running the polyply parameter generation.
     Parameters seq and seq_file are mutually exclusive. Set the other
