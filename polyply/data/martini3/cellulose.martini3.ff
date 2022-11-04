@@ -1,0 +1,68 @@
+;
+; Martini model for cellulose
+;
+[ citations ]
+Martini3
+polyply
+M3_sugars
+
+[ moleculetype ]
+; molname    nrexcl
+  CEL   1
+
+[ atoms ]
+; nr type resnr residue    atom cgnr charge mass
+  1  SP4r   1   CEL    A    1    0  54.0
+  2  SP4r   1   CEL    B    2    0  54.0
+  3  SP1r   1   CEL    C    3    0  54.0
+  4  TC4    1   CEL   VS    4    0  0.00
+[ bonds ]
+; residue internal bonds
+  A   B   1    0.320 10000 {"ifdef": "FLEXIBLE"}
+  A   C   1    0.470 10000 {"ifdef": "FLEXIBLE"}
+  B   C   1    0.390 10000 {"ifdef": "FLEXIBLE"}
+[ constraints ]
+; i  j  funct length
+  A   B   1    0.320 {"ifndef": "FLEXIBLE"}
+  A   C   1    0.470 {"ifndef": "FLEXIBLE"}
+  B   C   1    0.390 {"ifndef": "FLEXIBLE"}
+[ exclusions ]
+4 1 2 3
+[ virtual_sitesn ]
+4 1 2 3 -- 1
+[ edges ]
+A VS
+
+[ link ]
+; beta 1->4
+resname "CEL"
+[ atoms ]
+A  { }
+B  {"replace": {"atype": "SP1r"} }
+C  { }
++A {"replace": {"atype": "SN6", "mass": "36"} }
++B { }
++C { }
+
+[ bonds ]
+; i  j  funct  length  force constant
+  B  +A   1      0.355  8500 {"group": "b14"}
+
+[ angles ]
+; i  j  k funct angle force con.
+A   B   +A  1  155   320 {"group": "ABA - b14"}
+B  +A   +B  1  120   220 {"group": "BAB - b14"}
+B  +A   +C  1  70    230 {"group": "BAC - b14"}
+C   B   +A  1  75    260 {"group": "CBA - b14"}
+
+[ impropers ]
+A B  +A  +B  2 -125 30  {"group": "ABAB - b14"}
+
+[ link ]
+resname "CEL"
+[ impropers ]
+B  +A  +B ++A 2 5 15  {"group": "CACA - b14"}
+[ edges ]
+B +A
++A +B
++B ++A

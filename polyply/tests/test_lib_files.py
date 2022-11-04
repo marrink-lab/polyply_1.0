@@ -83,7 +83,7 @@ def assert_equal_blocks(block1, block2):
         for atoms, ref_interactions in ref_terms.items():
             new_interactions = new_terms[atoms]
             for ref_inter in ref_interactions:
-                #print(ref_inter)
+                print(ref_inter)
                 for new_inter in new_interactions:
                     if _interaction_equal(ref_inter, new_inter, inter_type):
                         break
@@ -183,6 +183,7 @@ def _interaction_equal(interaction1, interaction2, inter_type):
      ['martini3', 'PS'],
      ['martini3', 'PE'],
      ['martini3', 'DEX'],
+     ['martini3', 'CEL'],
      ['martini3', 'P3HT'],
      ['martini3', 'PPE'],
      ['martini3', 'PTMA'],
