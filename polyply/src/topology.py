@@ -358,14 +358,21 @@ class Topology(System):
                         for idx, (new_param, meta) in enumerate(new_params):
                             if not meta:
                                 meta = {}
-                            if idx > 0:
+                            # there is always at least one interaction in molecule, which
+                            # needs to get the typed parameters
+                            if idx == 0:
+                                interaction.parameters[:] = new_param[:]
+                                interaction.meta.update(meta)
+                            # however, sometimes a single interaction term needs to be
+                            # expanded (i.e. a single statment spwans multiple interactions)
+                            # In that case we update the parameters of the first term and
+                            # need to add the other interactions additionally
+                            else:
                                 new_interaction = Interaction(atoms=tuple(interaction.atoms),
                                                               parameters=new_param,
                                                               meta=meta)
                                 additional_interactions[inter_type].append(new_interaction)
-                            else:
-                                interaction.parameters[:] = new_param[:]
-                                interaction.meta.update(meta)
+
 
             # here we add the expanded interactions into the molecules
             for mol_idx in self.mol_idx_by_name[mol_name]:
