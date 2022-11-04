@@ -670,8 +670,7 @@ class TestTopology:
         polyply.src.top_parser.read_topology(new_lines, top)
         top.gen_bonded_interactions()
         for inter_type in outcome:
-            for inter in top.molecules[0].molecule.interactions[inter_type]:
-                assert top.molecules[0].molecule.interactions[inter_type] == outcome[inter_type]
+            assert top.molecules[0].molecule.interactions[inter_type] == outcome[inter_type]
 
     @staticmethod
     def test_replace_types_fail():
