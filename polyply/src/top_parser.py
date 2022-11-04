@@ -356,7 +356,7 @@ class TOPDirector(SectionLineParser):
         atoms, params = self._split_atoms_and_parameters(line.split(),
                                                          self.atom_idxs[section_name])
 
-        self.topology.types[inter_type][tuple(atoms)] = (params, self.current_meta)
+        self.topology.types[inter_type][tuple(atoms)].append((params, self.current_meta))
 
 
     @SectionLineParser.section_parser('implicit_genborn_params')
