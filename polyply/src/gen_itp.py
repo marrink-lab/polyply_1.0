@@ -110,6 +110,13 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=None, lib=Non
         for missing in find_missing_edges(meta_molecule, meta_molecule.molecule):
             LOGGER.warning(msg, **missing)
 
+    # Print molecule Log messages
+    for loglevel, entries in meta_molecule.molecule.log_entries.items():
+        for entry, fmt_args in entries.items():
+            for fmt_arg in fmt_args:
+                fmt_arg = {str(k): meta_molecule.molecule.nodes[v] for k, v in fmt_arg.items()}
+                LOGGER.log(loglevel, entry, **fmt_arg, type='model')
+
     with deferred_open(outpath, 'w') as outfile:
         header = [ ' '.join(sys.argv) + "\n" ]
         header.append("Please cite the following papers:")
