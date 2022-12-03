@@ -31,38 +31,38 @@ resname "PDMS"
   PDMS   +PDMS   ++PDMS   +++PDMS       1         1.18    1.4       1     ; 2
 ;
 [ moleculetype ]
-END  1
+PDMSTer  1
 [ atoms ]
-  1    DMS      1     END     END   1      0.00000     72.00
+  1    DMS      1     PDMSTer     DPMSTer   1      0.00000     72.00
 
 [ link ]
-resname "END|PDMS"
+resname "PDMSter|PDMS"
 [ bonds ]
-  END    +PDMS       1    0.446  11000     {"group": "END-PDMS"}
+  PDMSter    +PDMS       1    0.446  11000     {"group": "PDMSter-PDMS"}
 
 [ link ]
-resname "PDMS|END"
+resname "PDMS|PDMSter"
 [ bonds ]
-  PDMS    +END       1    0.446  11000     {"group": "PDMS-END"}  
+  PDMS    +PDMSter       1    0.446  11000     {"group": "PDMS-PDMSter"}  
 
 
 [ link ]
-resname "END|PDMS"
+resname "PDMSter|PDMS"
 [ angles ]
-END   +PDMS   ++PDMS   1     87     78  {"group": "END-PDMS"} 
+PDMSter   +PDMS   ++PDMS   1     87     78  {"group": "PDMSter-PDMS"} 
 
 [ link ]
-resname "PDMS|END"
+resname "PDMS|PDMSter"
 [ angles ]
-PDMS   +PDMS   ++END   1     87     78  {"group": "PDMS-END"} 
+PDMS   +PDMS   ++PDMSter   1     87     78  {"group": "PDMS-PDMSter"} 
 
 
 [ link ]
-resname "END|PDMS"
+resname "PDMSter|PDMS"
 [ dihedrals ]
-END  +PDMS  ++PDMS  +++PDMS  1    1.85    1.2    1 {"group": "END-PDMS"}
+PDMSter  +PDMS  ++PDMS  +++PDMS  1    1.85    1.2    1 {"group": "PDMSter-PDMS"}
 
 [ link ]
-resname "PDMS|END"
+resname "PDMS|PDMSter"
 [ dihedrals ]
-PDMS  +PDMS  ++PDMS  +++END  1    1.85    1.2    1 {"group": "PDMS-END"}
+PDMS  +PDMS  ++PDMS  +++PDMSter  1    1.85    1.2    1 {"group": "PDMS-PDMSter"}
