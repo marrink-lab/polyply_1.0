@@ -173,6 +173,6 @@ resname "PPE|PPEter"
 [ atoms ]
 BB4 {"resname": "PPE"}
 [ warning ]
-"You should patch PPE with a terminal residue. Use -seq PPEter:1 PPE:4 PPEter:1"
+You should patch PPE with a terminal residue. Use -seq PPEter:1 PPE:4 PPEter:1
 [ non-edges ]
 BB4 +BB1
