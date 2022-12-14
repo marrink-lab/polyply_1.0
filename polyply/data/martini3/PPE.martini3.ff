@@ -168,3 +168,11 @@ resname "PPE|PPEter"
 --BB4 -BB4 BB4    1   180   50          {"comment": "bending stiffness backbone" }
 [ dihedrals ]
 --BB4 -BB2 -BB3 -BB1 2  0   50             {"comment": "improper dihedral right turn"}
+
+[ link ]
+[ atoms ]
+BB4 {"resname": "PPE"}
+[ warning ]
+"You should patch PPE with a terminal residue. Use -seq PPEter:1 PPE:4 PPEter:1"
+[ non-edges ]
+BB4 +BB1
