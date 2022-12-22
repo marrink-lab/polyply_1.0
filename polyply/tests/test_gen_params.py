@@ -15,6 +15,7 @@
 from pathlib import Path
 import textwrap
 import argparse
+import logging
 import pytest
 import networkx as nx
 import vermouth.forcefield
@@ -22,6 +23,7 @@ import vermouth.molecule
 import vermouth.gmx.itp_read
 from polyply import gen_params, TEST_DATA, MetaMolecule
 from polyply.src.graph_utils import find_missing_edges
+from polyply.src.logging import LOGGER
 
 class TestGenParams():
     @staticmethod
@@ -124,3 +126,36 @@ def test_find_missing_links():
         assert edge["resB"] == "P3HTref"
         assert edge["idxA"] == ref[0]
         assert edge["idxB"] == ref[1]
+
+@pytest.mark.parametrize('warn_type', ['INFO', 'WARNING', 'ERROR'])
+def test_print_log_warnings(tmp_path, monkeypatch, caplog, warn_type):
+    """
+    Quick test to make sure that the logging warnings propagate to the
+    gen_params output.
+    """
+    # change to temporary direcotry
+    monkeypatch.chdir(tmp_path)
+
+    # get input file from test data
+    infile = TEST_DATA / Path(f"gen_params/logging/{warn_type}.ff")
+
+    # set loglevel
+    loglevel = getattr(logging, warn_type)
+    LOGGER.setLevel(loglevel)
+
+    # capture logging messages
+    with caplog.at_level(loglevel):
+        gen_params(name="polymer",
+                   outpath=Path("polymer.itp"),
+                   inpath=[infile],
+                   lib=None,
+                   seq=["test:5"],
+                   seq_file=None)
+
+        for record in caplog.records:
+            if record.levelname == warn_type:
+                if record.getMessage() == f"This is a {warn_type}.":
+                    assert True
+                    break
+        else:
+            assert False
