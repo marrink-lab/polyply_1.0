@@ -127,8 +127,14 @@ def test_find_missing_links():
         assert edge["idxA"] == ref[0]
         assert edge["idxB"] == ref[1]
 
-@pytest.mark.parametrize('warn_type', ['INFO', 'WARNING', 'ERROR'])
-def test_print_log_warnings(tmp_path, monkeypatch, caplog, warn_type):
+@pytest.mark.parametrize('warn_type, ffobject',
+                         (('INFO', 'link'),
+                          ('INFO', 'block'),
+                          ('WARNING', 'link'),
+                          ('WARNING', 'block'),
+                          ('ERROR', 'link'),
+                          ('ERROR', 'block')))
+def test_print_log_warnings(tmp_path, monkeypatch, caplog, warn_type, ffobject):
     """
     Quick test to make sure that the logging warnings propagate to the
     gen_params output.
@@ -137,7 +143,7 @@ def test_print_log_warnings(tmp_path, monkeypatch, caplog, warn_type):
     monkeypatch.chdir(tmp_path)
 
     # get input file from test data
-    infile = TEST_DATA / Path(f"gen_params/logging/{warn_type}.ff")
+    infile = TEST_DATA / Path(f"gen_params/logging/{warn_type}_{ffobject}.ff")
 
     # set loglevel
     loglevel = getattr(logging, warn_type)
