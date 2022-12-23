@@ -152,10 +152,4 @@ def test_print_log_warnings(tmp_path, monkeypatch, caplog, warn_type):
                    seq=["test:5"],
                    seq_file=None)
 
-        for record in caplog.records:
-            if record.levelname == warn_type:
-                if record.getMessage() == f"This is a {warn_type}.":
-                    assert True
-                    break
-        else:
-            assert False
+        assert f"This is a {warn_type}." in [record.getMessage() for record in caplog.records if record.levelname == warn_type]
