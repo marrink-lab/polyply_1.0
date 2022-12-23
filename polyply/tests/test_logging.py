@@ -7,9 +7,6 @@ from vermouth.log_helpers import (StyleAdapter, BipolarFormatter,
 from polyply.tests.test_build_file_parser import test_molecule, test_system
 from polyply.src.logging import LOGGER, LOGLEVELS
 
-LOGGER.setLevel(LOGLEVELS[1])
-
-
 @pytest.mark.parametrize('_type, option, expected, warning, idxs', (
    # tag all nodes 1-4 that have name ALA, GLU, THR should not get tagged and raise warning
    ("cylinder",
@@ -26,6 +23,7 @@ LOGGER.setLevel(LOGLEVELS[1])
     range(9, 12)),
    ))
 def test_tag_nodes_logging(caplog, test_molecule, _type, option, expected, warning, idxs):
+    LOGGER.setLevel(LOGLEVELS[1])
     polyply.src.build_file_parser.BuildDirector._tag_nodes(test_molecule, _type, option, "AA")
     for record, idx in zip(caplog.records, idxs):
         assert record.getMessage() == warning.format(idx)
@@ -34,6 +32,7 @@ def test_tag_nodes_logging(caplog, test_molecule, _type, option, expected, warni
            assert node in expected
 
 def test_mol_directive_logging(caplog, test_system):
+    LOGGER.setLevel(LOGLEVELS[1])
     processor = polyply.src.build_file_parser.BuildDirector([], test_system)
     line = "AA 0 3"
     processor._molecule(line)
