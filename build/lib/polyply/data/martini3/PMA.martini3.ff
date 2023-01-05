@@ -1,0 +1,30 @@
+[ citations ]
+Martini3
+polyply
+
+[ moleculetype ]
+PMA 1
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge   
+   1    TC3             1  PMA       VNL       1     0.0   
+   2    SN4a            1  PMA       EST       2     0.0   
+;
+[ bonds ]
+;  ai  aj   funct
+   1     2   1     0.365 8000
+
+[ link ]
+resname "PMA"
+[ bonds ]
+VNL     +VNL    1     0.253 8000  {"group": "vinyl backbone"}
+
+[ link ]
+resname "PMA"
+[ angles ]
+VNL  +VNL  ++VNL   2  139  100  {"group": "vinyl backbone"}
+
+[ link ]
+resname "PMA"
+[ angles ]
+EST  VNL  +VNL  2  90  80

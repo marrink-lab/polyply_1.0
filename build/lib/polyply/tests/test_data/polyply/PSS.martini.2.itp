@@ -1,0 +1,64 @@
+; Copyright 2020 University of Groningen
+;
+; Licensed under the Apache License, Version 2.0 (the "License");
+; you may not use this file except in compliance with the License.
+; You may obtain a copy of the License at
+;
+;    http://www.apache.org/licenses/LICENSE-2.0
+;
+; Unless required by applicable law or agreed to in writing, software
+; distributed under the License is distributed on an "AS IS" BASIS,
+; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+; See the License for the specific language governing permissions and
+; limitations under the License.
+
+; POLYSTYRENE SULFONATE (A-mapping)
+;
+; NUMBER OF MONOMERS:           30
+;
+;
+; If you use those parameters, please cite:
+;
+; M. Voegele, J. Smiatek, C. Holm
+; Coarse-grained simulations of polyelectrolyte complexes: MARTINI models for poly(styrene sulfonate) and poly(diallyldimethylammonium)
+; The Journal of Chemical Physics 143(24):243151, December 2015.
+; DOI: 10.1063/1.4937805
+;
+
+
+[ moleculetype ]
+; molname  nrexcl
+PSS30       3
+
+
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge
+   1    STY            1  STYR       R1       1     0.00000E+00   45
+   2    STY            1  STYR       R2       2     0.00000E+00   45
+   3    STY            1  STYR       R3       3     0.00000E+00   45
+   4    SCY            1  STYR       B        4     0.00000E+00   45
+   5     Qa            1  STYR       S        5    -1.00000E+00   45
+[ bonds ]
+   1     4    1     0.270000 8000.000000
+   4     6    1     0.270000 8000.000000
+   2     5    1     0.278000 8000.000000
+   3     5    1     0.278000 8000.000000
+;
+[ constraints ]
+;  ai  aj  funct length
+   2     3    1     0.270000
+   3     1    1     0.270000
+   1     2    1     0.270000
+;
+[ angles ]
+;  ai  aj  ak  funct
+   4     1     2    1   136.000000  100.000000
+   4     1     3    1   136.000000  100.000000
+   4     6     7    1   136.000000  100.000000
+   4     6     8    1   136.000000  100.000000
+   1     4     6    1   120.000000   25.000000
+   4     6     9    1    52.000000  550.000000
+;
+[ dihedrals ]
+; ai aj ak al funct q0 cq
+   1     2     3     5   2   180.0000e+00 1.673600e+02

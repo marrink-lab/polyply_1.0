@@ -1,0 +1,1 @@
+polyply gen_params -lib 2016H66 -seqf ../PP.json -name PP -o PP.itp

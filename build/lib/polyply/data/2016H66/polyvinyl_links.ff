@@ -1,0 +1,314 @@
+[ macros ]
+VINYL_RES "PE|PMMA|PMA|PP|PVA|PS|HEA|PAM|PMAM"
+VINYL_RES_SUB "PMMA|PMA|PP|PVA|PS|HEA|PAM|PMAM"
+VINYL_RES_SUB_SC3 "PMMA|PMA|PVA|PS|HEA|PAM|PMAM"
+VINYL_RES_TER "CH3ter|PE|PMMA|PMA|PP|PVA|PS|HEA|PAM|PMAM"
+
+;---------------------------
+;  VINYL-BONDS
+;---------------------------
+[ link ]
+resname "PE"
+[ atoms ]
++VC1 {"replace": {"atype": "CH2", "mass": "14.0270"}}
+VC2 {"replace": {"atype": "CH2", "mass": "14.0270"}}
+[ bonds ]
++VC1 VC2 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link"}
+
+[ link ]
+resname $VINYL_RES_SUB
+[ atoms ]
++VC1 {"replace": {"atype": "CH2", "mass": "14.0270"}}
+VC2 {"replace": {"atype": "CH1", "mass": "13.0190"}}
+[ bonds ]
++VC1 VC2 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link"}
+;---------------------------
+;       VINYL-ANGLES
+;---------------------------
+[ link ]
+resname $VINYL_RES
+[ angles ]
++VC1 VC2 VC1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"+VC1 VC2 VC1"}
+[ link ]
+resname $VINYL_RES
+[ angles ]
+VC2 +VC1 +VC2 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"VC2 +VC1 +VC2"}
+[ link ]
+resname $VINYL_RES
+[ angles ]
+SB1 VC2 +VC1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"SB1 VC2 +VC1"}
+;---------------------------
+;       VINYL-DIHEDRALS
+;---------------------------
+[ link ]
+resname $VINYL_RES
+[ dihedrals ]
+VC1 VC2 +VC1 +VC2 1 gd_34 {"comment":"X-SI,CHn-CHn-X", "group":"link"}
+[ link ]
+resname $VINYL_RES
+[ dihedrals ]
+VC2 +VC1 +VC2 ++VC1 1 gd_34 {"comment":"X-SI,CHn-CHn-X", "group":"link"}
+;---------------------------
+;       VINYL-PAIRS
+;---------------------------
+[ link ]
+resname $VINYL_RES
+[ atoms ]
+VC1 { }
+VC2 { }
++VC1 { }
++VC2 { }
+[ pairs ]
+VC1 +VC2 1 { "group":"link"}
+[ edges ]
+VC1 VC2
+VC2 +VC1
++VC1 +VC2
+
+[ link ]
+resname $VINYL_RES
+[ atoms ]
+SB1 { }
+VC1 { }
+VC2 { }
++VC1 { }
++VC2 { }
+[ pairs ]
+SB1 +VC2 1 { "group":"link"}
+[ edges ]
+VC1 VC2
+VC2 +VC1
++VC1 +VC2
+SB1 VC2
+
+[ link ]
+resname $VINYL_RES
+[ atoms ]
+VC1 { }
+VC2 { }
++VC1 { }
++VC2 { }
+++VC1 { }
+++VC2 { }
+[ pairs ]
+VC2 ++VC1 1 { "group":"link"}
+[ edges ]
+VC1 VC2
+VC2 +VC1
++VC1 +VC2
++VC2 ++VC1
+++VC1 ++VC2
+;---------------------------
+;   SC1 - INTERACTOINS
+;---------------------------
+[ link ]
+resname $VINYL_RES_SUB
+[ atoms ]
+VC1 { }
+VC2 { }
+SC1 { }
++VC1 { }
++VC2 { }
++SC1 { }
+[ pairs ]
+VC2 +SC1 1 { "group":"link"}
+[ edges ]
+VC1 VC2
+VC2 SC1
+VC2 +VC1
++VC1 +VC2
++VC2 +SC1
+
+[ link ]
+resname $VINYL_RES_SUB
+[ atoms ]
+VC1 { }
+VC2 { }
+SC1 { }
++VC1 { }
++VC2 { }
++SC1 { }
+[ pairs ]
+VC2 +SC1 1 { "group":"link"}
+[ edges ]
+VC1 VC2
+VC2 SC1
+VC2 +VC1
++VC1 +VC2
++VC2 +SC1
+
+[ link ]
+resname $VINYL_RES_SUB
+[ atoms ]
+VC1 { }
+VC2 { }
+SC1 { }
++VC1 { }
++VC2 { }
++SC1 { }
+[ pairs ]
+SC1 +VC2 1 { "group":"link"}
+[ edges ]
+VC1 VC2
+VC2 SC1
+VC2 +VC1
++VC1 +VC2
++VC2 +SC1
+
+[ link ]
+resname $VINYL_RES_SUB
+[ angles ]
++VC1 VC2 SC1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
+;---------------------------
+;   SC2/SC3 - INTERACTOINS
+;---------------------------
+[ link ]
+resname $VINYL_RES_SUB_SC3
+[ atoms ]
+VC1 { }
+VC2 { }
+SC1 { }
+SC2 { }
+SC3 { }
++VC1 { }
++VC2 { }
+[ pairs ]
+SC3 +VC1 1 { "group":"link", "comment": "SC3"}
+[ edges ]
+VC1 VC2
+VC2 SC1
+SC1 SC2
+SC1 SC3
+VC2 +VC1
++VC1 +VC2
+
+[ link ]
+resname $VINYL_RES_SUB_SC3
+[ atoms ]
+VC1 { }
+VC2 { }
+SC1 { }
+SC2 { }
+SC3 { }
++VC1 { }
++VC2 { }
+[ pairs ]
+SC2 +VC1 1 { "group":"link", "comment": "SC3"}
+[ edges ]
+VC1 VC2
+VC2 SC1
+SC1 SC2
+SC1 SC3
+VC2 +VC1
++VC1 +VC2
+
+;-----------------------------------
+;        TERMINAL LINKS
+;-----------------------------------
+[ link ]
+resname $VINYL_RES_TER
+[ atoms ]
+VC2 {"replace": {"atype": "CH1", "mass":"13.0190"}}
+[ bonds ]
+VC2 +C1 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link"}
+
+[ link ]
+resname "CH3ter|PE"
+[ atoms ]
+VC2 {"replace": {"atype": "CH2", "mass": "14.0270"}}
++C1 { }
+[ edges ]
+VC2 +C1
+
+[ link ]
+resname $VINYL_RES_TER
+[ atoms ]
++VC1 {"replace": {"atype": "CH2", "mass": "14.0270"}}
+[ bonds ]
++VC1 C1 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link"}
+
+[ link ]
+resname $VINYL_RES_TER
+[ angles ]
+VC1 VC2 +C1 2  ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
+
+[ link ]
+resname $VINYL_RES_TER
+[ angles ]
+C1 +VC1 +VC2 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
+
+[ link ]
+resname $VINYL_RES_TER
+[ angles ]
+SC1 VC2 +C1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
+
+[ link ]
+resname $VINYL_RES_TER
+[ dihedrals ]
+C1 +VC1 +VC2 ++VC1 1 gd_34 {"comment":"X-SI,CHn-CHn-X", "group":"link"}
+
+[ link ]
+resname $VINYL_RES_TER
+[ dihedrals ]
+VC2 +VC1 +VC2 ++C1 1 gd_34 {"comment":"X-SI,CHn-CHn-X", "group":"link"}
+
+[ link ]
+resname $VINYL_RES_TER
+[ atoms ]
+C1  { "resname": "CH3ter" }
++VC1 { }
++VC2 { }
+++VC1 { }
+[ pairs ]
+C1 {"resname": "CH3ter"} ++VC1 1 { "group":"link", "comment":"A"}
+[ edges ]
+C1 +VC1
++VC1 +VC2
++VC2 ++VC1
+
+[ link ]
+resname $VINYL_RES_TER
+[ atoms ]
+C1  { "resname": "CH3ter" }
++VC1 { }
++VC2 { }
++SC1 { }
+[ pairs ]
+C1 {"resname": "CH3ter"} +SC1 1 { "group":"link", "comment":"C"}
+[ edges ]
+C1 +VC1
++VC1 +VC2
++VC2 +SC1
+
+[ link ]
+resname $VINYL_RES_TER
+[ atoms ]
+VC2 { }
++VC1 { }
++VC2 { }
+++C1 { "resname": "CH3ter" }
+[ pairs ]
+VC2 ++C1 {"resname": "CH3ter"} 1 { "group":"link", "comment":"B"}
+[ edges ]
+VC2 +VC1
++VC1 +VC2
++VC2 ++C1
+
+[ link ]
+resname $VINYL_RES_TER
+[ atoms ]
+VC1 { }
+VC2 { }
+SC1 { }
+SC2 { }
+SC3 { }
++C1 { "resname": "CH3ter" }
+[ pairs ]
+SC2 +C1 {"resname": "CH3ter"} 1 { "group":"link", "comment":"D"}
+SC3 +C1 {"resname": "CH3ter"} 1 { "group":"link", "comment":"D"}
+[ edges ]
+VC1 VC2
+VC2 +C1
+VC2 SC1
+SC1 SC2
+SC1 SC3

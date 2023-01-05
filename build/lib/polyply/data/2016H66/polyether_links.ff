@@ -1,0 +1,217 @@
+;---------------------------
+;  POLYETHER-BONDS
+;---------------------------
+[ link ]
+resname "PEO|mPEG"
+[ atoms ]
+EC2 {"replace": {"atype": "CH2", "mass": "14.0270"}}
++EC1 {"replace": {"atype": "CH2", "mass": "14.0270"}}
+[ bonds ]
++EC1 EC2 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link"}
+
+;---------------------------
+;  POLYETHER-ANGLES
+;---------------------------
+[ link ]
+resname "PEO|mPEG"
+[ angles ]
+EC2 +EC1 +O1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
+[ link ]
+resname "PEO|mPEG"
+[ angles ]
++EC1 EC2 O1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
+
+;---------------------------
+;  POLYETHER-DIHEDRALS
+;---------------------------
+[ link ]
+resname "PEO|mPEG"
+[ dihedrals ]
+EC1 O1 EC2 +EC1 1 gd_42 {"comment":"CHn-CHn-OE-CHn", "version":"1" , "group":"link"}
+EC1 O1 EC2 +EC1 1 gd_43 {"comment":"CHn-CHn-OE-CHn", "version":"2" , "group":"link"}
+EC1 O1 EC2 +EC1 1 gd_44 {"comment":"CHn-CHn-OE-CHn", "version":"3" , "group":"link"}
+
+[ link ]
+resname "PEO|mPEG"
+[ dihedrals ]
+O1 EC2 +EC1 +O1 1 gd_45 {"comment":"OE-CHn-CHn-OE", "version":"1" , "group":"link"}
+O1 EC2 +EC1 +O1 1 gd_46 {"comment":"OE-CHn-CHn-OE", "version":"2" , "group":"link"}
+O1 EC2 +EC1 +O1 1 gd_47 {"comment":"OE-CHn-CHn-OE", "version":"3" , "group":"link"}
+
+[ link ]
+resname "PEO|mPEG"
+[ dihedrals ]
+EC2 +EC1 +O1 +EC2 1 gd_42 {"comment":"CHn-CHn-OE-CHn", "version":"1" , "group":"link"}
+EC2 +EC1 +O1 +EC2 1 gd_43 {"comment":"CHn-CHn-OE-CHn", "version":"2" , "group":"link"}
+EC2 +EC1 +O1 +EC2 1 gd_44 {"comment":"CHn-CHn-OE-CHn", "version":"3" , "group":"link"}
+
+;---------------------------
+;  POLYETHER-PAIRS
+;---------------------------
+[ link ]
+resname "PEO|mPEG"
+[ atoms ]
+EC1 { }
+O1 { }
+EC2 { }
++EC1 { }
++O1 { }
++EC2 { }
+[ pairs ]
+EC1 +EC1 1 { "group":"link"}
+[ edges ]
+EC1 O1
+O1 EC2
+EC2 +EC1
++EC1 +O1
++O1 +EC2
+[ link ]
+resname "PEO"
+[ atoms ]
+EC1 { }
+O1 { }
+EC2 { }
++EC1 { }
++O1 { }
++EC2 { }
+[ pairs ]
+O1 +O1 1 { "group":"link"}
+[ edges ]
+EC1 O1
+O1 EC2
+EC2 +EC1
++EC1 +O1
++O1 +EC2
+[ link ]
+resname "PEO|mPEG"
+[ atoms ]
+EC1 { }
+O1 { }
+EC2 { }
++EC1 { }
++O1 { }
++EC2 { }
+[ pairs ]
+EC2 +EC2 1 { "group":"link"}
+[ edges ]
+EC1 O1
+O1 EC2
+EC2 +EC1
++EC1 +O1
++O1 +EC2
+;-------------------------------------
+;       OH-TERMINAL
+;-------------------------------------
+[ link ]
+resname "PEO|OHter"
+[ atoms ]
+EC2 {"replace": {"atype": "CH2", "mass": "14.0270"}}
+[ bonds ]
++C1 EC2 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link-OHter"}
+
+[ link ]
+resname "PEO|OHter"
+[ atoms ]
++EC1 {"replace": {"atype": "CH2", "mass":"14.0270"}}
+[ bonds ]
+C1 +EC1 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link-OHter"}
+
+[ link ]
+resname "PEO|OHter"
+[ angles ]
+EC2 +C1 +O1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link-OHter"}
+
+[ link ]
+resname "PEO|OHter"
+[ angles ]
+O1 EC2 +C1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link-OHter"}
+
+[ link ]
+resname "PEO|OHter"
+[ angles ]
+O1 C1 +EC1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link-OHter"}
+
+[ link ]
+resname "PEO|OHter"
+[ angles ]
+C1 +EC1 +O1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link-OHter"}
+
+[ link ]
+resname "PEO|OHter"
+[ dihedrals ]
+EC2 +C1 +O1 +H1 1 gd_23 {"comment":"X-CHn-OA-X", "group":"link-OHter"}
+
+[ link ]
+resname "PEO|OHter"
+[ dihedrals ]
+;O1 EC2 +C1 +O1 1 gd_34 {"comment":"X-SI,CHn-CHn-X", "group":"link-OHter"}
+O1 EC2 +C1 +O1  1 gd_45 {"comment":"OA-CHn-OE-CHn", "version":"1" , "group":"link-OHter"}
+O1 EC2 +C1 +O1  1 gd_46 {"comment":"OA-CHn-OE-CHn", "version":"2" , "group":"link-OHter"}
+O1 EC2 +C1 +O1  1 gd_47 {"comment":"OA-CHn-OE-CHn", "version":"3" , "group":"link-OHter"}
+
+[ link ]
+resname "PEO|OHter"
+[ dihedrals ]
+EC1 O1 EC2 +C1  1 gd_42 {"comment":"CHn-CHn-OE-CHn", "version":"1" , "group":"link-OHter"}
+EC1 O1 EC2 +C1  1 gd_43 {"comment":"CHn-CHn-OE-CHn", "version":"2" , "group":"link-OHter"}
+EC1 O1 EC2 +C1  1 gd_44 {"comment":"CHn-CHn-OE-CHn", "version":"3" , "group":"link-OHter"}
+
+[ link ]
+resname "PEO|OHter"
+[ dihedrals ]
+H1 O1 C1 +EC1 1 gd_23 {"comment":"X-CHn-OA-X", "group":"link-OHter"}
+
+[ link ]
+resname "PEO|OHter"
+[ dihedrals ]
+;O1 C1 +EC1 +O1 1 gd_34 {"comment":"X-SI,CHn-CHn-X", "group":"link-OHter"}
+O1 C1 +EC1 +O1  1 gd_45 {"comment":"OA-CHn-OE-CHn", "version":"1" , "group":"link-OHter"}
+O1 C1 +EC1 +O1  1 gd_46 {"comment":"OA-CHn-OE-CHn", "version":"2" , "group":"link-OHter"}
+O1 C1 +EC1 +O1  1 gd_47 {"comment":"OA-CHn-OE-CHn", "version":"3" , "group":"link-OHter"}
+
+[ link ]
+resname "PEO|OHter"
+[ dihedrals ]
+C1 +EC1 +O1 +EC2  1 gd_42 {"comment":"CHn-CHn-OE-CHn", "version":"1" , "group":"link-OHter"}
+C1 +EC1 +O1 +EC2  1 gd_43 {"comment":"CHn-CHn-OE-CHn", "version":"2" , "group":"link-OHter"}
+C1 +EC1 +O1 +EC2  1 gd_44 {"comment":"CHn-CHn-OE-CHn", "version":"3" , "group":"link-OHter"}
+
+[ link ]
+resname "OHter|PEO"
+[ atoms ]
+H1 { }
+O1 { }
+C1 { }
++EC1 { }
++O1 { }
++EC2 { }
+[ pairs ]
+H1 +EC1  1 { "group":"link-OHter"}
+O1 +O1  1 { "group":"link-OHter"}
+C1 +EC2  1 { "group":"link-OHter"}
+[ edges ]
+H1 O1
+O1 C1
+C1 +EC1
++EC1 +O1
++O1 +EC2
+
+[ link ]
+resname "OHter|PEO"
+[ atoms ]
+EC1 { }
+O1 { }
+EC2 { }
++C1 { }
++O1 { }
++H1 { }
+[ pairs ]
++H1 EC2  1 { "group":"link-OHter"}
++O1 O1  1 { "group":"link-OHter"}
++C1 EC1  1 { "group":"link-OHter"}
+[ edges ]
++H1 +O1
++O1 +C1
++C1 EC2
+EC2 O1
+O1 EC1

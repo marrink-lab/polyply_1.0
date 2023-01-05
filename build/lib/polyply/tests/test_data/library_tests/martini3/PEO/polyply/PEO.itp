@@ -1,0 +1,32 @@
+; polyply-itp
+
+[ moleculetype ]
+PEO 1
+
+[ atoms ]
+1 SN3r 1 PEO EC 1 0.0 45.0
+2 SN3r 2 PEO EC 2 0.0 45.0
+3 SN3r 3 PEO EC 3 0.0 45.0
+4 SN3r 4 PEO EC 4 0.0 45.0
+5 SN3r 5 PEO EC 5 0.0 45.0
+6 SN3r 6 PEO EC 6 0.0 45.0
+
+[ bonds ]
+1 2 1 0.36 7000 ; central-bond
+2 3 1 0.36 7000 ; central-bond
+3 4 1 0.36 7000 ; central-bond
+4 5 1 0.36 7000 ; central-bond
+5 6 1 0.36 7000 ; central-bond
+
+[ angles ]
+1 2 3 2 123.00 80 ; central-angle
+2 3 4 2 123.00 80 ; central-angle
+3 4 5 2 123.00 80 ; central-angle
+4 5 6 2 123.00 80 ; central-angle
+
+#ifndef TI
+[ dihedrals ]
+1 2 3 4 11 8 0.6570 -1.3278 -0.43661278 1.0808704 0.680055
+2 3 4 5 11 8 0.6570 -1.3278 -0.43661278 1.0808704 0.680055
+3 4 5 6 11 8 0.6570 -1.3278 -0.43661278 1.0808704 0.680055
+#endif

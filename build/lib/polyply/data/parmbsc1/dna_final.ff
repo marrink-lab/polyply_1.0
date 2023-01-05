@@ -1,0 +1,3712 @@
+[ macros ]
+base_pairs "DA5|DA|DA3|DC5|DC|DC3|DT5|DT|DT3|DG5|DG|DG3"
+
+[ citations ]
+parmbsc1
+polyply
+
+[ moleculetype ]
+DA5 3
+[ atoms ]
+1    HO   1  DA5   H5T       1   0.44220
+2    OH   1  DA5   O5'       2  -0.63180
+3    CI   1  DA5   C5'       3  -0.00690
+4    H1   1  DA5   H5'1      4   0.07540
+5    H1   1  DA5   H5'2      5   0.07540
+6    CT   1  DA5   C4'       6   0.16290
+7    H1   1  DA5   H4'       7   0.11760
+8    OS   1  DA5   O4'       8  -0.36910
+9    CT   1  DA5   C1'       9   0.04310
+10   H2   1  DA5   H1'      10   0.18380
+11   N*   1  DA5   N9       11  -0.02680
+12   C1   1  DA5   C8       12   0.16070
+13   H5   1  DA5   H8       13   0.18770
+14   NB   1  DA5   N7       14  -0.61750
+15   CB   1  DA5   C5       15   0.07250
+16   CA   1  DA5   C6       16   0.68970
+17   N2   1  DA5   N6       17  -0.91230
+18   H    1  DA5   H61      18   0.41670
+19   H    1  DA5   H62      19   0.41670
+20   NC   1  DA5   N1       20  -0.76240
+21   CQ   1  DA5   C2       21   0.57160
+22   H5   1  DA5   H2       22   0.05980
+23   NC   1  DA5   N3       23  -0.74170
+24   CB   1  DA5   C4       24   0.38000
+25   CE   1  DA5   C3'      25   0.07130
+26   H1   1  DA5   H3'      26   0.09850
+27   CT   1  DA5   C2'      27  -0.08540
+28   HC   1  DA5   H2'1     28   0.07180
+29   HC   1  DA5   H2'2     29   0.07180
+30   OS   1  DA5   O3'      30  -0.52320
+[ impropers ]
+C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C1'", "ifdef":"eq_polyply"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C3'", "ifdef":"eq_polyply"}
+C4' C5' C3' O4'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center O4'", "ifdef":"eq_polyply"}
+
+C1' C2' N9 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
+[ bonds ]
+H5T O5'  1
+O5' C5'  1 
+C5' H5'1 1 
+C5' H5'2 1 
+C5' C4'  1 
+C4' H4'  1
+C4' O4'  1 
+C4' C3'  1 
+O4' C1'  1 
+C1' H1'  1 
+C1' N9   1
+C1' C2'  1
+N9 C8    1
+N9 C4    1
+C8 H8    1
+C8 N7    1
+N7 C5    1
+C5 C6    1
+C5 C4    1
+C6 N6    1
+C6 N1    1
+N6 H61   1
+N6 H62   1
+N1 C2    1
+C2 H2    1
+C2 N3    1
+N3 C4    1
+C3' H3'  1
+C3' C2'  1
+C3' O3'  1
+C2' H2'1 1
+C2' H2'2 1
+[ impropers ]
+C4 C8 N9 C1' 4
+C6 H61 N6 H62 4
+N9 N7 C8 H8 4
+N1 N3 C2 H2 4
+C5 N6 C6 N1 4
+[ dihedrals ]
+H5'1 C5' O5' H5T 9
+H5'2 C5' O5' H5T 9
+C4' C5' O5' H5T 9
+H4' C4' C5' O5' 9
+O4' C4' C5' O5' 9
+C3' C4' C5' O5' 9
+C1' O4' C4' C5' 9
+H3' C3' C4' C5' 9
+C2' C3' C4' C5' 9
+O3' C3' C4' C5' 9
+H4' C4' C5' H5'1 9
+O4' C4' C5' H5'1 9
+C3' C4' C5' H5'1 9
+H4' C4' C5' H5'2 9
+O4' C4' C5' H5'2 9
+C3' C4' C5' H5'2 9
+H1' C1' O4' C4' 9
+N9 C1' O4' C4' 9
+H2'1 C2' C3' C4' 9
+H2'2 C2' C3' C4' 9
+C1' O4' C4' H4' 9
+H3' C3' C4' H4' 9
+C2' C3' C4' H4' 9
+O3' C3' C4' H4' 9
+H3' C3' C4' O4' 9
+O3' C3' C4' O4' 9
+C8 N9 C1' O4' 9
+C4 N9 C1' O4' 9
+H2'1 C2' C1' O4' 9
+H2'2 C2' C1' O4' 9
+H8 C8 N9 C1' 9
+N7 C8 N9 C1' 9
+C5 C4 N9 C1' 9
+N3 C4 N9 C1' 9
+H3' C3' C2' C1' 9
+O3' C3' C2' C1' 9
+C8 N9 C1' H1' 9
+C4 N9 C1' H1' 9
+C3' C2' C1' H1' 9
+H2'1 C2' C1' H1' 9
+H2'2 C2' C1' H1' 9
+C3' C2' C1' N9 9
+H2'1 C2' C1' N9 9
+H2'2 C2' C1' N9 9
+C6 C5 C4 N9 9
+C2 N3 C4 N9 9
+C2' C1' N9 C8 9
+N3 C4 N9 C8 9
+C6 C5 N7 C8 9
+C4 N9 C8 H8 9
+C5 N7 C8 H8 9
+N6 C6 C5 N7 9
+N1 C6 C5 N7 9
+N3 C4 C5 N7 9
+H61 N6 C6 C5 9
+H62 N6 C6 C5 9
+C2 N1 C6 C5 9
+C6 C5 C4 N3 9
+H2 C2 N1 C6 9
+C4 C5 C6 N6 9
+C2 N1 C6 N6 9
+N1 C6 N6 H61 9
+N1 C6 N6 H62 9
+C4 C5 C6 N1 9
+C4 N3 C2 H2 9
+N3 C2 N1 C6 9
+C2' C1' N9 C4 9
+H2'1 C2' C3' H3' 9
+H2'2 C2' C3' H3' 9
+O3' C3' C2' H2'1 9
+O3' C3' C2' H2'2 9
+;
+C1' O4' C4' C3' 9 
+C2' C3' C4' O4' 9 
+C2' C1' O4' C4' 9 
+C3' C2' C1' O4' 9 
+;
+N7  C8  N9  C4  9 
+C5  C4  N9  C8  9 
+C5 N7 C8 N9 9     
+C4 C5 N7 C8 9     
+N9 C4 C5 N7 9     
+;
+C4 N3 C2 N1 9     
+C5 C4 N3 C2 9     
+C1' C2' C3' C4' 9 
+[ pairs ]
+H5'1 H5T 1
+H5'2 H5T 1
+C4' H5T 1
+H4' O5' 1
+O4' O5' 1
+C3' O5' 1
+C1' C5' 1
+H3' C5' 1
+C2' C5' 1
+O3' C5' 1
+H4' H5'1 1
+O4' H5'1 1
+C3' H5'1 1
+H4' H5'2 1
+O4' H5'2 1
+C3' H5'2 1
+H1' C4' 1
+N9 C4' 1
+H2'1 C4' 1
+H2'2 C4' 1
+C1' H4' 1
+H3' H4' 1
+C2' H4' 1
+O3' H4' 1
+H3' O4' 1
+O3' O4' 1
+C8 O4' 1
+C4 O4' 1
+H2'1 O4' 1
+H2'2 O4' 1
+H8 C1' 1
+N7 C1' 1
+C5 C1' 1
+N3 C1' 1
+H3' C1' 1
+O3' C1' 1
+C8 H1' 1
+C4 H1' 1
+C3' H1' 1
+H2'1 H1' 1
+H2'2 H1' 1
+C3' N9 1
+H2'1 N9 1
+H2'2 N9 1
+C6 N9 1
+C2 N9 1
+C2' C8 1
+N3 C8 1
+C6 C8 1
+C4 H8 1
+C5 H8 1
+N6 N7 1
+N1 N7 1
+N3 N7 1
+H61 C5 1
+H62 C5 1
+C2 C5 1
+N3 C6 1
+H2 C6 1
+C4 N6 1
+C2 N6 1
+N1 H61 1
+N1 H62 1
+C4 N1 1
+C4 H2 1
+C2' C4 1
+H2'1 H3' 1
+H2'2 H3' 1
+O3' H2'1 1
+O3' H2'2 1
+[ angles ]
+C5' O5' H5T 1
+H5'1 C5' O5' 1
+H5'2 C5' O5' 1
+C4' C5' O5' 1
+H4' C4' C5' 1
+O4' C4' C5' 1
+C3' C4' C5' 1
+H5'2 C5' H5'1 1
+C4' C5' H5'1 1
+C4' C5' H5'2 1
+C1' O4' C4' 1
+H3' C3' C4' 1
+C2' C3' C4' 1
+O3' C3' C4' 1
+O4' C4' H4' 1
+C3' C4' H4' 1
+C3' C4' O4' 1
+H1' C1' O4' 1
+N9 C1' O4' 1
+C2' C1' O4' 1
+C8 N9 C1' 1
+C4 N9 C1' 1
+C3' C2' C1' 1
+H2'1 C2' C1' 1
+H2'2 C2' C1' 1
+N9 C1' H1' 1
+C2' C1' H1' 1
+C2' C1' N9 1
+H8 C8 N9 1
+N7 C8 N9 1
+C5 C4 N9 1
+N3 C4 N9 1
+C4 N9 C8 1
+C5 N7 C8 1
+N7 C8 H8 1
+C6 C5 N7 1
+C4 C5 N7 1
+N6 C6 C5 1
+N1 C6 C5 1
+N3 C4 C5 1
+C4 C5 C6 1
+H61 N6 C6 1
+H62 N6 C6 1
+C2 N1 C6 1
+N1 C6 N6 1
+H62 N6 H61 1
+H2 C2 N1 1
+N3 C2 N1 1
+C4 N3 C2 1
+N3 C2 H2 1
+H2'1 C2' C3' 1
+H2'2 C2' C3' 1
+C2' C3' H3' 1
+O3' C3' H3' 1
+O3' C3' C2' 1
+H2'2 C2' H2'1 1
+[ moleculetype ]
+DA 3
+[ atoms ]
+[ moleculetype ]
+DA   3
+[ atoms ]
+;id  type resnr residu atom cgnr   charge
+  1   P   1   DA      P     1   1.16590    
+  2   O2  1   DA    O1P     2  -0.77610    
+  3   O2  1   DA    O2P     3  -0.77610    
+  4   OS  1   DA    O5'     4  -0.49540    
+  5   CI  1   DA    C5'     5  -0.00690    
+  6   H1  1   DA   H5'1     6   0.07540    
+  7   H1  1   DA   H5'2     7   0.07540    
+  8   CT  1   DA    C4'     8   0.16290    
+  9   H1  1   DA    H4'     9   0.11760    
+ 10   OS  1   DA    O4'    10  -0.36910    
+ 11   CT  1   DA    C1'    11   0.04310    
+ 12   H2  1   DA    H1'    12   0.18380    
+ 13   N*  1   DA     N9    13  -0.02680    
+ 14   C1  1   DA     C8    14   0.16070    
+ 15   H5  1   DA     H8    15   0.18770    
+ 16   NB  1   DA     N7    16  -0.61750    
+ 17   CB  1   DA     C5    17   0.07250    
+ 18   CA  1   DA     C6    18   0.68970    
+ 19   N2  1   DA     N6    19  -0.91230    
+ 20   H   1   DA    H61    20   0.41670    
+ 21   H   1   DA    H62    21   0.41670    
+ 22   NC  1   DA     N1    22  -0.76240    
+ 23   CQ  1   DA     C2    23   0.57160    
+ 24   H5  1   DA     H2    24   0.05980    
+ 25   NC  1   DA     N3    25  -0.74170    
+ 26   CB  1   DA     C4    26   0.38000    
+ 27   CE  1   DA    C3'    27   0.07130    
+ 28   H1  1   DA    H3'    28   0.09850    
+ 29   CT  1   DA    C2'    29  -0.08540    
+ 30   HC  1   DA   H2'1    30   0.07180    
+ 31   HC  1   DA   H2'2    31   0.07180    
+ 32   OS  1   DA    O3'    32  -0.52320    
+[ impropers ]
+C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C1'", "ifdef":"eq_polyply"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C3'", "ifdef":"eq_polyply"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center O4'", "ifdef":"eq_polyply"}
+
+C1' C2' N9 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
+
+[ bonds ]
+P O1P 1
+P O2P 1
+P O5' 1
+O5' C5' 1
+C5' H5'1 1
+C5' H5'2 1
+C5' C4' 1
+C4' H4' 1
+C4' O4' 1
+C4' C3' 1
+O4' C1' 1
+C1' H1' 1
+C1' N9 1
+C1' C2' 1
+N9 C8 1
+N9 C4 1
+C8 H8 1
+C8 N7 1
+N7 C5 1
+C5 C6 1
+C5 C4 1
+C6 N6 1
+C6 N1 1
+N6 H61 1
+N6 H62 1
+N1 C2 1
+C2 H2 1
+C2 N3 1
+N3 C4 1
+C3' H3' 1 
+C3' C2' 1
+C3' O3' 1
+C2' H2'1 1
+C2' H2'2 1
+[ impropers ]
+C4 C8 N9 C1' 4
+C6 H61 N6 H62 4
+N9 N7 C8 H8 4
+N1 N3 C2 H2 4
+C5 N6 C6 N1 4
+[ dihedrals ]
+H5'1 C5' O5' P 9
+H5'2 C5' O5' P 9
+C4' C5' O5' P 9
+C5' O5' P O1P 9
+C5' O5' P O2P 9
+H4' C4' C5' O5' 9
+O4' C4' C5' O5' 9
+C3' C4' C5' O5' 9
+C1' O4' C4' C5' 9
+H3' C3' C4' C5' 9
+C2' C3' C4' C5' 9
+O3' C3' C4' C5' 9
+H4' C4' C5' H5'1 9
+O4' C4' C5' H5'1 9
+C3' C4' C5' H5'1 9
+H4' C4' C5' H5'2 9
+O4' C4' C5' H5'2 9
+C3' C4' C5' H5'2 9
+H1' C1' O4' C4' 9
+N9 C1' O4' C4' 9
+H2'1 C2' C3' C4' 9
+H2'2 C2' C3' C4' 9
+C1' O4' C4' H4' 9
+H3' C3' C4' H4' 9
+C2' C3' C4' H4' 9
+O3' C3' C4' H4' 9
+H3' C3' C4' O4' 9
+O3' C3' C4' O4' 9
+C8 N9 C1' O4' 9
+C4 N9 C1' O4' 9
+H2'1 C2' C1' O4' 9
+H2'2 C2' C1' O4' 9
+H8 C8 N9 C1' 9
+N7 C8 N9 C1' 9
+C5 C4 N9 C1' 9
+N3 C4 N9 C1' 9
+H3' C3' C2' C1' 9
+O3' C3' C2' C1' 9
+C8 N9 C1' H1' 9
+C4 N9 C1' H1' 9
+C3' C2' C1' H1' 9
+H2'1 C2' C1' H1' 9
+H2'2 C2' C1' H1' 9
+C3' C2' C1' N9 9
+H2'1 C2' C1' N9 9
+H2'2 C2' C1' N9 9
+C6 C5 C4 N9 9
+C2 N3 C4 N9 9
+C2' C1' N9 C8 9
+N3 C4 N9 C8 9
+C6 C5 N7 C8 9
+C4 N9 C8 H8 9
+C5 N7 C8 H8 9
+N6 C6 C5 N7 9
+N1 C6 C5 N7 9
+N3 C4 C5 N7 9
+H61 N6 C6 C5 9
+H62 N6 C6 C5 9
+C2 N1 C6 C5 9
+C6 C5 C4 N3 9
+H2 C2 N1 C6 9
+C4 C5 C6 N6 9
+C2 N1 C6 N6 9
+N1 C6 N6 H61 9
+N1 C6 N6 H62 9
+C4 C5 C6 N1 9
+C4 N3 C2 H2 9
+N3 C2 N1 C6 9
+C2' C1' N9 C4 9
+H2'1 C2' C3' H3' 9
+H2'2 C2' C3' H3' 9
+O3' C3' C2' H2'1 9
+O3' C3' C2' H2'2 9
+;
+C1' O4' C4' C3' 9 
+C2' C3' C4' O4' 9 
+C2' C1' O4' C4' 9 
+C3' C2' C1' O4' 9 
+;
+N7  C8  N9  C4  9 
+C5  C4  N9  C8  9 
+C5 N7 C8 N9 9 
+C4 C5 N7 C8 9 
+N9 C4 C5 N7 9 
+;
+C4 N3 C2 N1 9 
+C5 C4 N3 C2 9 
+C1' C2' C3' C4' 9 
+
+[ pairs ]
+H5'1 P 1
+H5'2 P 1
+C4' P 1
+C5' O1P 1
+C5' O2P 1
+H4' O5' 1
+O4' O5' 1
+C3' O5' 1
+C1' C5' 1
+H3' C5' 1
+C2' C5' 1
+O3' C5' 1
+H4' H5'1 1
+O4' H5'1 1
+C3' H5'1 1
+H4' H5'2 1
+O4' H5'2 1
+C3' H5'2 1
+H1' C4' 1
+N9 C4' 1
+H2'1 C4' 1
+H2'2 C4' 1
+C1' H4' 1
+H3' H4' 1
+C2' H4' 1
+O3' H4' 1
+H3' O4' 1
+O3' O4' 1
+C8 O4' 1
+C4 O4' 1
+H2'1 O4' 1
+H2'2 O4' 1
+H8 C1' 1
+N7 C1' 1
+C5 C1' 1
+N3 C1' 1
+H3' C1' 1
+O3' C1' 1
+C8 H1' 1
+C4 H1' 1
+C3' H1' 1
+H2'1 H1' 1
+H2'2 H1' 1
+C3' N9 1
+H2'1 N9 1
+H2'2 N9 1
+C6 N9 1
+C2 N9 1
+C2' C8 1
+N3 C8 1
+C6 C8 1
+C4 H8 1
+C5 H8 1
+N6 N7 1
+N1 N7 1
+N3 N7 1
+H61 C5 1
+H62 C5 1
+C2 C5 1
+N3 C6 1
+H2 C6 1
+C4 N6 1
+C2 N6 1
+N1 H61 1
+N1 H62 1
+C4 N1 1
+C4 H2 1
+C2' C4 1
+H2'1 H3' 1
+H2'2 H3' 1
+O3' H2'1 1
+O3' H2'2 1
+[ angles ]
+C5' O5' P 1
+O2P P O1P 1
+O5' P O1P 1
+O5' P O2P 1
+H5'1 C5' O5' 1
+H5'2 C5' O5' 1
+C4' C5' O5' 1
+H4' C4' C5' 1
+O4' C4' C5' 1
+C3' C4' C5' 1
+H5'2 C5' H5'1 1
+C4' C5' H5'1 1
+C4' C5' H5'2 1
+C1' O4' C4' 1
+H3' C3' C4' 1
+C2' C3' C4' 1
+O3' C3' C4' 1
+O4' C4' H4' 1
+C3' C4' H4' 1
+C3' C4' O4' 1
+H1' C1' O4' 1
+N9 C1' O4' 1
+C2' C1' O4' 1
+C8 N9 C1' 1
+C4 N9 C1' 1
+C3' C2' C1' 1
+H2'1 C2' C1' 1
+H2'2 C2' C1' 1
+N9 C1' H1' 1
+C2' C1' H1' 1
+C2' C1' N9 1
+H8 C8 N9 1
+N7 C8 N9 1
+C5 C4 N9 1
+N3 C4 N9 1
+C4 N9 C8 1
+C5 N7 C8 1
+N7 C8 H8 1
+C6 C5 N7 1
+C4 C5 N7 1
+N6 C6 C5 1
+N1 C6 C5 1
+N3 C4 C5 1
+C4 C5 C6 1
+H61 N6 C6 1
+H62 N6 C6 1
+C2 N1 C6 1
+N1 C6 N6 1
+H62 N6 H61 1
+H2 C2 N1 1
+N3 C2 N1 1
+C4 N3 C2 1
+N3 C2 H2 1
+H2'1 C2' C3' 1
+H2'2 C2' C3' 1
+C2' C3' H3' 1
+O3' C3' H3' 1
+O3' C3' C2' 1
+H2'2 C2' H2'1 1
+[ moleculetype ]
+DA3 3
+[ atoms ]
+  1   P    1 DA3     P    1   1.16590
+  2   O2   1 DA3   O1P    2  -0.77610
+  3   O2   1 DA3   O2P    3  -0.77610
+  4   OS   1 DA3   O5'    4  -0.49540
+  5   CI   1 DA3   C5'    5  -0.00690
+  6   H1   1 DA3  H5'1    6   0.07540
+  7   H1   1 DA3  H5'2    7   0.07540
+  8   CT   1 DA3   C4'    8   0.16290
+  9   H1   1 DA3   H4'    9   0.11760
+ 10   OS   1 DA3   O4'   10  -0.36910
+ 11   CT   1 DA3   C1'   11   0.04310
+ 12   H2   1 DA3   H1'   12   0.18380
+ 13   N*   1 DA3    N9   13  -0.02680
+ 14   C1   1 DA3    C8   14   0.16070
+ 15   H5   1 DA3    H8   15   0.18770
+ 16   NB   1 DA3    N7   16  -0.61750
+ 17   CB   1 DA3    C5   17   0.07250
+ 18   CA   1 DA3    C6   18   0.68970
+ 19   N2   1 DA3    N6   19  -0.91230
+ 20   H    1 DA3   H61   20   0.41670
+ 21   H    1 DA3   H62   21   0.41670
+ 22   NC   1 DA3    N1   22  -0.76240
+ 23   CQ   1 DA3    C2   23   0.57160
+ 24   H5   1 DA3    H2   24   0.05980
+ 25   NC   1 DA3    N3   25  -0.74170
+ 26   CB   1 DA3    C4   26   0.38000
+ 27   CE   1 DA3   C3'   27   0.07130
+ 28   H1   1 DA3   H3'   28   0.09850
+ 29   CT   1 DA3   C2'   29  -0.08540
+ 30   HC   1 DA3  H2'1   30   0.07180
+ 31   HC   1 DA3  H2'2   31   0.07180
+ 32   OH   1 DA3   O3'   32  -0.65490
+ 33   HO   1 DA3   H3T   33   0.43960
+[ impropers ]
+C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C1'", "ifdef":"eq_polyply"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C3'", "ifdef":"eq_polyply"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center O4'", "ifdef":"eq_polyply"}
+
+C1' C2' N9 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
+[ bonds ]
+P O1P 1
+P O2P 1
+P O5' 1
+O5' C5' 1 
+C5' H5'1 1
+C5' H5'2 1
+C5' C4' 1
+C4' H4' 1
+C4' O4' 1
+C4' C3' 1
+O4' C1' 1
+C1' H1' 1
+C1' N9 1
+C1' C2' 1
+N9 C8 1
+N9 C4 1
+C8 H8 1
+C8 N7 1
+N7 C5 1
+C5 C6 1
+C5 C4 1
+C6 N6 1
+C6 N1 1
+N6 H61 1
+N6 H62 1
+N1 C2 1
+C2 H2 1
+C2 N3 1
+N3 C4 1
+C3' H3' 1 
+C3' C2' 1
+C3' O3' 1
+C2' H2'1 1
+C2' H2'2 1
+O3' H3T 1
+[ impropers ]
+C4 C8 N9 C1' 4
+C6 H61 N6 H62 4
+N9 N7 C8 H8 4
+N1 N3 C2 H2 4
+C5 N6 C6 N1 4
+[ dihedrals ]
+H5'1 C5' O5' P 9
+H5'2 C5' O5' P 9
+C4' C5' O5' P 9
+C5' O5' P O1P 9
+C5' O5' P O2P 9
+H4' C4' C5' O5' 9
+O4' C4' C5' O5' 9
+C3' C4' C5' O5' 9
+C1' O4' C4' C5' 9
+H3' C3' C4' C5' 9
+C2' C3' C4' C5' 9
+O3' C3' C4' C5' 9
+H4' C4' C5' H5'1 9
+O4' C4' C5' H5'1 9
+C3' C4' C5' H5'1 9
+H4' C4' C5' H5'2 9
+O4' C4' C5' H5'2 9
+C3' C4' C5' H5'2 9
+H1' C1' O4' C4' 9
+N9 C1' O4' C4' 9
+H2'1 C2' C3' C4' 9
+H2'2 C2' C3' C4' 9
+H3T O3' C3' C4' 9
+C1' O4' C4' H4' 9
+H3' C3' C4' H4' 9
+C2' C3' C4' H4' 9
+O3' C3' C4' H4' 9
+H3' C3' C4' O4' 9
+O3' C3' C4' O4' 9
+C8 N9 C1' O4' 9
+C4 N9 C1' O4' 9
+H2'1 C2' C1' O4' 9
+H2'2 C2' C1' O4' 9
+H8 C8 N9 C1' 9
+N7 C8 N9 C1' 9
+C5 C4 N9 C1' 9
+N3 C4 N9 C1' 9
+H3' C3' C2' C1' 9
+O3' C3' C2' C1' 9
+C8 N9 C1' H1' 9
+C4 N9 C1' H1' 9
+C3' C2' C1' H1' 9
+H2'1 C2' C1' H1' 9
+H2'2 C2' C1' H1' 9
+C3' C2' C1' N9 9
+H2'1 C2' C1' N9 9
+H2'2 C2' C1' N9 9
+C6 C5 C4 N9 9
+C2 N3 C4 N9 9
+C2' C1' N9 C8 9
+N3 C4 N9 C8 9
+C6 C5 N7 C8 9
+C4 N9 C8 H8 9
+C5 N7 C8 H8 9
+N6 C6 C5 N7 9
+N1 C6 C5 N7 9
+N3 C4 C5 N7 9
+H61 N6 C6 C5 9
+H62 N6 C6 C5 9
+C2 N1 C6 C5 9
+C6 C5 C4 N3 9
+H2 C2 N1 C6 9
+C4 C5 C6 N6 9
+C2 N1 C6 N6 9
+N1 C6 N6 H61 9
+N1 C6 N6 H62 9
+C4 C5 C6 N1 9
+C4 N3 C2 H2 9
+N3 C2 N1 C6 9
+C2' C1' N9 C4 9
+H2'1 C2' C3' H3' 9
+H2'2 C2' C3' H3' 9
+H3T O3' C3' H3' 9
+H3T O3' C3' C2' 9
+O3' C3' C2' H2'1 9
+O3' C3' C2' H2'2 9
+;
+C1' O4' C4' C3' 9 
+C2' C3' C4' O4' 9 
+C2' C1' O4' C4' 9 
+C3' C2' C1' O4' 9 
+;
+N7  C8  N9  C4  9 
+C5  C4  N9  C8  9 
+C5 N7 C8 N9 9 
+C4 C5 N7 C8 9 
+N9 C4 C5 N7 9 
+;
+C4 N3 C2 N1 9 
+C5 C4 N3 C2 9 
+C1' C2' C3' C4' 9 
+[ pairs ]
+H5'1 P 1
+H5'2 P 1
+C4' P 1
+C5' O1P 1
+C5' O2P 1
+H4' O5' 1
+O4' O5' 1
+C3' O5' 1
+C1' C5' 1
+H3' C5' 1
+C2' C5' 1
+O3' C5' 1
+H4' H5'1 1
+O4' H5'1 1
+C3' H5'1 1
+H4' H5'2 1
+O4' H5'2 1
+C3' H5'2 1
+H1' C4' 1
+N9 C4' 1
+H2'1 C4' 1
+H2'2 C4' 1
+H3T C4' 1
+C1' H4' 1
+H3' H4' 1
+C2' H4' 1
+O3' H4' 1
+H3' O4' 1
+O3' O4' 1
+C8 O4' 1
+C4 O4' 1
+H2'1 O4' 1
+H2'2 O4' 1
+H8 C1' 1
+N7 C1' 1
+C5 C1' 1
+N3 C1' 1
+H3' C1' 1
+O3' C1' 1
+C8 H1' 1
+C4 H1' 1
+C3' H1' 1
+H2'1 H1' 1
+H2'2 H1' 1
+C3' N9 1
+H2'1 N9 1
+H2'2 N9 1
+C6 N9 1
+C2 N9 1
+C2' C8 1
+N3 C8 1
+C6 C8 1
+C4 H8 1
+C5 H8 1
+N6 N7 1
+N1 N7 1
+N3 N7 1
+H61 C5 1
+H62 C5 1
+C2 C5 1
+N3 C6 1
+H2 C6 1
+C4 N6 1
+C2 N6 1
+N1 H61 1
+N1 H62 1
+C4 N1 1
+C4 H2 1
+C2' C4 1
+H2'1 H3' 1
+H2'2 H3' 1
+H3T H3' 1
+H3T C2' 1
+O3' H2'1 1
+O3' H2'2 1
+[ angles ]
+C5' O5' P 1
+O2P P O1P 1
+O5' P O1P 1
+O5' P O2P 1
+H5'1 C5' O5' 1
+H5'2 C5' O5' 1
+C4' C5' O5' 1
+H4' C4' C5' 1
+O4' C4' C5' 1
+C3' C4' C5' 1
+H5'2 C5' H5'1 1
+C4' C5' H5'1 1
+C4' C5' H5'2 1
+C1' O4' C4' 1
+H3' C3' C4' 1
+C2' C3' C4' 1
+O3' C3' C4' 1
+O4' C4' H4' 1
+C3' C4' H4' 1
+C3' C4' O4' 1
+H1' C1' O4' 1
+N9 C1' O4' 1
+C2' C1' O4' 1
+C8 N9 C1' 1
+C4 N9 C1' 1
+C3' C2' C1' 1
+H2'1 C2' C1' 1
+H2'2 C2' C1' 1
+N9 C1' H1' 1
+C2' C1' H1' 1
+C2' C1' N9 1
+H8 C8 N9 1
+N7 C8 N9 1
+C5 C4 N9 1
+N3 C4 N9 1
+C4 N9 C8 1
+C5 N7 C8 1
+N7 C8 H8 1
+C6 C5 N7 1
+C4 C5 N7 1
+N6 C6 C5 1
+N1 C6 C5 1
+N3 C4 C5 1
+C4 C5 C6 1
+H61 N6 C6 1
+H62 N6 C6 1
+C2 N1 C6 1
+N1 C6 N6 1
+H62 N6 H61 1
+H2 C2 N1 1
+N3 C2 N1 1
+C4 N3 C2 1
+N3 C2 H2 1
+H2'1 C2' C3' 1
+H2'2 C2' C3' 1
+H3T O3' C3' 1
+C2' C3' H3' 1
+O3' C3' H3' 1
+O3' C3' C2' 1
+H2'2 C2' H2'1 1
+[ moleculetype ]
+DT5 3
+[ atoms ]
+  1  HO  1  DT5   H5T   1    0.44220
+  2  OH  1  DT5   O5'   2   -0.63180
+  3  CI  1  DT5   C5'   3   -0.00690
+  4  H1  1  DT5  H5'1   4    0.07540
+  5  H1  1  DT5  H5'2   5    0.07540
+  6  CT  1  DT5   C4'   6    0.16290
+  7  H1  1  DT5   H4'   7    0.11760
+  8  OS  1  DT5   O4'   8   -0.36910
+  9  CT  1  DT5   C1'   9    0.06800
+ 10  H2  1  DT5   H1'  10    0.18040
+ 11  N*  1  DT5    N1  11   -0.02390
+ 12  C2  1  DT5    C6  12   -0.22090
+ 13  H4  1  DT5    H6  13    0.26070
+ 14  C2  1  DT5    C5  14    0.00250
+ 15  CT  1  DT5    C7  15   -0.22690
+ 16  HC  1  DT5   H71  16    0.07700
+ 17  HC  1  DT5   H72  17    0.07700
+ 18  HC  1  DT5   H73  18    0.07700
+ 19  C   1  DT5    C4  19    0.51940
+ 20  O   1  DT5    O4  20   -0.55630
+ 21  NA  1  DT5    N3  21   -0.43400
+ 22  H   1  DT5    H3  22    0.34200
+ 23  C   1  DT5    C2  23    0.56770
+ 24  O   1  DT5    O2  24   -0.58810
+ 25  CE  1  DT5   C3'  25    0.07130
+ 26  H1  1  DT5   H3'  26    0.09850
+ 27  CT  1  DT5   C2'  27   -0.08540
+ 28  HC  1  DT5  H2'1  28    0.07180
+ 29  HC  1  DT5  H2'2  29    0.07180
+ 30  OS  1  DT5   O3'  30   -0.52320
+[ impropers ]
+C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTO4'", "ifdef":"eq_polyply"}
+
+C1' C2' N1 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
+[ bonds ]
+H5T O5' 1
+O5' C5' 1
+C5' H5'1 1
+C5' H5'2 1
+C5' C4' 1
+C4' H4' 1
+C4' O4' 1
+C4' C3' 1
+O4' C1' 1
+C1' H1' 1
+C1' N1 1
+C1' C2' 1
+N1 C6 1
+N1 C2 1
+C6 H6 1
+C6 C5 1
+C5 C7 1
+C5 C4 1
+C7 H71 1
+C7 H72 1
+C7 H73 1
+C4 O4 1
+C4 N3 1
+N3 H3 1
+N3 C2 1
+C2 O2 1
+C3' H3' 1
+C3' C2' 1
+C3' O3' 1
+C2' H2'1 1
+C2' H2'2 1
+[ impropers ]
+C2 C6 N1 C1' 4
+C4 C6 C5 C7 4
+N1 N3 C2 O2 4
+C5 N3 C4 O4 4
+C4 C2 N3 H3 4
+N1 C5 C6 H6 4
+[ dihedrals ]
+H5'1 C5' O5' H5T 9
+H5'2 C5' O5' H5T 9
+C4' C5' O5' H5T 9
+H4' C4' C5' O5' 9
+O4' C4' C5' O5' 9
+C3' C4' C5' O5' 9
+C1' O4' C4' C5' 9
+H3' C3' C4' C5' 9
+C2' C3' C4' C5' 9
+O3' C3' C4' C5' 9
+H4' C4' C5' H5'1 9
+O4' C4' C5' H5'1 9
+C3' C4' C5' H5'1 9
+H4' C4' C5' H5'2 9
+O4' C4' C5' H5'2 9
+C3' C4' C5' H5'2 9
+H1' C1' O4' C4' 9
+N1 C1' O4' C4' 9
+H2'1 C2' C3' C4' 9
+H2'2 C2' C3' C4' 9
+C1' O4' C4' H4' 9
+H3' C3' C4' H4' 9
+C2' C3' C4' H4' 9
+O3' C3' C4' H4' 9
+H3' C3' C4' O4' 9
+O3' C3' C4' O4' 9
+C6 N1 C1' O4' 9
+C2 N1 C1' O4' 9
+H2'1 C2' C1' O4' 9
+H2'2 C2' C1' O4' 9
+H6 C6 N1 C1' 9
+C5 C6 N1 C1' 9
+N3 C2 N1 C1' 9
+O2 C2 N1 C1' 9
+H3' C3' C2' C1' 9
+O3' C3' C2' C1' 9
+C6 N1 C1' H1' 9
+C2 N1 C1' H1' 9
+C3' C2' C1' H1' 9
+H2'1 C2' C1' H1' 9
+H2'2 C2' C1' H1' 9
+C3' C2' C1' N1 9
+H2'1 C2' C1' N1 9
+H2'2 C2' C1' N1 9
+C7 C5 C6 N1 9
+C4 C5 C6 N1 9
+H3 N3 C2 N1 9
+C2' C1' N1 C6 9
+C6 N1 C2 N3 9
+O2 C2 N1 C6 9
+H71 C7 C5 C6 9
+H72 C7 C5 C6 9
+H73 C7 C5 C6 9
+O4 C4 C5 C6 9
+C2 N1 C6 H6 9
+C7 C5 C6 H6 9
+C4 C5 C6 H6 9
+C2 N1 C6 C5 9
+H3 N3 C4 C5 9
+O4 C4 C5 C7 9
+N3 C4 C5 C7 9
+C4 C5 C7 H71 9
+C4 C5 C7 H72 9
+C4 C5 C7 H73 9
+O2 C2 N3 C4 9
+H3 N3 C4 O4 9
+C2 N3 C4 O4 9
+N3 C4 C5 C6 9
+O2 C2 N3 H3 9
+C2' C1' N1 C2 9
+H2'1 C2' C3' H3' 9
+H2'2 C2' C3' H3' 9
+O3' C3' C2' H2'1 9
+O3' C3' C2' H2'2 9
+;
+C1' O4' C4' C3' 9 
+C2' C3' C4' O4' 9 
+C2' C1' O4' C4' 9 
+C3' C2' C1' O4' 9 
+;
+C2 N3 C4 C5 9 
+N1 C2 N3 C4 9 
+C4' C3' C2' C1' 9 
+[ pairs ]
+H5'1 H5T 1
+H5'2 H5T 1
+C4' H5T 1
+H4' O5' 1
+O4' O5' 1
+C3' O5' 1
+C1' C5' 1
+H3' C5' 1
+C2' C5' 1
+O3' C5' 1
+H4' H5'1 1
+O4' H5'1 1
+C3' H5'1 1
+H4' H5'2 1
+O4' H5'2 1
+C3' H5'2 1
+H1' C4' 1
+N1 C4' 1
+H2'1 C4' 1
+H2'2 C4' 1
+C1' H4' 1
+H3' H4' 1
+C2' H4' 1
+O3' H4' 1
+H3' O4' 1
+O3' O4' 1
+C6 O4' 1
+C2 O4' 1
+H2'1 O4' 1
+H2'2 O4' 1
+H6 C1' 1
+C5 C1' 1
+N3 C1' 1
+O2 C1' 1
+H3' C1' 1
+O3' C1' 1
+C6 H1' 1
+C2 H1' 1
+C3' H1' 1
+H2'1 H1' 1
+H2'2 H1' 1
+C3' N1 1
+H2'1 N1 1
+H2'2 N1 1
+C7 N1 1
+C4 N1 1
+H3 N1 1
+C2' C6 1
+N3 C6 1
+O2 C6 1
+H71 C6 1
+H72 C6 1
+H73 C6 1
+O4 C6 1
+C2 H6 1
+C7 H6 1
+C4 H6 1
+C2 C5 1
+H3 C5 1
+O4 C7 1
+N3 C7 1
+C4 H71 1
+C4 H72 1
+C4 H73 1
+O2 C4 1
+H3 O4 1
+C2 O4 1
+O2 H3 1
+C2' C2 1
+H2'1 H3' 1
+H2'2 H3' 1
+O3' H2'1 1
+O3' H2'2 1
+[ angles ]
+C5' O5' H5T 1
+H5'1 C5' O5' 1
+H5'2 C5' O5' 1
+C4' C5' O5' 1
+H4' C4' C5' 1
+O4' C4' C5' 1
+C3' C4' C5' 1
+H5'2 C5' H5'1 1
+C4' C5' H5'1 1
+C4' C5' H5'2 1
+C1' O4' C4' 1
+H3' C3' C4' 1
+C2' C3' C4' 1
+O3' C3' C4' 1
+O4' C4' H4' 1
+C3' C4' H4' 1
+C3' C4' O4' 1
+H1' C1' O4' 1
+N1 C1' O4' 1
+C2' C1' O4' 1
+C6 N1 C1' 1
+C2 N1 C1' 1
+C3' C2' C1' 1
+H2'1 C2' C1' 1
+H2'2 C2' C1' 1
+N1 C1' H1' 1
+C2' C1' H1' 1
+C2' C1' N1 1
+H6 C6 N1 1
+C5 C6 N1 1
+N3 C2 N1 1
+O2 C2 N1 1
+C2 N1 C6 1
+C7 C5 C6 1
+C4 C5 C6 1
+C5 C6 H6 1
+H71 C7 C5 1
+H72 C7 C5 1
+H73 C7 C5 1
+O4 C4 C5 1
+N3 C4 C5 1
+C4 C5 C7 1
+H72 C7 H71 1
+H73 C7 H71 1
+H73 C7 H72 1
+H3 N3 C4 1
+C2 N3 C4 1
+N3 C4 O4 1
+O2 C2 N3 1
+C2 N3 H3 1
+H2'1 C2' C3' 1
+H2'2 C2' C3' 1
+C2' C3' H3' 1
+O3' C3' H3' 1
+O3' C3' C2' 1
+H2'2 C2' H2'1 1
+[ moleculetype ]
+DT 3
+[ atoms ]
+  1  P   1 DT     P   1   1.16590
+  2  O2  1 DT   O1P   2  -0.77610
+  3  O2  1 DT   O2P   3  -0.77610
+  4  OS  1 DT   O5'   4  -0.49540
+  5  CI  1 DT   C5'   5  -0.00690
+  6  H1  1 DT  H5'1   6   0.07540
+  7  H1  1 DT  H5'2   7   0.07540
+  8  CT  1 DT   C4'   8   0.16290
+  9  H1  1 DT   H4'   9   0.11760
+ 10  OS  1 DT   O4'  10  -0.36910
+ 11  CT  1 DT   C1'  11   0.06800
+ 12  H2  1 DT   H1'  12   0.18040
+ 13  N*  1 DT    N1  13  -0.02390
+ 14  C2  1 DT    C6  14  -0.22090
+ 15  H4  1 DT    H6  15   0.26070
+ 16  C2  1 DT    C5  16   0.00250
+ 17  CT  1 DT    C7  17  -0.22690
+ 18  HC  1 DT   H71  18   0.07700
+ 19  HC  1 DT   H72  19   0.07700
+ 20  HC  1 DT   H73  20   0.07700
+ 21  C   1 DT    C4  21   0.51940
+ 22  O   1 DT    O4  22  -0.55630
+ 23  NA  1 DT    N3  23  -0.43400
+ 24  H   1 DT    H3  24   0.34200
+ 25  C   1 DT    C2  25   0.56770
+ 26  O   1 DT    O2  26  -0.58810
+ 27  CE  1 DT   C3'  27   0.07130
+ 28  H1  1 DT   H3'  28   0.09850
+ 29  CT  1 DT   C2'  29  -0.08540
+ 30  HC  1 DT  H2'1  30   0.07180
+ 31  HC  1 DT  H2'2  31   0.07180
+ 32  OS  1 DT   O3'  32  -0.52320
+[ impropers ]
+C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTO4'", "ifdef":"eq_polyply"}
+
+C1' C2' N1 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
+[ bonds ]
+P O1P 1
+P O2P 1
+P O5' 1
+O5' C5' 1
+C5' H5'1 1
+C5' H5'2 1
+C5' C4' 1
+C4' H4' 1
+C4' O4' 1
+C4' C3' 1
+O4' C1' 1
+C1' H1' 1
+C1' N1 1
+C1' C2' 1
+N1 C6 1
+N1 C2 1
+C6 H6 1
+C6 C5 1
+C5 C7 1
+C5 C4 1
+C7 H71 1
+C7 H72 1
+C7 H73 1
+C4 O4 1
+C4 N3 1
+N3 H3 1
+N3 C2 1
+C2 O2 1
+C3' H3' 1
+C3' C2' 1
+C3' O3' 1
+C2' H2'1 1
+C2' H2'2 1
+[ impropers ]
+C2 C6 N1 C1' 4
+C4 C6 C5 C7 4
+N1 N3 C2 O2 4
+C5 N3 C4 O4 4
+C4 C2 N3 H3 4
+N1 C5 C6 H6 4
+[ dihedrals ]
+H5'1 C5' O5' P 9
+H5'2 C5' O5' P 9
+C4' C5' O5' P 9
+C5' O5' P O1P 9
+C5' O5' P O2P 9
+H4' C4' C5' O5' 9
+O4' C4' C5' O5' 9
+C3' C4' C5' O5' 9
+C1' O4' C4' C5' 9
+H3' C3' C4' C5' 9
+C2' C3' C4' C5' 9
+O3' C3' C4' C5' 9
+H4' C4' C5' H5'1 9
+O4' C4' C5' H5'1 9
+C3' C4' C5' H5'1 9
+H4' C4' C5' H5'2 9
+O4' C4' C5' H5'2 9
+C3' C4' C5' H5'2 9
+H1' C1' O4' C4' 9
+N1 C1' O4' C4' 9
+H2'1 C2' C3' C4' 9
+H2'2 C2' C3' C4' 9
+C1' O4' C4' H4' 9
+H3' C3' C4' H4' 9
+C2' C3' C4' H4' 9
+O3' C3' C4' H4' 9
+H3' C3' C4' O4' 9
+O3' C3' C4' O4' 9
+C6 N1 C1' O4' 9
+C2 N1 C1' O4' 9
+H2'1 C2' C1' O4' 9
+H2'2 C2' C1' O4' 9
+H6 C6 N1 C1' 9
+C5 C6 N1 C1' 9
+N3 C2 N1 C1' 9
+O2 C2 N1 C1' 9
+H3' C3' C2' C1' 9
+O3' C3' C2' C1' 9
+C6 N1 C1' H1' 9
+C2 N1 C1' H1' 9
+C3' C2' C1' H1' 9
+H2'1 C2' C1' H1' 9
+H2'2 C2' C1' H1' 9
+C3' C2' C1' N1 9
+H2'1 C2' C1' N1 9
+H2'2 C2' C1' N1 9
+C7 C5 C6 N1 9
+C4 C5 C6 N1 9
+H3 N3 C2 N1 9
+C2' C1' N1 C6 9
+C6 N1 C2 N3 9
+O2 C2 N1 C6 9
+H71 C7 C5 C6 9
+H72 C7 C5 C6 9
+H73 C7 C5 C6 9
+O4 C4 C5 C6 9
+C2 N1 C6 H6 9
+C7 C5 C6 H6 9
+C4 C5 C6 H6 9
+C2 N1 C6 C5 9
+H3 N3 C4 C5 9
+O4 C4 C5 C7 9
+N3 C4 C5 C7 9
+C4 C5 C7 H71 9
+C4 C5 C7 H72 9
+C4 C5 C7 H73 9
+O2 C2 N3 C4 9
+H3 N3 C4 O4 9
+C2 N3 C4 O4 9
+N3 C4 C5 C6 9
+O2 C2 N3 H3 9
+C2' C1' N1 C2 9
+H2'1 C2' C3' H3' 9
+H2'2 C2' C3' H3' 9
+O3' C3' C2' H2'1 9
+O3' C3' C2' H2'2 9
+;
+C1' O4' C4' C3' 9 
+C2' C3' C4' O4' 9 
+C2' C1' O4' C4' 9 
+C3' C2' C1' O4' 9 
+;
+C2 N3 C4 C5 9 
+N1 C2 N3 C4 9 
+C1' C2' C3' C4' 9 
+[ pairs ]
+H5'1 P 1
+H5'2 P 1
+C4' P 1
+C5' O1P 1
+C5' O2P 1
+H4' O5' 1
+O4' O5' 1
+C3' O5' 1
+C1' C5' 1
+H3' C5' 1
+C2' C5' 1
+O3' C5' 1
+H4' H5'1 1
+O4' H5'1 1
+C3' H5'1 1
+H4' H5'2 1
+O4' H5'2 1
+C3' H5'2 1
+H1' C4' 1
+N1 C4' 1
+H2'1 C4' 1
+H2'2 C4' 1
+C1' H4' 1
+H3' H4' 1
+C2' H4' 1
+O3' H4' 1
+H3' O4' 1
+O3' O4' 1
+C6 O4' 1
+C2 O4' 1
+H2'1 O4' 1
+H2'2 O4' 1
+H6 C1' 1
+C5 C1' 1
+N3 C1' 1
+O2 C1' 1
+H3' C1' 1
+O3' C1' 1
+C6 H1' 1
+C2 H1' 1
+C3' H1' 1
+H2'1 H1' 1
+H2'2 H1' 1
+C3' N1 1
+H2'1 N1 1
+H2'2 N1 1
+C7 N1 1
+C4 N1 1
+H3 N1 1
+C2' C6 1
+N3 C6 1
+O2 C6 1
+H71 C6 1
+H72 C6 1
+H73 C6 1
+O4 C6 1
+C2 H6 1
+C7 H6 1
+C4 H6 1
+C2 C5 1
+H3 C5 1
+O4 C7 1
+N3 C7 1
+C4 H71 1
+C4 H72 1
+C4 H73 1
+O2 C4 1
+H3 O4 1
+C2 O4 1
+O2 H3 1
+C2' C2 1
+H2'1 H3' 1
+H2'2 H3' 1
+O3' H2'1 1
+O3' H2'2 1
+[ angles ]
+C5' O5' P 1
+O2P P O1P 1
+O5' P O1P 1
+O5' P O2P 1
+H5'1 C5' O5' 1
+H5'2 C5' O5' 1
+C4' C5' O5' 1
+H4' C4' C5' 1
+O4' C4' C5' 1
+C3' C4' C5' 1
+H5'2 C5' H5'1 1
+C4' C5' H5'1 1
+C4' C5' H5'2 1
+C1' O4' C4' 1
+H3' C3' C4' 1
+C2' C3' C4' 1
+O3' C3' C4' 1
+O4' C4' H4' 1
+C3' C4' H4' 1
+C3' C4' O4' 1
+H1' C1' O4' 1
+N1 C1' O4' 1
+C2' C1' O4' 1
+C6 N1 C1' 1
+C2 N1 C1' 1
+C3' C2' C1' 1
+H2'1 C2' C1' 1
+H2'2 C2' C1' 1
+N1 C1' H1' 1
+C2' C1' H1' 1
+C2' C1' N1 1
+H6 C6 N1 1
+C5 C6 N1 1
+N3 C2 N1 1
+O2 C2 N1 1
+C2 N1 C6 1
+C7 C5 C6 1
+C4 C5 C6 1
+C5 C6 H6 1
+H71 C7 C5 1
+H72 C7 C5 1
+H73 C7 C5 1
+O4 C4 C5 1
+N3 C4 C5 1
+C4 C5 C7 1
+H72 C7 H71 1
+H73 C7 H71 1
+H73 C7 H72 1
+H3 N3 C4 1
+C2 N3 C4 1
+N3 C4 O4 1
+O2 C2 N3 1
+C2 N3 H3 1
+H2'1 C2' C3' 1
+H2'2 C2' C3' 1
+C2' C3' H3' 1
+O3' C3' H3' 1
+O3' C3' C2' 1
+H2'2 C2' H2'1 1
+[ moleculetype ]
+DT3 3
+[ atoms ]
+1 P 1 DT3 P 1          1.16590
+2 O2 1 DT3 O1P 2      -0.77610
+3 O2 1 DT3 O2P 3      -0.77610
+4 OS 1 DT3 O5' 4      -0.49540
+5 CI 1 DT3 C5' 5      -0.00690
+6 H1 1 DT3 H5'1 6      0.07540
+7 H1 1 DT3 H5'2 7      0.07540
+8 CT 1 DT3 C4' 8       0.16290
+9 H1 1 DT3 H4' 9       0.11760
+10 OS 1 DT3 O4' 10    -0.36910
+11 CT 1 DT3 C1' 11     0.06800
+12 H2 1 DT3 H1' 12     0.18040
+13 N* 1 DT3 N1 13     -0.02390
+14 C2 1 DT3 C6 14     -0.22090
+15 H4 1 DT3 H6 15      0.26070
+16 C2 1 DT3 C5 16      0.00250
+17 CT 1 DT3 C7 17     -0.22690
+18 HC 1 DT3 H71 18     0.07700
+19 HC 1 DT3 H72 19     0.07700
+20 HC 1 DT3 H73 20     0.07700
+21 C 1 DT3 C4 21       0.51940
+22 O 1 DT3 O4 22      -0.55630
+23 NA 1 DT3 N3 23     -0.43400
+24 H 1 DT3 H3 24       0.34200
+25 C 1 DT3 C2 25       0.56770
+26 O 1 DT3 O2 26      -0.58810
+27 CE 1 DT3 C3' 27     0.07130
+28 H1 1 DT3 H3' 28     0.09850
+29 CT 1 DT3 C2' 29    -0.08540
+30 HC 1 DT3 H2'1 30    0.07180
+31 HC 1 DT3 H2'2 31    0.07180
+32 OH 1 DT3 O3' 32    -0.65490
+33 HO 1 DT3 H3T 33     0.43960
+[ impropers ]
+C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DTO4'", "ifdef":"eq_polyply"}
+
+C1' C2' N1 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
+[ bonds ]
+P O1P 1
+P O2P 1
+P O5' 1
+O5' C5' 1
+C5' H5'1 1
+C5' H5'2 1
+C5' C4' 1
+C4' H4' 1
+C4' O4' 1
+C4' C3' 1
+O4' C1' 1
+C1' H1' 1
+C1' N1 1
+C1' C2' 1
+N1 C6 1
+N1 C2 1
+C6 H6 1
+C6 C5 1
+C5 C7 1
+C5 C4 1
+C7 H71 1
+C7 H72 1
+C7 H73 1
+C4 O4 1
+C4 N3 1
+N3 H3 1
+N3 C2 1
+C2 O2 1
+C3' H3' 1
+C3' C2' 1
+C3' O3' 1
+C2' H2'1 1
+C2' H2'2 1
+O3' H3T 1
+[ impropers ]
+C2 C6 N1 C1' 4
+C4 C6 C5 C7 4
+N1 N3 C2 O2 4
+C5 N3 C4 O4 4
+C4 C2 N3 H3 4
+N1 C5 C6 H6 4
+[ dihedrals ]
+H5'1 C5' O5' P 9
+H5'2 C5' O5' P 9
+C4' C5' O5' P 9
+C5' O5' P O1P 9
+C5' O5' P O2P 9
+H4' C4' C5' O5' 9
+O4' C4' C5' O5' 9
+C3' C4' C5' O5' 9
+C1' O4' C4' C5' 9
+H3' C3' C4' C5' 9
+C2' C3' C4' C5' 9
+O3' C3' C4' C5' 9
+H4' C4' C5' H5'1 9
+O4' C4' C5' H5'1 9
+C3' C4' C5' H5'1 9
+H4' C4' C5' H5'2 9
+O4' C4' C5' H5'2 9
+C3' C4' C5' H5'2 9
+H1' C1' O4' C4' 9
+N1 C1' O4' C4' 9
+H2'1 C2' C3' C4' 9
+H2'2 C2' C3' C4' 9
+H3T O3' C3' C4' 9
+C1' O4' C4' H4' 9
+H3' C3' C4' H4' 9
+C2' C3' C4' H4' 9
+O3' C3' C4' H4' 9
+H3' C3' C4' O4' 9
+O3' C3' C4' O4' 9
+C6 N1 C1' O4' 9
+C2 N1 C1' O4' 9
+H2'1 C2' C1' O4' 9
+H2'2 C2' C1' O4' 9
+H6 C6 N1 C1' 9
+C5 C6 N1 C1' 9
+N3 C2 N1 C1' 9
+O2 C2 N1 C1' 9
+H3' C3' C2' C1' 9
+O3' C3' C2' C1' 9
+C6 N1 C1' H1' 9
+C2 N1 C1' H1' 9
+C3' C2' C1' H1' 9
+H2'1 C2' C1' H1' 9
+H2'2 C2' C1' H1' 9
+C3' C2' C1' N1 9
+H2'1 C2' C1' N1 9
+H2'2 C2' C1' N1 9
+C7 C5 C6 N1 9
+C4 C5 C6 N1 9
+H3 N3 C2 N1 9
+C2' C1' N1 C6 9
+C6 N1 C2 N3 9
+O2 C2 N1 C6 9
+H71 C7 C5 C6 9
+H72 C7 C5 C6 9
+H73 C7 C5 C6 9
+O4 C4 C5 C6 9
+C2 N1 C6 H6 9
+C7 C5 C6 H6 9
+C4 C5 C6 H6 9
+C2 N1 C6 C5 9
+H3 N3 C4 C5 9
+O4 C4 C5 C7 9
+N3 C4 C5 C7 9
+C4 C5 C7 H71 9
+C4 C5 C7 H72 9
+C4 C5 C7 H73 9
+O2 C2 N3 C4 9
+H3 N3 C4 O4 9
+C2 N3 C4 O4 9
+N3 C4 C5 C6 9
+O2 C2 N3 H3 9
+C2' C1' N1 C2 9
+H2'1 C2' C3' H3' 9
+H2'2 C2' C3' H3' 9
+H3T O3' C3' H3' 9
+H3T O3' C3' C2' 9
+O3' C3' C2' H2'1 9
+O3' C3' C2' H2'2 9
+;
+C1' O4' C4' C3' 9 
+C2' C3' C4' O4' 9 
+C2' C1' O4' C4' 9 
+C3' C2' C1' O4' 9 
+;
+C2 N3 C4 C5 9 
+N1 C2 N3 C4 9 
+C1' C2' C3' C4' 9 
+[ pairs ]
+H5'1 P 1
+H5'2 P 1
+C4' P 1
+C5' O1P 1
+C5' O2P 1
+H4' O5' 1
+O4' O5' 1
+C3' O5' 1
+C1' C5' 1
+H3' C5' 1
+C2' C5' 1
+O3' C5' 1
+H4' H5'1 1
+O4' H5'1 1
+C3' H5'1 1
+H4' H5'2 1
+O4' H5'2 1
+C3' H5'2 1
+H1' C4' 1
+N1 C4' 1
+H2'1 C4' 1
+H2'2 C4' 1
+H3T C4' 1
+C1' H4' 1
+H3' H4' 1
+C2' H4' 1
+O3' H4' 1
+H3' O4' 1
+O3' O4' 1
+C6 O4' 1
+C2 O4' 1
+H2'1 O4' 1
+H2'2 O4' 1
+H6 C1' 1
+C5 C1' 1
+N3 C1' 1
+O2 C1' 1
+H3' C1' 1
+O3' C1' 1
+C6 H1' 1
+C2 H1' 1
+C3' H1' 1
+H2'1 H1' 1
+H2'2 H1' 1
+C3' N1 1
+H2'1 N1 1
+H2'2 N1 1
+C7 N1 1
+C4 N1 1
+H3 N1 1
+C2' C6 1
+N3 C6 1
+O2 C6 1
+H71 C6 1
+H72 C6 1
+H73 C6 1
+O4 C6 1
+C2 H6 1
+C7 H6 1
+C4 H6 1
+C2 C5 1
+H3 C5 1
+O4 C7 1
+N3 C7 1
+C4 H71 1
+C4 H72 1
+C4 H73 1
+O2 C4 1
+H3 O4 1
+C2 O4 1
+O2 H3 1
+C2' C2 1
+H2'1 H3' 1
+H2'2 H3' 1
+H3T H3' 1
+H3T C2' 1
+O3' H2'1 1
+O3' H2'2 1
+[ angles ]
+C5' O5' P 1
+O2P P O1P 1
+O5' P O1P 1
+O5' P O2P 1
+H5'1 C5' O5' 1
+H5'2 C5' O5' 1
+C4' C5' O5' 1
+H4' C4' C5' 1
+O4' C4' C5' 1
+C3' C4' C5' 1
+H5'2 C5' H5'1 1
+C4' C5' H5'1 1
+C4' C5' H5'2 1
+C1' O4' C4' 1
+H3' C3' C4' 1
+C2' C3' C4' 1
+O3' C3' C4' 1
+O4' C4' H4' 1
+C3' C4' H4' 1
+C3' C4' O4' 1
+H1' C1' O4' 1
+N1 C1' O4' 1
+C2' C1' O4' 1
+C6 N1 C1' 1
+C2 N1 C1' 1
+C3' C2' C1' 1
+H2'1 C2' C1' 1
+H2'2 C2' C1' 1
+N1 C1' H1' 1
+C2' C1' H1' 1
+C2' C1' N1 1
+H6 C6 N1 1
+C5 C6 N1 1
+N3 C2 N1 1
+O2 C2 N1 1
+C2 N1 C6 1
+C7 C5 C6 1
+C4 C5 C6 1
+C5 C6 H6 1
+H71 C7 C5 1
+H72 C7 C5 1
+H73 C7 C5 1
+O4 C4 C5 1
+N3 C4 C5 1
+C4 C5 C7 1
+H72 C7 H71 1
+H73 C7 H71 1
+H73 C7 H72 1
+H3 N3 C4 1
+C2 N3 C4 1
+N3 C4 O4 1
+O2 C2 N3 1
+C2 N3 H3 1
+H2'1 C2' C3' 1
+H2'2 C2' C3' 1
+H3T O3' C3' 1
+C2' C3' H3' 1
+O3' C3' H3' 1
+O3' C3' C2' 1
+H2'2 C2' H2'1 1
+[ moleculetype ]
+DG5 3
+[ atoms ]
+  1  HO 1  DG5   H5T      1     0.44220
+  2  OH 1  DG5   O5'      2    -0.63180
+  3  CI 1  DG5   C5'      3    -0.00690
+  4  H1 1  DG5  H5'1      4     0.07540
+  5  H1 1  DG5  H5'2      5     0.07540
+  6  CT 1  DG5   C4'      6     0.16290
+  7  H1 1  DG5   H4'      7     0.11760
+  8  OS 1  DG5   O4'      8    -0.36910
+  9  CT 1  DG5   C1'      9     0.03580
+ 10  H2 1  DG5   H1'     10     0.17460
+ 11  N* 1  DG5    N9     11     0.05770
+ 12  CK 1  DG5    C8     12     0.07360
+ 13  H5 1  DG5    H8     13     0.19970
+ 14  NB 1  DG5    N7     14    -0.57250
+ 15  CB 1  DG5    C5     15     0.19910
+ 16  C  1  DG5    C6     16     0.49180
+ 17  O  1  DG5    O6     17    -0.56990
+ 18  NA 1  DG5    N1     18    -0.50530
+ 19  H  1  DG5    H1     19     0.35200
+ 20  CA 1  DG5    C2     20     0.74320
+ 21  N2 1  DG5    N2     21    -0.92300
+ 22  H  1  DG5   H21     22     0.42350
+ 23  H  1  DG5   H22     23     0.42350
+ 24  NC 1  DG5    N3     24    -0.66360
+ 25  CB 1  DG5    C4     25     0.18140
+ 26  CE 1  DG5   C3'     26     0.07130
+ 27  H1 1  DG5   H3'     27     0.09850
+ 28  CT 1  DG5   C2'     28    -0.08540
+ 29  HC 1  DG5  H2'1     29     0.07180
+ 30  HC 1  DG5  H2'2     30     0.07180
+ 31  OS 1  DG5   O3'     31    -0.52320
+[ impropers ]
+C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGO4'", "ifdef":"eq_polyply"}
+
+C1' C2' N9 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
+[ bonds ]
+H5T O5' 1
+O5' C5' 1
+C5' H5'1 1
+C5' H5'2 1
+C5' C4' 1
+C4' H4' 1
+C4' O4' 1
+C4' C3' 1
+O4' C1' 1
+C1' H1' 1
+C1' N9 1
+C1' C2' 1
+N9 C8 1
+N9 C4 1
+C8 H8 1
+C8 N7 1
+N7 C5 1
+C5 C6 1
+C5 C4 1
+C6 O6 1
+C6 N1 1
+N1 H1 1
+N1 C2 1
+C2 N2 1
+C2 N3 1
+N2 H21 1
+N2 H22 1
+N3 C4 1
+C3' H3' 1
+C3' C2' 1
+C3' O3' 1
+C2' H2'1 1
+C2' H2'2 1
+[ impropers ]
+C4 C8 N9 C1' 4
+C5 N1 C6 O6 4
+C6 C2 N1 H1 4
+C2 H21 N2 H22 4
+N9 N7 C8 H8 4
+N2 N1 C2 N3 4
+[ dihedrals ]
+H5'1 C5' O5' H5T 9
+H5'2 C5' O5' H5T 9
+C4' C5' O5' H5T 9
+H4' C4' C5' O5' 9
+O4' C4' C5' O5' 9
+C3' C4' C5' O5' 9
+C1' O4' C4' C5' 9
+H3' C3' C4' C5' 9
+C2' C3' C4' C5' 9
+O3' C3' C4' C5' 9
+H4' C4' C5' H5'1 9
+O4' C4' C5' H5'1 9
+C3' C4' C5' H5'1 9
+H4' C4' C5' H5'2 9
+O4' C4' C5' H5'2 9
+C3' C4' C5' H5'2 9
+H1' C1' O4' C4' 9
+N9 C1' O4' C4' 9
+H2'1 C2' C3' C4' 9
+H2'2 C2' C3' C4' 9
+C1' O4' C4' H4' 9
+H3' C3' C4' H4' 9
+C2' C3' C4' H4' 9
+O3' C3' C4' H4' 9
+H3' C3' C4' O4' 9
+O3' C3' C4' O4' 9
+C8 N9 C1' O4' 9
+C4 N9 C1' O4' 9
+H2'1 C2' C1' O4' 9
+H2'2 C2' C1' O4' 9
+H8 C8 N9 C1' 9
+N7 C8 N9 C1' 9
+C5 C4 N9 C1' 9
+N3 C4 N9 C1' 9
+H3' C3' C2' C1' 9
+O3' C3' C2' C1' 9
+C8 N9 C1' H1' 9
+C4 N9 C1' H1' 9
+C3' C2' C1' H1' 9
+H2'1 C2' C1' H1' 9
+H2'2 C2' C1' H1' 9
+C3' C2' C1' N9 9
+H2'1 C2' C1' N9 9
+H2'2 C2' C1' N9 9
+C6 C5 C4 N9 9
+C2 N3 C4 N9 9
+C2' C1' N9 C8 9
+N3 C4 N9 C8 9
+C6 C5 N7 C8 9
+C4 N9 C8 H8 9
+C5 N7 C8 H8 9
+O6 C6 C5 N7 9
+N1 C6 C5 N7 9
+N3 C4 C5 N7 9
+H1 N1 C6 C5 9
+C2 N1 C6 C5 9
+C6 C5 C4 N3 9
+N2 C2 N1 C6 9
+C4 C5 C6 O6 9
+H1 N1 C6 O6 9
+C2 N1 C6 O6 9
+C4 C5 C6 N1 9
+H21 N2 C2 N1 9
+H22 N2 C2 N1 9
+N2 C2 N1 H1 9
+N3 C2 N1 H1 9
+C4 N3 C2 N2 9
+N3 C2 N2 H21 9
+N3 C2 N2 H22 9
+N3 C2 N1 C6 9
+C2' C1' N9 C4 9
+H2'1 C2' C3' H3' 9
+H2'2 C2' C3' H3' 9
+O3' C3' C2' H2'1 9
+O3' C3' C2' H2'2 9
+;
+C1' O4' C4' C3' 9 
+C2' C3' C4' O4' 9 
+C2' C1' O4' C4' 9 
+C3' C2' C1' O4' 9 
+;
+N7  C8  N9  C4  9 
+C5  C4  N9  C8  9 
+C5 N7 C8 N9 9 
+C4 C5 N7 C8 9 
+N9 C4 C5 N7 9 
+;
+C4 N3 C2 N1 9 
+C5 C4 N3 C2 9 
+C1' C2' C3' C4' 9 
+[ pairs ]
+H5'1 H5T 1
+H5'2 H5T 1
+C4' H5T 1
+H4' O5' 1
+O4' O5' 1
+C3' O5' 1
+C1' C5' 1
+H3' C5' 1
+C2' C5' 1
+O3' C5' 1
+H4' H5'1 1
+O4' H5'1 1
+C3' H5'1 1
+H4' H5'2 1
+O4' H5'2 1
+C3' H5'2 1
+H1' C4' 1
+N9 C4' 1
+H2'1 C4' 1
+H2'2 C4' 1
+C1' H4' 1
+H3' H4' 1
+C2' H4' 1
+O3' H4' 1
+H3' O4' 1
+O3' O4' 1
+C8 O4' 1
+C4 O4' 1
+H2'1 O4' 1
+H2'2 O4' 1
+H8 C1' 1
+N7 C1' 1
+C5 C1' 1
+N3 C1' 1
+H3' C1' 1
+O3' C1' 1
+C8 H1' 1
+C4 H1' 1
+C3' H1' 1
+H2'1 H1' 1
+H2'2 H1' 1
+C3' N9 1
+H2'1 N9 1
+H2'2 N9 1
+C6 N9 1
+C2 N9 1
+C2' C8 1
+N3 C8 1
+C6 C8 1
+C4 H8 1
+C5 H8 1
+O6 N7 1
+N1 N7 1
+N3 N7 1
+H1 C5 1
+C2 C5 1
+N3 C6 1
+N2 C6 1
+C4 O6 1
+H1 O6 1
+C2 O6 1
+C4 N1 1
+H21 N1 1
+H22 N1 1
+N2 H1 1
+N3 H1 1
+C4 N2 1
+N3 H21 1
+N3 H22 1
+C2' C4 1
+H2'1 H3' 1
+H2'2 H3' 1
+O3' H2'1 1
+O3' H2'2 1
+[ angles ]
+C5' O5' H5T 1
+H5'1 C5' O5' 1
+H5'2 C5' O5' 1
+C4' C5' O5' 1
+H4' C4' C5' 1
+O4' C4' C5' 1
+C3' C4' C5' 1
+H5'2 C5' H5'1 1
+C4' C5' H5'1 1
+C4' C5' H5'2 1
+C1' O4' C4' 1
+H3' C3' C4' 1
+C2' C3' C4' 1
+O3' C3' C4' 1
+O4' C4' H4' 1
+C3' C4' H4' 1
+C3' C4' O4' 1
+H1' C1' O4' 1
+N9 C1' O4' 1
+C2' C1' O4' 1
+C8 N9 C1' 1
+C4 N9 C1' 1
+C3' C2' C1' 1
+H2'1 C2' C1' 1
+H2'2 C2' C1' 1
+N9 C1' H1' 1
+C2' C1' H1' 1
+C2' C1' N9 1
+H8 C8 N9 1
+N7 C8 N9 1
+C5 C4 N9 1
+N3 C4 N9 1
+C4 N9 C8 1
+C5 N7 C8 1
+N7 C8 H8 1
+C6 C5 N7 1
+C4 C5 N7 1
+O6 C6 C5 1
+N1 C6 C5 1
+N3 C4 C5 1
+C4 C5 C6 1
+H1 N1 C6 1
+C2 N1 C6 1
+N1 C6 O6 1
+N2 C2 N1 1
+N3 C2 N1 1
+C2 N1 H1 1
+H21 N2 C2 1
+H22 N2 C2 1
+C4 N3 C2 1
+N3 C2 N2 1
+H22 N2 H21 1
+H2'1 C2' C3' 1
+H2'2 C2' C3' 1
+C2' C3' H3' 1
+O3' C3' H3' 1
+O3' C3' C2' 1
+H2'2 C2' H2'1 1
+[ moleculetype ]
+DG 3
+[ atoms ]
+  1  P  1  DG      P      1     1.16590
+  2  O2 1  DG    O1P      2    -0.77610
+  3  O2 1  DG    O2P      3    -0.77610
+  4  OS 1  DG    O5'      4    -0.49540
+  5  CI 1  DG    C5'      5    -0.00690
+  6  H1 1  DG   H5'1      6     0.07540
+  7  H1 1  DG   H5'2      7     0.07540
+  8  CT 1  DG    C4'      8     0.16290
+  9  H1 1  DG    H4'      9     0.11760
+ 10  OS 1  DG    O4'     10    -0.36910
+ 11  CT 1  DG    C1'     11     0.03580
+ 12  H2 1  DG    H1'     12     0.17460
+ 13  N* 1  DG     N9     13     0.05770
+ 14  CK 1  DG     C8     14     0.07360
+ 15  H5 1  DG     H8     15     0.19970
+ 16  NB 1  DG     N7     16    -0.57250
+ 17  CB 1  DG     C5     17     0.19910
+ 18  C  1  DG     C6     18     0.49180
+ 19  O  1  DG     O6     19    -0.56990
+ 20  NA 1  DG     N1     20    -0.50530
+ 21  H  1  DG     H1     21     0.35200
+ 22  CA 1  DG     C2     22     0.74320
+ 23  N2 1  DG     N2     23    -0.92300
+ 24  H  1  DG    H21     24     0.42350
+ 25  H  1  DG    H22     25     0.42350
+ 26  NC 1  DG     N3     26    -0.66360
+ 27  CB 1  DG     C4     27     0.18140
+ 28  CE 1  DG    C3'     28     0.07130
+ 29  H1 1  DG    H3'     29     0.09850
+ 30  CT 1  DG    C2'     30    -0.08540
+ 31  HC 1  DG   H2'1     31     0.07180
+ 32  HC 1  DG   H2'2     32     0.07180
+ 33  OS 1  DG    O3'     33    -0.52320
+[ impropers ]
+C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGO4'", "ifdef":"eq_polyply"}
+
+C1' C2' N9 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
+[ bonds ]
+P O1P 1
+P O2P 1
+P O5' 1
+O5' C5' 1
+C5' H5'1 1
+C5' H5'2 1
+C5' C4' 1
+C4' H4' 1
+C4' O4' 1
+C4' C3' 1
+O4' C1' 1
+C1' H1' 1
+C1' N9 1
+C1' C2' 1
+N9 C8 1
+N9 C4 1
+C8 H8 1
+C8 N7 1
+N7 C5 1
+C5 C6 1
+C5 C4 1
+C6 O6 1
+C6 N1 1
+N1 H1 1
+N1 C2 1
+C2 N2 1
+C2 N3 1
+N2 H21 1
+N2 H22 1
+N3 C4 1
+C3' H3' 1
+C3' C2' 1
+C3' O3' 1
+C2' H2'1 1
+C2' H2'2 1
+[ impropers ]
+C4 C8 N9 C1' 4
+C5 N1 C6 O6 4
+C6 C2 N1 H1 4
+C2 H21 N2 H22 4
+N9 N7 C8 H8 4
+N2 N1 C2 N3 4
+[ dihedrals ]
+H5'1 C5' O5' P 9
+H5'2 C5' O5' P 9
+C4' C5' O5' P 9
+C5' O5' P O1P 9
+C5' O5' P O2P 9
+H4' C4' C5' O5' 9
+O4' C4' C5' O5' 9
+C3' C4' C5' O5' 9
+C1' O4' C4' C5' 9
+H3' C3' C4' C5' 9
+C2' C3' C4' C5' 9
+O3' C3' C4' C5' 9
+H4' C4' C5' H5'1 9
+O4' C4' C5' H5'1 9
+C3' C4' C5' H5'1 9
+H4' C4' C5' H5'2 9
+O4' C4' C5' H5'2 9
+C3' C4' C5' H5'2 9
+H1' C1' O4' C4' 9
+N9 C1' O4' C4' 9
+H2'1 C2' C3' C4' 9
+H2'2 C2' C3' C4' 9
+C1' O4' C4' H4' 9
+H3' C3' C4' H4' 9
+C2' C3' C4' H4' 9
+O3' C3' C4' H4' 9
+H3' C3' C4' O4' 9
+O3' C3' C4' O4' 9
+C8 N9 C1' O4' 9
+C4 N9 C1' O4' 9
+H2'1 C2' C1' O4' 9
+H2'2 C2' C1' O4' 9
+H8 C8 N9 C1' 9
+N7 C8 N9 C1' 9
+C5 C4 N9 C1' 9
+N3 C4 N9 C1' 9
+H3' C3' C2' C1' 9
+O3' C3' C2' C1' 9
+C8 N9 C1' H1' 9
+C4 N9 C1' H1' 9
+C3' C2' C1' H1' 9
+H2'1 C2' C1' H1' 9
+H2'2 C2' C1' H1' 9
+C3' C2' C1' N9 9
+H2'1 C2' C1' N9 9
+H2'2 C2' C1' N9 9
+C6 C5 C4 N9 9
+C2 N3 C4 N9 9
+C2' C1' N9 C8 9
+N3 C4 N9 C8 9
+C6 C5 N7 C8 9
+C4 N9 C8 H8 9
+C5 N7 C8 H8 9
+O6 C6 C5 N7 9
+N1 C6 C5 N7 9
+N3 C4 C5 N7 9
+H1 N1 C6 C5 9
+C2 N1 C6 C5 9
+C6 C5 C4 N3 9
+N2 C2 N1 C6 9
+C4 C5 C6 O6 9
+H1 N1 C6 O6 9
+C2 N1 C6 O6 9
+C4 C5 C6 N1 9
+H21 N2 C2 N1 9
+H22 N2 C2 N1 9
+N2 C2 N1 H1 9
+N3 C2 N1 H1 9
+C4 N3 C2 N2 9
+N3 C2 N2 H21 9
+N3 C2 N2 H22 9
+N3 C2 N1 C6 9
+C2' C1' N9 C4 9
+H2'1 C2' C3' H3' 9
+H2'2 C2' C3' H3' 9
+O3' C3' C2' H2'1 9
+O3' C3' C2' H2'2 9
+;
+C1' O4' C4' C3' 9 
+C2' C3' C4' O4' 9 
+C2' C1' O4' C4' 9 
+C3' C2' C1' O4' 9 
+;
+N7  C8  N9  C4  9 
+C5  C4  N9  C8  9 
+C5 N7 C8 N9 9 
+C4 C5 N7 C8 9 
+N9 C4 C5 N7 9 
+;
+C4 N3 C2 N1 9 
+C5 C4 N3 C2 9 
+C1' C2' C3' C4' 9 
+[ pairs ]
+H5'1 P 1
+H5'2 P 1
+C4' P 1
+C5' O1P 1
+C5' O2P 1
+H4' O5' 1
+O4' O5' 1
+C3' O5' 1
+C1' C5' 1
+H3' C5' 1
+C2' C5' 1
+O3' C5' 1
+H4' H5'1 1
+O4' H5'1 1
+C3' H5'1 1
+H4' H5'2 1
+O4' H5'2 1
+C3' H5'2 1
+H1' C4' 1
+N9 C4' 1
+H2'1 C4' 1
+H2'2 C4' 1
+C1' H4' 1
+H3' H4' 1
+C2' H4' 1
+O3' H4' 1
+H3' O4' 1
+O3' O4' 1
+C8 O4' 1
+C4 O4' 1
+H2'1 O4' 1
+H2'2 O4' 1
+H8 C1' 1
+N7 C1' 1
+C5 C1' 1
+N3 C1' 1
+H3' C1' 1
+O3' C1' 1
+C8 H1' 1
+C4 H1' 1
+C3' H1' 1
+H2'1 H1' 1
+H2'2 H1' 1
+C3' N9 1
+H2'1 N9 1
+H2'2 N9 1
+C6 N9 1
+C2 N9 1
+C2' C8 1
+N3 C8 1
+C6 C8 1
+C4 H8 1
+C5 H8 1
+O6 N7 1
+N1 N7 1
+N3 N7 1
+H1 C5 1
+C2 C5 1
+N3 C6 1
+N2 C6 1
+C4 O6 1
+H1 O6 1
+C2 O6 1
+C4 N1 1
+H21 N1 1
+H22 N1 1
+N2 H1 1
+N3 H1 1
+C4 N2 1
+N3 H21 1
+N3 H22 1
+C2' C4 1
+H2'1 H3' 1
+H2'2 H3' 1
+O3' H2'1 1
+O3' H2'2 1
+[ angles ]
+C5' O5' P 1
+O2P P O1P 1
+O5' P O1P 1
+O5' P O2P 1
+H5'1 C5' O5' 1
+H5'2 C5' O5' 1
+C4' C5' O5' 1
+H4' C4' C5' 1
+O4' C4' C5' 1
+C3' C4' C5' 1
+H5'2 C5' H5'1 1
+C4' C5' H5'1 1
+C4' C5' H5'2 1
+C1' O4' C4' 1
+H3' C3' C4' 1
+C2' C3' C4' 1
+O3' C3' C4' 1
+O4' C4' H4' 1
+C3' C4' H4' 1
+C3' C4' O4' 1
+H1' C1' O4' 1
+N9 C1' O4' 1
+C2' C1' O4' 1
+C8 N9 C1' 1
+C4 N9 C1' 1
+C3' C2' C1' 1
+H2'1 C2' C1' 1
+H2'2 C2' C1' 1
+N9 C1' H1' 1
+C2' C1' H1' 1
+C2' C1' N9 1
+H8 C8 N9 1
+N7 C8 N9 1
+C5 C4 N9 1
+N3 C4 N9 1
+C4 N9 C8 1
+C5 N7 C8 1
+N7 C8 H8 1
+C6 C5 N7 1
+C4 C5 N7 1
+O6 C6 C5 1
+N1 C6 C5 1
+N3 C4 C5 1
+C4 C5 C6 1
+H1 N1 C6 1
+C2 N1 C6 1
+N1 C6 O6 1
+N2 C2 N1 1
+N3 C2 N1 1
+C2 N1 H1 1
+H21 N2 C2 1
+H22 N2 C2 1
+C4 N3 C2 1
+N3 C2 N2 1
+H22 N2 H21 1
+H2'1 C2' C3' 1
+H2'2 C2' C3' 1
+C2' C3' H3' 1
+O3' C3' H3' 1
+O3' C3' C2' 1
+H2'2 C2' H2'1 1
+[ moleculetype ]
+DG3 3
+[ atoms ]
+  1  P  1  DG3      P    1     1.16590
+  2  O2 1  DG3    O1P    2    -0.77610
+  3  O2 1  DG3    O2P    3    -0.77610
+  4  OS 1  DG3    O5'    4    -0.49540
+  5  CI 1  DG3    C5'    5    -0.00690
+  6  H1 1  DG3   H5'1    6     0.07540
+  7  H1 1  DG3   H5'2    7     0.07540
+  8  CT 1  DG3    C4'    8     0.16290
+  9  H1 1  DG3    H4'    9     0.11760
+ 10  OS 1  DG3    O4'   10    -0.36910
+ 11  CT 1  DG3    C1'   11     0.03580
+ 12  H2 1  DG3    H1'   12     0.17460
+ 13  N* 1  DG3     N9   13     0.05770
+ 14  CK 1  DG3     C8   14     0.07360
+ 15  H5 1  DG3     H8   15     0.19970
+ 16  NB 1  DG3     N7   16    -0.57250
+ 17  CB 1  DG3     C5   17     0.19910
+ 18  C  1  DG3     C6   18     0.49180
+ 19  O  1  DG3     O6   19    -0.56990
+ 20  NA 1  DG3     N1   20    -0.50530
+ 21  H  1  DG3     H1   21     0.35200
+ 22  CA 1  DG3     C2   22     0.74320
+ 23  N2 1  DG3     N2   23    -0.92300
+ 24  H  1  DG3    H21   24     0.42350
+ 25  H  1  DG3    H22   25     0.42350
+ 26  NC 1  DG3     N3   26    -0.66360
+ 27  CB 1  DG3     C4   27     0.18140
+ 28  CE 1  DG3    C3'   28     0.07130
+ 29  H1 1  DG3    H3'   29     0.09850
+ 30  CT 1  DG3    C2'   30    -0.08540
+ 31  HC 1  DG3   H2'1   31     0.07180
+ 32  HC 1  DG3   H2'2   32     0.07180
+ 33  OH 1  DG3    O3'   33    -0.65490
+ 34  HO 1  DG3    H3T   34     0.43960
+[ impropers ]
+C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGO4'", "ifdef":"eq_polyply"}
+
+C1' C2' N9 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
+[ bonds ]
+P O1P 1
+P O2P 1
+P O5' 1
+O5' C5' 1
+C5' H5'1 1
+C5' H5'2 1
+C5' C4' 1
+C4' H4' 1
+C4' O4' 1
+C4' C3' 1
+O4' C1' 1
+C1' H1' 1
+C1' N9 1
+C1' C2' 1
+N9 C8 1
+N9 C4 1
+C8 H8 1
+C8 N7 1
+N7 C5 1
+C5 C6 1
+C5 C4 1
+C6 O6 1
+C6 N1 1
+N1 H1 1
+N1 C2 1
+C2 N2 1
+C2 N3 1
+N2 H21 1
+N2 H22 1
+N3 C4 1
+C3' H3' 1
+C3' C2' 1
+C3' O3' 1
+C2' H2'1 1
+C2' H2'2 1
+O3' H3T 1
+[ impropers ]
+C4 C8 N9 C1' 4
+C5 N1 C6 O6 4
+C6 C2 N1 H1 4
+C2 H21 N2 H22 4
+N9 N7 C8 H8 4
+N2 N1 C2 N3 4
+[ dihedrals ]
+H5'1 C5' O5' P 9
+H5'2 C5' O5' P 9
+C4' C5' O5' P 9
+C5' O5' P O1P 9
+C5' O5' P O2P 9
+H4' C4' C5' O5' 9
+O4' C4' C5' O5' 9
+C3' C4' C5' O5' 9
+C1' O4' C4' C5' 9
+H3' C3' C4' C5' 9
+C2' C3' C4' C5' 9
+O3' C3' C4' C5' 9
+H4' C4' C5' H5'1 9
+O4' C4' C5' H5'1 9
+C3' C4' C5' H5'1 9
+H4' C4' C5' H5'2 9
+O4' C4' C5' H5'2 9
+C3' C4' C5' H5'2 9
+H1' C1' O4' C4' 9
+N9 C1' O4' C4' 9
+H2'1 C2' C3' C4' 9
+H2'2 C2' C3' C4' 9
+H3T O3' C3' C4' 9
+C1' O4' C4' H4' 9
+H3' C3' C4' H4' 9
+C2' C3' C4' H4' 9
+O3' C3' C4' H4' 9
+H3' C3' C4' O4' 9
+O3' C3' C4' O4' 9
+C8 N9 C1' O4' 9
+C4 N9 C1' O4' 9
+H2'1 C2' C1' O4' 9
+H2'2 C2' C1' O4' 9
+H8 C8 N9 C1' 9
+N7 C8 N9 C1' 9
+C5 C4 N9 C1' 9
+N3 C4 N9 C1' 9
+H3' C3' C2' C1' 9
+O3' C3' C2' C1' 9
+C8 N9 C1' H1' 9
+C4 N9 C1' H1' 9
+C3' C2' C1' H1' 9
+H2'1 C2' C1' H1' 9
+H2'2 C2' C1' H1' 9
+C3' C2' C1' N9 9
+H2'1 C2' C1' N9 9
+H2'2 C2' C1' N9 9
+C6 C5 C4 N9 9
+C2 N3 C4 N9 9
+C2' C1' N9 C8 9
+N3 C4 N9 C8 9
+C6 C5 N7 C8 9
+C4 N9 C8 H8 9
+C5 N7 C8 H8 9
+O6 C6 C5 N7 9
+N1 C6 C5 N7 9
+N3 C4 C5 N7 9
+H1 N1 C6 C5 9
+C2 N1 C6 C5 9
+C6 C5 C4 N3 9
+N2 C2 N1 C6 9
+C4 C5 C6 O6 9
+H1 N1 C6 O6 9
+C2 N1 C6 O6 9
+C4 C5 C6 N1 9
+H21 N2 C2 N1 9
+H22 N2 C2 N1 9
+N2 C2 N1 H1 9
+N3 C2 N1 H1 9
+C4 N3 C2 N2 9
+N3 C2 N2 H21 9
+N3 C2 N2 H22 9
+N3 C2 N1 C6 9
+C2' C1' N9 C4 9
+H2'1 C2' C3' H3' 9
+H2'2 C2' C3' H3' 9
+H3T O3' C3' H3' 9
+H3T O3' C3' C2' 9
+O3' C3' C2' H2'1 9
+O3' C3' C2' H2'2 9
+;
+C1' O4' C4' C3' 9 
+C2' C3' C4' O4' 9 
+C2' C1' O4' C4' 9 
+C3' C2' C1' O4' 9 
+;
+N7  C8  N9  C4  9 
+C5  C4  N9  C8  9 
+C5 N7 C8 N9 9 
+C4 C5 N7 C8 9 
+N9 C4 C5 N7 9 
+;
+C4 N3 C2 N1 9 
+C5 C4 N3 C2 9 
+C1' C2' C3' C4' 9 
+[ pairs ]
+H5'1 P 1
+H5'2 P 1
+C4' P 1
+C5' O1P 1
+C5' O2P 1
+H4' O5' 1
+O4' O5' 1
+C3' O5' 1
+C1' C5' 1
+H3' C5' 1
+C2' C5' 1
+O3' C5' 1
+H4' H5'1 1
+O4' H5'1 1
+C3' H5'1 1
+H4' H5'2 1
+O4' H5'2 1
+C3' H5'2 1
+H1' C4' 1
+N9 C4' 1
+H2'1 C4' 1
+H2'2 C4' 1
+H3T C4' 1
+C1' H4' 1
+H3' H4' 1
+C2' H4' 1
+O3' H4' 1
+H3' O4' 1
+O3' O4' 1
+C8 O4' 1
+C4 O4' 1
+H2'1 O4' 1
+H2'2 O4' 1
+H8 C1' 1
+N7 C1' 1
+C5 C1' 1
+N3 C1' 1
+H3' C1' 1
+O3' C1' 1
+C8 H1' 1
+C4 H1' 1
+C3' H1' 1
+H2'1 H1' 1
+H2'2 H1' 1
+C3' N9 1
+H2'1 N9 1
+H2'2 N9 1
+C6 N9 1
+C2 N9 1
+C2' C8 1
+N3 C8 1
+C6 C8 1
+C4 H8 1
+C5 H8 1
+O6 N7 1
+N1 N7 1
+N3 N7 1
+H1 C5 1
+C2 C5 1
+N3 C6 1
+N2 C6 1
+C4 O6 1
+H1 O6 1
+C2 O6 1
+C4 N1 1
+H21 N1 1
+H22 N1 1
+N2 H1 1
+N3 H1 1
+C4 N2 1
+N3 H21 1
+N3 H22 1
+C2' C4 1
+H2'1 H3' 1
+H2'2 H3' 1
+H3T H3' 1
+H3T C2' 1
+O3' H2'1 1
+O3' H2'2 1
+[ angles ]
+C5' O5' P 1
+O2P P O1P 1
+O5' P O1P 1
+O5' P O2P 1
+H5'1 C5' O5' 1
+H5'2 C5' O5' 1
+C4' C5' O5' 1
+H4' C4' C5' 1
+O4' C4' C5' 1
+C3' C4' C5' 1
+H5'2 C5' H5'1 1
+C4' C5' H5'1 1
+C4' C5' H5'2 1
+C1' O4' C4' 1
+H3' C3' C4' 1
+C2' C3' C4' 1
+O3' C3' C4' 1
+O4' C4' H4' 1
+C3' C4' H4' 1
+C3' C4' O4' 1
+H1' C1' O4' 1
+N9 C1' O4' 1
+C2' C1' O4' 1
+C8 N9 C1' 1
+C4 N9 C1' 1
+C3' C2' C1' 1
+H2'1 C2' C1' 1
+H2'2 C2' C1' 1
+N9 C1' H1' 1
+C2' C1' H1' 1
+C2' C1' N9 1
+H8 C8 N9 1
+N7 C8 N9 1
+C5 C4 N9 1
+N3 C4 N9 1
+C4 N9 C8 1
+C5 N7 C8 1
+N7 C8 H8 1
+C6 C5 N7 1
+C4 C5 N7 1
+O6 C6 C5 1
+N1 C6 C5 1
+N3 C4 C5 1
+C4 C5 C6 1
+H1 N1 C6 1
+C2 N1 C6 1
+N1 C6 O6 1
+N2 C2 N1 1
+N3 C2 N1 1
+C2 N1 H1 1
+H21 N2 C2 1
+H22 N2 C2 1
+C4 N3 C2 1
+N3 C2 N2 1
+H22 N2 H21 1
+H2'1 C2' C3' 1
+H2'2 C2' C3' 1
+H3T O3' C3' 1
+C2' C3' H3' 1
+O3' C3' H3' 1
+O3' C3' C2' 1
+H2'2 C2' H2'1 1
+[ moleculetype ]
+DC5 3
+[ atoms ]
+  1  HO 1  DC5   H5T   1    0.44220    
+  2  OH 1  DC5   O5'   2   -0.63180    
+  3  CI 1  DC5   C5'   3   -0.00690    
+  4  H1 1  DC5  H5'1   4    0.07540    
+  5  H1 1  DC5  H5'2   5    0.07540    
+  6  CT 1  DC5   C4'   6    0.16290    
+  7  H1 1  DC5   H4'   7    0.11760    
+  8  OS 1  DC5   O4'   8   -0.36910    
+  9  CT 1  DC5   C1'   9   -0.01160    
+ 10  H2 1  DC5   H1'  10    0.19630    
+ 11  N* 1  DC5    N1  11   -0.03390    
+ 12  CM 1  DC5    C6  12   -0.01830    
+ 13  H4 1  DC5    H6  13    0.22930    
+ 14  CM 1  DC5    C5  14   -0.52220    
+ 15  HA 1  DC5    H5  15    0.18630    
+ 16  CA 1  DC5    C4  16    0.84390    
+ 17  N2 1  DC5    N4  17   -0.97730    
+ 18  H  1  DC5   H41  18    0.43140    
+ 19  H  1  DC5   H42  19    0.43140    
+ 20  NC 1  DC5    N3  20   -0.77480    
+ 21  C  1  DC5    C2  21    0.79590    
+ 22  O  1  DC5    O2  22   -0.65480    
+ 23  CE 1  DC5   C3'  23    0.07130    
+ 24  H1 1  DC5   H3'  24    0.09850    
+ 25  CT 1  DC5   C2'  25   -0.08540    
+ 26  HC 1  DC5  H2'1  26    0.07180    
+ 27  HC 1  DC5  H2'2  27    0.07180    
+ 28  OS 1  DC5   O3'  28   -0.52320    
+[ impropers ]
+C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCO4'", "ifdef":"eq_polyply"}
+
+C1' C2' N1 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
+[ bonds ]
+H5T O5' 1
+O5' C5' 1
+C5' H5'1 1
+C5' H5'2 1
+C5' C4' 1
+C4' H4' 1
+C4' O4' 1
+C4' C3' 1
+O4' C1' 1
+C1' H1' 1
+C1' N1 1
+C1' C2' 1
+N1 C6 1
+N1 C2 1
+C6 H6 1
+C6 C5 1
+C5 H5 1
+C5 C4 1
+C4 N4 1
+C4 N3 1
+N4 H41 1
+N4 H42 1
+N3 C2 1
+C2 O2 1
+C3' H3' 1
+C3' C2' 1
+C3' O3' 1
+C2' H2'1 1
+C2' H2'2 1
+[ impropers ]
+C1' N1 C6 C2 4
+N1 N3 C2 O2 4
+C4 H41 N4 H42 4
+N1 C5 C6 H6 4
+C6 C4 C5 H5 4
+C5 N4 C4 N3 4
+[ dihedrals ]
+H5'1 C5' O5' H5T 9
+H5'2 C5' O5' H5T 9
+C4' C5' O5' H5T 9
+H4' C4' C5' O5' 9
+O4' C4' C5' O5' 9
+C3' C4' C5' O5' 9
+C1' O4' C4' C5' 9
+H3' C3' C4' C5' 9
+C2' C3' C4' C5' 9
+O3' C3' C4' C5' 9
+H4' C4' C5' H5'1 9
+O4' C4' C5' H5'1 9
+C3' C4' C5' H5'1 9
+H4' C4' C5' H5'2 9
+O4' C4' C5' H5'2 9
+C3' C4' C5' H5'2 9
+H1' C1' O4' C4' 9
+N1 C1' O4' C4' 9
+H2'1 C2' C3' C4' 9
+H2'2 C2' C3' C4' 9
+C1' O4' C4' H4' 9
+H3' C3' C4' H4' 9
+C2' C3' C4' H4' 9
+O3' C3' C4' H4' 9
+H3' C3' C4' O4' 9
+O3' C3' C4' O4' 9
+C6 N1 C1' O4' 9
+C2 N1 C1' O4' 9
+H2'1 C2' C1' O4' 9
+H2'2 C2' C1' O4' 9
+H6 C6 N1 C1' 9
+C5 C6 N1 C1' 9
+N3 C2 N1 C1' 9
+O2 C2 N1 C1' 9
+H3' C3' C2' C1' 9
+O3' C3' C2' C1' 9
+C6 N1 C1' H1' 9
+C2 N1 C1' H1' 9
+C3' C2' C1' H1' 9
+H2'1 C2' C1' H1' 9
+H2'2 C2' C1' H1' 9
+C3' C2' C1' N1 9
+H2'1 C2' C1' N1 9
+H2'2 C2' C1' N1 9
+H5 C5 C6 N1 9
+C4 C5 C6 N1 9
+C2' C1' N1 C6 9
+C6 N1 C2 N3 9
+O2 C2 N1 C6 9
+N4 C4 C5 C6 9
+C2 N1 C6 H6 9
+H5 C5 C6 H6 9
+C4 C5 C6 H6 9
+C2 N1 C6 C5 9
+H41 N4 C4 C5 9
+H42 N4 C4 C5 9
+N4 C4 C5 H5 9
+N3 C4 C5 H5 9
+O2 C2 N3 C4 9
+C2 N3 C4 N4 9
+N3 C4 N4 H41 9
+N3 C4 N4 H42 9
+N3 C4 C5 C6 9
+C2' C1' N1 C2 9
+H2'1 C2' C3' H3' 9
+H2'2 C2' C3' H3' 9
+O3' C3' C2' H2'1 9
+O3' C3' C2' H2'2 9
+;
+C1' O4' C4' C3' 9 
+C2' C3' C4' O4' 9 
+C2' C1' O4' C4' 9 
+C3' C2' C1' O4' 9 
+;
+C2 N3 C4 C5 9 
+N1 C2 N3 C4 9 
+C1' C2' C3' C4' 9 
+[ pairs ]
+H5'1 H5T 1
+H5'2 H5T 1
+C4' H5T 1
+H4' O5' 1
+O4' O5' 1
+C3' O5' 1
+C1' C5' 1
+H3' C5' 1
+C2' C5' 1
+O3' C5' 1
+H4' H5'1 1
+O4' H5'1 1
+C3' H5'1 1
+H4' H5'2 1
+O4' H5'2 1
+C3' H5'2 1
+H1' C4' 1
+N1 C4' 1
+H2'1 C4' 1
+H2'2 C4' 1
+C1' H4' 1
+H3' H4' 1
+C2' H4' 1
+O3' H4' 1
+H3' O4' 1
+O3' O4' 1
+C6 O4' 1
+C2 O4' 1
+H2'1 O4' 1
+H2'2 O4' 1
+H6 C1' 1
+C5 C1' 1
+N3 C1' 1
+O2 C1' 1
+H3' C1' 1
+O3' C1' 1
+C6 H1' 1
+C2 H1' 1
+C3' H1' 1
+H2'1 H1' 1
+H2'2 H1' 1
+C3' N1 1
+H2'1 N1 1
+H2'2 N1 1
+H5 N1 1
+C4 N1 1
+C2' C6 1
+N3 C6 1
+O2 C6 1
+N4 C6 1
+C2 H6 1
+H5 H6 1
+C4 H6 1
+C2 C5 1
+H41 C5 1
+H42 C5 1
+N4 H5 1
+N3 H5 1
+O2 C4 1
+C2 N4 1
+N3 H41 1
+N3 H42 1
+C2' C2 1
+H2'1 H3' 1
+H2'2 H3' 1
+O3' H2'1 1
+O3' H2'2 1
+[ angles ]
+C5' O5' H5T 1
+H5'1 C5' O5' 1
+H5'2 C5' O5' 1
+C4' C5' O5' 1
+H4' C4' C5' 1
+O4' C4' C5' 1
+C3' C4' C5' 1
+H5'2 C5' H5'1 1
+C4' C5' H5'1 1
+C4' C5' H5'2 1
+C1' O4' C4' 1
+H3' C3' C4' 1
+C2' C3' C4' 1
+O3' C3' C4' 1
+O4' C4' H4' 1
+C3' C4' H4' 1
+C3' C4' O4' 1
+H1' C1' O4' 1
+N1 C1' O4' 1
+C2' C1' O4' 1
+C6 N1 C1' 1
+C2 N1 C1' 1
+C3' C2' C1' 1
+H2'1 C2' C1' 1
+H2'2 C2' C1' 1
+N1 C1' H1' 1
+C2' C1' H1' 1
+C2' C1' N1 1
+H6 C6 N1 1
+C5 C6 N1 1
+N3 C2 N1 1
+O2 C2 N1 1
+C2 N1 C6 1
+H5 C5 C6 1
+C4 C5 C6 1
+C5 C6 H6 1
+N4 C4 C5 1
+N3 C4 C5 1
+C4 C5 H5 1
+H41 N4 C4 1
+H42 N4 C4 1
+C2 N3 C4 1
+N3 C4 N4 1
+H42 N4 H41 1
+O2 C2 N3 1
+H2'1 C2' C3' 1
+H2'2 C2' C3' 1
+C2' C3' H3' 1
+O3' C3' H3' 1
+O3' C3' C2' 1
+H2'2 C2' H2'1 1
+[ moleculetype ]
+DC 3
+[ atoms ]
+  1  P  1  DC      P    1    1.16590
+  2  O2 1  DC    O1P    2   -0.77610
+  3  O2 1  DC    O2P    3   -0.77610
+  4  OS 1  DC    O5'    4   -0.49540
+  5  CI 1  DC    C5'    5   -0.00690
+  6  H1 1  DC   H5'1    6    0.07540
+  7  H1 1  DC   H5'2    7    0.07540
+  8  CT 1  DC    C4'    8    0.16290
+  9  H1 1  DC    H4'    9    0.11760
+ 10  OS 1  DC    O4'   10   -0.36910
+ 11  CT 1  DC    C1'   11   -0.01160
+ 12  H2 1  DC    H1'   12    0.19630
+ 13  N* 1  DC     N1   13   -0.03390
+ 14  CM 1  DC     C6   14   -0.01830
+ 15  H4 1  DC     H6   15    0.22930
+ 16  CM 1  DC     C5   16   -0.52220
+ 17  HA 1  DC     H5   17    0.18630
+ 18  CA 1  DC     C4   18    0.84390
+ 19  N2 1  DC     N4   19   -0.97730
+ 20  H  1  DC    H41   20    0.43140
+ 21  H  1  DC    H42   21    0.43140
+ 22  NC 1  DC     N3   22   -0.77480
+ 23  C  1  DC     C2   23    0.79590
+ 24  O  1  DC     O2   24   -0.65480
+ 25  CE 1  DC    C3'   25    0.07130
+ 26  H1 1  DC    H3'   26    0.09850
+ 27  CT 1  DC    C2'   27   -0.08540
+ 28  HC 1  DC   H2'1   28    0.07180
+ 29  HC 1  DC   H2'2   29    0.07180
+ 30  OS 1  DC    O3'   30   -0.52320
+[ impropers ]
+C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCO4'", "ifdef":"eq_polyply"}
+
+C1' C2' N1 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
+[ bonds ]
+P O1P 1
+P O2P 1
+P O5' 1
+O5' C5' 1
+C5' H5'1 1
+C5' H5'2 1
+C5' C4' 1
+C4' H4' 1
+C4' O4' 1
+C4' C3' 1
+O4' C1' 1
+C1' H1' 1
+C1' N1  1
+C1' C2' 1
+N1 C6 1
+N1 C2 1
+C6 H6 1
+C6 C5 1
+C5 H5 1
+C5 C4 1
+C4 N4 1
+C4 N3 1
+N4 H41 1
+N4 H42 1
+N3 C2 1
+C2 O2 1
+C3' H3' 1
+C3' C2' 1
+C3' O3' 1
+C2' H2'1 1
+C2' H2'2 1
+[ impropers ]
+C2 C6 N1 C1' 4
+N1 N3 C2 O2 4
+C4 H41 N4 H42 4
+N1 C5 C6 H6 4
+C6 C4 C5 H5 4
+C5 N4 C4 N3 4
+[ dihedrals ]
+H5'1 C5' O5' P 9
+H5'2 C5' O5' P 9
+C4' C5' O5' P 9
+C5' O5' P O1P 9
+C5' O5' P O2P 9
+H4' C4' C5' O5' 9
+O4' C4' C5' O5' 9
+C3' C4' C5' O5' 9
+C1' O4' C4' C5' 9
+H3' C3' C4' C5' 9
+C2' C3' C4' C5' 9
+O3' C3' C4' C5' 9
+H4' C4' C5' H5'1 9
+O4' C4' C5' H5'1 9
+C3' C4' C5' H5'1 9
+H4' C4' C5' H5'2 9
+O4' C4' C5' H5'2 9
+C3' C4' C5' H5'2 9
+H1' C1' O4' C4' 9
+N1 C1' O4' C4' 9
+H2'1 C2' C3' C4' 9
+H2'2 C2' C3' C4' 9
+C1' O4' C4' H4' 9
+H3' C3' C4' H4' 9
+C2' C3' C4' H4' 9
+O3' C3' C4' H4' 9
+H3' C3' C4' O4' 9
+O3' C3' C4' O4' 9
+C6 N1 C1' O4' 9
+C2 N1 C1' O4' 9
+H2'1 C2' C1' O4' 9
+H2'2 C2' C1' O4' 9
+H6 C6 N1 C1' 9
+C5 C6 N1 C1' 9
+N3 C2 N1 C1' 9
+O2 C2 N1 C1' 9
+H3' C3' C2' C1' 9
+O3' C3' C2' C1' 9
+C6 N1 C1' H1' 9
+C2 N1 C1' H1' 9
+C3' C2' C1' H1' 9
+H2'1 C2' C1' H1' 9
+H2'2 C2' C1' H1' 9
+C3' C2' C1' N1 9
+H2'1 C2' C1' N1 9
+H2'2 C2' C1' N1 9
+H5 C5 C6 N1 9
+C4 C5 C6 N1 9
+C2' C1' N1 C6 9
+C6 N1 C2 N3 9
+O2 C2 N1 C6 9
+N4 C4 C5 C6 9
+C2 N1 C6 H6 9
+H5 C5 C6 H6 9
+C4 C5 C6 H6 9
+C2 N1 C6 C5 9
+H41 N4 C4 C5 9
+H42 N4 C4 C5 9
+N4 C4 C5 H5 9
+N3 C4 C5 H5 9
+O2 C2 N3 C4 9
+C2 N3 C4 N4 9
+N3 C4 N4 H41 9
+N3 C4 N4 H42 9
+N3 C4 C5 C6 9
+C2' C1' N1 C2 9
+H2'1 C2' C3' H3' 9
+H2'2 C2' C3' H3' 9
+O3' C3' C2' H2'1 9
+O3' C3' C2' H2'2 9
+;
+C1' O4' C4' C3' 9 
+C2' C3' C4' O4' 9 
+C2' C1' O4' C4' 9 
+C3' C2' C1' O4' 9 
+;
+C2 N3 C4 C5 9 
+N1 C2 N3 C4 9 
+C1' C2' C3' C4' 9
+
+[ pairs ]
+H5'1 P 1
+H5'2 P 1
+C4' P 1
+C5' O1P 1
+C5' O2P 1
+H4' O5' 1
+O4' O5' 1
+C3' O5' 1
+C1' C5' 1
+H3' C5' 1
+C2' C5' 1
+O3' C5' 1
+H4' H5'1 1
+O4' H5'1 1
+C3' H5'1 1
+H4' H5'2 1
+O4' H5'2 1
+C3' H5'2 1
+H1' C4' 1
+N1 C4' 1
+H2'1 C4' 1
+H2'2 C4' 1
+C1' H4' 1
+H3' H4' 1
+C2' H4' 1
+O3' H4' 1
+H3' O4' 1
+O3' O4' 1
+C6 O4' 1
+C2 O4' 1
+H2'1 O4' 1
+H2'2 O4' 1
+H6 C1' 1
+C5 C1' 1
+N3 C1' 1
+O2 C1' 1
+H3' C1' 1
+O3' C1' 1
+C6 H1' 1
+C2 H1' 1
+C3' H1' 1
+H2'1 H1' 1
+H2'2 H1' 1
+C3' N1 1
+H2'1 N1 1
+H2'2 N1 1
+H5 N1 1
+C4 N1 1
+C2' C6 1
+N3 C6 1
+O2 C6 1
+N4 C6 1
+C2 H6 1
+H5 H6 1
+C4 H6 1
+C2 C5 1
+H41 C5 1
+H42 C5 1
+N4 H5 1
+N3 H5 1
+O2 C4 1
+C2 N4 1
+N3 H41 1
+N3 H42 1
+C2' C2 1
+H2'1 H3' 1
+H2'2 H3' 1
+O3' H2'1 1
+O3' H2'2 1
+[ angles ]
+C5' O5' P 1
+O2P P O1P 1
+O5' P O1P 1
+O5' P O2P 1
+H5'1 C5' O5' 1
+H5'2 C5' O5' 1
+C4' C5' O5' 1
+H4' C4' C5' 1
+O4' C4' C5' 1
+C3' C4' C5' 1
+H5'2 C5' H5'1 1
+C4' C5' H5'1 1
+C4' C5' H5'2 1
+C1' O4' C4' 1
+H3' C3' C4' 1
+C2' C3' C4' 1
+O3' C3' C4' 1
+O4' C4' H4' 1
+C3' C4' H4' 1
+C3' C4' O4' 1
+H1' C1' O4' 1
+N1 C1' O4' 1
+C2' C1' O4' 1
+C6 N1 C1' 1
+C2 N1 C1' 1
+C3' C2' C1' 1
+H2'1 C2' C1' 1
+H2'2 C2' C1' 1
+N1 C1' H1' 1
+C2' C1' H1' 1
+C2' C1' N1 1
+H6 C6 N1 1
+C5 C6 N1 1
+N3 C2 N1 1
+O2 C2 N1 1
+C2 N1 C6 1
+H5 C5 C6 1
+C4 C5 C6 1
+C5 C6 H6 1
+N4 C4 C5 1
+N3 C4 C5 1
+C4 C5 H5 1
+H41 N4 C4 1
+H42 N4 C4 1
+C2 N3 C4 1
+N3 C4 N4 1
+H42 N4 H41 1
+O2 C2 N3 1
+H2'1 C2' C3' 1
+H2'2 C2' C3' 1
+C2' C3' H3' 1
+O3' C3' H3' 1
+O3' C3' C2' 1
+H2'2 C2' H2'1 1
+[ moleculetype ]
+DC3 3
+[ atoms ]
+  1  P  1  DC3     P    1     1.16590
+  2  O2 1  DC3   O1P    2    -0.77610
+  3  O2 1  DC3   O2P    3    -0.77610
+  4  OS 1  DC3   O5'    4    -0.49540
+  5  CI 1  DC3   C5'    5    -0.00690
+  6  H1 1  DC3  H5'1    6     0.07540
+  7  H1 1  DC3  H5'2    7     0.07540
+  8  CT 1  DC3   C4'    8     0.16290
+  9  H1 1  DC3   H4'    9     0.11760
+ 10  OS 1  DC3   O4'   10    -0.36910
+ 11  CT 1  DC3   C1'   11    -0.01160
+ 12  H2 1  DC3   H1'   12     0.19630
+ 13  N* 1  DC3    N1   13    -0.03390
+ 14  CM 1  DC3    C6   14    -0.01830
+ 15  H4 1  DC3    H6   15     0.22930
+ 16  CM 1  DC3    C5   16    -0.52220
+ 17  HA 1  DC3    H5   17     0.18630
+ 18  CA 1  DC3    C4   18     0.84390
+ 19  N2 1  DC3    N4   19    -0.97730
+ 20  H  1  DC3   H41   20     0.43140
+ 21  H  1  DC3   H42   21     0.43140
+ 22  NC 1  DC3    N3   22    -0.77480
+ 23  C  1  DC3    C2   23     0.79590
+ 24  O  1  DC3    O2   24    -0.65480
+ 25  CE 1  DC3   C3'   25     0.07130
+ 26  H1 1  DC3   H3'   26     0.09850
+ 27  CT 1  DC3   C2'   27    -0.08540
+ 28  HC 1  DC3  H2'1   28     0.07180
+ 29  HC 1  DC3  H2'2   29     0.07180
+ 30  OH 1  DC3   O3'   30    -0.65490
+ 31  HO 1  DC3   H3T   31     0.43960
+[ impropers ]
+C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCO4'", "ifdef":"eq_polyply"}
+
+C1' C2' N1 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
+[ bonds ]
+P O1P 1
+P O2P 1
+P O5' 1
+O5' C5' 1
+C5' H5'1 1
+C5' H5'2 1
+C5' C4' 1
+C4' H4' 1
+C4' O4' 1
+C4' C3' 1
+O4' C1' 1
+C1' H1' 1
+C1' N1 1
+C1' C2' 1
+N1 C6 1
+N1 C2 1
+C6 H6 1
+C6 C5 1
+C5 H5 1
+C5 C4 1
+C4 N4 1
+C4 N3 1
+N4 H41 1
+N4 H42 1
+N3 C2 1
+C2 O2 1
+C3' H3' 1
+C3' C2' 1
+C3' O3' 1
+C2' H2'1 1
+C2' H2'2 1
+O3' H3T 1
+[ impropers ]
+C2 C6 N1 C1' 4
+N1 N3 C2 O2 4
+C4 H41 N4 H42 4
+N1 C5 C6 H6 4
+C6 C4 C5 H5 4
+C5 N4 C4 N3 4
+[ dihedrals ]
+H5'1 C5' O5' P 9
+H5'2 C5' O5' P 9
+C4' C5' O5' P 9
+C5' O5' P O1P 9
+C5' O5' P O2P 9
+H4' C4' C5' O5' 9
+O4' C4' C5' O5' 9
+C3' C4' C5' O5' 9
+C1' O4' C4' C5' 9
+H3' C3' C4' C5' 9
+C2' C3' C4' C5' 9
+O3' C3' C4' C5' 9
+H4' C4' C5' H5'1 9
+O4' C4' C5' H5'1 9
+C3' C4' C5' H5'1 9
+H4' C4' C5' H5'2 9
+O4' C4' C5' H5'2 9
+C3' C4' C5' H5'2 9
+H1' C1' O4' C4' 9
+N1 C1' O4' C4' 9
+H2'1 C2' C3' C4' 9
+H2'2 C2' C3' C4' 9
+H3T O3' C3' C4' 9
+C1' O4' C4' H4' 9
+H3' C3' C4' H4' 9
+C2' C3' C4' H4' 9
+O3' C3' C4' H4' 9
+H3' C3' C4' O4' 9
+O3' C3' C4' O4' 9
+C6 N1 C1' O4' 9
+C2 N1 C1' O4' 9
+H2'1 C2' C1' O4' 9
+H2'2 C2' C1' O4' 9
+H6 C6 N1 C1' 9
+C5 C6 N1 C1' 9
+N3 C2 N1 C1' 9
+O2 C2 N1 C1' 9
+H3' C3' C2' C1' 9
+O3' C3' C2' C1' 9
+C6 N1 C1' H1' 9
+C2 N1 C1' H1' 9
+C3' C2' C1' H1' 9
+H2'1 C2' C1' H1' 9
+H2'2 C2' C1' H1' 9
+C3' C2' C1' N1 9
+H2'1 C2' C1' N1 9
+H2'2 C2' C1' N1 9
+H5 C5 C6 N1 9
+C4 C5 C6 N1 9
+C2' C1' N1 C6 9
+C6 N1 C2 N3 9
+O2 C2 N1 C6 9
+N4 C4 C5 C6 9
+C2 N1 C6 H6 9
+H5 C5 C6 H6 9
+C4 C5 C6 H6 9
+C2 N1 C6 C5 9
+H41 N4 C4 C5 9
+H42 N4 C4 C5 9
+N4 C4 C5 H5 9
+N3 C4 C5 H5 9
+O2 C2 N3 C4 9
+C2 N3 C4 N4 9
+N3 C4 N4 H41 9
+N3 C4 N4 H42 9
+N3 C4 C5 C6 9
+C2' C1' N1 C2 9
+H2'1 C2' C3' H3' 9
+H2'2 C2' C3' H3' 9
+H3T O3' C3' H3' 9
+H3T O3' C3' C2' 9
+O3' C3' C2' H2'1 9
+O3' C3' C2' H2'2 9
+;
+C1' O4' C4' C3' 9 
+C2' C3' C4' O4' 9 
+C2' C1' O4' C4' 9 
+C3' C2' C1' O4' 9 
+;
+C2 N3 C4 C5 9 
+N1 C2 N3 C4 9 
+C1' C2' C3' C4' 9 
+[ pairs ]
+H5'1 P 1
+H5'2 P 1
+C4' P 1
+C5' O1P 1
+C5' O2P 1
+H4' O5' 1
+O4' O5' 1
+C3' O5' 1
+C1' C5' 1
+H3' C5' 1
+C2' C5' 1
+O3' C5' 1
+H4' H5'1 1
+O4' H5'1 1
+C3' H5'1 1
+H4' H5'2 1
+O4' H5'2 1
+C3' H5'2 1
+H1' C4' 1
+N1 C4' 1
+H2'1 C4' 1
+H2'2 C4' 1
+H3T C4' 1
+C1' H4' 1
+H3' H4' 1
+C2' H4' 1
+O3' H4' 1
+H3' O4' 1
+O3' O4' 1
+C6 O4' 1
+C2 O4' 1
+H2'1 O4' 1
+H2'2 O4' 1
+H6 C1' 1
+C5 C1' 1
+N3 C1' 1
+O2 C1' 1
+H3' C1' 1
+O3' C1' 1
+C6 H1' 1
+C2 H1' 1
+C3' H1' 1
+H2'1 H1' 1
+H2'2 H1' 1
+C3' N1 1
+H2'1 N1 1
+H2'2 N1 1
+H5 N1 1
+C4 N1 1
+C2' C6 1
+N3 C6 1
+O2 C6 1
+N4 C6 1
+C2 H6 1
+H5 H6 1
+C4 H6 1
+C2 C5 1
+H41 C5 1
+H42 C5 1
+N4 H5 1
+N3 H5 1
+O2 C4 1
+C2 N4 1
+N3 H41 1
+N3 H42 1
+C2' C2 1
+H2'1 H3' 1
+H2'2 H3' 1
+H3T H3' 1
+H3T C2' 1
+O3' H2'1 1
+O3' H2'2 1
+[ angles ]
+C5' O5' P 1
+O2P P O1P 1
+O5' P O1P 1
+O5' P O2P 1
+H5'1 C5' O5' 1
+H5'2 C5' O5' 1
+C4' C5' O5' 1
+H4' C4' C5' 1
+O4' C4' C5' 1
+C3' C4' C5' 1
+H5'2 C5' H5'1 1
+C4' C5' H5'1 1
+C4' C5' H5'2 1
+C1' O4' C4' 1
+H3' C3' C4' 1
+C2' C3' C4' 1
+O3' C3' C4' 1
+O4' C4' H4' 1
+C3' C4' H4' 1
+C3' C4' O4' 1
+H1' C1' O4' 1
+N1 C1' O4' 1
+C2' C1' O4' 1
+C6 N1 C1' 1
+C2 N1 C1' 1
+C3' C2' C1' 1
+H2'1 C2' C1' 1
+H2'2 C2' C1' 1
+N1 C1' H1' 1
+C2' C1' H1' 1
+C2' C1' N1 1
+H6 C6 N1 1
+C5 C6 N1 1
+N3 C2 N1 1
+O2 C2 N1 1
+C2 N1 C6 1
+H5 C5 C6 1
+C4 C5 C6 1
+C5 C6 H6 1
+N4 C4 C5 1
+N3 C4 C5 1
+C4 C5 H5 1
+H41 N4 C4 1
+H42 N4 C4 1
+C2 N3 C4 1
+N3 C4 N4 1
+H42 N4 H41 1
+O2 C2 N3 1
+H2'1 C2' C3' 1
+H2'2 C2' C3' 1
+H3T O3' C3' 1
+C2' C3' H3' 1
+O3' C3' H3' 1
+O3' C3' C2' 1
+H2'2 C2' H2'1 1
+
+[ link ]
+resname $base_pairs
+[ bonds ]
+-O3'     P  1
+[ angles ]
+P  -O3'  -C3'   1
+O1P  P   -O3'   1
+O2P  P   -O3'   1
+O5'  P   -O3'   1
+[ dihedrals ]
+P   -O3'   -C3'  -C4'   9  {"group": "link"}
+O1P  P     -O3'  -C3'   9  {"group": "link"}
+O2P  P     -O3'  -C3'   9  {"group": "link"}
+O5'  P     -O3'  -C3'   9  {"group": "link"}
+P   -O3'   -C3'  -C2'   9  {"group": "link"}
+C5'  O5'     P   -O3'   9  {"group": "link"}
+P   -O3'   -C3'  -H3'   9  {"group": "link"}
+[ pairs ]
+P     -C4' 1
+O1P   -C3' 1
+O2P   -C3' 1
+O5'   -C3' 1
+P     -C2' 1
+C5'   -O3' 1
+P     -H3' 1
+
+[ link ]
+resname $base_pairs
+[ bonds ]
+O3'     <P  1 {"group": "link-circle"}
+[ angles ]
+<P  O3'  C3'   1 {"group": "link-circle"}
+<O1P  <P   O3'   1 {"group": "link-circle"}
+<O2P  <P   O3'   1 {"group": "link-circle"}
+<O5'  <P   O3'   1 {"group": "ink-circle"}
+[ dihedrals ]
+<P   O3'   C3'  C4'   9  {"group": "ink-circle"}
+<O1P <P    O3'  C3'   9  {"group": "ink-circle"}
+<O2P <P    O3'  C3'   9  {"group": "ink-circle"}
+<O5' <P    O3'  C3'   9  {"group": "ink-circle"}
+<P   O3'   C3'  C2'   9  {"group": "ink-circle"}
+<C5' <O5'  <P   O3'   9  {"group": "link-circle"}
+<P   O3'   C3'  H3'   9  {"group": "link-circle"}
+[ pairs ]
+<P     C4' 1
+<O1P   C3' 1
+<O2P   C3' 1
+<O5'   C3' 1
+<P     C2' 1
+<C5'   O3' 1
+<P     H3' 1
+[ edges ]
+O3'  <P {"linktype": "circle"}
+O3' C3' {"linktype": "circle"}
+<O1P <P {"linktype": "circle"}
+<O2P <P {"linktype": "circle"}
+<O5' <P {"linktype": "circle"}

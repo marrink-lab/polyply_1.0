@@ -1,0 +1,6622 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "name": "molecule_0"
+  },
+  "nodes": [
+    {
+      "resid": 1,
+      "charge": 1.0,
+      "atype": "Qp",
+      "charge_group": 1,
+      "index": 1,
+      "atomname": "BB",
+      "resname": "LYS",
+      "seqid": 0,
+      "id": 0
+    },
+    {
+      "resid": 1,
+      "charge": 0.0,
+      "atype": "SC3",
+      "charge_group": 2,
+      "index": 2,
+      "atomname": "SC1",
+      "resname": "LYS",
+      "seqid": 0,
+      "id": 1
+    },
+    {
+      "resid": 1,
+      "charge": 1.0,
+      "atype": "SQp",
+      "charge_group": 3,
+      "index": 3,
+      "atomname": "SC2",
+      "resname": "LYS",
+      "seqid": 0,
+      "id": 2
+    },
+    {
+      "resid": 2,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 4,
+      "index": 4,
+      "atomname": "BB",
+      "resname": "VAL",
+      "seqid": 0,
+      "id": 3
+    },
+    {
+      "resid": 2,
+      "charge": 0.0,
+      "atype": "SC2",
+      "charge_group": 5,
+      "index": 5,
+      "atomname": "SC1",
+      "resname": "VAL",
+      "seqid": 0,
+      "id": 4
+    },
+    {
+      "resid": 3,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 6,
+      "index": 6,
+      "atomname": "BB",
+      "resname": "PHE",
+      "seqid": 0,
+      "id": 5
+    },
+    {
+      "resid": 3,
+      "charge": 0.0,
+      "atype": "TC3",
+      "charge_group": 7,
+      "index": 7,
+      "atomname": "SC1",
+      "resname": "PHE",
+      "seqid": 0,
+      "id": 6
+    },
+    {
+      "resid": 3,
+      "charge": 0.0,
+      "atype": "TC4",
+      "charge_group": 8,
+      "index": 8,
+      "atomname": "SC2",
+      "resname": "PHE",
+      "seqid": 0,
+      "id": 7
+    },
+    {
+      "resid": 3,
+      "charge": 0.0,
+      "atype": "TC4",
+      "charge_group": 9,
+      "index": 9,
+      "atomname": "SC3",
+      "resname": "PHE",
+      "seqid": 0,
+      "id": 8
+    },
+    {
+      "resid": 4,
+      "charge": 0.0,
+      "atype": "SP2",
+      "charge_group": 10,
+      "index": 10,
+      "atomname": "BB",
+      "resname": "GLY",
+      "seqid": 0,
+      "id": 9
+    },
+    {
+      "resid": 5,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 11,
+      "index": 11,
+      "atomname": "BB",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 10
+    },
+    {
+      "resid": 5,
+      "charge": 0.0,
+      "atype": "SN2d",
+      "charge_group": 12,
+      "index": 12,
+      "atomname": "SC1",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 11
+    },
+    {
+      "resid": 5,
+      "charge": 1.0,
+      "atype": "SQp",
+      "charge_group": 13,
+      "index": 13,
+      "atomname": "SC2",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 12
+    },
+    {
+      "resid": 6,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 14,
+      "index": 14,
+      "atomname": "BB",
+      "resname": "CYS",
+      "seqid": 0,
+      "id": 13
+    },
+    {
+      "resid": 6,
+      "charge": 0.0,
+      "atype": "TC4",
+      "charge_group": 15,
+      "index": 15,
+      "atomname": "SC1",
+      "resname": "CYS",
+      "seqid": 0,
+      "id": 14
+    },
+    {
+      "resid": 7,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 16,
+      "index": 16,
+      "atomname": "BB",
+      "resname": "GLU",
+      "seqid": 0,
+      "id": 15
+    },
+    {
+      "resid": 7,
+      "charge": -1.0,
+      "atype": "Qn",
+      "charge_group": 17,
+      "index": 17,
+      "atomname": "SC1",
+      "resname": "GLU",
+      "seqid": 0,
+      "id": 16
+    },
+    {
+      "resid": 8,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 18,
+      "index": 18,
+      "atomname": "BB",
+      "resname": "LEU",
+      "seqid": 0,
+      "id": 17
+    },
+    {
+      "resid": 8,
+      "charge": 0.0,
+      "atype": "SC1",
+      "charge_group": 19,
+      "index": 19,
+      "atomname": "SC1",
+      "resname": "LEU",
+      "seqid": 0,
+      "id": 18
+    },
+    {
+      "resid": 9,
+      "charge": 0.0,
+      "atype": "P1",
+      "charge_group": 20,
+      "index": 20,
+      "atomname": "BB",
+      "resname": "ALA",
+      "seqid": 0,
+      "id": 19
+    },
+    {
+      "resid": 10,
+      "charge": 0.0,
+      "atype": "P1",
+      "charge_group": 21,
+      "index": 21,
+      "atomname": "BB",
+      "resname": "ALA",
+      "seqid": 0,
+      "id": 20
+    },
+    {
+      "resid": 11,
+      "charge": 0.0,
+      "atype": "P1",
+      "charge_group": 22,
+      "index": 22,
+      "atomname": "BB",
+      "resname": "ALA",
+      "seqid": 0,
+      "id": 21
+    },
+    {
+      "resid": 12,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 23,
+      "index": 23,
+      "atomname": "BB",
+      "resname": "MET",
+      "seqid": 0,
+      "id": 22
+    },
+    {
+      "resid": 12,
+      "charge": 0.0,
+      "atype": "C4",
+      "charge_group": 24,
+      "index": 24,
+      "atomname": "SC1",
+      "resname": "MET",
+      "seqid": 0,
+      "id": 23
+    },
+    {
+      "resid": 13,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 25,
+      "index": 25,
+      "atomname": "BB",
+      "resname": "LYS",
+      "seqid": 0,
+      "id": 24
+    },
+    {
+      "resid": 13,
+      "charge": 0.0,
+      "atype": "SC3",
+      "charge_group": 26,
+      "index": 26,
+      "atomname": "SC1",
+      "resname": "LYS",
+      "seqid": 0,
+      "id": 25
+    },
+    {
+      "resid": 13,
+      "charge": 1.0,
+      "atype": "SQp",
+      "charge_group": 27,
+      "index": 27,
+      "atomname": "SC2",
+      "resname": "LYS",
+      "seqid": 0,
+      "id": 26
+    },
+    {
+      "resid": 14,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 28,
+      "index": 28,
+      "atomname": "BB",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 27
+    },
+    {
+      "resid": 14,
+      "charge": 0.0,
+      "atype": "SN2d",
+      "charge_group": 29,
+      "index": 29,
+      "atomname": "SC1",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 28
+    },
+    {
+      "resid": 14,
+      "charge": 1.0,
+      "atype": "SQp",
+      "charge_group": 30,
+      "index": 30,
+      "atomname": "SC2",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 29
+    },
+    {
+      "resid": 15,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 31,
+      "index": 31,
+      "atomname": "BB",
+      "resname": "HIS",
+      "seqid": 0,
+      "id": 30
+    },
+    {
+      "resid": 15,
+      "charge": 0.0,
+      "atype": "TC3",
+      "charge_group": 32,
+      "index": 32,
+      "atomname": "SC1",
+      "resname": "HIS",
+      "seqid": 0,
+      "id": 31
+    },
+    {
+      "resid": 15,
+      "charge": 0.0,
+      "atype": "TN3d",
+      "charge_group": 33,
+      "index": 33,
+      "atomname": "SC2",
+      "resname": "HIS",
+      "seqid": 0,
+      "id": 32
+    },
+    {
+      "resid": 15,
+      "charge": 0.0,
+      "atype": "TN3a",
+      "charge_group": 34,
+      "index": 34,
+      "atomname": "SC3",
+      "resname": "HIS",
+      "seqid": 0,
+      "id": 33
+    },
+    {
+      "resid": 16,
+      "charge": 0.0,
+      "atype": "SP2",
+      "charge_group": 35,
+      "index": 35,
+      "atomname": "BB",
+      "resname": "GLY",
+      "seqid": 0,
+      "id": 34
+    },
+    {
+      "resid": 17,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 36,
+      "index": 36,
+      "atomname": "BB",
+      "resname": "LEU",
+      "seqid": 0,
+      "id": 35
+    },
+    {
+      "resid": 17,
+      "charge": 0.0,
+      "atype": "SC1",
+      "charge_group": 37,
+      "index": 37,
+      "atomname": "SC1",
+      "resname": "LEU",
+      "seqid": 0,
+      "id": 36
+    },
+    {
+      "resid": 18,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 38,
+      "index": 38,
+      "atomname": "BB",
+      "resname": "ASP",
+      "seqid": 0,
+      "id": 37
+    },
+    {
+      "resid": 18,
+      "charge": -1.0,
+      "atype": "SQn",
+      "charge_group": 39,
+      "index": 39,
+      "atomname": "SC1",
+      "resname": "ASP",
+      "seqid": 0,
+      "id": 38
+    },
+    {
+      "resid": 19,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 40,
+      "index": 40,
+      "atomname": "BB",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 39
+    },
+    {
+      "resid": 19,
+      "charge": 0.0,
+      "atype": "SP4",
+      "charge_group": 41,
+      "index": 41,
+      "atomname": "SC1",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 40
+    },
+    {
+      "resid": 20,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 42,
+      "index": 42,
+      "atomname": "BB",
+      "resname": "TYR",
+      "seqid": 0,
+      "id": 41
+    },
+    {
+      "resid": 20,
+      "charge": 0.0,
+      "atype": "TC3",
+      "charge_group": 43,
+      "index": 43,
+      "atomname": "SC1",
+      "resname": "TYR",
+      "seqid": 0,
+      "id": 42
+    },
+    {
+      "resid": 20,
+      "charge": 0.0,
+      "atype": "TC4",
+      "charge_group": 44,
+      "index": 44,
+      "atomname": "SC2",
+      "resname": "TYR",
+      "seqid": 0,
+      "id": 43
+    },
+    {
+      "resid": 20,
+      "charge": 0.0,
+      "atype": "TC4",
+      "charge_group": 45,
+      "index": 45,
+      "atomname": "SC3",
+      "resname": "TYR",
+      "seqid": 0,
+      "id": 44
+    },
+    {
+      "resid": 20,
+      "charge": 0.0,
+      "atype": "TP1",
+      "charge_group": 46,
+      "index": 46,
+      "atomname": "SC4",
+      "resname": "TYR",
+      "seqid": 0,
+      "id": 45
+    },
+    {
+      "resid": 21,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 47,
+      "index": 47,
+      "atomname": "BB",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 46
+    },
+    {
+      "resid": 21,
+      "charge": 0.0,
+      "atype": "SN2d",
+      "charge_group": 48,
+      "index": 48,
+      "atomname": "SC1",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 47
+    },
+    {
+      "resid": 21,
+      "charge": 1.0,
+      "atype": "SQp",
+      "charge_group": 49,
+      "index": 49,
+      "atomname": "SC2",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 48
+    },
+    {
+      "resid": 22,
+      "charge": 0.0,
+      "atype": "SP2",
+      "charge_group": 50,
+      "index": 50,
+      "atomname": "BB",
+      "resname": "GLY",
+      "seqid": 0,
+      "id": 49
+    },
+    {
+      "resid": 23,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 51,
+      "index": 51,
+      "atomname": "BB",
+      "resname": "TYR",
+      "seqid": 0,
+      "id": 50
+    },
+    {
+      "resid": 23,
+      "charge": 0.0,
+      "atype": "TC3",
+      "charge_group": 52,
+      "index": 52,
+      "atomname": "SC1",
+      "resname": "TYR",
+      "seqid": 0,
+      "id": 51
+    },
+    {
+      "resid": 23,
+      "charge": 0.0,
+      "atype": "TC4",
+      "charge_group": 53,
+      "index": 53,
+      "atomname": "SC2",
+      "resname": "TYR",
+      "seqid": 0,
+      "id": 52
+    },
+    {
+      "resid": 23,
+      "charge": 0.0,
+      "atype": "TC4",
+      "charge_group": 54,
+      "index": 54,
+      "atomname": "SC3",
+      "resname": "TYR",
+      "seqid": 0,
+      "id": 53
+    },
+    {
+      "resid": 23,
+      "charge": 0.0,
+      "atype": "TP1",
+      "charge_group": 55,
+      "index": 55,
+      "atomname": "SC4",
+      "resname": "TYR",
+      "seqid": 0,
+      "id": 54
+    },
+    {
+      "resid": 24,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 56,
+      "index": 56,
+      "atomname": "BB",
+      "resname": "SER",
+      "seqid": 0,
+      "id": 55
+    },
+    {
+      "resid": 24,
+      "charge": 0.0,
+      "atype": "TP1",
+      "charge_group": 57,
+      "index": 57,
+      "atomname": "SC1",
+      "resname": "SER",
+      "seqid": 0,
+      "id": 56
+    },
+    {
+      "resid": 25,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 58,
+      "index": 58,
+      "atomname": "BB",
+      "resname": "LEU",
+      "seqid": 0,
+      "id": 57
+    },
+    {
+      "resid": 25,
+      "charge": 0.0,
+      "atype": "SC1",
+      "charge_group": 59,
+      "index": 59,
+      "atomname": "SC1",
+      "resname": "LEU",
+      "seqid": 0,
+      "id": 58
+    },
+    {
+      "resid": 26,
+      "charge": 0.0,
+      "atype": "SP2",
+      "charge_group": 60,
+      "index": 60,
+      "atomname": "BB",
+      "resname": "GLY",
+      "seqid": 0,
+      "id": 59
+    },
+    {
+      "resid": 27,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 61,
+      "index": 61,
+      "atomname": "BB",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 60
+    },
+    {
+      "resid": 27,
+      "charge": 0.0,
+      "atype": "SP4",
+      "charge_group": 62,
+      "index": 62,
+      "atomname": "SC1",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 61
+    },
+    {
+      "resid": 28,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 63,
+      "index": 63,
+      "atomname": "BB",
+      "resname": "TRP",
+      "seqid": 0,
+      "id": 62
+    },
+    {
+      "charge": 0.0,
+      "index": 64,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 28,
+      "atype": "TC4",
+      "charge_group": 64,
+      "atomname": "SC1",
+      "seqid": 0,
+      "id": 63
+    },
+    {
+      "charge": 0.0,
+      "index": 65,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 28,
+      "atype": "TN3d",
+      "charge_group": 65,
+      "atomname": "SC2",
+      "seqid": 0,
+      "id": 64
+    },
+    {
+      "charge": 0.0,
+      "index": 66,
+      "mass": 0.0,
+      "resname": "TRP",
+      "resid": 28,
+      "atype": "TC4",
+      "charge_group": 66,
+      "atomname": "SC3",
+      "seqid": 0,
+      "id": 65
+    },
+    {
+      "charge": 0.0,
+      "index": 67,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 28,
+      "atype": "TC4",
+      "charge_group": 67,
+      "atomname": "SC4",
+      "seqid": 0,
+      "id": 66
+    },
+    {
+      "charge": 0.0,
+      "index": 68,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 28,
+      "atype": "TC4",
+      "charge_group": 68,
+      "atomname": "SC5",
+      "seqid": 0,
+      "id": 67
+    },
+    {
+      "resid": 29,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 69,
+      "index": 69,
+      "atomname": "BB",
+      "resname": "VAL",
+      "seqid": 0,
+      "id": 68
+    },
+    {
+      "resid": 29,
+      "charge": 0.0,
+      "atype": "SC2",
+      "charge_group": 70,
+      "index": 70,
+      "atomname": "SC1",
+      "resname": "VAL",
+      "seqid": 0,
+      "id": 69
+    },
+    {
+      "resid": 30,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 71,
+      "index": 71,
+      "atomname": "BB",
+      "resname": "CYS",
+      "seqid": 0,
+      "id": 70
+    },
+    {
+      "resid": 30,
+      "charge": 0.0,
+      "atype": "TC4",
+      "charge_group": 72,
+      "index": 72,
+      "atomname": "SC1",
+      "resname": "CYS",
+      "seqid": 0,
+      "id": 71
+    },
+    {
+      "resid": 31,
+      "charge": 0.0,
+      "atype": "P1",
+      "charge_group": 73,
+      "index": 73,
+      "atomname": "BB",
+      "resname": "ALA",
+      "seqid": 0,
+      "id": 72
+    },
+    {
+      "resid": 32,
+      "charge": 0.0,
+      "atype": "P1",
+      "charge_group": 74,
+      "index": 74,
+      "atomname": "BB",
+      "resname": "ALA",
+      "seqid": 0,
+      "id": 73
+    },
+    {
+      "resid": 33,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 75,
+      "index": 75,
+      "atomname": "BB",
+      "resname": "LYS",
+      "seqid": 0,
+      "id": 74
+    },
+    {
+      "resid": 33,
+      "charge": 0.0,
+      "atype": "SC3",
+      "charge_group": 76,
+      "index": 76,
+      "atomname": "SC1",
+      "resname": "LYS",
+      "seqid": 0,
+      "id": 75
+    },
+    {
+      "resid": 33,
+      "charge": 1.0,
+      "atype": "SQp",
+      "charge_group": 77,
+      "index": 77,
+      "atomname": "SC2",
+      "resname": "LYS",
+      "seqid": 0,
+      "id": 76
+    },
+    {
+      "resid": 34,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 78,
+      "index": 78,
+      "atomname": "BB",
+      "resname": "PHE",
+      "seqid": 0,
+      "id": 77
+    },
+    {
+      "resid": 34,
+      "charge": 0.0,
+      "atype": "TC3",
+      "charge_group": 79,
+      "index": 79,
+      "atomname": "SC1",
+      "resname": "PHE",
+      "seqid": 0,
+      "id": 78
+    },
+    {
+      "resid": 34,
+      "charge": 0.0,
+      "atype": "TC4",
+      "charge_group": 80,
+      "index": 80,
+      "atomname": "SC2",
+      "resname": "PHE",
+      "seqid": 0,
+      "id": 79
+    },
+    {
+      "resid": 34,
+      "charge": 0.0,
+      "atype": "TC4",
+      "charge_group": 81,
+      "index": 81,
+      "atomname": "SC3",
+      "resname": "PHE",
+      "seqid": 0,
+      "id": 80
+    },
+    {
+      "resid": 35,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 82,
+      "index": 82,
+      "atomname": "BB",
+      "resname": "GLU",
+      "seqid": 0,
+      "id": 81
+    },
+    {
+      "resid": 35,
+      "charge": -1.0,
+      "atype": "Qn",
+      "charge_group": 83,
+      "index": 83,
+      "atomname": "SC1",
+      "resname": "GLU",
+      "seqid": 0,
+      "id": 82
+    },
+    {
+      "resid": 36,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 84,
+      "index": 84,
+      "atomname": "BB",
+      "resname": "SER",
+      "seqid": 0,
+      "id": 83
+    },
+    {
+      "resid": 36,
+      "charge": 0.0,
+      "atype": "TP1",
+      "charge_group": 85,
+      "index": 85,
+      "atomname": "SC1",
+      "resname": "SER",
+      "seqid": 0,
+      "id": 84
+    },
+    {
+      "resid": 37,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 86,
+      "index": 86,
+      "atomname": "BB",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 85
+    },
+    {
+      "resid": 37,
+      "charge": 0.0,
+      "atype": "SP4",
+      "charge_group": 87,
+      "index": 87,
+      "atomname": "SC1",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 86
+    },
+    {
+      "resid": 38,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 88,
+      "index": 88,
+      "atomname": "BB",
+      "resname": "PHE",
+      "seqid": 0,
+      "id": 87
+    },
+    {
+      "resid": 38,
+      "charge": 0.0,
+      "atype": "TC3",
+      "charge_group": 89,
+      "index": 89,
+      "atomname": "SC1",
+      "resname": "PHE",
+      "seqid": 0,
+      "id": 88
+    },
+    {
+      "resid": 38,
+      "charge": 0.0,
+      "atype": "TC4",
+      "charge_group": 90,
+      "index": 90,
+      "atomname": "SC2",
+      "resname": "PHE",
+      "seqid": 0,
+      "id": 89
+    },
+    {
+      "resid": 38,
+      "charge": 0.0,
+      "atype": "TC4",
+      "charge_group": 91,
+      "index": 91,
+      "atomname": "SC3",
+      "resname": "PHE",
+      "seqid": 0,
+      "id": 90
+    },
+    {
+      "resid": 39,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 92,
+      "index": 92,
+      "atomname": "BB",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 91
+    },
+    {
+      "resid": 39,
+      "charge": 0.0,
+      "atype": "SP4",
+      "charge_group": 93,
+      "index": 93,
+      "atomname": "SC1",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 92
+    },
+    {
+      "resid": 40,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 94,
+      "index": 94,
+      "atomname": "BB",
+      "resname": "THR",
+      "seqid": 0,
+      "id": 93
+    },
+    {
+      "resid": 40,
+      "charge": 0.0,
+      "atype": "SP1",
+      "charge_group": 95,
+      "index": 95,
+      "atomname": "SC1",
+      "resname": "THR",
+      "seqid": 0,
+      "id": 94
+    },
+    {
+      "resid": 41,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 96,
+      "index": 96,
+      "atomname": "BB",
+      "resname": "GLN",
+      "seqid": 0,
+      "id": 95
+    },
+    {
+      "resid": 41,
+      "charge": 0.0,
+      "atype": "P4",
+      "charge_group": 97,
+      "index": 97,
+      "atomname": "SC1",
+      "resname": "GLN",
+      "seqid": 0,
+      "id": 96
+    },
+    {
+      "resid": 42,
+      "charge": 0.0,
+      "atype": "P1",
+      "charge_group": 98,
+      "index": 98,
+      "atomname": "BB",
+      "resname": "ALA",
+      "seqid": 0,
+      "id": 97
+    },
+    {
+      "resid": 43,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 99,
+      "index": 99,
+      "atomname": "BB",
+      "resname": "THR",
+      "seqid": 0,
+      "id": 98
+    },
+    {
+      "resid": 43,
+      "charge": 0.0,
+      "atype": "SP1",
+      "charge_group": 100,
+      "index": 100,
+      "atomname": "SC1",
+      "resname": "THR",
+      "seqid": 0,
+      "id": 99
+    },
+    {
+      "resid": 44,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 101,
+      "index": 101,
+      "atomname": "BB",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 100
+    },
+    {
+      "resid": 44,
+      "charge": 0.0,
+      "atype": "SP4",
+      "charge_group": 102,
+      "index": 102,
+      "atomname": "SC1",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 101
+    },
+    {
+      "resid": 45,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 103,
+      "index": 103,
+      "atomname": "BB",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 102
+    },
+    {
+      "resid": 45,
+      "charge": 0.0,
+      "atype": "SN2d",
+      "charge_group": 104,
+      "index": 104,
+      "atomname": "SC1",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 103
+    },
+    {
+      "resid": 45,
+      "charge": 1.0,
+      "atype": "SQp",
+      "charge_group": 105,
+      "index": 105,
+      "atomname": "SC2",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 104
+    },
+    {
+      "resid": 46,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 106,
+      "index": 106,
+      "atomname": "BB",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 105
+    },
+    {
+      "resid": 46,
+      "charge": 0.0,
+      "atype": "SP4",
+      "charge_group": 107,
+      "index": 107,
+      "atomname": "SC1",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 106
+    },
+    {
+      "resid": 47,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 108,
+      "index": 108,
+      "atomname": "BB",
+      "resname": "THR",
+      "seqid": 0,
+      "id": 107
+    },
+    {
+      "resid": 47,
+      "charge": 0.0,
+      "atype": "SP1",
+      "charge_group": 109,
+      "index": 109,
+      "atomname": "SC1",
+      "resname": "THR",
+      "seqid": 0,
+      "id": 108
+    },
+    {
+      "resid": 48,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 110,
+      "index": 110,
+      "atomname": "BB",
+      "resname": "ASP",
+      "seqid": 0,
+      "id": 109
+    },
+    {
+      "resid": 48,
+      "charge": -1.0,
+      "atype": "SQn",
+      "charge_group": 111,
+      "index": 111,
+      "atomname": "SC1",
+      "resname": "ASP",
+      "seqid": 0,
+      "id": 110
+    },
+    {
+      "resid": 49,
+      "charge": 0.0,
+      "atype": "SP2",
+      "charge_group": 112,
+      "index": 112,
+      "atomname": "BB",
+      "resname": "GLY",
+      "seqid": 0,
+      "id": 111
+    },
+    {
+      "resid": 50,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 113,
+      "index": 113,
+      "atomname": "BB",
+      "resname": "SER",
+      "seqid": 0,
+      "id": 112
+    },
+    {
+      "resid": 50,
+      "charge": 0.0,
+      "atype": "TP1",
+      "charge_group": 114,
+      "index": 114,
+      "atomname": "SC1",
+      "resname": "SER",
+      "seqid": 0,
+      "id": 113
+    },
+    {
+      "resid": 51,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 115,
+      "index": 115,
+      "atomname": "BB",
+      "resname": "THR",
+      "seqid": 0,
+      "id": 114
+    },
+    {
+      "resid": 51,
+      "charge": 0.0,
+      "atype": "SP1",
+      "charge_group": 116,
+      "index": 116,
+      "atomname": "SC1",
+      "resname": "THR",
+      "seqid": 0,
+      "id": 115
+    },
+    {
+      "resid": 52,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 117,
+      "index": 117,
+      "atomname": "BB",
+      "resname": "ASP",
+      "seqid": 0,
+      "id": 116
+    },
+    {
+      "resid": 52,
+      "charge": -1.0,
+      "atype": "SQn",
+      "charge_group": 118,
+      "index": 118,
+      "atomname": "SC1",
+      "resname": "ASP",
+      "seqid": 0,
+      "id": 117
+    },
+    {
+      "resid": 53,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 119,
+      "index": 119,
+      "atomname": "BB",
+      "resname": "TYR",
+      "seqid": 0,
+      "id": 118
+    },
+    {
+      "resid": 53,
+      "charge": 0.0,
+      "atype": "TC3",
+      "charge_group": 120,
+      "index": 120,
+      "atomname": "SC1",
+      "resname": "TYR",
+      "seqid": 0,
+      "id": 119
+    },
+    {
+      "resid": 53,
+      "charge": 0.0,
+      "atype": "TC4",
+      "charge_group": 121,
+      "index": 121,
+      "atomname": "SC2",
+      "resname": "TYR",
+      "seqid": 0,
+      "id": 120
+    },
+    {
+      "resid": 53,
+      "charge": 0.0,
+      "atype": "TC4",
+      "charge_group": 122,
+      "index": 122,
+      "atomname": "SC3",
+      "resname": "TYR",
+      "seqid": 0,
+      "id": 121
+    },
+    {
+      "resid": 53,
+      "charge": 0.0,
+      "atype": "TP1",
+      "charge_group": 123,
+      "index": 123,
+      "atomname": "SC4",
+      "resname": "TYR",
+      "seqid": 0,
+      "id": 122
+    },
+    {
+      "resid": 54,
+      "charge": 0.0,
+      "atype": "SP2",
+      "charge_group": 124,
+      "index": 124,
+      "atomname": "BB",
+      "resname": "GLY",
+      "seqid": 0,
+      "id": 123
+    },
+    {
+      "resid": 55,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 125,
+      "index": 125,
+      "atomname": "BB",
+      "resname": "ILE",
+      "seqid": 0,
+      "id": 124
+    },
+    {
+      "resid": 55,
+      "charge": 0.0,
+      "atype": "SC1",
+      "charge_group": 126,
+      "index": 126,
+      "atomname": "SC1",
+      "resname": "ILE",
+      "seqid": 0,
+      "id": 125
+    },
+    {
+      "resid": 56,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 127,
+      "index": 127,
+      "atomname": "BB",
+      "resname": "LEU",
+      "seqid": 0,
+      "id": 126
+    },
+    {
+      "resid": 56,
+      "charge": 0.0,
+      "atype": "SC1",
+      "charge_group": 128,
+      "index": 128,
+      "atomname": "SC1",
+      "resname": "LEU",
+      "seqid": 0,
+      "id": 127
+    },
+    {
+      "resid": 57,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 129,
+      "index": 129,
+      "atomname": "BB",
+      "resname": "GLN",
+      "seqid": 0,
+      "id": 128
+    },
+    {
+      "resid": 57,
+      "charge": 0.0,
+      "atype": "P4",
+      "charge_group": 130,
+      "index": 130,
+      "atomname": "SC1",
+      "resname": "GLN",
+      "seqid": 0,
+      "id": 129
+    },
+    {
+      "resid": 58,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 131,
+      "index": 131,
+      "atomname": "BB",
+      "resname": "ILE",
+      "seqid": 0,
+      "id": 130
+    },
+    {
+      "resid": 58,
+      "charge": 0.0,
+      "atype": "SC1",
+      "charge_group": 132,
+      "index": 132,
+      "atomname": "SC1",
+      "resname": "ILE",
+      "seqid": 0,
+      "id": 131
+    },
+    {
+      "resid": 59,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 133,
+      "index": 133,
+      "atomname": "BB",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 132
+    },
+    {
+      "resid": 59,
+      "charge": 0.0,
+      "atype": "SP4",
+      "charge_group": 134,
+      "index": 134,
+      "atomname": "SC1",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 133
+    },
+    {
+      "resid": 60,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 135,
+      "index": 135,
+      "atomname": "BB",
+      "resname": "SER",
+      "seqid": 0,
+      "id": 134
+    },
+    {
+      "resid": 60,
+      "charge": 0.0,
+      "atype": "TP1",
+      "charge_group": 136,
+      "index": 136,
+      "atomname": "SC1",
+      "resname": "SER",
+      "seqid": 0,
+      "id": 135
+    },
+    {
+      "resid": 61,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 137,
+      "index": 137,
+      "atomname": "BB",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 136
+    },
+    {
+      "resid": 61,
+      "charge": 0.0,
+      "atype": "SN2d",
+      "charge_group": 138,
+      "index": 138,
+      "atomname": "SC1",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 137
+    },
+    {
+      "resid": 61,
+      "charge": 1.0,
+      "atype": "SQp",
+      "charge_group": 139,
+      "index": 139,
+      "atomname": "SC2",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 138
+    },
+    {
+      "resid": 62,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 140,
+      "index": 140,
+      "atomname": "BB",
+      "resname": "TRP",
+      "seqid": 0,
+      "id": 139
+    },
+    {
+      "charge": 0.0,
+      "index": 141,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 62,
+      "atype": "TC4",
+      "charge_group": 141,
+      "atomname": "SC1",
+      "seqid": 0,
+      "id": 140
+    },
+    {
+      "charge": 0.0,
+      "index": 142,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 62,
+      "atype": "TN3d",
+      "charge_group": 142,
+      "atomname": "SC2",
+      "seqid": 0,
+      "id": 141
+    },
+    {
+      "charge": 0.0,
+      "index": 143,
+      "mass": 0.0,
+      "resname": "TRP",
+      "resid": 62,
+      "atype": "TC4",
+      "charge_group": 143,
+      "atomname": "SC3",
+      "seqid": 0,
+      "id": 142
+    },
+    {
+      "charge": 0.0,
+      "index": 144,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 62,
+      "atype": "TC4",
+      "charge_group": 144,
+      "atomname": "SC4",
+      "seqid": 0,
+      "id": 143
+    },
+    {
+      "charge": 0.0,
+      "index": 145,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 62,
+      "atype": "TC4",
+      "charge_group": 145,
+      "atomname": "SC5",
+      "seqid": 0,
+      "id": 144
+    },
+    {
+      "resid": 63,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 146,
+      "index": 146,
+      "atomname": "BB",
+      "resname": "TRP",
+      "seqid": 0,
+      "id": 145
+    },
+    {
+      "charge": 0.0,
+      "index": 147,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 63,
+      "atype": "TC4",
+      "charge_group": 147,
+      "atomname": "SC1",
+      "seqid": 0,
+      "id": 146
+    },
+    {
+      "charge": 0.0,
+      "index": 148,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 63,
+      "atype": "TN3d",
+      "charge_group": 148,
+      "atomname": "SC2",
+      "seqid": 0,
+      "id": 147
+    },
+    {
+      "charge": 0.0,
+      "index": 149,
+      "mass": 0.0,
+      "resname": "TRP",
+      "resid": 63,
+      "atype": "TC4",
+      "charge_group": 149,
+      "atomname": "SC3",
+      "seqid": 0,
+      "id": 148
+    },
+    {
+      "charge": 0.0,
+      "index": 150,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 63,
+      "atype": "TC4",
+      "charge_group": 150,
+      "atomname": "SC4",
+      "seqid": 0,
+      "id": 149
+    },
+    {
+      "charge": 0.0,
+      "index": 151,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 63,
+      "atype": "TC4",
+      "charge_group": 151,
+      "atomname": "SC5",
+      "seqid": 0,
+      "id": 150
+    },
+    {
+      "resid": 64,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 152,
+      "index": 152,
+      "atomname": "BB",
+      "resname": "CYS",
+      "seqid": 0,
+      "id": 151
+    },
+    {
+      "resid": 64,
+      "charge": 0.0,
+      "atype": "TC4",
+      "charge_group": 153,
+      "index": 153,
+      "atomname": "SC1",
+      "resname": "CYS",
+      "seqid": 0,
+      "id": 152
+    },
+    {
+      "resid": 65,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 154,
+      "index": 154,
+      "atomname": "BB",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 153
+    },
+    {
+      "resid": 65,
+      "charge": 0.0,
+      "atype": "SP4",
+      "charge_group": 155,
+      "index": 155,
+      "atomname": "SC1",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 154
+    },
+    {
+      "resid": 66,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 156,
+      "index": 156,
+      "atomname": "BB",
+      "resname": "ASP",
+      "seqid": 0,
+      "id": 155
+    },
+    {
+      "resid": 66,
+      "charge": -1.0,
+      "atype": "SQn",
+      "charge_group": 157,
+      "index": 157,
+      "atomname": "SC1",
+      "resname": "ASP",
+      "seqid": 0,
+      "id": 156
+    },
+    {
+      "resid": 67,
+      "charge": 0.0,
+      "atype": "SP2",
+      "charge_group": 158,
+      "index": 158,
+      "atomname": "BB",
+      "resname": "GLY",
+      "seqid": 0,
+      "id": 157
+    },
+    {
+      "resid": 68,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 159,
+      "index": 159,
+      "atomname": "BB",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 158
+    },
+    {
+      "resid": 68,
+      "charge": 0.0,
+      "atype": "SN2d",
+      "charge_group": 160,
+      "index": 160,
+      "atomname": "SC1",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 159
+    },
+    {
+      "resid": 68,
+      "charge": 1.0,
+      "atype": "SQp",
+      "charge_group": 161,
+      "index": 161,
+      "atomname": "SC2",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 160
+    },
+    {
+      "resid": 69,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 162,
+      "index": 162,
+      "atomname": "BB",
+      "resname": "THR",
+      "seqid": 0,
+      "id": 161
+    },
+    {
+      "resid": 69,
+      "charge": 0.0,
+      "atype": "SP1",
+      "charge_group": 163,
+      "index": 163,
+      "atomname": "SC1",
+      "resname": "THR",
+      "seqid": 0,
+      "id": 162
+    },
+    {
+      "resid": 70,
+      "charge": 0.0,
+      "atype": "SP2a",
+      "charge_group": 164,
+      "index": 164,
+      "atomname": "BB",
+      "resname": "PRO",
+      "seqid": 0,
+      "id": 163
+    },
+    {
+      "resid": 70,
+      "charge": 0.0,
+      "atype": "SC3",
+      "charge_group": 165,
+      "index": 165,
+      "atomname": "SC1",
+      "resname": "PRO",
+      "seqid": 0,
+      "id": 164
+    },
+    {
+      "resid": 71,
+      "charge": 0.0,
+      "atype": "SP2",
+      "charge_group": 166,
+      "index": 166,
+      "atomname": "BB",
+      "resname": "GLY",
+      "seqid": 0,
+      "id": 165
+    },
+    {
+      "resid": 72,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 167,
+      "index": 167,
+      "atomname": "BB",
+      "resname": "SER",
+      "seqid": 0,
+      "id": 166
+    },
+    {
+      "resid": 72,
+      "charge": 0.0,
+      "atype": "TP1",
+      "charge_group": 168,
+      "index": 168,
+      "atomname": "SC1",
+      "resname": "SER",
+      "seqid": 0,
+      "id": 167
+    },
+    {
+      "resid": 73,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 169,
+      "index": 169,
+      "atomname": "BB",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 168
+    },
+    {
+      "resid": 73,
+      "charge": 0.0,
+      "atype": "SN2d",
+      "charge_group": 170,
+      "index": 170,
+      "atomname": "SC1",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 169
+    },
+    {
+      "resid": 73,
+      "charge": 1.0,
+      "atype": "SQp",
+      "charge_group": 171,
+      "index": 171,
+      "atomname": "SC2",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 170
+    },
+    {
+      "resid": 74,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 172,
+      "index": 172,
+      "atomname": "BB",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 171
+    },
+    {
+      "resid": 74,
+      "charge": 0.0,
+      "atype": "SP4",
+      "charge_group": 173,
+      "index": 173,
+      "atomname": "SC1",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 172
+    },
+    {
+      "resid": 75,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 174,
+      "index": 174,
+      "atomname": "BB",
+      "resname": "LEU",
+      "seqid": 0,
+      "id": 173
+    },
+    {
+      "resid": 75,
+      "charge": 0.0,
+      "atype": "SC1",
+      "charge_group": 175,
+      "index": 175,
+      "atomname": "SC1",
+      "resname": "LEU",
+      "seqid": 0,
+      "id": 174
+    },
+    {
+      "resid": 76,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 176,
+      "index": 176,
+      "atomname": "BB",
+      "resname": "CYS",
+      "seqid": 0,
+      "id": 175
+    },
+    {
+      "resid": 76,
+      "charge": 0.0,
+      "atype": "TC4",
+      "charge_group": 177,
+      "index": 177,
+      "atomname": "SC1",
+      "resname": "CYS",
+      "seqid": 0,
+      "id": 176
+    },
+    {
+      "resid": 77,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 178,
+      "index": 178,
+      "atomname": "BB",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 177
+    },
+    {
+      "resid": 77,
+      "charge": 0.0,
+      "atype": "SP4",
+      "charge_group": 179,
+      "index": 179,
+      "atomname": "SC1",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 178
+    },
+    {
+      "resid": 78,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 180,
+      "index": 180,
+      "atomname": "BB",
+      "resname": "ILE",
+      "seqid": 0,
+      "id": 179
+    },
+    {
+      "resid": 78,
+      "charge": 0.0,
+      "atype": "SC1",
+      "charge_group": 181,
+      "index": 181,
+      "atomname": "SC1",
+      "resname": "ILE",
+      "seqid": 0,
+      "id": 180
+    },
+    {
+      "resid": 79,
+      "charge": 0.0,
+      "atype": "SP2a",
+      "charge_group": 182,
+      "index": 182,
+      "atomname": "BB",
+      "resname": "PRO",
+      "seqid": 0,
+      "id": 181
+    },
+    {
+      "resid": 79,
+      "charge": 0.0,
+      "atype": "SC3",
+      "charge_group": 183,
+      "index": 183,
+      "atomname": "SC1",
+      "resname": "PRO",
+      "seqid": 0,
+      "id": 182
+    },
+    {
+      "resid": 80,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 184,
+      "index": 184,
+      "atomname": "BB",
+      "resname": "CYS",
+      "seqid": 0,
+      "id": 183
+    },
+    {
+      "resid": 80,
+      "charge": 0.0,
+      "atype": "TC4",
+      "charge_group": 185,
+      "index": 185,
+      "atomname": "SC1",
+      "resname": "CYS",
+      "seqid": 0,
+      "id": 184
+    },
+    {
+      "resid": 81,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 186,
+      "index": 186,
+      "atomname": "BB",
+      "resname": "SER",
+      "seqid": 0,
+      "id": 185
+    },
+    {
+      "resid": 81,
+      "charge": 0.0,
+      "atype": "TP1",
+      "charge_group": 187,
+      "index": 187,
+      "atomname": "SC1",
+      "resname": "SER",
+      "seqid": 0,
+      "id": 186
+    },
+    {
+      "resid": 82,
+      "charge": 0.0,
+      "atype": "P1",
+      "charge_group": 188,
+      "index": 188,
+      "atomname": "BB",
+      "resname": "ALA",
+      "seqid": 0,
+      "id": 187
+    },
+    {
+      "resid": 83,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 189,
+      "index": 189,
+      "atomname": "BB",
+      "resname": "LEU",
+      "seqid": 0,
+      "id": 188
+    },
+    {
+      "resid": 83,
+      "charge": 0.0,
+      "atype": "SC1",
+      "charge_group": 190,
+      "index": 190,
+      "atomname": "SC1",
+      "resname": "LEU",
+      "seqid": 0,
+      "id": 189
+    },
+    {
+      "resid": 84,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 191,
+      "index": 191,
+      "atomname": "BB",
+      "resname": "LEU",
+      "seqid": 0,
+      "id": 190
+    },
+    {
+      "resid": 84,
+      "charge": 0.0,
+      "atype": "SC1",
+      "charge_group": 192,
+      "index": 192,
+      "atomname": "SC1",
+      "resname": "LEU",
+      "seqid": 0,
+      "id": 191
+    },
+    {
+      "resid": 85,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 193,
+      "index": 193,
+      "atomname": "BB",
+      "resname": "SER",
+      "seqid": 0,
+      "id": 192
+    },
+    {
+      "resid": 85,
+      "charge": 0.0,
+      "atype": "TP1",
+      "charge_group": 194,
+      "index": 194,
+      "atomname": "SC1",
+      "resname": "SER",
+      "seqid": 0,
+      "id": 193
+    },
+    {
+      "resid": 86,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 195,
+      "index": 195,
+      "atomname": "BB",
+      "resname": "SER",
+      "seqid": 0,
+      "id": 194
+    },
+    {
+      "resid": 86,
+      "charge": 0.0,
+      "atype": "TP1",
+      "charge_group": 196,
+      "index": 196,
+      "atomname": "SC1",
+      "resname": "SER",
+      "seqid": 0,
+      "id": 195
+    },
+    {
+      "resid": 87,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 197,
+      "index": 197,
+      "atomname": "BB",
+      "resname": "ASP",
+      "seqid": 0,
+      "id": 196
+    },
+    {
+      "resid": 87,
+      "charge": -1.0,
+      "atype": "SQn",
+      "charge_group": 198,
+      "index": 198,
+      "atomname": "SC1",
+      "resname": "ASP",
+      "seqid": 0,
+      "id": 197
+    },
+    {
+      "resid": 88,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 199,
+      "index": 199,
+      "atomname": "BB",
+      "resname": "ILE",
+      "seqid": 0,
+      "id": 198
+    },
+    {
+      "resid": 88,
+      "charge": 0.0,
+      "atype": "SC1",
+      "charge_group": 200,
+      "index": 200,
+      "atomname": "SC1",
+      "resname": "ILE",
+      "seqid": 0,
+      "id": 199
+    },
+    {
+      "resid": 89,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 201,
+      "index": 201,
+      "atomname": "BB",
+      "resname": "THR",
+      "seqid": 0,
+      "id": 200
+    },
+    {
+      "resid": 89,
+      "charge": 0.0,
+      "atype": "SP1",
+      "charge_group": 202,
+      "index": 202,
+      "atomname": "SC1",
+      "resname": "THR",
+      "seqid": 0,
+      "id": 201
+    },
+    {
+      "resid": 90,
+      "charge": 0.0,
+      "atype": "P1",
+      "charge_group": 203,
+      "index": 203,
+      "atomname": "BB",
+      "resname": "ALA",
+      "seqid": 0,
+      "id": 202
+    },
+    {
+      "resid": 91,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 204,
+      "index": 204,
+      "atomname": "BB",
+      "resname": "SER",
+      "seqid": 0,
+      "id": 203
+    },
+    {
+      "resid": 91,
+      "charge": 0.0,
+      "atype": "TP1",
+      "charge_group": 205,
+      "index": 205,
+      "atomname": "SC1",
+      "resname": "SER",
+      "seqid": 0,
+      "id": 204
+    },
+    {
+      "resid": 92,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 206,
+      "index": 206,
+      "atomname": "BB",
+      "resname": "VAL",
+      "seqid": 0,
+      "id": 205
+    },
+    {
+      "resid": 92,
+      "charge": 0.0,
+      "atype": "SC2",
+      "charge_group": 207,
+      "index": 207,
+      "atomname": "SC1",
+      "resname": "VAL",
+      "seqid": 0,
+      "id": 206
+    },
+    {
+      "resid": 93,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 208,
+      "index": 208,
+      "atomname": "BB",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 207
+    },
+    {
+      "resid": 93,
+      "charge": 0.0,
+      "atype": "SP4",
+      "charge_group": 209,
+      "index": 209,
+      "atomname": "SC1",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 208
+    },
+    {
+      "resid": 94,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 210,
+      "index": 210,
+      "atomname": "BB",
+      "resname": "CYS",
+      "seqid": 0,
+      "id": 209
+    },
+    {
+      "resid": 94,
+      "charge": 0.0,
+      "atype": "TC4",
+      "charge_group": 211,
+      "index": 211,
+      "atomname": "SC1",
+      "resname": "CYS",
+      "seqid": 0,
+      "id": 210
+    },
+    {
+      "resid": 95,
+      "charge": 0.0,
+      "atype": "P1",
+      "charge_group": 212,
+      "index": 212,
+      "atomname": "BB",
+      "resname": "ALA",
+      "seqid": 0,
+      "id": 211
+    },
+    {
+      "resid": 96,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 213,
+      "index": 213,
+      "atomname": "BB",
+      "resname": "LYS",
+      "seqid": 0,
+      "id": 212
+    },
+    {
+      "resid": 96,
+      "charge": 0.0,
+      "atype": "SC3",
+      "charge_group": 214,
+      "index": 214,
+      "atomname": "SC1",
+      "resname": "LYS",
+      "seqid": 0,
+      "id": 213
+    },
+    {
+      "resid": 96,
+      "charge": 1.0,
+      "atype": "SQp",
+      "charge_group": 215,
+      "index": 215,
+      "atomname": "SC2",
+      "resname": "LYS",
+      "seqid": 0,
+      "id": 214
+    },
+    {
+      "resid": 97,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 216,
+      "index": 216,
+      "atomname": "BB",
+      "resname": "LYS",
+      "seqid": 0,
+      "id": 215
+    },
+    {
+      "resid": 97,
+      "charge": 0.0,
+      "atype": "SC3",
+      "charge_group": 217,
+      "index": 217,
+      "atomname": "SC1",
+      "resname": "LYS",
+      "seqid": 0,
+      "id": 216
+    },
+    {
+      "resid": 97,
+      "charge": 1.0,
+      "atype": "SQp",
+      "charge_group": 218,
+      "index": 218,
+      "atomname": "SC2",
+      "resname": "LYS",
+      "seqid": 0,
+      "id": 217
+    },
+    {
+      "resid": 98,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 219,
+      "index": 219,
+      "atomname": "BB",
+      "resname": "ILE",
+      "seqid": 0,
+      "id": 218
+    },
+    {
+      "resid": 98,
+      "charge": 0.0,
+      "atype": "SC1",
+      "charge_group": 220,
+      "index": 220,
+      "atomname": "SC1",
+      "resname": "ILE",
+      "seqid": 0,
+      "id": 219
+    },
+    {
+      "resid": 99,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 221,
+      "index": 221,
+      "atomname": "BB",
+      "resname": "VAL",
+      "seqid": 0,
+      "id": 220
+    },
+    {
+      "resid": 99,
+      "charge": 0.0,
+      "atype": "SC2",
+      "charge_group": 222,
+      "index": 222,
+      "atomname": "SC1",
+      "resname": "VAL",
+      "seqid": 0,
+      "id": 221
+    },
+    {
+      "resid": 100,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 223,
+      "index": 223,
+      "atomname": "BB",
+      "resname": "SER",
+      "seqid": 0,
+      "id": 222
+    },
+    {
+      "resid": 100,
+      "charge": 0.0,
+      "atype": "TP1",
+      "charge_group": 224,
+      "index": 224,
+      "atomname": "SC1",
+      "resname": "SER",
+      "seqid": 0,
+      "id": 223
+    },
+    {
+      "resid": 101,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 225,
+      "index": 225,
+      "atomname": "BB",
+      "resname": "ASP",
+      "seqid": 0,
+      "id": 224
+    },
+    {
+      "resid": 101,
+      "charge": -1.0,
+      "atype": "SQn",
+      "charge_group": 226,
+      "index": 226,
+      "atomname": "SC1",
+      "resname": "ASP",
+      "seqid": 0,
+      "id": 225
+    },
+    {
+      "resid": 102,
+      "charge": 0.0,
+      "atype": "SP2",
+      "charge_group": 227,
+      "index": 227,
+      "atomname": "BB",
+      "resname": "GLY",
+      "seqid": 0,
+      "id": 226
+    },
+    {
+      "resid": 103,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 228,
+      "index": 228,
+      "atomname": "BB",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 227
+    },
+    {
+      "resid": 103,
+      "charge": 0.0,
+      "atype": "SP4",
+      "charge_group": 229,
+      "index": 229,
+      "atomname": "SC1",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 228
+    },
+    {
+      "resid": 104,
+      "charge": 0.0,
+      "atype": "SP2",
+      "charge_group": 230,
+      "index": 230,
+      "atomname": "BB",
+      "resname": "GLY",
+      "seqid": 0,
+      "id": 229
+    },
+    {
+      "resid": 105,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 231,
+      "index": 231,
+      "atomname": "BB",
+      "resname": "MET",
+      "seqid": 0,
+      "id": 230
+    },
+    {
+      "resid": 105,
+      "charge": 0.0,
+      "atype": "C4",
+      "charge_group": 232,
+      "index": 232,
+      "atomname": "SC1",
+      "resname": "MET",
+      "seqid": 0,
+      "id": 231
+    },
+    {
+      "resid": 106,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 233,
+      "index": 233,
+      "atomname": "BB",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 232
+    },
+    {
+      "resid": 106,
+      "charge": 0.0,
+      "atype": "SP4",
+      "charge_group": 234,
+      "index": 234,
+      "atomname": "SC1",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 233
+    },
+    {
+      "resid": 107,
+      "charge": 0.0,
+      "atype": "P1",
+      "charge_group": 235,
+      "index": 235,
+      "atomname": "BB",
+      "resname": "ALA",
+      "seqid": 0,
+      "id": 234
+    },
+    {
+      "resid": 108,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 236,
+      "index": 236,
+      "atomname": "BB",
+      "resname": "TRP",
+      "seqid": 0,
+      "id": 235
+    },
+    {
+      "charge": 0.0,
+      "index": 237,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 108,
+      "atype": "TC4",
+      "charge_group": 237,
+      "atomname": "SC1",
+      "seqid": 0,
+      "id": 236
+    },
+    {
+      "charge": 0.0,
+      "index": 238,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 108,
+      "atype": "TN3d",
+      "charge_group": 238,
+      "atomname": "SC2",
+      "seqid": 0,
+      "id": 237
+    },
+    {
+      "charge": 0.0,
+      "index": 239,
+      "mass": 0.0,
+      "resname": "TRP",
+      "resid": 108,
+      "atype": "TC4",
+      "charge_group": 239,
+      "atomname": "SC3",
+      "seqid": 0,
+      "id": 238
+    },
+    {
+      "charge": 0.0,
+      "index": 240,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 108,
+      "atype": "TC4",
+      "charge_group": 240,
+      "atomname": "SC4",
+      "seqid": 0,
+      "id": 239
+    },
+    {
+      "charge": 0.0,
+      "index": 241,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 108,
+      "atype": "TC4",
+      "charge_group": 241,
+      "atomname": "SC5",
+      "seqid": 0,
+      "id": 240
+    },
+    {
+      "resid": 109,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 242,
+      "index": 242,
+      "atomname": "BB",
+      "resname": "VAL",
+      "seqid": 0,
+      "id": 241
+    },
+    {
+      "resid": 109,
+      "charge": 0.0,
+      "atype": "SC2",
+      "charge_group": 243,
+      "index": 243,
+      "atomname": "SC1",
+      "resname": "VAL",
+      "seqid": 0,
+      "id": 242
+    },
+    {
+      "resid": 110,
+      "charge": 0.0,
+      "atype": "P1",
+      "charge_group": 244,
+      "index": 244,
+      "atomname": "BB",
+      "resname": "ALA",
+      "seqid": 0,
+      "id": 243
+    },
+    {
+      "resid": 111,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 245,
+      "index": 245,
+      "atomname": "BB",
+      "resname": "TRP",
+      "seqid": 0,
+      "id": 244
+    },
+    {
+      "charge": 0.0,
+      "index": 246,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 111,
+      "atype": "TC4",
+      "charge_group": 246,
+      "atomname": "SC1",
+      "seqid": 0,
+      "id": 245
+    },
+    {
+      "charge": 0.0,
+      "index": 247,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 111,
+      "atype": "TN3d",
+      "charge_group": 247,
+      "atomname": "SC2",
+      "seqid": 0,
+      "id": 246
+    },
+    {
+      "charge": 0.0,
+      "index": 248,
+      "mass": 0.0,
+      "resname": "TRP",
+      "resid": 111,
+      "atype": "TC4",
+      "charge_group": 248,
+      "atomname": "SC3",
+      "seqid": 0,
+      "id": 247
+    },
+    {
+      "charge": 0.0,
+      "index": 249,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 111,
+      "atype": "TC4",
+      "charge_group": 249,
+      "atomname": "SC4",
+      "seqid": 0,
+      "id": 248
+    },
+    {
+      "charge": 0.0,
+      "index": 250,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 111,
+      "atype": "TC4",
+      "charge_group": 250,
+      "atomname": "SC5",
+      "seqid": 0,
+      "id": 249
+    },
+    {
+      "resid": 112,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 251,
+      "index": 251,
+      "atomname": "BB",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 250
+    },
+    {
+      "resid": 112,
+      "charge": 0.0,
+      "atype": "SN2d",
+      "charge_group": 252,
+      "index": 252,
+      "atomname": "SC1",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 251
+    },
+    {
+      "resid": 112,
+      "charge": 1.0,
+      "atype": "SQp",
+      "charge_group": 253,
+      "index": 253,
+      "atomname": "SC2",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 252
+    },
+    {
+      "resid": 113,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 254,
+      "index": 254,
+      "atomname": "BB",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 253
+    },
+    {
+      "resid": 113,
+      "charge": 0.0,
+      "atype": "SP4",
+      "charge_group": 255,
+      "index": 255,
+      "atomname": "SC1",
+      "resname": "ASN",
+      "seqid": 0,
+      "id": 254
+    },
+    {
+      "resid": 114,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 256,
+      "index": 256,
+      "atomname": "BB",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 255
+    },
+    {
+      "resid": 114,
+      "charge": 0.0,
+      "atype": "SN2d",
+      "charge_group": 257,
+      "index": 257,
+      "atomname": "SC1",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 256
+    },
+    {
+      "resid": 114,
+      "charge": 1.0,
+      "atype": "SQp",
+      "charge_group": 258,
+      "index": 258,
+      "atomname": "SC2",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 257
+    },
+    {
+      "resid": 115,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 259,
+      "index": 259,
+      "atomname": "BB",
+      "resname": "CYS",
+      "seqid": 0,
+      "id": 258
+    },
+    {
+      "resid": 115,
+      "charge": 0.0,
+      "atype": "TC4",
+      "charge_group": 260,
+      "index": 260,
+      "atomname": "SC1",
+      "resname": "CYS",
+      "seqid": 0,
+      "id": 259
+    },
+    {
+      "resid": 116,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 261,
+      "index": 261,
+      "atomname": "BB",
+      "resname": "LYS",
+      "seqid": 0,
+      "id": 260
+    },
+    {
+      "resid": 116,
+      "charge": 0.0,
+      "atype": "SC3",
+      "charge_group": 262,
+      "index": 262,
+      "atomname": "SC1",
+      "resname": "LYS",
+      "seqid": 0,
+      "id": 261
+    },
+    {
+      "resid": 116,
+      "charge": 1.0,
+      "atype": "SQp",
+      "charge_group": 263,
+      "index": 263,
+      "atomname": "SC2",
+      "resname": "LYS",
+      "seqid": 0,
+      "id": 262
+    },
+    {
+      "resid": 117,
+      "charge": 0.0,
+      "atype": "SP2",
+      "charge_group": 264,
+      "index": 264,
+      "atomname": "BB",
+      "resname": "GLY",
+      "seqid": 0,
+      "id": 263
+    },
+    {
+      "resid": 118,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 265,
+      "index": 265,
+      "atomname": "BB",
+      "resname": "THR",
+      "seqid": 0,
+      "id": 264
+    },
+    {
+      "resid": 118,
+      "charge": 0.0,
+      "atype": "SP1",
+      "charge_group": 266,
+      "index": 266,
+      "atomname": "SC1",
+      "resname": "THR",
+      "seqid": 0,
+      "id": 265
+    },
+    {
+      "resid": 119,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 267,
+      "index": 267,
+      "atomname": "BB",
+      "resname": "ASP",
+      "seqid": 0,
+      "id": 266
+    },
+    {
+      "resid": 119,
+      "charge": -1.0,
+      "atype": "SQn",
+      "charge_group": 268,
+      "index": 268,
+      "atomname": "SC1",
+      "resname": "ASP",
+      "seqid": 0,
+      "id": 267
+    },
+    {
+      "resid": 120,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 269,
+      "index": 269,
+      "atomname": "BB",
+      "resname": "VAL",
+      "seqid": 0,
+      "id": 268
+    },
+    {
+      "resid": 120,
+      "charge": 0.0,
+      "atype": "SC2",
+      "charge_group": 270,
+      "index": 270,
+      "atomname": "SC1",
+      "resname": "VAL",
+      "seqid": 0,
+      "id": 269
+    },
+    {
+      "resid": 121,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 271,
+      "index": 271,
+      "atomname": "BB",
+      "resname": "GLN",
+      "seqid": 0,
+      "id": 270
+    },
+    {
+      "resid": 121,
+      "charge": 0.0,
+      "atype": "P4",
+      "charge_group": 272,
+      "index": 272,
+      "atomname": "SC1",
+      "resname": "GLN",
+      "seqid": 0,
+      "id": 271
+    },
+    {
+      "resid": 122,
+      "charge": 0.0,
+      "atype": "P1",
+      "charge_group": 273,
+      "index": 273,
+      "atomname": "BB",
+      "resname": "ALA",
+      "seqid": 0,
+      "id": 272
+    },
+    {
+      "resid": 123,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 274,
+      "index": 274,
+      "atomname": "BB",
+      "resname": "TRP",
+      "seqid": 0,
+      "id": 273
+    },
+    {
+      "charge": 0.0,
+      "index": 275,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 123,
+      "atype": "TC4",
+      "charge_group": 275,
+      "atomname": "SC1",
+      "seqid": 0,
+      "id": 274
+    },
+    {
+      "charge": 0.0,
+      "index": 276,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 123,
+      "atype": "TN3d",
+      "charge_group": 276,
+      "atomname": "SC2",
+      "seqid": 0,
+      "id": 275
+    },
+    {
+      "charge": 0.0,
+      "index": 277,
+      "mass": 0.0,
+      "resname": "TRP",
+      "resid": 123,
+      "atype": "TC4",
+      "charge_group": 277,
+      "atomname": "SC3",
+      "seqid": 0,
+      "id": 276
+    },
+    {
+      "charge": 0.0,
+      "index": 278,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 123,
+      "atype": "TC4",
+      "charge_group": 278,
+      "atomname": "SC4",
+      "seqid": 0,
+      "id": 277
+    },
+    {
+      "charge": 0.0,
+      "index": 279,
+      "mass": 36.0,
+      "resname": "TRP",
+      "resid": 123,
+      "atype": "TC4",
+      "charge_group": 279,
+      "atomname": "SC5",
+      "seqid": 0,
+      "id": 278
+    },
+    {
+      "resid": 124,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 280,
+      "index": 280,
+      "atomname": "BB",
+      "resname": "ILE",
+      "seqid": 0,
+      "id": 279
+    },
+    {
+      "resid": 124,
+      "charge": 0.0,
+      "atype": "SC1",
+      "charge_group": 281,
+      "index": 281,
+      "atomname": "SC1",
+      "resname": "ILE",
+      "seqid": 0,
+      "id": 280
+    },
+    {
+      "resid": 125,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 282,
+      "index": 282,
+      "atomname": "BB",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 281
+    },
+    {
+      "resid": 125,
+      "charge": 0.0,
+      "atype": "SN2d",
+      "charge_group": 283,
+      "index": 283,
+      "atomname": "SC1",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 282
+    },
+    {
+      "resid": 125,
+      "charge": 1.0,
+      "atype": "SQp",
+      "charge_group": 284,
+      "index": 284,
+      "atomname": "SC2",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 283
+    },
+    {
+      "resid": 126,
+      "charge": 0.0,
+      "atype": "SP2",
+      "charge_group": 285,
+      "index": 285,
+      "atomname": "BB",
+      "resname": "GLY",
+      "seqid": 0,
+      "id": 284
+    },
+    {
+      "resid": 127,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 286,
+      "index": 286,
+      "atomname": "BB",
+      "resname": "CYS",
+      "seqid": 0,
+      "id": 285
+    },
+    {
+      "resid": 127,
+      "charge": 0.0,
+      "atype": "TC4",
+      "charge_group": 287,
+      "index": 287,
+      "atomname": "SC1",
+      "resname": "CYS",
+      "seqid": 0,
+      "id": 286
+    },
+    {
+      "resid": 128,
+      "charge": 0.0,
+      "atype": "P2",
+      "charge_group": 288,
+      "index": 288,
+      "atomname": "BB",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 287
+    },
+    {
+      "resid": 128,
+      "charge": 0.0,
+      "atype": "SN2d",
+      "charge_group": 289,
+      "index": 289,
+      "atomname": "SC1",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 288
+    },
+    {
+      "resid": 128,
+      "charge": 1.0,
+      "atype": "SQp",
+      "charge_group": 290,
+      "index": 290,
+      "atomname": "SC2",
+      "resname": "ARG",
+      "seqid": 0,
+      "id": 289
+    },
+    {
+      "resid": 129,
+      "charge": -1.0,
+      "atype": "Qn",
+      "charge_group": 291,
+      "index": 291,
+      "atomname": "BB",
+      "resname": "LEU",
+      "seqid": 0,
+      "id": 290
+    },
+    {
+      "resid": 129,
+      "charge": 0.0,
+      "atype": "SC1",
+      "charge_group": 292,
+      "index": 292,
+      "atomname": "SC1",
+      "resname": "LEU",
+      "seqid": 0,
+      "id": 291
+    },
+    {
+      "resname": "PEG",
+      "seqid": 1,
+      "id": 292
+    },
+    {
+      "resname": "PEG",
+      "seqid": 1,
+      "id": 293
+    },
+    {
+      "resname": "PEG",
+      "seqid": 1,
+      "id": 294
+    },
+    {
+      "resname": "PEG",
+      "seqid": 1,
+      "id": 295
+    },
+    {
+      "resname": "PEG",
+      "seqid": 1,
+      "id": 296
+    }
+  ],
+  "links": [
+    {
+      "source": 0,
+      "target": 3
+    },
+    {
+      "source": 0,
+      "target": 85
+    },
+    {
+      "source": 0,
+      "target": 87
+    },
+    {
+      "source": 0,
+      "target": 91
+    },
+    {
+      "source": 0,
+      "target": 93
+    },
+    {
+      "source": 0,
+      "target": 95
+    },
+    {
+      "source": 0,
+      "target": 97
+    },
+    {
+      "source": 0,
+      "target": 190
+    },
+    {
+      "source": 0,
+      "target": 192
+    },
+    {
+      "source": 0,
+      "target": 194
+    },
+    {
+      "source": 0,
+      "target": 196
+    },
+    {
+      "source": 0,
+      "target": 1
+    },
+    {
+      "source": 0,
+      "target": 293
+    },
+    {
+      "source": 1,
+      "target": 2
+    },
+    {
+      "source": 3,
+      "target": 5
+    },
+    {
+      "source": 3,
+      "target": 85
+    },
+    {
+      "source": 3,
+      "target": 87
+    },
+    {
+      "source": 3,
+      "target": 91
+    },
+    {
+      "source": 3,
+      "target": 93
+    },
+    {
+      "source": 3,
+      "target": 194
+    },
+    {
+      "source": 3,
+      "target": 4
+    },
+    {
+      "source": 5,
+      "target": 9
+    },
+    {
+      "source": 5,
+      "target": 15
+    },
+    {
+      "source": 5,
+      "target": 17
+    },
+    {
+      "source": 5,
+      "target": 85
+    },
+    {
+      "source": 5,
+      "target": 87
+    },
+    {
+      "source": 5,
+      "target": 91
+    },
+    {
+      "source": 5,
+      "target": 93
+    },
+    {
+      "source": 5,
+      "target": 6
+    },
+    {
+      "source": 5,
+      "target": 7
+    },
+    {
+      "source": 6,
+      "target": 7
+    },
+    {
+      "source": 6,
+      "target": 8
+    },
+    {
+      "source": 7,
+      "target": 8
+    },
+    {
+      "source": 9,
+      "target": 10
+    },
+    {
+      "source": 9,
+      "target": 17
+    },
+    {
+      "source": 9,
+      "target": 19
+    },
+    {
+      "source": 9,
+      "target": 85
+    },
+    {
+      "source": 9,
+      "target": 87
+    },
+    {
+      "source": 10,
+      "target": 13
+    },
+    {
+      "source": 10,
+      "target": 19
+    },
+    {
+      "source": 10,
+      "target": 20
+    },
+    {
+      "source": 10,
+      "target": 68
+    },
+    {
+      "source": 10,
+      "target": 87
+    },
+    {
+      "source": 10,
+      "target": 273
+    },
+    {
+      "source": 10,
+      "target": 279
+    },
+    {
+      "source": 10,
+      "target": 281
+    },
+    {
+      "source": 10,
+      "target": 285
+    },
+    {
+      "source": 10,
+      "target": 11
+    },
+    {
+      "source": 11,
+      "target": 12
+    },
+    {
+      "source": 13,
+      "target": 15
+    },
+    {
+      "source": 13,
+      "target": 20
+    },
+    {
+      "source": 13,
+      "target": 21
+    },
+    {
+      "source": 13,
+      "target": 273
+    },
+    {
+      "source": 13,
+      "target": 279
+    },
+    {
+      "source": 13,
+      "target": 281
+    },
+    {
+      "source": 13,
+      "target": 284
+    },
+    {
+      "source": 13,
+      "target": 285
+    },
+    {
+      "source": 13,
+      "target": 287
+    },
+    {
+      "source": 13,
+      "target": 290
+    },
+    {
+      "source": 13,
+      "target": 14
+    },
+    {
+      "source": 14,
+      "target": 286
+    },
+    {
+      "source": 15,
+      "target": 17
+    },
+    {
+      "source": 15,
+      "target": 21
+    },
+    {
+      "source": 15,
+      "target": 22
+    },
+    {
+      "source": 15,
+      "target": 285
+    },
+    {
+      "source": 15,
+      "target": 287
+    },
+    {
+      "source": 15,
+      "target": 16
+    },
+    {
+      "source": 17,
+      "target": 19
+    },
+    {
+      "source": 17,
+      "target": 22
+    },
+    {
+      "source": 17,
+      "target": 24
+    },
+    {
+      "source": 17,
+      "target": 62
+    },
+    {
+      "source": 17,
+      "target": 68
+    },
+    {
+      "source": 17,
+      "target": 87
+    },
+    {
+      "source": 17,
+      "target": 18
+    },
+    {
+      "source": 19,
+      "target": 20
+    },
+    {
+      "source": 19,
+      "target": 24
+    },
+    {
+      "source": 19,
+      "target": 27
+    },
+    {
+      "source": 19,
+      "target": 35
+    },
+    {
+      "source": 19,
+      "target": 57
+    },
+    {
+      "source": 19,
+      "target": 59
+    },
+    {
+      "source": 19,
+      "target": 62
+    },
+    {
+      "source": 19,
+      "target": 68
+    },
+    {
+      "source": 19,
+      "target": 273
+    },
+    {
+      "source": 19,
+      "target": 279
+    },
+    {
+      "source": 19,
+      "target": 285
+    },
+    {
+      "source": 19,
+      "target": 287
+    },
+    {
+      "source": 19,
+      "target": 290
+    },
+    {
+      "source": 20,
+      "target": 21
+    },
+    {
+      "source": 20,
+      "target": 27
+    },
+    {
+      "source": 20,
+      "target": 30
+    },
+    {
+      "source": 20,
+      "target": 285
+    },
+    {
+      "source": 20,
+      "target": 287
+    },
+    {
+      "source": 20,
+      "target": 290
+    },
+    {
+      "source": 21,
+      "target": 22
+    },
+    {
+      "source": 21,
+      "target": 30
+    },
+    {
+      "source": 21,
+      "target": 34
+    },
+    {
+      "source": 21,
+      "target": 35
+    },
+    {
+      "source": 21,
+      "target": 198
+    },
+    {
+      "source": 22,
+      "target": 24
+    },
+    {
+      "source": 22,
+      "target": 34
+    },
+    {
+      "source": 22,
+      "target": 35
+    },
+    {
+      "source": 22,
+      "target": 37
+    },
+    {
+      "source": 22,
+      "target": 57
+    },
+    {
+      "source": 22,
+      "target": 62
+    },
+    {
+      "source": 22,
+      "target": 198
+    },
+    {
+      "source": 22,
+      "target": 205
+    },
+    {
+      "source": 22,
+      "target": 23
+    },
+    {
+      "source": 24,
+      "target": 27
+    },
+    {
+      "source": 24,
+      "target": 35
+    },
+    {
+      "source": 24,
+      "target": 37
+    },
+    {
+      "source": 24,
+      "target": 57
+    },
+    {
+      "source": 24,
+      "target": 290
+    },
+    {
+      "source": 24,
+      "target": 25
+    },
+    {
+      "source": 25,
+      "target": 26
+    },
+    {
+      "source": 27,
+      "target": 30
+    },
+    {
+      "source": 27,
+      "target": 37
+    },
+    {
+      "source": 27,
+      "target": 28
+    },
+    {
+      "source": 28,
+      "target": 29
+    },
+    {
+      "source": 30,
+      "target": 34
+    },
+    {
+      "source": 30,
+      "target": 198
+    },
+    {
+      "source": 30,
+      "target": 200
+    },
+    {
+      "source": 30,
+      "target": 205
+    },
+    {
+      "source": 30,
+      "target": 207
+    },
+    {
+      "source": 30,
+      "target": 31
+    },
+    {
+      "source": 30,
+      "target": 32
+    },
+    {
+      "source": 31,
+      "target": 32
+    },
+    {
+      "source": 31,
+      "target": 33
+    },
+    {
+      "source": 32,
+      "target": 33
+    },
+    {
+      "source": 34,
+      "target": 35
+    },
+    {
+      "source": 34,
+      "target": 41
+    },
+    {
+      "source": 34,
+      "target": 205
+    },
+    {
+      "source": 35,
+      "target": 37
+    },
+    {
+      "source": 35,
+      "target": 46
+    },
+    {
+      "source": 35,
+      "target": 49
+    },
+    {
+      "source": 35,
+      "target": 50
+    },
+    {
+      "source": 35,
+      "target": 55
+    },
+    {
+      "source": 35,
+      "target": 57
+    },
+    {
+      "source": 35,
+      "target": 59
+    },
+    {
+      "source": 35,
+      "target": 60
+    },
+    {
+      "source": 35,
+      "target": 62
+    },
+    {
+      "source": 35,
+      "target": 205
+    },
+    {
+      "source": 35,
+      "target": 36
+    },
+    {
+      "source": 37,
+      "target": 39
+    },
+    {
+      "source": 37,
+      "target": 49
+    },
+    {
+      "source": 37,
+      "target": 50
+    },
+    {
+      "source": 37,
+      "target": 55
+    },
+    {
+      "source": 37,
+      "target": 57
+    },
+    {
+      "source": 37,
+      "target": 59
+    },
+    {
+      "source": 37,
+      "target": 38
+    },
+    {
+      "source": 39,
+      "target": 41
+    },
+    {
+      "source": 39,
+      "target": 50
+    },
+    {
+      "source": 39,
+      "target": 55
+    },
+    {
+      "source": 39,
+      "target": 57
+    },
+    {
+      "source": 39,
+      "target": 40
+    },
+    {
+      "source": 41,
+      "target": 46
+    },
+    {
+      "source": 41,
+      "target": 55
+    },
+    {
+      "source": 41,
+      "target": 57
+    },
+    {
+      "source": 41,
+      "target": 212
+    },
+    {
+      "source": 41,
+      "target": 220
+    },
+    {
+      "source": 41,
+      "target": 42
+    },
+    {
+      "source": 42,
+      "target": 43
+    },
+    {
+      "source": 42,
+      "target": 44
+    },
+    {
+      "source": 43,
+      "target": 45
+    },
+    {
+      "source": 43,
+      "target": 44
+    },
+    {
+      "source": 44,
+      "target": 45
+    },
+    {
+      "source": 46,
+      "target": 49
+    },
+    {
+      "source": 46,
+      "target": 220
+    },
+    {
+      "source": 46,
+      "target": 47
+    },
+    {
+      "source": 47,
+      "target": 48
+    },
+    {
+      "source": 49,
+      "target": 50
+    },
+    {
+      "source": 50,
+      "target": 55
+    },
+    {
+      "source": 50,
+      "target": 60
+    },
+    {
+      "source": 50,
+      "target": 62
+    },
+    {
+      "source": 50,
+      "target": 51
+    },
+    {
+      "source": 51,
+      "target": 52
+    },
+    {
+      "source": 51,
+      "target": 53
+    },
+    {
+      "source": 52,
+      "target": 54
+    },
+    {
+      "source": 52,
+      "target": 53
+    },
+    {
+      "source": 53,
+      "target": 54
+    },
+    {
+      "source": 55,
+      "target": 57
+    },
+    {
+      "source": 55,
+      "target": 62
+    },
+    {
+      "source": 55,
+      "target": 68
+    },
+    {
+      "source": 55,
+      "target": 268
+    },
+    {
+      "source": 55,
+      "target": 270
+    },
+    {
+      "source": 55,
+      "target": 56
+    },
+    {
+      "source": 57,
+      "target": 59
+    },
+    {
+      "source": 57,
+      "target": 68
+    },
+    {
+      "source": 57,
+      "target": 70
+    },
+    {
+      "source": 57,
+      "target": 268
+    },
+    {
+      "source": 57,
+      "target": 270
+    },
+    {
+      "source": 57,
+      "target": 273
+    },
+    {
+      "source": 57,
+      "target": 279
+    },
+    {
+      "source": 57,
+      "target": 58
+    },
+    {
+      "source": 59,
+      "target": 60
+    },
+    {
+      "source": 59,
+      "target": 70
+    },
+    {
+      "source": 59,
+      "target": 72
+    },
+    {
+      "source": 59,
+      "target": 258
+    },
+    {
+      "source": 59,
+      "target": 266
+    },
+    {
+      "source": 59,
+      "target": 268
+    },
+    {
+      "source": 59,
+      "target": 270
+    },
+    {
+      "source": 59,
+      "target": 272
+    },
+    {
+      "source": 59,
+      "target": 273
+    },
+    {
+      "source": 59,
+      "target": 279
+    },
+    {
+      "source": 60,
+      "target": 62
+    },
+    {
+      "source": 60,
+      "target": 72
+    },
+    {
+      "source": 60,
+      "target": 73
+    },
+    {
+      "source": 60,
+      "target": 230
+    },
+    {
+      "source": 60,
+      "target": 244
+    },
+    {
+      "source": 60,
+      "target": 258
+    },
+    {
+      "source": 60,
+      "target": 260
+    },
+    {
+      "source": 60,
+      "target": 268
+    },
+    {
+      "source": 60,
+      "target": 270
+    },
+    {
+      "source": 60,
+      "target": 273
+    },
+    {
+      "source": 60,
+      "target": 61
+    },
+    {
+      "source": 62,
+      "target": 68
+    },
+    {
+      "source": 62,
+      "target": 73
+    },
+    {
+      "source": 62,
+      "target": 74
+    },
+    {
+      "source": 62,
+      "target": 244
+    },
+    {
+      "source": 62,
+      "target": 268
+    },
+    {
+      "source": 62,
+      "target": 273
+    },
+    {
+      "source": 62,
+      "target": 63
+    },
+    {
+      "source": 63,
+      "target": 64
+    },
+    {
+      "source": 63,
+      "target": 66
+    },
+    {
+      "source": 64,
+      "target": 67
+    },
+    {
+      "source": 64,
+      "target": 66
+    },
+    {
+      "source": 65,
+      "target": 67
+    },
+    {
+      "source": 66,
+      "target": 67
+    },
+    {
+      "source": 68,
+      "target": 70
+    },
+    {
+      "source": 68,
+      "target": 74
+    },
+    {
+      "source": 68,
+      "target": 77
+    },
+    {
+      "source": 68,
+      "target": 87
+    },
+    {
+      "source": 68,
+      "target": 268
+    },
+    {
+      "source": 68,
+      "target": 273
+    },
+    {
+      "source": 68,
+      "target": 279
+    },
+    {
+      "source": 68,
+      "target": 69
+    },
+    {
+      "source": 70,
+      "target": 72
+    },
+    {
+      "source": 70,
+      "target": 77
+    },
+    {
+      "source": 70,
+      "target": 81
+    },
+    {
+      "source": 70,
+      "target": 243
+    },
+    {
+      "source": 70,
+      "target": 244
+    },
+    {
+      "source": 70,
+      "target": 255
+    },
+    {
+      "source": 70,
+      "target": 258
+    },
+    {
+      "source": 70,
+      "target": 268
+    },
+    {
+      "source": 70,
+      "target": 273
+    },
+    {
+      "source": 70,
+      "target": 71
+    },
+    {
+      "source": 71,
+      "target": 259
+    },
+    {
+      "source": 72,
+      "target": 73
+    },
+    {
+      "source": 72,
+      "target": 81
+    },
+    {
+      "source": 72,
+      "target": 83
+    },
+    {
+      "source": 72,
+      "target": 85
+    },
+    {
+      "source": 72,
+      "target": 124
+    },
+    {
+      "source": 72,
+      "target": 126
+    },
+    {
+      "source": 72,
+      "target": 128
+    },
+    {
+      "source": 72,
+      "target": 230
+    },
+    {
+      "source": 72,
+      "target": 235
+    },
+    {
+      "source": 72,
+      "target": 241
+    },
+    {
+      "source": 72,
+      "target": 243
+    },
+    {
+      "source": 72,
+      "target": 244
+    },
+    {
+      "source": 72,
+      "target": 255
+    },
+    {
+      "source": 72,
+      "target": 258
+    },
+    {
+      "source": 73,
+      "target": 74
+    },
+    {
+      "source": 73,
+      "target": 83
+    },
+    {
+      "source": 73,
+      "target": 85
+    },
+    {
+      "source": 73,
+      "target": 87
+    },
+    {
+      "source": 73,
+      "target": 91
+    },
+    {
+      "source": 73,
+      "target": 123
+    },
+    {
+      "source": 73,
+      "target": 124
+    },
+    {
+      "source": 73,
+      "target": 126
+    },
+    {
+      "source": 73,
+      "target": 128
+    },
+    {
+      "source": 73,
+      "target": 243
+    },
+    {
+      "source": 74,
+      "target": 77
+    },
+    {
+      "source": 74,
+      "target": 85
+    },
+    {
+      "source": 74,
+      "target": 87
+    },
+    {
+      "source": 74,
+      "target": 91
+    },
+    {
+      "source": 74,
+      "target": 124
+    },
+    {
+      "source": 74,
+      "target": 126
+    },
+    {
+      "source": 74,
+      "target": 243
+    },
+    {
+      "source": 74,
+      "target": 75
+    },
+    {
+      "source": 75,
+      "target": 76
+    },
+    {
+      "source": 77,
+      "target": 81
+    },
+    {
+      "source": 77,
+      "target": 87
+    },
+    {
+      "source": 77,
+      "target": 124
+    },
+    {
+      "source": 77,
+      "target": 126
+    },
+    {
+      "source": 77,
+      "target": 241
+    },
+    {
+      "source": 77,
+      "target": 243
+    },
+    {
+      "source": 77,
+      "target": 244
+    },
+    {
+      "source": 77,
+      "target": 255
+    },
+    {
+      "source": 77,
+      "target": 78
+    },
+    {
+      "source": 77,
+      "target": 79
+    },
+    {
+      "source": 78,
+      "target": 79
+    },
+    {
+      "source": 78,
+      "target": 80
+    },
+    {
+      "source": 79,
+      "target": 80
+    },
+    {
+      "source": 81,
+      "target": 83
+    },
+    {
+      "source": 81,
+      "target": 91
+    },
+    {
+      "source": 81,
+      "target": 97
+    },
+    {
+      "source": 81,
+      "target": 123
+    },
+    {
+      "source": 81,
+      "target": 124
+    },
+    {
+      "source": 81,
+      "target": 126
+    },
+    {
+      "source": 81,
+      "target": 128
+    },
+    {
+      "source": 81,
+      "target": 235
+    },
+    {
+      "source": 81,
+      "target": 241
+    },
+    {
+      "source": 81,
+      "target": 243
+    },
+    {
+      "source": 81,
+      "target": 244
+    },
+    {
+      "source": 81,
+      "target": 82
+    },
+    {
+      "source": 83,
+      "target": 85
+    },
+    {
+      "source": 83,
+      "target": 93
+    },
+    {
+      "source": 83,
+      "target": 95
+    },
+    {
+      "source": 83,
+      "target": 97
+    },
+    {
+      "source": 83,
+      "target": 98
+    },
+    {
+      "source": 83,
+      "target": 123
+    },
+    {
+      "source": 83,
+      "target": 124
+    },
+    {
+      "source": 83,
+      "target": 126
+    },
+    {
+      "source": 83,
+      "target": 128
+    },
+    {
+      "source": 83,
+      "target": 84
+    },
+    {
+      "source": 85,
+      "target": 87
+    },
+    {
+      "source": 85,
+      "target": 97
+    },
+    {
+      "source": 85,
+      "target": 124
+    },
+    {
+      "source": 85,
+      "target": 86
+    },
+    {
+      "source": 87,
+      "target": 91
+    },
+    {
+      "source": 87,
+      "target": 97
+    },
+    {
+      "source": 87,
+      "target": 123
+    },
+    {
+      "source": 87,
+      "target": 124
+    },
+    {
+      "source": 87,
+      "target": 126
+    },
+    {
+      "source": 87,
+      "target": 88
+    },
+    {
+      "source": 87,
+      "target": 89
+    },
+    {
+      "source": 88,
+      "target": 89
+    },
+    {
+      "source": 88,
+      "target": 90
+    },
+    {
+      "source": 89,
+      "target": 90
+    },
+    {
+      "source": 91,
+      "target": 93
+    },
+    {
+      "source": 91,
+      "target": 98
+    },
+    {
+      "source": 91,
+      "target": 118
+    },
+    {
+      "source": 91,
+      "target": 123
+    },
+    {
+      "source": 91,
+      "target": 124
+    },
+    {
+      "source": 91,
+      "target": 126
+    },
+    {
+      "source": 91,
+      "target": 190
+    },
+    {
+      "source": 91,
+      "target": 192
+    },
+    {
+      "source": 91,
+      "target": 194
+    },
+    {
+      "source": 91,
+      "target": 92
+    },
+    {
+      "source": 93,
+      "target": 95
+    },
+    {
+      "source": 93,
+      "target": 118
+    },
+    {
+      "source": 93,
+      "target": 123
+    },
+    {
+      "source": 93,
+      "target": 124
+    },
+    {
+      "source": 93,
+      "target": 126
+    },
+    {
+      "source": 93,
+      "target": 188
+    },
+    {
+      "source": 93,
+      "target": 190
+    },
+    {
+      "source": 93,
+      "target": 192
+    },
+    {
+      "source": 93,
+      "target": 194
+    },
+    {
+      "source": 93,
+      "target": 196
+    },
+    {
+      "source": 93,
+      "target": 198
+    },
+    {
+      "source": 93,
+      "target": 94
+    },
+    {
+      "source": 95,
+      "target": 97
+    },
+    {
+      "source": 95,
+      "target": 118
+    },
+    {
+      "source": 95,
+      "target": 123
+    },
+    {
+      "source": 95,
+      "target": 124
+    },
+    {
+      "source": 95,
+      "target": 188
+    },
+    {
+      "source": 95,
+      "target": 190
+    },
+    {
+      "source": 95,
+      "target": 192
+    },
+    {
+      "source": 95,
+      "target": 194
+    },
+    {
+      "source": 95,
+      "target": 96
+    },
+    {
+      "source": 97,
+      "target": 98
+    },
+    {
+      "source": 97,
+      "target": 116
+    },
+    {
+      "source": 97,
+      "target": 118
+    },
+    {
+      "source": 97,
+      "target": 123
+    },
+    {
+      "source": 97,
+      "target": 124
+    },
+    {
+      "source": 97,
+      "target": 126
+    },
+    {
+      "source": 97,
+      "target": 128
+    },
+    {
+      "source": 97,
+      "target": 188
+    },
+    {
+      "source": 97,
+      "target": 190
+    },
+    {
+      "source": 98,
+      "target": 100
+    },
+    {
+      "source": 98,
+      "target": 114
+    },
+    {
+      "source": 98,
+      "target": 116
+    },
+    {
+      "source": 98,
+      "target": 118
+    },
+    {
+      "source": 98,
+      "target": 123
+    },
+    {
+      "source": 98,
+      "target": 128
+    },
+    {
+      "source": 98,
+      "target": 99
+    },
+    {
+      "source": 100,
+      "target": 102
+    },
+    {
+      "source": 100,
+      "target": 112
+    },
+    {
+      "source": 100,
+      "target": 114
+    },
+    {
+      "source": 100,
+      "target": 116
+    },
+    {
+      "source": 100,
+      "target": 118
+    },
+    {
+      "source": 100,
+      "target": 123
+    },
+    {
+      "source": 100,
+      "target": 128
+    },
+    {
+      "source": 100,
+      "target": 130
+    },
+    {
+      "source": 100,
+      "target": 101
+    },
+    {
+      "source": 102,
+      "target": 105
+    },
+    {
+      "source": 102,
+      "target": 111
+    },
+    {
+      "source": 102,
+      "target": 112
+    },
+    {
+      "source": 102,
+      "target": 114
+    },
+    {
+      "source": 102,
+      "target": 116
+    },
+    {
+      "source": 102,
+      "target": 103
+    },
+    {
+      "source": 103,
+      "target": 104
+    },
+    {
+      "source": 105,
+      "target": 107
+    },
+    {
+      "source": 105,
+      "target": 112
+    },
+    {
+      "source": 105,
+      "target": 114
+    },
+    {
+      "source": 105,
+      "target": 116
+    },
+    {
+      "source": 105,
+      "target": 106
+    },
+    {
+      "source": 107,
+      "target": 109
+    },
+    {
+      "source": 107,
+      "target": 108
+    },
+    {
+      "source": 109,
+      "target": 111
+    },
+    {
+      "source": 109,
+      "target": 158
+    },
+    {
+      "source": 109,
+      "target": 161
+    },
+    {
+      "source": 109,
+      "target": 163
+    },
+    {
+      "source": 109,
+      "target": 110
+    },
+    {
+      "source": 111,
+      "target": 112
+    },
+    {
+      "source": 111,
+      "target": 134
+    },
+    {
+      "source": 111,
+      "target": 136
+    },
+    {
+      "source": 111,
+      "target": 158
+    },
+    {
+      "source": 111,
+      "target": 161
+    },
+    {
+      "source": 111,
+      "target": 163
+    },
+    {
+      "source": 112,
+      "target": 114
+    },
+    {
+      "source": 112,
+      "target": 132
+    },
+    {
+      "source": 112,
+      "target": 134
+    },
+    {
+      "source": 112,
+      "target": 136
+    },
+    {
+      "source": 112,
+      "target": 158
+    },
+    {
+      "source": 112,
+      "target": 161
+    },
+    {
+      "source": 112,
+      "target": 163
+    },
+    {
+      "source": 112,
+      "target": 113
+    },
+    {
+      "source": 114,
+      "target": 116
+    },
+    {
+      "source": 114,
+      "target": 128
+    },
+    {
+      "source": 114,
+      "target": 130
+    },
+    {
+      "source": 114,
+      "target": 132
+    },
+    {
+      "source": 114,
+      "target": 134
+    },
+    {
+      "source": 114,
+      "target": 136
+    },
+    {
+      "source": 114,
+      "target": 151
+    },
+    {
+      "source": 114,
+      "target": 155
+    },
+    {
+      "source": 114,
+      "target": 158
+    },
+    {
+      "source": 114,
+      "target": 161
+    },
+    {
+      "source": 114,
+      "target": 183
+    },
+    {
+      "source": 114,
+      "target": 115
+    },
+    {
+      "source": 116,
+      "target": 118
+    },
+    {
+      "source": 116,
+      "target": 126
+    },
+    {
+      "source": 116,
+      "target": 128
+    },
+    {
+      "source": 116,
+      "target": 130
+    },
+    {
+      "source": 116,
+      "target": 132
+    },
+    {
+      "source": 116,
+      "target": 134
+    },
+    {
+      "source": 116,
+      "target": 183
+    },
+    {
+      "source": 116,
+      "target": 188
+    },
+    {
+      "source": 116,
+      "target": 117
+    },
+    {
+      "source": 118,
+      "target": 123
+    },
+    {
+      "source": 118,
+      "target": 128
+    },
+    {
+      "source": 118,
+      "target": 130
+    },
+    {
+      "source": 118,
+      "target": 132
+    },
+    {
+      "source": 118,
+      "target": 134
+    },
+    {
+      "source": 118,
+      "target": 183
+    },
+    {
+      "source": 118,
+      "target": 185
+    },
+    {
+      "source": 118,
+      "target": 187
+    },
+    {
+      "source": 118,
+      "target": 188
+    },
+    {
+      "source": 118,
+      "target": 190
+    },
+    {
+      "source": 118,
+      "target": 203
+    },
+    {
+      "source": 118,
+      "target": 119
+    },
+    {
+      "source": 119,
+      "target": 120
+    },
+    {
+      "source": 119,
+      "target": 121
+    },
+    {
+      "source": 120,
+      "target": 122
+    },
+    {
+      "source": 120,
+      "target": 121
+    },
+    {
+      "source": 121,
+      "target": 122
+    },
+    {
+      "source": 123,
+      "target": 124
+    },
+    {
+      "source": 123,
+      "target": 130
+    },
+    {
+      "source": 123,
+      "target": 183
+    },
+    {
+      "source": 123,
+      "target": 188
+    },
+    {
+      "source": 123,
+      "target": 190
+    },
+    {
+      "source": 123,
+      "target": 192
+    },
+    {
+      "source": 123,
+      "target": 203
+    },
+    {
+      "source": 124,
+      "target": 126
+    },
+    {
+      "source": 124,
+      "target": 188
+    },
+    {
+      "source": 124,
+      "target": 190
+    },
+    {
+      "source": 124,
+      "target": 192
+    },
+    {
+      "source": 124,
+      "target": 198
+    },
+    {
+      "source": 124,
+      "target": 203
+    },
+    {
+      "source": 124,
+      "target": 125
+    },
+    {
+      "source": 126,
+      "target": 128
+    },
+    {
+      "source": 126,
+      "target": 188
+    },
+    {
+      "source": 126,
+      "target": 203
+    },
+    {
+      "source": 126,
+      "target": 211
+    },
+    {
+      "source": 126,
+      "target": 235
+    },
+    {
+      "source": 126,
+      "target": 127
+    },
+    {
+      "source": 128,
+      "target": 130
+    },
+    {
+      "source": 128,
+      "target": 188
+    },
+    {
+      "source": 128,
+      "target": 203
+    },
+    {
+      "source": 128,
+      "target": 235
+    },
+    {
+      "source": 128,
+      "target": 129
+    },
+    {
+      "source": 130,
+      "target": 132
+    },
+    {
+      "source": 130,
+      "target": 139
+    },
+    {
+      "source": 130,
+      "target": 145
+    },
+    {
+      "source": 130,
+      "target": 151
+    },
+    {
+      "source": 130,
+      "target": 183
+    },
+    {
+      "source": 130,
+      "target": 188
+    },
+    {
+      "source": 130,
+      "target": 203
+    },
+    {
+      "source": 130,
+      "target": 209
+    },
+    {
+      "source": 130,
+      "target": 131
+    },
+    {
+      "source": 132,
+      "target": 134
+    },
+    {
+      "source": 132,
+      "target": 145
+    },
+    {
+      "source": 132,
+      "target": 151
+    },
+    {
+      "source": 132,
+      "target": 153
+    },
+    {
+      "source": 132,
+      "target": 183
+    },
+    {
+      "source": 132,
+      "target": 133
+    },
+    {
+      "source": 134,
+      "target": 136
+    },
+    {
+      "source": 134,
+      "target": 151
+    },
+    {
+      "source": 134,
+      "target": 153
+    },
+    {
+      "source": 134,
+      "target": 155
+    },
+    {
+      "source": 134,
+      "target": 157
+    },
+    {
+      "source": 134,
+      "target": 158
+    },
+    {
+      "source": 134,
+      "target": 161
+    },
+    {
+      "source": 134,
+      "target": 163
+    },
+    {
+      "source": 134,
+      "target": 165
+    },
+    {
+      "source": 134,
+      "target": 166
+    },
+    {
+      "source": 134,
+      "target": 168
+    },
+    {
+      "source": 134,
+      "target": 171
+    },
+    {
+      "source": 134,
+      "target": 183
+    },
+    {
+      "source": 134,
+      "target": 135
+    },
+    {
+      "source": 136,
+      "target": 139
+    },
+    {
+      "source": 136,
+      "target": 153
+    },
+    {
+      "source": 136,
+      "target": 155
+    },
+    {
+      "source": 136,
+      "target": 158
+    },
+    {
+      "source": 136,
+      "target": 161
+    },
+    {
+      "source": 136,
+      "target": 163
+    },
+    {
+      "source": 136,
+      "target": 165
+    },
+    {
+      "source": 136,
+      "target": 166
+    },
+    {
+      "source": 136,
+      "target": 168
+    },
+    {
+      "source": 136,
+      "target": 171
+    },
+    {
+      "source": 136,
+      "target": 173
+    },
+    {
+      "source": 136,
+      "target": 137
+    },
+    {
+      "source": 137,
+      "target": 138
+    },
+    {
+      "source": 139,
+      "target": 145
+    },
+    {
+      "source": 139,
+      "target": 163
+    },
+    {
+      "source": 139,
+      "target": 165
+    },
+    {
+      "source": 139,
+      "target": 166
+    },
+    {
+      "source": 139,
+      "target": 168
+    },
+    {
+      "source": 139,
+      "target": 171
+    },
+    {
+      "source": 139,
+      "target": 173
+    },
+    {
+      "source": 139,
+      "target": 175
+    },
+    {
+      "source": 139,
+      "target": 140
+    },
+    {
+      "source": 140,
+      "target": 141
+    },
+    {
+      "source": 140,
+      "target": 143
+    },
+    {
+      "source": 141,
+      "target": 144
+    },
+    {
+      "source": 141,
+      "target": 143
+    },
+    {
+      "source": 142,
+      "target": 144
+    },
+    {
+      "source": 143,
+      "target": 144
+    },
+    {
+      "source": 145,
+      "target": 151
+    },
+    {
+      "source": 145,
+      "target": 166
+    },
+    {
+      "source": 145,
+      "target": 168
+    },
+    {
+      "source": 145,
+      "target": 171
+    },
+    {
+      "source": 145,
+      "target": 173
+    },
+    {
+      "source": 145,
+      "target": 175
+    },
+    {
+      "source": 145,
+      "target": 177
+    },
+    {
+      "source": 145,
+      "target": 179
+    },
+    {
+      "source": 145,
+      "target": 181
+    },
+    {
+      "source": 145,
+      "target": 183
+    },
+    {
+      "source": 145,
+      "target": 209
+    },
+    {
+      "source": 145,
+      "target": 215
+    },
+    {
+      "source": 145,
+      "target": 218
+    },
+    {
+      "source": 145,
+      "target": 146
+    },
+    {
+      "source": 146,
+      "target": 147
+    },
+    {
+      "source": 146,
+      "target": 149
+    },
+    {
+      "source": 147,
+      "target": 150
+    },
+    {
+      "source": 147,
+      "target": 149
+    },
+    {
+      "source": 148,
+      "target": 150
+    },
+    {
+      "source": 149,
+      "target": 150
+    },
+    {
+      "source": 151,
+      "target": 153
+    },
+    {
+      "source": 151,
+      "target": 161
+    },
+    {
+      "source": 151,
+      "target": 166
+    },
+    {
+      "source": 151,
+      "target": 168
+    },
+    {
+      "source": 151,
+      "target": 171
+    },
+    {
+      "source": 151,
+      "target": 173
+    },
+    {
+      "source": 151,
+      "target": 175
+    },
+    {
+      "source": 151,
+      "target": 177
+    },
+    {
+      "source": 151,
+      "target": 179
+    },
+    {
+      "source": 151,
+      "target": 181
+    },
+    {
+      "source": 151,
+      "target": 183
+    },
+    {
+      "source": 151,
+      "target": 152
+    },
+    {
+      "source": 152,
+      "target": 184
+    },
+    {
+      "source": 153,
+      "target": 155
+    },
+    {
+      "source": 153,
+      "target": 161
+    },
+    {
+      "source": 153,
+      "target": 166
+    },
+    {
+      "source": 153,
+      "target": 168
+    },
+    {
+      "source": 153,
+      "target": 171
+    },
+    {
+      "source": 153,
+      "target": 175
+    },
+    {
+      "source": 153,
+      "target": 177
+    },
+    {
+      "source": 153,
+      "target": 179
+    },
+    {
+      "source": 153,
+      "target": 181
+    },
+    {
+      "source": 153,
+      "target": 183
+    },
+    {
+      "source": 153,
+      "target": 185
+    },
+    {
+      "source": 153,
+      "target": 154
+    },
+    {
+      "source": 155,
+      "target": 157
+    },
+    {
+      "source": 155,
+      "target": 179
+    },
+    {
+      "source": 155,
+      "target": 181
+    },
+    {
+      "source": 155,
+      "target": 183
+    },
+    {
+      "source": 155,
+      "target": 185
+    },
+    {
+      "source": 155,
+      "target": 156
+    },
+    {
+      "source": 157,
+      "target": 158
+    },
+    {
+      "source": 157,
+      "target": 166
+    },
+    {
+      "source": 158,
+      "target": 161
+    },
+    {
+      "source": 158,
+      "target": 166
+    },
+    {
+      "source": 158,
+      "target": 159
+    },
+    {
+      "source": 159,
+      "target": 160
+    },
+    {
+      "source": 161,
+      "target": 163
+    },
+    {
+      "source": 161,
+      "target": 162
+    },
+    {
+      "source": 163,
+      "target": 165
+    },
+    {
+      "source": 163,
+      "target": 164
+    },
+    {
+      "source": 165,
+      "target": 166
+    },
+    {
+      "source": 166,
+      "target": 168
+    },
+    {
+      "source": 166,
+      "target": 167
+    },
+    {
+      "source": 168,
+      "target": 171
+    },
+    {
+      "source": 168,
+      "target": 177
+    },
+    {
+      "source": 168,
+      "target": 169
+    },
+    {
+      "source": 169,
+      "target": 170
+    },
+    {
+      "source": 171,
+      "target": 173
+    },
+    {
+      "source": 171,
+      "target": 179
+    },
+    {
+      "source": 171,
+      "target": 181
+    },
+    {
+      "source": 171,
+      "target": 172
+    },
+    {
+      "source": 173,
+      "target": 175
+    },
+    {
+      "source": 173,
+      "target": 209
+    },
+    {
+      "source": 173,
+      "target": 215
+    },
+    {
+      "source": 173,
+      "target": 218
+    },
+    {
+      "source": 173,
+      "target": 174
+    },
+    {
+      "source": 175,
+      "target": 177
+    },
+    {
+      "source": 175,
+      "target": 202
+    },
+    {
+      "source": 175,
+      "target": 207
+    },
+    {
+      "source": 175,
+      "target": 209
+    },
+    {
+      "source": 175,
+      "target": 215
+    },
+    {
+      "source": 175,
+      "target": 176
+    },
+    {
+      "source": 176,
+      "target": 210
+    },
+    {
+      "source": 177,
+      "target": 179
+    },
+    {
+      "source": 177,
+      "target": 209
+    },
+    {
+      "source": 177,
+      "target": 178
+    },
+    {
+      "source": 179,
+      "target": 181
+    },
+    {
+      "source": 179,
+      "target": 187
+    },
+    {
+      "source": 179,
+      "target": 202
+    },
+    {
+      "source": 179,
+      "target": 180
+    },
+    {
+      "source": 181,
+      "target": 183
+    },
+    {
+      "source": 181,
+      "target": 188
+    },
+    {
+      "source": 181,
+      "target": 202
+    },
+    {
+      "source": 181,
+      "target": 182
+    },
+    {
+      "source": 183,
+      "target": 185
+    },
+    {
+      "source": 183,
+      "target": 190
+    },
+    {
+      "source": 183,
+      "target": 202
+    },
+    {
+      "source": 183,
+      "target": 184
+    },
+    {
+      "source": 185,
+      "target": 187
+    },
+    {
+      "source": 185,
+      "target": 192
+    },
+    {
+      "source": 185,
+      "target": 202
+    },
+    {
+      "source": 185,
+      "target": 186
+    },
+    {
+      "source": 187,
+      "target": 188
+    },
+    {
+      "source": 187,
+      "target": 194
+    },
+    {
+      "source": 187,
+      "target": 196
+    },
+    {
+      "source": 187,
+      "target": 198
+    },
+    {
+      "source": 187,
+      "target": 200
+    },
+    {
+      "source": 187,
+      "target": 202
+    },
+    {
+      "source": 187,
+      "target": 203
+    },
+    {
+      "source": 188,
+      "target": 190
+    },
+    {
+      "source": 188,
+      "target": 196
+    },
+    {
+      "source": 188,
+      "target": 198
+    },
+    {
+      "source": 188,
+      "target": 200
+    },
+    {
+      "source": 188,
+      "target": 202
+    },
+    {
+      "source": 188,
+      "target": 203
+    },
+    {
+      "source": 188,
+      "target": 189
+    },
+    {
+      "source": 190,
+      "target": 192
+    },
+    {
+      "source": 190,
+      "target": 198
+    },
+    {
+      "source": 190,
+      "target": 202
+    },
+    {
+      "source": 190,
+      "target": 191
+    },
+    {
+      "source": 192,
+      "target": 194
+    },
+    {
+      "source": 192,
+      "target": 200
+    },
+    {
+      "source": 192,
+      "target": 202
+    },
+    {
+      "source": 192,
+      "target": 203
+    },
+    {
+      "source": 192,
+      "target": 193
+    },
+    {
+      "source": 194,
+      "target": 196
+    },
+    {
+      "source": 194,
+      "target": 195
+    },
+    {
+      "source": 196,
+      "target": 198
+    },
+    {
+      "source": 196,
+      "target": 203
+    },
+    {
+      "source": 196,
+      "target": 197
+    },
+    {
+      "source": 198,
+      "target": 200
+    },
+    {
+      "source": 198,
+      "target": 205
+    },
+    {
+      "source": 198,
+      "target": 207
+    },
+    {
+      "source": 198,
+      "target": 199
+    },
+    {
+      "source": 200,
+      "target": 202
+    },
+    {
+      "source": 200,
+      "target": 207
+    },
+    {
+      "source": 200,
+      "target": 209
+    },
+    {
+      "source": 200,
+      "target": 201
+    },
+    {
+      "source": 202,
+      "target": 203
+    },
+    {
+      "source": 202,
+      "target": 209
+    },
+    {
+      "source": 202,
+      "target": 211
+    },
+    {
+      "source": 203,
+      "target": 205
+    },
+    {
+      "source": 203,
+      "target": 211
+    },
+    {
+      "source": 203,
+      "target": 212
+    },
+    {
+      "source": 203,
+      "target": 204
+    },
+    {
+      "source": 205,
+      "target": 207
+    },
+    {
+      "source": 205,
+      "target": 212
+    },
+    {
+      "source": 205,
+      "target": 215
+    },
+    {
+      "source": 205,
+      "target": 206
+    },
+    {
+      "source": 207,
+      "target": 209
+    },
+    {
+      "source": 207,
+      "target": 215
+    },
+    {
+      "source": 207,
+      "target": 218
+    },
+    {
+      "source": 207,
+      "target": 208
+    },
+    {
+      "source": 209,
+      "target": 211
+    },
+    {
+      "source": 209,
+      "target": 218
+    },
+    {
+      "source": 209,
+      "target": 220
+    },
+    {
+      "source": 209,
+      "target": 210
+    },
+    {
+      "source": 211,
+      "target": 212
+    },
+    {
+      "source": 211,
+      "target": 220
+    },
+    {
+      "source": 211,
+      "target": 222
+    },
+    {
+      "source": 212,
+      "target": 215
+    },
+    {
+      "source": 212,
+      "target": 222
+    },
+    {
+      "source": 212,
+      "target": 224
+    },
+    {
+      "source": 212,
+      "target": 227
+    },
+    {
+      "source": 212,
+      "target": 213
+    },
+    {
+      "source": 213,
+      "target": 214
+    },
+    {
+      "source": 215,
+      "target": 218
+    },
+    {
+      "source": 215,
+      "target": 224
+    },
+    {
+      "source": 215,
+      "target": 226
+    },
+    {
+      "source": 215,
+      "target": 227
+    },
+    {
+      "source": 215,
+      "target": 216
+    },
+    {
+      "source": 216,
+      "target": 217
+    },
+    {
+      "source": 218,
+      "target": 220
+    },
+    {
+      "source": 218,
+      "target": 226
+    },
+    {
+      "source": 218,
+      "target": 227
+    },
+    {
+      "source": 218,
+      "target": 229
+    },
+    {
+      "source": 218,
+      "target": 230
+    },
+    {
+      "source": 218,
+      "target": 234
+    },
+    {
+      "source": 218,
+      "target": 219
+    },
+    {
+      "source": 220,
+      "target": 222
+    },
+    {
+      "source": 220,
+      "target": 227
+    },
+    {
+      "source": 220,
+      "target": 229
+    },
+    {
+      "source": 220,
+      "target": 230
+    },
+    {
+      "source": 220,
+      "target": 221
+    },
+    {
+      "source": 222,
+      "target": 224
+    },
+    {
+      "source": 222,
+      "target": 229
+    },
+    {
+      "source": 222,
+      "target": 223
+    },
+    {
+      "source": 224,
+      "target": 226
+    },
+    {
+      "source": 224,
+      "target": 225
+    },
+    {
+      "source": 226,
+      "target": 227
+    },
+    {
+      "source": 227,
+      "target": 229
+    },
+    {
+      "source": 227,
+      "target": 234
+    },
+    {
+      "source": 227,
+      "target": 228
+    },
+    {
+      "source": 229,
+      "target": 230
+    },
+    {
+      "source": 229,
+      "target": 235
+    },
+    {
+      "source": 230,
+      "target": 232
+    },
+    {
+      "source": 230,
+      "target": 241
+    },
+    {
+      "source": 230,
+      "target": 243
+    },
+    {
+      "source": 230,
+      "target": 244
+    },
+    {
+      "source": 230,
+      "target": 250
+    },
+    {
+      "source": 230,
+      "target": 231
+    },
+    {
+      "source": 232,
+      "target": 234
+    },
+    {
+      "source": 232,
+      "target": 243
+    },
+    {
+      "source": 232,
+      "target": 244
+    },
+    {
+      "source": 232,
+      "target": 250
+    },
+    {
+      "source": 232,
+      "target": 233
+    },
+    {
+      "source": 234,
+      "target": 235
+    },
+    {
+      "source": 234,
+      "target": 244
+    },
+    {
+      "source": 234,
+      "target": 250
+    },
+    {
+      "source": 235,
+      "target": 241
+    },
+    {
+      "source": 235,
+      "target": 250
+    },
+    {
+      "source": 235,
+      "target": 253
+    },
+    {
+      "source": 235,
+      "target": 236
+    },
+    {
+      "source": 236,
+      "target": 237
+    },
+    {
+      "source": 236,
+      "target": 239
+    },
+    {
+      "source": 237,
+      "target": 240
+    },
+    {
+      "source": 237,
+      "target": 239
+    },
+    {
+      "source": 238,
+      "target": 240
+    },
+    {
+      "source": 239,
+      "target": 240
+    },
+    {
+      "source": 241,
+      "target": 243
+    },
+    {
+      "source": 241,
+      "target": 253
+    },
+    {
+      "source": 241,
+      "target": 255
+    },
+    {
+      "source": 241,
+      "target": 242
+    },
+    {
+      "source": 243,
+      "target": 244
+    },
+    {
+      "source": 243,
+      "target": 255
+    },
+    {
+      "source": 243,
+      "target": 258
+    },
+    {
+      "source": 243,
+      "target": 260
+    },
+    {
+      "source": 244,
+      "target": 250
+    },
+    {
+      "source": 244,
+      "target": 258
+    },
+    {
+      "source": 244,
+      "target": 260
+    },
+    {
+      "source": 244,
+      "target": 245
+    },
+    {
+      "source": 245,
+      "target": 246
+    },
+    {
+      "source": 245,
+      "target": 248
+    },
+    {
+      "source": 246,
+      "target": 249
+    },
+    {
+      "source": 246,
+      "target": 248
+    },
+    {
+      "source": 247,
+      "target": 249
+    },
+    {
+      "source": 248,
+      "target": 249
+    },
+    {
+      "source": 250,
+      "target": 253
+    },
+    {
+      "source": 250,
+      "target": 260
+    },
+    {
+      "source": 250,
+      "target": 263
+    },
+    {
+      "source": 250,
+      "target": 251
+    },
+    {
+      "source": 251,
+      "target": 252
+    },
+    {
+      "source": 253,
+      "target": 255
+    },
+    {
+      "source": 253,
+      "target": 254
+    },
+    {
+      "source": 255,
+      "target": 258
+    },
+    {
+      "source": 255,
+      "target": 264
+    },
+    {
+      "source": 255,
+      "target": 256
+    },
+    {
+      "source": 256,
+      "target": 257
+    },
+    {
+      "source": 258,
+      "target": 260
+    },
+    {
+      "source": 258,
+      "target": 266
+    },
+    {
+      "source": 258,
+      "target": 268
+    },
+    {
+      "source": 258,
+      "target": 259
+    },
+    {
+      "source": 260,
+      "target": 263
+    },
+    {
+      "source": 260,
+      "target": 268
+    },
+    {
+      "source": 260,
+      "target": 261
+    },
+    {
+      "source": 261,
+      "target": 262
+    },
+    {
+      "source": 263,
+      "target": 264
+    },
+    {
+      "source": 264,
+      "target": 266
+    },
+    {
+      "source": 264,
+      "target": 272
+    },
+    {
+      "source": 264,
+      "target": 265
+    },
+    {
+      "source": 266,
+      "target": 268
+    },
+    {
+      "source": 266,
+      "target": 273
+    },
+    {
+      "source": 266,
+      "target": 267
+    },
+    {
+      "source": 268,
+      "target": 270
+    },
+    {
+      "source": 268,
+      "target": 279
+    },
+    {
+      "source": 268,
+      "target": 281
+    },
+    {
+      "source": 268,
+      "target": 269
+    },
+    {
+      "source": 270,
+      "target": 272
+    },
+    {
+      "source": 270,
+      "target": 281
+    },
+    {
+      "source": 270,
+      "target": 271
+    },
+    {
+      "source": 272,
+      "target": 273
+    },
+    {
+      "source": 272,
+      "target": 284
+    },
+    {
+      "source": 273,
+      "target": 279
+    },
+    {
+      "source": 273,
+      "target": 285
+    },
+    {
+      "source": 273,
+      "target": 274
+    },
+    {
+      "source": 274,
+      "target": 275
+    },
+    {
+      "source": 274,
+      "target": 277
+    },
+    {
+      "source": 275,
+      "target": 278
+    },
+    {
+      "source": 275,
+      "target": 277
+    },
+    {
+      "source": 276,
+      "target": 278
+    },
+    {
+      "source": 277,
+      "target": 278
+    },
+    {
+      "source": 279,
+      "target": 281
+    },
+    {
+      "source": 279,
+      "target": 287
+    },
+    {
+      "source": 279,
+      "target": 280
+    },
+    {
+      "source": 281,
+      "target": 284
+    },
+    {
+      "source": 281,
+      "target": 282
+    },
+    {
+      "source": 282,
+      "target": 283
+    },
+    {
+      "source": 284,
+      "target": 285
+    },
+    {
+      "source": 285,
+      "target": 287
+    },
+    {
+      "source": 285,
+      "target": 286
+    },
+    {
+      "source": 287,
+      "target": 290
+    },
+    {
+      "source": 287,
+      "target": 288
+    },
+    {
+      "source": 288,
+      "target": 289
+    },
+    {
+      "source": 290,
+      "target": 291
+    },
+    {
+      "source": 292,
+      "target": 293
+    },
+    {
+      "source": 293,
+      "target": 294
+    },
+    {
+      "source": 294,
+      "target": 295
+    },
+    {
+      "source": 295,
+      "target": 296
+    }
+  ]
+}

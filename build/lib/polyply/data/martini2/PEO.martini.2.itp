@@ -1,0 +1,25 @@
+[ moleculetype ]
+; name nexcl.
+PEO         1
+;
+[ atoms ]
+1  EO    1   PEO   COC  1   0.000  45
+;
+[ bonds ]
+; back bone bonds
+1  2   1   0.322 7000
+;
+[ angles ]
+;
+1	2	3	2	135.00 	50.0
+1   2   3   10  135.00  75.0
+;
+[ citation ]
+Martini2
+PEO_M2
+polyply
+[ dihedrals ]
+1  2  3  4     1    180.00    1.96   1
+1  2  3  4     1     0        0.18   2  
+1  2  3  4     1     0        0.33   3
+1  2  3  4     1     0        0.12   4 
