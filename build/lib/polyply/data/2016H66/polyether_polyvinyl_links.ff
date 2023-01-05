@@ -1,0 +1,207 @@
+[ macros ]
+PEO_VINYL_RES "PEO|PE|PMMA|PMA|PP|PVA|PS|HEA|PAM|PMAM"
+
+[ link ]
+; ether -> vinyl
+resname $PEO_VINYL_RES
+[ atoms ]
+EC1 { }
+O1 { }
+EC2 {"replace":{"atype": "CH2", "mass": "14.0270"} }
++VC1 {"replace":{"atype": "CH2", "mass": "14.0270"} }
++VC2 { }
+[ bonds  ]
+EC2 +VC1 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link"}
+[ angles ]
++VC2 +VC1 EC2 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
++VC1 EC2 O1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
+[ dihedrals ]
+EC1 O1 EC2 +VC1 1 gd_42 {"comment":"CHn-CHn-OE-CHn", "version":"1" , "group":"link"}
+EC1 O1 EC2 +VC1 1 gd_43 {"comment":"CHn-CHn-OE-CHn", "version":"2" , "group":"link"}
+EC1 O1 EC2 +VC1 1 gd_44 {"comment":"CHn-CHn-OE-CHn", "version":"3" , "group":"link"}
+O1 EC2 +VC1 +VC2 1 gd_34 {"comment":"X-SI,CHn-CHn-X", "group":"link"}
+[ pairs ]
+EC1 +VC1 1 { "group": "link" }
+O1  +VC2 1 { "group": "link" }
+[ edges ]
+EC1  O1
+O1   EC2
+EC2 +VC1
++VC1 +VC2
+
+[ link ]
+; vinyl -> ether
+resname $PEO_VINYL_RES
+[ atoms ]
+VC1 { }
+VC2 {"replace":{"atype": "CH2", "mass": "14.0270"}}
++EC1 {"replace":{"atype": "CH2", "mass": "14.0270"} }
++O1 { }
++EC2 { }
+[ bonds ]
+VC2 +EC1  2  gb_27 {"comment":"C,CHn-CHn,C", "group":"link"}
+[ angles ]
++EC1 VC2 VC1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
+VC2 +EC1 +O1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
+[ dihedrals ]
+VC1 VC2 +EC1 +O1 1 gd_34 {"comment":"X-SI,CHn-CHn-X", "group":"link"}
+VC2 +EC1 +O1 +EC2 1 gd_42 {"comment":"CHn-CHn-OE-CHn", "version":"1" , "group":"link"}
+VC2 +EC1 +O1 +EC2 1 gd_43 {"comment":"CHn-CHn-OE-CHn", "version":"2" , "group":"link"}
+VC2 +EC1 +O1 +EC2 1 gd_44 {"comment":"CHn-CHn-OE-CHn", "version":"3" , "group":"link"}
+[ pairs ]
+VC1 +O1 1 { "group":"link"}
+VC2 +EC2 1 { "group": "link" }
+[ edges ]
+VC1 VC2
+VC2 +EC1
++EC1 +O1
++O1 +EC2
+
+[ link ]
+; side chain substiuent vinyl -> ether
+resname $PEO_VINYL_RES
+[ atoms ]
+VC1 { }
+VC2 { }
+SC3 { }
++EC1 { }
++O1 { }
++EC2 { }
+[ angles ]
+SC3 VC1 +EC1 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
+[ pairs ]
+SC3 +O1 1 { "group": "link" }
+[ edges ]
+VC1 VC2
+VC2 SC3
+VC2 +EC1
++EC1 +O1
++EC1 +EC2
+;
+[ link ]
+; side chain substiuent ether -> vinyl
+resname $PEO_VINYL_RES
+[ atoms ]
+EC1 { }
+O1 { }
+EC2 { }
++VC1 { }
++VC2 { }
++SC3 { }
+[ pairs ]
+EC2 +SC3 1 { "group": "link" }
+[ edges ]
+EC1 O1
+O1 EC2
+EC2 +VC1
++VC1 +VC2
++VC2 +SC3
+
+[ link ]
+resname $PEO_VINYL_RES
+; vinyl -> vinyl -> ether
+[ atoms ]
+VC1 { }
+VC2 { }
++VC1 { }
++VC2 { }
+++EC1 { }
+++O1 { }
+++EC2 { }
+[ pairs ]
+VC2 ++EC1 1 { "group":"link"}
+[ dihedrals ]
+VC2 +VC1 +VC2 ++EC1 1 gd_34 {"comment":"X-SI,CHn-CHn-X", "group":"link"}
+[ edges ]
+VC2 +VC1
++VC1 +VC1
++VC2 ++EC1
+++EC1 ++O1
+++O1 ++EC2
+
+[ link ]
+resname $PEO_VINYL_RES
+; ether  -> vinyl -> vinyl
+[ atoms ]
+EC1  { }
+O1 { }
+EC2 { }
++VC1 { }
++VC2 { }
+++VC1 { }
+++VC2 { }
+[ pairs ]
+EC2 ++VC1 1
+[ dihedrals ]
+EC2 +VC1 +VC2 ++VC1 1 gd_34 {"comment":"X-SI,CHn-CHn-X", "group":"link"}
+[ edges ]
+EC1 O1
+O1 EC2
+EC2 +VC1
++VC1 +VC2
++VC2 ++VC1
+++VC1 ++VC2
+
+[ link ]
+resname $PEO_VINYL_RES
+; ether -> vinyl -> ether
+[ atoms ]
+EC1 { }
+O1 { }
+EC2 { }
++VC1 { }
++VC2 { }
+++EC1 { }
+++O1 { }
+++EC2 { }
+[ pairs ]
+EC2 ++EC1
+[ dihedrals ]
+EC2 +VC1 +VC2 ++EC1 1 gd_34 {"comment":"X-SI,CHn-CHn-X", "group":"link"}
+[ edges ]
+EC1 O1
+O1 EC2
+EC2 +VC1
++VC1 +VC2
++VC2 ++EC1
+++EC1 ++O1
+++O1 ++EC2
+
+[ link ]
+; mPEG PMMA/PMA
+resname "mPEG|PMA|PMMA"
+[ atoms ]
+SC1 { }
+SC2 { }
+SC3 { }
+SC4 {"replace":{"atype": "CH2", "mass": "14.0270"} }
+>EC1 {"replace":{"atype": "CH2", "mass": "14.0270"} }
+>O1 { }
+>EC2 { }
+[ bonds  ]
+SC4 >EC1 2 gb_27 {"comment":"C,CHn-CHn,C", "group":"link"}
+[ angles ]
+SC3 SC4 >EC1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
+SC4 >EC1 >O1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
+[ dihedrals ]
+; C-O-C-C
+SC1 SC3 SC4 >EC1 1 gd_42 {"comment":"CHn-CHn-OE-CHn", "version":"1" , "group":"link"}
+SC1 SC3 SC4 >EC1 1 gd_43 {"comment":"CHn-CHn-OE-CHn", "version":"2" , "group":"link"}
+SC1 SC3 SC4 >EC1 1 gd_44 {"comment":"CHn-CHn-OE-CHn", "version":"3" , "group":"link"}
+; O-C-C-O
+SC3 SC4 >EC1 >O1 1 gd_45 {"comment":"OE-CHn-CHn-OE", "version":"1" , "group":"link"}
+SC3 SC4 >EC1 >O1 1 gd_46 {"comment":"OE-CHn-CHn-OE", "version":"2" , "group":"link"}
+SC3 SC4 >EC1 >O1 1 gd_47 {"comment":"OE-CHn-CHn-OE", "version":"3" , "group":"link"}
+; C-C-O-C
+SC4 >EC1 >O1 >EC2 1 gd_42 {"comment":"CHn-CHn-OE-CHn", "version":"1" , "group":"link"}
+SC4 >EC1 >O1 >EC2 1 gd_43 {"comment":"CHn-CHn-OE-CHn", "version":"2" , "group":"link"}
+SC4 >EC1 >O1 >EC2 1 gd_44 {"comment":"CHn-CHn-OE-CHn", "version":"3" , "group":"link"}
+[ pairs ]
+SC1  >EC1 1 { "group": "link" }
+SC3  >O1  1 { "group": "link" }
+SC4   >EC2 1 { "group": "link" }
+[ edges ]
+SC1 SC3
+SC3 SC4
+SC4 >EC1
+>EC1 >O1

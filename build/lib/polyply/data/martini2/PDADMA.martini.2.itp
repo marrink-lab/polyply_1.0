@@ -1,0 +1,42 @@
+; POLY(DIALLYLDIMETHYLAMMONIUM)
+;
+; NUMBER OF MONOMERS:           30
+;
+;
+; If you use those parameters, please cite:
+;
+; M. Voegele, J. Smiatek, C. Holm
+; Coarse-grained simulations of polyelectrolyte complexes: MARTINI models for poly(styrene sulfonate) and poly(diallyldimethylammonium)
+; The Journal of Chemical Physics 143(24):243151, December 2015.
+; DOI: 10.1063/1.4937805
+;
+;
+;
+[ moleculetype ]
+; molname  nrexcl
+PDADMA         2
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge      mass
+   1     SC1            1  PDADMA      B1       1     0.00000E+00    45
+   2     SC1            1  PDADMA      B2       2     0.00000E+00    45
+   3     SQd            1  PDADMA      N        3     1.00000E+00    45
+;
+[ bonds ]
+;  ai  aj   funct
+   2     4    1     0.270000 8000.000000
+;
+[ constraints ]
+;  ai  aj  funct length
+   1     2    1     0.270000
+   2     3    1     0.270000
+   3     1    1     0.270000
+;
+[ angles ]
+;  ai  aj  ak  funct
+   1     2     4    1   136.000000  100.000000
+   2     4     5    1   136.000000  100.000000
+[ citation ]
+Martini2
+PSS_M2
+polyply

@@ -1,0 +1,23 @@
+[ citations ]
+PEO_M2
+polyply
+[ moleculetype ]
+; name nexcl.
+PEO         1
+;
+[ atoms ]
+1  SN1a    1   PEO   EO  1   0.000  45
+[ bonds ]
+; back bone bonds
+1  2   1   0.37  7000
+;
+[ angles ]
+;
+1	2	3	2	135.00 	50    
+1       2       3      10       135.00  75  
+;
+[ dihedrals ]
+1  2  3  4     1    180.00    1.96   1
+1  2  3  4     1     0        0.18   2  
+1  2  3  4     1     0        0.33   3
+1  2  3  4     1     0        0.12   4 

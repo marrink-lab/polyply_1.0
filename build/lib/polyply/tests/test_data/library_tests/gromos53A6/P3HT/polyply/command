@@ -1,0 +1,1 @@
+polyply gen_itp -lib gromos53A6 -name P3HT -seq Hter:1 P3HT:6 Hter:1 -o P3HT.itp

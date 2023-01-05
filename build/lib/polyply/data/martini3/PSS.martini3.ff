@@ -1,0 +1,59 @@
+[ citations ]
+Martini3
+polyply
+
+; POLYSTYRENE (A-mapping, see ref. below)
+;
+;
+
+[ moleculetype ]
+PSS 3
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge    mass 
+   1    TC5            1  PSS       R1       1     0.0   
+   2    TC5            1  PSS       R2       2     0.0   
+   3    TC5            1  PSS       R3       3     0.0   
+   4    TC3            1  PSS       B        4     0.0   
+   5    SQ4n           1  PSS       S        5    -1.0   
+;
+[ bonds ]
+;  ai  aj   funct
+   1     4    1     0.27  8000
+   3     5    1     0.278 8000
+   2     5    1     0.278 8000
+
+[ constraints ]
+;  ai  aj  funct length
+   2     3    1     0.290 {"ifndef": "FLEXIBLE"}
+   3     1    1     0.290 {"ifndef": "FLEXIBLE"}
+   1     2    1     0.290 {"ifndef": "FLEXIBLE"}
+
+[ bonds ]
+;  ai  aj  funct length
+   2     3    1     0.290 10000 {"ifdef": "FLEXIBLE"}
+   3     1    1     0.290 10000 {"ifdef": "FLEXIBLE"}
+   1     2    1     0.290 10000 {"ifdef": "FLEXIBLE"}
+
+;
+[ angles ]
+;  ai  aj  ak  funct
+   4     1     2    1   136.000000  100.000000
+   4     1     3    1   136.000000  100.000000
+
+[ dihedrals ]
+; ai aj ak al funct q0 cq
+   1     2     3     5   2   180.0000e+00 1.673600e+02
+
+[ link ]
+resname "PSS"
+[ bonds ]
+B     +R1    1     0.27 8000
+
+[ link ]
+resname "PSS"
+[ angles ]
+B     +R1     +R2    1   136.000000  100.000000
+B     +R1     +R3    1   136.000000  100.000000
+R1     B      +R1    1   120.000000   25.000000
+B     +R1     +B     1    52.000000  550.000000

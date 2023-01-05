@@ -1,0 +1,330 @@
+[ citations ]
+2016H66
+polyply
+[ moleculetype ]
+PE 3
+[ atoms ]
+1 CH3 1 PE VC1 1 0.0 15.0350
+2 CH3 1 PE VC2 1 0.0 15.0350
+[ bonds ]
+1 2 2 gb_27 {"comment":"C,CHn-CHn,C"}
+[ moleculetype ]
+PP 3
+[ atoms ]
+1 CH3 1 PP VC1 1 0.0 15.0350
+2 CH2 1 PP VC2 2 0.0 14.0270
+3 CH3 1 PP SC1 3 0.0 15.0350
+[ bonds ]
+1 2 2 gb_27 {"comment":"C,CHn-CHn,C"}
+2 3 2 gb_27 {"comment":"C,CHn-CHn,C"}
+[ angles ]
+1 2 3 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
+[ moleculetype ]
+PS 3
+[ atoms ]
+1  CH3 1 PS VC1  1   0.0    15.0350
+2  CH2 1 PS VC2  2   0.1    14.0270
+3  C   1 PS SC1  3  -0.1    12.0110
+4  C   1 PS SC2  4  -0.1298 12.0110
+5  HC  1 PS H1   5   0.1298 1.0080
+6  C   1 PS C3   6  -0.1298 12.0110
+7  HC  1 PS H2   7   0.1298 1.0080
+8  C   1 PS C4   8  -0.1298 12.0110
+9  HC  1 PS H3   9   0.1298 1.0080
+10 C   1 PS C5   10 -0.1298 12.0110
+11 HC  1 PS H4   11  0.1298 1.0080
+12 C   1 PS SC3  12 -0.1298 12.0110
+13 HC  1 PS H5   13  0.1298 1.0080
+[ bonds ]
+1  2  2 gb_27 {"comment":"C,CHn-CHn,C"}
+2  3  2 gb_27 {"comment":"C,CHn-CHn,C"}
+5  4  2 gb_3  {"comment":"C-HC"}
+3  4  2 gb_16 {"comment":"C-C arom."}
+7  6  2 gb_3  {"comment":"C-HC"}
+4  6  2 gb_16 {"comment":"C-C arom."}
+9  8  2 gb_3  {"comment":"C-HC"}
+6  8  2 gb_16 {"comment":"C-C arom."}
+11 10 2 gb_3  {"comment":"C-HC"}
+8  10 2 gb_16 {"comment":"C-C arom."}
+13 12 2 gb_3  {"comment":"C-HC"}
+3  12 2 gb_16 {"comment":"C-C arom."}
+10 12 2 gb_16 {"comment":"C-C arom."}
+[ angles ]
+3 2 1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
+12 3 2 2 ga_27 {"comment":"6-ring"}
+4 3 2 2 ga_27 {"comment":"6-ring"}
+13 12 3 2 ga_25 {"comment":"HC-C-C"}
+10 12 3 2 ga_27 {"comment":"6-ring"}
+5 4 3 2 ga_25 {"comment":"HC-C-C"}
+6 4 3 2 ga_27 {"comment":"6-ring"}
+12 3 4 2 ga_27 {"comment":"6-ring"}
+7 6 4 2 ga_25 {"comment":"HC-C-C"}
+8 6 4 2 ga_27 {"comment":"6-ring"}
+6 4 5 2 ga_25 {"comment":"HC-C-C"}
+9 8 6 2 ga_25 {"comment":"HC-C-C"}
+10 8 6 2 ga_27 {"comment":"6-ring"}
+8 6 7 2 ga_25 {"comment":"HC-C-C"}
+11 10 8 2 ga_25 {"comment":"HC-C-C"}
+12 10 8 2 ga_27 {"comment":"6-ring"}
+10 8 9 2 ga_25 {"comment":"HC-C-C"}
+13 12 10 2 ga_25 {"comment":"HC-C-C"}
+12 10 11 2 ga_25 {"comment":"HC-C-C"}
+[ dihedrals ]
+1 2 3 12 1 gd_40 {"comment":"X-CHn-C,CR1-X"}
+[ impropers ]
+4  3  12 10 2 gi_1 {"comment":"arom. planar center"}
+6  4  3  12 2 gi_1 {"comment":"arom. planar center"}
+3  12 10  8 2 gi_1 {"comment":"arom. planar center"}
+3  4  6   8 2 gi_1 {"comment":"arom. planar center"}
+4  6  8  10 2 gi_1 {"comment":"arom. planar center"}
+6  8  10 12 2 gi_1 {"comment":"arom. planar center"}
+3  2  4  12 2 gi_1 {"comment":"planar center"}
+4  5  6  3  2 gi_1 {"comment":"planar center"}
+6  7  8  4  2 gi_1 {"comment":"planar center"}
+8  10 6  9  2 gi_1 {"comment":"planar center"}
+10 12 8  11 2 gi_1 {"comment":"planar center"}
+12 3  13 10 2 gi_1 {"comment":"planar center"}
+[ pairs ]
+1 4 1
+1 12 1
+
+[ moleculetype ]
+PVA 3
+[ atoms ]
+1 CH3 1 PVA VC1 1  0.00 15.0350
+2 CH2 1 PVA VC2 2  0.29 14.0270
+3 OA  1 PVA SC1 3 -0.70 15.9994
+4 H   1 PVA SC2 4  0.41 1.0080
+[ bonds ]
+1 2 2 gb_27 {"comment":"C,CHn-CHn,C"}
+2 3 2 gb_18 {"comment":"CHn-OA,OE"}
+3 4 2 gb_1 {"comment":"OA-H"}
+[ angles ]
+1 2 3 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
+2 3 4 2 ga_12 {"comment":"X-OA,SI-X"}
+[ dihedrals ]
+1 2 3 4 1 gd_23 {"comment":"X-CHn-OA-X"}
+[ pairs ]
+1 4 1
+
+[ moleculetype ]
+PMA 3
+[ atoms ]
+1  CH3 1 PMA VC1 1  0.00 15.0350
+2  CH2 1 PMA VC2 2  0.29 14.0270
+3  C   1 PMA SC1 3  0.63 12.0110
+4  O   1 PMA SC2 4 -0.55 15.9994
+5  OE  1 PMA SC3 5 -0.37 15.9994
+6  CH3 1 PMA SC4 6  0.00 15.0350
+[ bonds ]
+1 2 2 gb_27 {"comment":"C,CHn-CHn,C"}
+2 3 2 gb_27 {"comment":"C,CHn-CHn,C"}
+3 4 2 gb_5 {"comment":"O-C"}
+3 5 2 gb_13 {"comment":"C-OA,OE"}
+5 6 2 gb_18 {"comment":"CHn-OA,OE"}
+[ angles ]
+3 2 1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
+3 5 6 2 ga_22 {"comment":"C-OE-CHn"}
+4 3 2 2 ga_35 {"comment":"CHn-C-O ester/carboxylic-acid"}
+4 3 5 2 ga_31 {"comment":"O-C-OA,OE,CHn"}
+2 3 5 2 ga_16 {"comment":"CHn,C-C-OA,OE"}
+[ dihedrals ]
+1 2 3 4 1 gd_40 {"comment":"X-CHn-C,CR1-X"}
+2 3 5 6 1 gd_12 {"comment":"X-C-OE,OA-X, carboxylic"}
+[ impropers ]
+3 4 5 2 2 gi_1 {"comment":"planar center"}
+[ pairs ]
+1 4 1
+1 5 1
+2 6 1
+4 6 1
+
+[ moleculetype ]
+HEA 3
+[ atoms ]
+1  CH3 1 HEA VC1 1  0.00 15.0350
+2  CH2 1 HEA VC2 2  0.29 14.0270
+3  C   1 HEA SC1 3  0.63 12.0110
+4  O   1 HEA SC2 4 -0.55 15.9994
+5  OE  1 HEA SC3 5 -0.37 15.9994
+6  CH2 1 HEA SC4 6  0.00 14.0270
+7  CH2 1 HEA C2  7  0.29 14.0270
+8  OA  1 HEA O1  8 -0.70 15.9994
+9  H   1 HEA H1  9  0.41 1.0080
+[ bonds ]
+1 2 2 gb_27 {"comment":"C,CHn-CHn,C"}
+2 3 2 gb_27 {"comment":"C,CHn-CHn,C"}
+3 4 2 gb_5 {"comment":"O-C"}
+3 5 2 gb_13 {"comment":"C-OA,OE"}
+5 6 2 gb_18 {"comment":"CHn-OA,OE"}
+6 7 2 gb_27 {"comment":"C,CHn-CHn,C"}
+7 8 2 gb_18
+8 9 2 gb_1
+[ angles ]
+3 2 1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
+3 5 6 2 ga_22 {"comment":"C-OE-CHn"}
+4 3 2 2 ga_35 {"comment":"CHn-C-O ester/carboxylic-acid"}
+4 3 5 2 ga_31 {"comment":"O-C-OA,OE,CHn"}
+2 3 5 2 ga_16 {"comment":"CHn,C-C-OA,OE"}
+6 7 8 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
+7 8 9 2 ga_12
+5 6 7 2 ga_15  {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
+[ dihedrals ]
+1 2 3 4 1 gd_40 {"comment":"X-CHn-C,CR1-X"}
+2 3 5 6 1 gd_12 {"comment":"X-C-OE,OA-X, carboxylic"}
+6 7 8 9 1 gd_23
+3 5 6 7 1 gd_42 {"comment":"CHn-CHn-OE-CHn", "version":"1" , "group":"link", "edge": "false"}
+3 5 6 7 1 gd_43 {"comment":"CHn-CHn-OE-CHn", "version":"2" , "group":"link", "edge": "false"}
+3 5 6 7 1 gd_44 {"comment":"CHn-CHn-OE-CHn", "version":"3" , "group":"link", "edge": "false"}
+5 6 7 8 1 gd_34 {"comment":"X-SI,CHn-CHn-X", "group":"link", "edge": "false"}
+[ impropers ]
+3 4 5 2 2 gi_1 {"comment":"planar center"}
+[ pairs ]
+1 4 1
+1 5 1
+2 6 1
+4 6 1
+6 9 1
+3 7 1
+5 8 1
+;9 5 1 4.3755200e-04  1.0591530e-07 {"ifdef": "eq_polyply", "version": "2", "comment": "pairtype HC-O"}
+;9 4 1 4.3755200e-04  1.0591530e-07 {"ifdef": "eq_polyply", "version": "2", "comment": "pairtype HC-O"}
+
+
+[ moleculetype ]
+PMMA 3
+[ atoms ]
+1  CH3 1 PMMA VC1 1  0.00 15.0350
+2  CH2 1 PMMA VC2 2  0.29 14.0270
+3  C   1 PMMA SC1 3  0.63 12.0110
+4  O   1 PMMA SC2 4 -0.55 15.9994
+5  OE  1 PMMA SC3 5 -0.37 15.9994
+6  CH3 1 PMMA SC4 6  0.00 15.0350
+7  CH3 1 PMMA SB1 6  0.00 15.0350
+[ bonds ]
+1 2 2 gb_27 {"comment":"C,CHn-CHn,C"}
+2 3 2 gb_27 {"comment":"C,CHn-CHn,C"}
+3 4 2 gb_5 {"comment":"O-C"}
+3 5 2 gb_13 {"comment":"C-OA,OE"}
+5 6 2 gb_18 {"comment":"CHn-OA,OE"}
+2 7 2 gb_27 {"comment":"C,CHn-CHn,C"}
+[ angles ]
+3 2 1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
+3 5 6 2 ga_22 {"comment":"C-OE-CHn"}
+4 3 2 2 ga_35 {"comment":"CHn-C-O ester/carboxylic-acid"}
+4 3 5 2 ga_31 {"comment":"O-C-OA,OE,CHn"}
+2 3 5 2 ga_16 {"comment":"CHn,C-C-OA,OE"}
+;
+1 2 7 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
+7 2 3 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
+;
+[ dihedrals ]
+1 2 3 4 1 gd_40 {"comment":"X-CHn-C,CR1-X"}
+2 3 5 6 1 gd_12 {"comment":"X-C-OE,OA-X, carboxylic"}
+[ impropers ]
+3 4 5 2 2 gi_1 {"comment":"planar center"}
+[ pairs ]
+1 4 1
+1 5 1
+2 6 1
+4 6 1
+5 7 1
+7 6 1
+
+[ moleculetype ]
+PAM 3
+[ atoms ]
+1  CH3 1 PAM VC1 1  0.00 15.0350
+2  CH2 1 PAM VC2 2  0.00 14.0270
+3  C   1 PAM SC1 3  0.54 12.0110
+4  O   1 PAM SC2 4 -0.54 15.9994
+5  N   1 PAM SC3 5 -0.76 14.0067
+6  H   1 PAM SC4 6  0.38 1.0080
+7  H   1 PAM SC5 7  0.38 1.0080
+[ bonds ]
+1 2 2 gb_27 {"comment":"C,CHn-CHn,C"}
+2 3 2 gb_27 {"comment":"C,CHn-CHn,C"}
+3 4 2 gb_5 {"comment":"O-C"}
+3 5 2 gb_11 {"comment":"C-N,NZ,NE"}
+5 6 2 gb_2 {"comment":"N-H"}
+5 7 2 gb_2 {"comment":"N-H"}
+[ angles ]
+3 2 1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
+; amide
+4 3 2 2 ga_30 {"comment":"CHn-C-O"}
+2 3 5 2 ga_19 {"comment":"CHn,C-C-OA,N,NT,NL"}
+4 3 5 2 ga_33 {"comment":"O-C-OA,N,NT,NL"}
+3 5 6 2 ga_23 {"comment":"H-NT,NZ,NE-C"}
+3 5 7 2 ga_23 {"comment":"H-NT,NZ,NE-C"}
+7 5 6 2 ga_24 {"comment":"H-NT,NZ-H"}
+[ dihedrals ]
+1 2 3 4 1 gd_40 {"comment":"X-CHn-C,CR1-X"}
+2 3 5 6 1 gd_14 {"comment":"X-C-N,NT,NE,NZ,NR-X"}
+[ impropers ]
+3 4 5 2 2 gi_1 {"comment":"planar center"}
+5 3 6 7 2 gi_1 {"comment":"planar center"}
+[ pairs ]
+1 4 1
+1 5 1
+2 6 1
+2 7 1
+; pairtypes involving hydrogen are zero by default, which however is bad during the polyply
+; energy minization step because it can happen that the oxygen and hydrogen overlap leading
+; to a undefined gradient. Adding this pair potential helps steering the conformation
+4 6 1 {"ifndef": "eq_polyply", "version": "1"}
+4 7 1 {"ifndef": "eq_polyply", "version": "1"}
+4 6 1 4.3755200e-04  1.0591530e-07 {"ifdef": "eq_polyply", "version": "2", "comment": "pairtype HC-O"}
+4 7 1 4.3755200e-04  1.0591530e-07 {"ifdef": "eq_polyply", "version": "2", "comment": "pairtype HC-O"}
+
+[ moleculetype ]
+PMAM 3
+[ atoms ]
+1  CH3 1 PMAM VC1 1  0.00 15.0350
+2  CH1 1 PMAM VC2 2  0.00 14.0270
+3  C   1 PMAM SC1 3  0.54 12.0110
+4  O   1 PMAM SC2 4 -0.54 15.9994
+5  N   1 PMAM SC3 5 -0.76 14.0067
+6  H   1 PMAM SC4 6  0.38 1.0080
+7  H   1 PMAM SC5 7  0.38 1.0080
+8  CH3 1 PMAM SB1 6  0.00 15.0350
+[ bonds ]
+1 2 2 gb_27 {"comment":"C,CHn-CHn,C"}
+2 3 2 gb_27 {"comment":"C,CHn-CHn,C"}
+3 4 2 gb_5 {"comment":"O-C"}
+3 5 2 gb_11 {"comment":"C-N,NZ,NE"}
+5 6 2 gb_2 {"comment":"N-H"}
+5 7 2 gb_2 {"comment":"N-H"}
+2 8 2 gb_27 {"comment":"C,CHn-CHn,C"}
+[ angles ]
+3 2 1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
+; amide
+4 3 2 2 ga_30 {"comment":"CHn-C-O"}
+2 3 5 2 ga_19 {"comment":"CHn,C-C-OA,N,NT,NL"}
+4 3 5 2 ga_33 {"comment":"O-C-OA,N,NT,NL"}
+3 5 6 2 ga_23 {"comment":"H-NT,NZ,NE-C"}
+3 5 7 2 ga_23 {"comment":"H-NT,NZ,NE-C"}
+7 5 6 2 ga_24 {"comment":"H-NT,NZ-H"}
+;
+1 2 8 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
+8 2 3 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL"}
+[ dihedrals ]
+1 2 3 4 1 gd_40 {"comment":"X-CHn-C,CR1-X"}
+2 3 5 6 1 gd_14 {"comment":"X-C-N,NT,NE,NZ,NR-X"}
+[ impropers ]
+3 4 5 2 2 gi_1 {"comment":"planar center"}
+5 3 6 7 2 gi_1 {"comment":"planar center"}
+[ pairs ]
+1 4 1
+1 5 1
+2 6 1
+2 7 1
+5 7 1
+8 4 1
+8 5 1
+4 6 1 {"ifndef": "eq_polyply", "version": "1"}
+4 7 1 {"ifndef": "eq_polyply", "version": "1"}
+; pairtypes involving hydrogen are zero by default, which however is bad during the polyply
+; energy minization step because it can happen that the oxygen and hydrogen overlap leading
+; to a undefined gradient. Adding this pair potential helps steering the conformation
+4 6 1 4.3755200e-04  1.0591530e-07 {"ifdef": "eq_polyply", "version": "2", "comment": "pairtype HC-O"}
+4 7 1 4.3755200e-04  1.0591530e-07 {"ifdef": "eq_polyply", "version": "2", "comment": "pairtype HC-O"}

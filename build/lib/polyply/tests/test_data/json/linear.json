@@ -1,0 +1,10 @@
+{"directed": "False",
+ "multigraph": "False",
+ "graph": {},
+ "nodes": [{"resname": "PEO", "id": 0},
+           {"resname": "PEO", "id": 1},
+           {"resname": "PEO", "id": 2}],
+ "links":  [{"source": 0, "target": 1},
+            {"source": 1, "target": 2}]
+}
+

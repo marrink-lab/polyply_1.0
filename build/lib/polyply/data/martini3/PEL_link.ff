@@ -1,0 +1,13 @@
+[ citations ]
+Martini3
+polyply
+
+[ link ]
+resname "DPPE|POPE|DOPE|PEO"
+[ atoms ]
+NH3 {"replace": {"atype": "P5", "charge": 0.0}}
+[ bonds ]
+NH3    +EC    1   0.3220   7000    {"group": "lipid-PEG"}
+[ angles ]
+NH3      +EC      ++EC       2  135.00   50.0  {"group": "lipid-PEG", "version": 1}
+NH3      +EC      ++EC      10  135.00   75.0  {"group": "lipid-PEG", "version": 2, "ifndef": "TI"}

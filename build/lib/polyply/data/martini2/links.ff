@@ -1,0 +1,58 @@
+[ citations ]
+Martini2
+polyply
+
+[ moleculetype ]
+OHter 1
+[ atoms ]
+1   SP2    1   OHter  OH  1  0.000  45
+
+[ link ]
+resname "DPPC|POPC|DOPC|PEO"
+[ atoms ]
+NC3 {"replace": {"atype": "P5", "charge": 0.0}}
+[ bonds ]
+NC3    +COC    1   0.3220   7000    {"group": "lipid-PEG"}
+[ angles ]
+NC3      +COC      ++COC       2  135.00   50.0  {"group": "lipid-PEG", "version": 1}
+NC3      +COC      ++COC      10  135.00   75.0  {"group": "lipid-PEG", "version": 2}
+
+[ link ]
+resname "DPPE|POPE|DOPE|PEO"
+[ atoms ]
+NH3 {"replace": {"atype": "P5", "charge": 0.0}}
+[ bonds ]
+NH3    +COC    1   0.3220   7000    {"group": "lipid-PEG"}
+[ angles ]
+NH3      +COC      ++COC       2  135.00   50.0  {"group": "lipid-PEG", "version": 1}
+NH3      +COC      ++COC      10  135.00   75.0  {"group": "lipid-PEG", "version": 2}
+
+[ link ]
+resname "PEO|OHter"
+[ bonds ]
+COC    +OH   1   0.2800  7000  {"group": "OHter-PEG"}
+
+[ link ]
+resname "PEO|OHter"
+[ angles ]
+COC   +COC   ++OH   2     140.0     25.0  {"group": "OHter-PEG"}
+
+[ link ]
+resname "OHter|PEO"
+[ bonds ]
+OH   +COC        1       0.2800   7000   {"group": "OHter-PEG"}
+
+[ link ]
+resname "PEO|OHter"
+[ angles ]
+ OH   +COC   ++COC   2     140.0     25.0  {"group": "OHter-PEG"}
+
+[ link ]
+resname "PEO|PE"
+[ bonds ]
+COC  +CH2            1       0.45  7000  {"group": "PE-PEO"}
+
+[ link ]
+resname "PE|PEO"
+[ bonds ]
+CH2  +COC            1       0.45  7000  {"group": "PEO-PE"}
