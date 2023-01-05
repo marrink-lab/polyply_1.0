@@ -47,18 +47,9 @@ import vermouth.molecule
 from vermouth.gmx.itp_read import read_itp
 from vermouth.molecule import Interaction
 
-# setting up pydantic checking just in case..
-
-from datetime import datetime
+# setting up pydantic checking just in case - TODO
 from typing import List, Optional
 from pydantic import BaseModel
-
-
-class User(BaseModel):
-    id: int
-    name = "John Doe"
-    signup_ts: Optional[datetime] = None
-    friends: List[int] = []
 
 
 class NanoparticleCoordinates(Processor):
