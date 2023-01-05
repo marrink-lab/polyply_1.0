@@ -25,7 +25,6 @@ import polyply.src.polyply_parser
 
 # from polyply.src.generate_templates import _expand_initial_coords
 from polyply.src.load_library import load_library
-
 from polyply.src.minimizer import optimize_geometry
 from polyply.src.apply_links import MatchError, ApplyLinks
 from polyply.src.linalg_functions import center_of_geometry
@@ -184,7 +183,7 @@ class NanoparticleGenerator(Processor):
                 attachment_index = index
         return attachment_index
 
-    def run_molecule(self):
+    def run(self, core_mol):
         """
         we have two blocks representing the blocks of the NP core and
         the ligand block. Hence, we wish to add links to the blocks
@@ -212,7 +211,6 @@ class NanoparticleGenerator(Processor):
         # NP core the main ligand blocks ligand_N number of times
 
         for index in range(0, self.ligands_N):
-
             ligand_index = index * ligand_len  # compute starting index for each ligand
             print(ligand_index, core_size)
             scaled_ligand_index = ligand_index + core_size
@@ -285,23 +283,6 @@ class NanoparticleGenerator(Processor):
             defer_writing=False,
         )
 
-    # def optimize_geometry(self):
-    #    """
-    #    this function should take the newly attached carbon nanoparticle with the sulfur
-    #    ligand (not realistic, but wanting to check the functionality)
-    #    """
-    #    for _iteration in range(0, 10):
-    #        init_coords = _expand_inital_coords(self.NP_block)
-    #        success, coords = optimize_geometry(
-    #            self.NP_block, init_coords, ["bonds", "constraints", "angles"]
-    #        )
-    #        success, coords = optimize_geometry(
-    #            self.NP_block, coords, ["bonds", "constraints", "angles", "dihedrals"]
-    #        )
-    #        if success:
-    #            print("success!")
-    #            break
-
 
 def gen_np(
     library,
@@ -334,46 +315,50 @@ def gen_np(
     # 3. initiate a class NPAttachLigandsGraphs, that generates only the itp files
     full_np_metamol = NanoparticleGenerator(
         force_field, ligand_names, 1, ligand_anchor, None
-    ).run_molecule()
+    ).run(core_mol)
     # probably a good idea to let this function return a meta_molecule
     # once we have the metamolecule we can instantiate a topology object to use later
 
     np_top = Topology(name=name, force_field=force_field)
     np_top.molecules = [full_np_metamol]
     # 4. Generate coordinates
-    NanoparticleLigandCoordinates().run_system(np_top)
     # 5. Write output like you've done before
     # first the itp file
     with open(str(out_path) + "/" + "NP.itp", "w") as outfile:
         write_molecule_itp(np_top.molecules[0].molecule, outfile)
 
     # then the coordinate file
-    command = " ".join(sys.argv)
+    # command = " ".join(sys.argv)
     system = np_top.convert_to_vermouth_system()
+    NanoparticleLigandCoordinates().run_system(system)
 
-    # vermouth.gmx.write_gro(
-    #    system, out_path + "/" + "NP.gro", precision=7, title=command, box=box
-    # )
-    return system
+    vermouth.gmx.write_gro(
+        system,
+        str(out_path) + "/" + "NP.gro",
+        precision=7,
+        title="new",
+        box=box,
+        defer_writing=False,
+    )
 
-    if __name__ == "__main__":
-        # example input with gen_np to generate the fullerene/BCM nanoparticle
 
-        gen_np(["oplsaaLigParGen"], "/home/sang/Desktop", None, "C60", "BCM", "C07")
+if __name__ == "__main__":
+    # example input with gen_np to generate the fullerene/BCM nanoparticle
+    gen_np(["oplsaaLigParGen"], "/home/sang/Desktop", None, "C60", "BCM", "C07")
 
-        # previous version of the code - will keep as a reference point
-        # for how we called it before
+    # previous version of the code - will keep as a reference point
+    # for how we called it before
 
-        # building fullerene PBCM complex - need necessary itp paths
-        # PATH = "/home/sang/Desktop/git/polyply_1.0/polyply/data/nanoparticle_test/PCBM"
-        # NP_itp = PATH + "/" + "C60.itp"
-        # BCM_itp = PATH + "/" + "BCM.itp"
-        # In this case, as the C60 core is relatively small compared to the ligand size, the
-        # system will not work
-        # BCM_class = NanoparticleGenerator(NP_itp, BCM_itp, "test", 1, "Janus", "C07")
-        # BCM_class.set_NP_ff("C60")
-        # BCM_class.set_ligands_ff("BCM")
-        # BCM_class._convert_to_vermouth_molecule()
-        # BCM_class.create_top()
-        # BCM_class.create_itp(PATH + "/" + "NP.itp")
-        # BCM_class.create_gro(PATH + "/" + "NP.gro")
+    # building fullerene PBCM complex - need necessary itp paths
+    # PATH = "/home/sang/Desktop/git/polyply_1.0/polyply/data/nanoparticle_test/PCBM"
+    # NP_itp = PATH + "/" + "C60.itp"
+    # BCM_itp = PATH + "/" + "BCM.itp"
+    # In this case, as the C60 core is relatively small compared to the ligand size, the
+    # system will not work
+    # BCM_class = NanoparticleGenerator(NP_itp, BCM_itp, "test", 1, "Janus", "C07")
+    # BCM_class.set_NP_ff("C60")
+    # BCM_class.set_ligands_ff("BCM")
+    # BCM_class._convert_to_vermouth_molecule()
+    # BCM_class.create_top()
+    # BCM_class.create_itp(PATH + "/" + "NP.itp")
+    # BCM_class.create_gro(PATH + "/" + "NP.gro")
