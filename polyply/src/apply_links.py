@@ -340,6 +340,29 @@ class ApplyLinks(Processor):
         self.debug = debug
         super().__init__(*args, **kwargs)
         self.applied_links = defaultdict(dict)
+        self.nodes_to_remove = []
+
+    def _update_interactions_dict(self, interactions_dict, molecule, citations, mapping=None):
+        """
+        Helper function for adding links to the applied links dictionary.
+        If mapping is given the interaction atoms are mapped to the molecule
+        atoms using mapping. Otherwise interactions are assumed to be written
+        in terms of molecule nodes.
+        """
+        for inter_type, interactions in interactions_dict.items():
+            for interaction in interactions:
+                # it is not guaranteed that interaction.atoms is a tuple
+                # the key is the atoms involved in the interaction and the version type so
+                # that multiple versions are kept and not overwritten
+                if mapping:
+                    new_interaction = _build_link_interaction_from(molecule,
+                                                                   interaction,
+                                                                   mapping)
+                else:
+                    new_interaction = interaction
+
+                interaction_key = (*new_interaction.atoms, new_interaction.meta.get("version", 1))
+                self.applied_links[inter_type][interaction_key] = (new_interaction, citations)
 
     def apply_link_between_residues(self, meta_molecule, link, link_to_resid):
         """
@@ -384,24 +407,30 @@ class ApplyLinks(Processor):
         # if all atoms have a match the link applies and we first
         # replace any attributes from the link node section
         for node in link.nodes:
-            molecule.nodes[link_to_mol[node]].update(link.nodes[node].get('replace', {}))
+            # if the atomname is set to null we schedule the node to be removed
+            if link.nodes[node].get('replace', {}).get('atomname', False) is None:
+                self.nodes_to_remove.append(link_to_mol[node])
+            else:
+                molecule.nodes[link_to_mol[node]].update(link.nodes[node].get('replace', {}))
 
         # based on the match we build the link interaction
-        for inter_type in link.interactions:
-            for interaction in link.interactions[inter_type]:
-                new_interaction = _build_link_interaction_from(molecule, interaction, link_to_mol)
-                # it is not guaranteed that interaction.atoms is a tuple
-                # the key is the atoms involved in the interaction and the version type so
-                # that multiple versions are kept and not overwritten
-                interaction_key = tuple(new_interaction.atoms) +\
-                                  tuple([new_interaction.meta.get("version",1)])
-                self.applied_links[inter_type][interaction_key] = (new_interaction, link.citations)
+        self._update_interactions_dict(link.interactions,
+                                       molecule,
+                                       link.citations,
+                                       mapping=link_to_mol)
+
         # now we already add the edges of this link
         # links can overwrite each other but the edges must be the same
         # this is safer than using the make_edge method because it accounts
         # for edges written in the edges directive
         for edge in link.edges:
             molecule.add_edge(link_to_mol[edge[0]], link_to_mol[edge[1]])
+
+        # put the log messages
+        for loglevel, entries in link.log_entries.items():
+            for entry, fmt_args in entries.items():
+                fmt_args = fmt_args + [link_to_mol]
+                molecule.log_entries[loglevel][entry] += fmt_args
 
     def run_molecule(self, meta_molecule):
         """
@@ -423,6 +452,11 @@ class ApplyLinks(Processor):
         """
         molecule = meta_molecule.molecule
         force_field = meta_molecule.force_field
+        # we need to update the temporary interactions dict
+        self._update_interactions_dict(molecule.interactions, molecule, molecule.citations, mapping=None)
+        # now we can clear the molecule dict
+        molecule.interactions = defaultdict(list)
+
         resnames = set(nx.get_node_attributes(molecule, "resname").values())
         for link in tqdm(force_field.links):
             link_resnames = _get_link_resnames(link)
@@ -453,10 +487,15 @@ class ApplyLinks(Processor):
                     except MatchError as error:
                         LOGGER.debug(str(error), type='step')
 
+        # take care to remove nodes if there are any scheduled for removal
+        # we do this here becuase that's more efficent
+        molecule.remove_nodes_from(self.nodes_to_remove)
+        # now we add all interactions but not the ones that contain the removed
+        # nodes
         for inter_type in self.applied_links:
-            for interaction, citation in self.applied_links[inter_type].values():
-                meta_molecule.molecule.interactions[inter_type].append(interaction)
-                if citation:
+            for atoms, (interaction, citation) in self.applied_links[inter_type].items():
+                if not any(atom in self.nodes_to_remove for atom in atoms):
+                    meta_molecule.molecule.interactions[inter_type].append(interaction)
                     meta_molecule.molecule.citations.update(citation)
 
         for link in force_field.links:

@@ -4,7 +4,7 @@
 [![Build Status](https://github.com/marrink-lab/polyply_1.0/actions/workflows/python-app.yml/badge.svg)](https://github.com/marrink-lab/polyply_1.0/actions)
 [![PyPI version](https://badge.fury.io/py/polyply.svg)](https://badge.fury.io/py/polyply)
 ![license](https://img.shields.io/github/license/marrink-lab/polyply_1.0)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/marrink-lab/polyply_1.0/Upload%20Python%20Package)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/marrink-lab/polyply_1.0/pypi_deploy.yml)
 [![arXiv](https://img.shields.io/badge/arXiv-2105.05890-b31b1b.svg)](https://arxiv.org/abs/2105.05890)
 [![DOI:10.1038/s41467-021-27627-4](https://zenodo.org/badge/DOI/10.1038/s41467-021-27627-4.svg)](https://doi.org/10.1038/s41467-021-27627-4)
 
@@ -29,6 +29,7 @@ force-field, molecule parameters and this program.
 ## Quick references
 [Installation Guide](https://github.com/marrink-lab/polyply_1.0/wiki/Installation)\
 [FAQs](https://github.com/marrink-lab/polyply_1.0/wiki/FAQs)\
+[Current Polyply Polymer Library](./LIBRARY.md)\
 [Submissions to Martini Polymer Library](https://github.com/marrink-lab/polyply_1.0/wiki/Submit-polymer-parameters)\
 [Tutorial: Martini Polymers](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-martini-polymer-melts)\
 [Tutorial: GROMOS Polymers](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-GROMOS-polymer-melts)\

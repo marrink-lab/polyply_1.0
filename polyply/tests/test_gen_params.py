@@ -15,6 +15,7 @@
 from pathlib import Path
 import textwrap
 import argparse
+import logging
 import pytest
 import networkx as nx
 import vermouth.forcefield
@@ -22,6 +23,7 @@ import vermouth.molecule
 import vermouth.gmx.itp_read
 from polyply import gen_params, TEST_DATA, MetaMolecule
 from polyply.src.graph_utils import find_missing_edges
+from polyply.src.logging import LOGGER
 
 class TestGenParams():
     @staticmethod
@@ -56,7 +58,13 @@ class TestGenParams():
          "-seqf", TEST_DATA + "/gen_params/input/test_edge_attr.json",
          "-name", "test",
          "-o", TEST_DATA + "/gen_params/output/test_edge_attr_out.itp"],
-         TEST_DATA + "/gen_params/ref/test_edge_attr_ref.itp")
+         TEST_DATA + "/gen_params/ref/test_edge_attr_ref.itp"),
+        # check if nodes can be removed
+        (["-f", TEST_DATA+"/gen_params/input/removal.ff",
+         "-seq", "PEO:3",
+         "-name", "test",
+         "-o", TEST_DATA + "/gen_params/output/removal.itp"],
+         TEST_DATA + "/gen_params/ref/removal.itp")
         ))
     def test_gen_params(args_in, ref_file):
         parser = argparse.ArgumentParser(
@@ -118,3 +126,36 @@ def test_find_missing_links():
         assert edge["resB"] == "P3HTref"
         assert edge["idxA"] == ref[0]
         assert edge["idxB"] == ref[1]
+
+@pytest.mark.parametrize('warn_type, ffobject',
+                         (('INFO', 'link'),
+                          ('INFO', 'block'),
+                          ('WARNING', 'link'),
+                          ('WARNING', 'block'),
+                          ('ERROR', 'link'),
+                          ('ERROR', 'block')))
+def test_print_log_warnings(tmp_path, monkeypatch, caplog, warn_type, ffobject):
+    """
+    Quick test to make sure that the logging warnings propagate to the
+    gen_params output.
+    """
+    # change to temporary direcotry
+    monkeypatch.chdir(tmp_path)
+
+    # get input file from test data
+    infile = TEST_DATA / Path(f"gen_params/logging/{warn_type}_{ffobject}.ff")
+
+    # set loglevel
+    loglevel = getattr(logging, warn_type)
+    LOGGER.setLevel(loglevel)
+
+    # capture logging messages
+    with caplog.at_level(loglevel):
+        gen_params(name="polymer",
+                   outpath=Path("polymer.itp"),
+                   inpath=[infile],
+                   lib=None,
+                   seq=["test:5"],
+                   seq_file=None)
+
+        assert f"This is a {warn_type}." in [record.getMessage() for record in caplog.records if record.levelname == warn_type]

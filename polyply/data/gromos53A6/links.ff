@@ -58,3 +58,13 @@ CT2 {"replace": {"charge": -0.394}}
  CT3  CT2 +H1      2     126.0      575.0   {"comment":"H-CT2-link", "group": "termini"}
 [ dihedrals ]
 +H1   ST1  CT3  CT2  2     0.0   167.42309  {"comment":"H-CT2-link", "group": "termini"}
+
+
+[ link ]
+[ atoms ]
+CT2 {"resname": "P3HT"}
+[ warning ]
+You should patch P3HT with a H-terminal residues. Use -seq Hter:1 P3HT:4 Hter:1
+[ non-edges ]
+CT2 +H1
+CT2 +CT5
