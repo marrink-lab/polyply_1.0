@@ -2,7 +2,6 @@
 testing debugging with dap-mode 
 """
 import sys
-
 import numpy as np
 from scipy.spatial import distance
 import networkx as nx
