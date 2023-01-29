@@ -28,7 +28,13 @@ The program reads the relaxed coordinates of a single gold-alkanethiol
 nanoparticle. These coordinates are writte in the file 
 singleNP.cfg. 
 
+-- notes from singleNP: 
+
+The program outputs LAMMPS data file "data.np" and CFG file. 
+
 """
+# generate pydantic class for lennard jones parameters
+# pair_coeff       1 1 morse  10.956 1.5830 3.0242 # These paramaeters are identical as with the other orientations and visa versa
 
 
 class NanoparticleSingle:
@@ -39,6 +45,7 @@ class NanoparticleSingle:
     """
 
     def __init__(self):
+        self.orientation = None
         self.lattice_constant: float = 4.0782
         self.box_size: int = 100
         self.matrix: np.ndarray = np.array(
@@ -73,7 +80,7 @@ class NanoparticleSingle:
         self.center: list[float] = [0.5, 0.5, 0.5]  # TODO
         self.phi: float = (np.sqrt(5) + 1) / 2
 
-    def _vertices_edges(self) -> None:
+    def _vertices_edges(self):
         """
         iniiate np array values
         """
@@ -158,9 +165,11 @@ class NanoparticleSingle:
         self.E = self.E * scaling
         self.F = self.F * scaling
 
-    def fill(self):
-        """ """
-        self._vertices_edges()
+    def generate_positions(self):
+        """
+        Need some general notes on how the core was generated.
+        """
+        self._vertices_edges()  # need brief description of this function does
         self.pos_gold[0, :] = self.center
 
         # coordinates of the second innermost layer atoms
@@ -187,6 +196,85 @@ class NanoparticleSingle:
                 self.E[0, 2, i] + self.E[1, 2, i]
             ) / self.box_size + self.center[2]
 
+        for N in range(3, self.gold_layer):
+
+            n_atom_to_now = int(
+                ((10 * (N - 1) ** 3 + 11 * (N - 1)) / 3 - 5 * ((N - 1) ** 2) - 1)
+            )
+
+            for i in range(12):
+                self.pos_gold[n_atom_to_now + i][0] = (
+                    self.V[i][0] * (N - 1) / self.box_size + self.center[0]
+                )
+                self.pos_gold[n_atom_to_now + i][1] = (
+                    self.V[i][1] * (N - 1) / self.box_size + self.center[1]
+                )
+                self.pos_gold[n_atom_to_now + i][2] = (
+                    self.V[i][2] * (N - 1) / self.box_size + self.center[2]
+                )
+            n_atom_to_now = n_atom_to_now + 12
+
+            for i in range(30):
+                for j in range(N - 2):
+                    self.pos_gold[n_atom_to_now + (i - 1) * (N - 2) + j][0] = (
+                        self.E[0][0][i] * (N - 1)
+                        + (self.E[1][0][i] - self.E[0][0][i]) * j
+                    ) / self.box_size + self.center[0]
+                    self.pos_gold[n_atom_to_now + (i - 1) * (N - 2) + j][1] = (
+                        self.E[0][1][i] * (N - 1)
+                        + (self.E[1][1][i] - self.E[0][1][i]) * j
+                    ) / self.box_size + self.center[1]
+                    self.pos_gold[n_atom_to_now + (i - 1) * (N - 2) + j][2] = (
+                        self.E[0][2][i] * (N - 1)
+                        + (self.E[1][2][i] - self.E[0][2][i]) * j
+                    ) / self.box_size + self.center[2]
+
+            n_atom_to_now = n_atom_to_now + 30 * (N - 2)
+
+            for i in range(20):
+                for m in range(N - 3):
+                    for n in range(N - m - 2):
+                        self.pos_gold[
+                            n_atom_to_now + (2 * N - m - 4) * (m - 1) // 2 + n, 0
+                        ] = (
+                            self.F[0, 0, i] * (N - 1)
+                            + (self.F[1, 0, i] * (N - 1) - self.F[0, 0, i] * (N - 1))
+                            * m
+                            / (N - 1)
+                            + (self.F[2, 0, i] * (N - 1) - self.F[0, 0, i] * (N - 1))
+                            * n
+                            / (N - 1)
+                        ) / self.box_size + self.center[
+                            0
+                        ]
+                        self.pos_gold[
+                            n_atom_to_now + (2 * N - m - 4) * (m - 1) // 2 + n, 1
+                        ] = (
+                            self.F[0, 1, i] * (N - 1)
+                            + (self.F[1, 1, i] * (N - 1) - self.F[0, 1, i] * (N - 1))
+                            * m
+                            / (N - 1)
+                            + (self.F[2, 1, i] * (N - 1) - self.F[0, 1, i] * (N - 1))
+                            * n
+                            / (N - 1)
+                        ) / self.box_size + self.center[
+                            1
+                        ]
+                        self.pos_gold[
+                            n_atom_to_now + (2 * N - m - 4) * (m - 1) // 2 + n, 2
+                        ] = (
+                            self.F[0, 2, i] * (N - 1)
+                            + (self.F[1, 2, i] * (N - 1) - self.F[0, 2, i] * (N - 1))
+                            * m
+                            / (N - 1)
+                            + (self.F[2, 2, i] * (N - 1) - self.F[0, 2, i] * (N - 1))
+                            * n
+                            / (N - 1)
+                        ) / self.box_size + self.center[
+                            2
+                        ]
+                n_atom_to_now += (N - 2) * (N - 3) // 2
+
 
 class NanoparticleLatticeGenerator(Processor):
     """
@@ -209,9 +297,9 @@ class NanoparticleLatticeGenerator(Processor):
         and then store it within a 'coordinates' object. The form
         of which I am not certain yet.
         """
-        pass
+        return
 
 
 if __name__ == "__main__":
     sampleNPCore = NanoparticleSingle()
-    sampleNPCore.fill()
+    sampleNPCore.generate_positions()
