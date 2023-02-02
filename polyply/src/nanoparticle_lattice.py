@@ -10,6 +10,10 @@ import polyply.src.meta_molecule
 from polyply.src.generate_templates import GenerateTemplates
 from polyply.src.processor import Processor
 from polyply.src.topology import Topology
+from polyply.src.load_library import load_library
+
+import vermouth.forcefield
+import vermouth.molecule
 
 # import textwrap
 # from pathlib import Path
@@ -283,11 +287,13 @@ class NanoparticleLatticeGenerator(Processor):
 
     """
 
-    input_file: str()
-    n_atoms_gold: int = 561
-    n_atoms_S: int = 136
-    n_atom_C1: int = 952
-    n_atom_C2: int = 136  # number of CH3 per nanoparticle?
+    def __init__(self, force_field):
+        self.force_field = force_field
+
+        n_atoms_gold: int = 561
+        n_atoms_S: int = 136
+        n_atom_C1: int = 952
+        n_atom_C2: int = 136  # number of CH3 per nanoparticle?
 
     def generate_coordinates(self) -> None:
         """
@@ -303,3 +309,8 @@ class NanoparticleLatticeGenerator(Processor):
 if __name__ == "__main__":
     sampleNPCore = NanoparticleSingle()
     sampleNPCore.generate_positions()
+    # test amber force field loading libraries
+    # force_field = load_library("gold", ["amber"], inpath)
+    gold = vermouth.gmx.read_gro(
+        "/home/sang/Desktop/git/polyply_1.0/polyply/data/nanoparticle_test/AMBER_AU/au102.gro"
+    )
