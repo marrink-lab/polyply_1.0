@@ -306,7 +306,7 @@ def _tag_nodes(graph, tags, seed=None):
 def gen_seq(name,
             outpath,
             seq,
-            inpath=None,
+            inpath=[],
             macro_strings=[],
             from_file=None,
             connects=[],

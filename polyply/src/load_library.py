@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import os
-import pathlib
+from pathlib import Path
 import vermouth
 from vermouth.gmx.rtp import read_rtp
 from vermouth.citation_parser import read_bib
@@ -22,156 +22,79 @@ from polyply import DATA_PATH
 from .ff_parser_sub import read_ff
 from .build_file_parser import read_build_file
 from .polyply_parser import read_polyply
-from .topology import Topology
 
 LOGGER = StyleAdapter(get_logger(__name__))
+BUILD_FILE_PARSERS = {'bld': read_build_file}
 FORCE_FIELD_PARSERS = {'rtp': read_rtp, 'ff': read_ff, 'itp': read_polyply, 'bib': read_bib}
 
-
-def check_extensions_bld(bld_files):
+def determine_parser(file_, file_parsers):
     """
-    check the extensions of the
-    user provided build files
-
-    Parameters
-    ----------
-    bld_files: list[`pathlib.PosixPath`]
-        list of build files
-    """
-    for _file in bld_files:
-        file_extension = _file.suffix[1:]
-        if file_extension != 'bld':
-            msg = "Cannot parse build file with extension {}".format(file_extension)
-            raise IOError(msg)
-
-def check_extensions_ff(ff_files):
-    """
-    check the extensions of the
-    user provided forcefield files
+    check if file can be parsed and
+    if possible return the respective parser
 
     Parameters
     ----------
-    ff_files: list[`pathlib.PosixPath`]
-        list of forcefield files
+    file_: class:`pathlib.PosixPath`
+        path to file
+    file_parsers: dict
+        dictionary of available file parsers
     """
-    for _file in ff_files:
-        file_extension = _file.suffix[1:]
-        if file_extension not in FORCE_FIELD_PARSERS:
-            msg = "Cannot parse forcefield file with extension {}".format(file_extension)
-            raise IOError(msg)
+    file_extension = file_.suffix[1:]
+    if file_extension not in file_parsers:
+        msg = "Cannot parse file file with extension {}".format(file_extension)
+        raise IOError(msg)
+    else:
+        return file_parsers[file_extension]
 
-def _resolve_lib_paths(lib_names, data_path, allowed_extensions):
+
+def _resolve_lib_paths(lib_names, data_path):
     """
-    select the appropiate files from data_path
+    select the appropiate files from a file path
     according to library names given.
 
     Parameters
     ----------
-    lib_names: list[`os.path`]
+    lib_names: list[`pathlib.Path`]
         list of library names
     data_path:
         location of library files
-    allowed_extensions: list[str]
-         list of allowed file extensions
     """
     files = []
-    for name in lib_names:
-        directory = os.path.join(data_path, name)
-        for _file in os.listdir(directory):
-            _, file_extension = os.path.splitext(_file)
-            if file_extension[1:] in allowed_extensions:
-                _file = os.path.join(directory, _file)
-                files.append(_file)
+    data_path = Path(data_path)
+    for name in lib_names or []:
+        directory = data_path.joinpath(name)
+        for file_ in os.listdir(directory):
+            file_path = directory.joinpath(file_)
+            files.append(file_path)
     return files
 
 
-def read_ff_from_files(paths, force_field):
+def read_options_from_files(paths, storage_object, file_parsers):
     """
-    read the input files for the defintion of blocks and links.
+    read the input files for the definition of blocks and links.
 
     Parameters
     ----------
-    paths: list[`os.path`]
-           List of valid file paths
-    force_field: class:`vermouth.force_field.ForceField`
-
-    Returns
-    -------
-    force_field: class:`vermouth.force_field.ForceField`
-       updated forcefield
+    paths: list[`pathlib.Path`]
+           List of provided file paths
+    storage_object: topology or forcefield
+    file_parsers: dict
+        dictionary of available file parsers
 
     """
 
-    def wrapper(parser, path, force_field):
+    def parse_file(parser, path, storage_object):
         with open(path, 'r') as file_:
             lines = file_.readlines()
-            parser(lines, force_field=force_field)
+            parser(lines, storage_object)
 
-    for path in paths:
-        path = pathlib.Path(path)
-        file_extension = path.suffix.casefold()[1:]
+    for path in paths or []:
+        parser = determine_parser(path, file_parsers)
 
-        parser = FORCE_FIELD_PARSERS[file_extension]
-        wrapper(parser, path, force_field)
-
-    return force_field
+        parse_file(parser, path, storage_object)
 
 
-def load_ff_library(name, lib_names, extra_files):
-    """
-    Load libraries and extra-files into vermouth
-    force-field.
-
-    Parameters
-    ----------
-    name: str
-      Force-field name
-    lib_names: list[`os.path`]
-      List of lirbary names
-    extra_files: list[`os.path`]
-      List of extra files to include
-
-    Returns
-    -------
-    :class:`vermouth.forcefield.Forcefield`
-    """
-    force_field = vermouth.forcefield.ForceField(name)
-    if lib_names and extra_files:
-        lib_files = _resolve_lib_paths(lib_names, DATA_PATH,
-                                       FORCE_FIELD_PARSERS.keys())
-        all_files = lib_files + extra_files
-    elif lib_names:
-        all_files = _resolve_lib_paths(lib_names, DATA_PATH,
-                                       FORCE_FIELD_PARSERS.keys())
-    elif extra_files:
-        all_files = extra_files
-
-    read_ff_from_files(all_files, force_field)
-    return force_field
-
-
-def read_build_options_from_files(paths, topology):
-    """
-    read the input files for the build options and
-    molecule templates.
-
-    Parameters
-    ----------
-    paths: list[`os.path`]
-           List of valid file paths
-    topology: :class:`polyply.src.topology`
-
-    Returns
-    -------
-
-    """
-    for path in paths:
-        with open(path, 'r') as file_:
-            lines = file_.readlines()
-        read_build_file(lines, topology.molecules, topology)
-
-
-def load_build_options(topology, lib_names, build_file):
+def load_build_files(topology, lib_names, build_file):
     """
     Load build file options and molecule templates into topology.
 
@@ -187,14 +110,31 @@ def load_build_options(topology, lib_names, build_file):
     -------
 
     """
-    if lib_names and build_file:
-        lib_files = _resolve_lib_paths(lib_names, DATA_PATH, ['bld'])
-        all_files = lib_files + [build_file]
-    elif lib_names:
-        all_files = _resolve_lib_paths(lib_names, DATA_PATH, ['bld'])
-    elif build_file:
-        all_files = [build_file]
-    else:
-        return
+    all_files = _resolve_lib_paths(lib_names, DATA_PATH)
+    all_files.extend(build_file)
+    read_options_from_files(all_files, topology, BUILD_FILE_PARSERS)
 
-    read_build_options_from_files(all_files, topology)
+
+def load_ff_library(name, lib_names, extra_ff_file):
+    """
+    Load libraries and extra-files into vermouth
+    force-field.
+
+    Parameters
+    ----------
+    name: str
+      Force-field name
+    lib_names: list[`pathlib.Path`]
+      List of library names
+    extra_files: list[`pathlib.Path`]
+      List of extra files to include
+
+    Returns
+    -------
+    :class:`vermouth.forcefield.Forcefield`
+    """
+    force_field = vermouth.forcefield.ForceField(name)
+    all_files = _resolve_lib_paths(lib_names, DATA_PATH)
+    all_files.extend(extra_ff_file)
+    read_options_from_files(all_files, force_field, FORCE_FIELD_PARSERS)
+    return force_field

@@ -26,7 +26,7 @@ from .backmap import Backmap
 from .topology import Topology
 from .build_system import BuildSystem
 from .annotate_ligands import AnnotateLigands, parse_residue_spec, _find_nodes
-from .load_library import load_build_options, check_extensions_bld
+from .load_library import load_build_files
 from .check_residue_equivalence import check_residue_equivalence
 
 LOGGER = StyleAdapter(get_logger(__name__))
@@ -226,9 +226,7 @@ def gen_coords(toppath,
 
     # load in build file
     LOGGER.info("reading build options",  type="step")
-    if build:
-        check_extensions_bld(build)
-    load_build_options(topology, lib, build)
+    load_build_files(topology, lib, build)
 
     # collect all starting points for the molecules
     start_dict = find_starting_node_from_spec(topology, start)

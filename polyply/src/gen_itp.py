@@ -32,7 +32,7 @@ from vermouth.citation_parser import citation_formatter
 from vermouth.graph_utils import make_residue_graph
 from polyply import (MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
 from polyply.src.graph_utils import find_missing_edges
-from .load_library import load_ff_library, check_extensions_ff, check_extensions_ff
+from .load_library import load_ff_library
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
@@ -59,7 +59,7 @@ def split_seq_string(sequence):
         monomers.append(Monomer(resname=resname, n_blocks=n_blocks))
     return monomers
 
-def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=None, lib=None, seq=None, seq_file=None):
+def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[], lib=None, seq=None, seq_file=None):
     """
     Top level function for running the polyply parameter generation.
     Parameters seq and seq_file are mutually exclusive. Set the other
@@ -83,8 +83,6 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=None, lib=Non
     """
     # Import of Itp and FF files
     LOGGER.info("reading input and library files",  type="step")
-    if inpath:
-        check_extensions_ff(inpath)
     force_field = load_ff_library(name, lib, inpath)
 
     # Generate the MetaMolecule
