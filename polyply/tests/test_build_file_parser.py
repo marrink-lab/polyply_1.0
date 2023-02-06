@@ -14,6 +14,7 @@
 """
 Test that build files are properly read.
 """
+import logging
 import textwrap
 import pytest
 import numpy as np
@@ -50,6 +51,41 @@ def test_base_parser_geometry(tokens, _type, expected):
             assert all(result[key][1] == expected[key][1])
             for result_param, expected_param in zip(result[key][2:], expected[key][2:]):
                 assert result_param == expected_param
+
+@pytest.mark.parametrize('tokens, _type', (
+   # for cylinder radius is not box
+   (["PEO", "63", "154", "in", "4", "8", "8", "6", "7"],
+    "cylinder",),
+   # for cylinder radius is equal
+   (["PEO", "63", "154", "in", "6", "8", "8", "6", "7"],
+    "cylinder",),
+   # for cylinder z is not covered
+   (["PEO", "63", "154", "in", "8", "8", "6", "6", "7"],
+    "cylinder",),
+   # for cylinder z is equal
+   (["PEO", "63", "154", "in", "8", "8", "7", "6", "7"],
+    "cylinder",),
+   # for recangle one of the sides is out
+   (["PEO", "0", "10", "out", "11", "0", "13", "1", "2", "3"],
+    "rectangle",),
+   # for recangle one of the sides is equal
+   (["PEO", "0", "10", "out", "1", "10", "10", "1", "2", "3"],
+    "rectangle",),
+   # for sphere radius is to large/small
+   (["PEO", "0", "10", "in", "0", "12", "13", "5"],
+    "sphere",),
+   # for sphere radius is to equal
+   (["PEO", "0", "10", "in", "5", "12", "13", "5"],
+    "sphere",),
+   ))
+def test_base_parser_geometry_warning(caplog, tokens, _type):
+    with caplog.at_level(logging.WARNING):
+        result = polyply.src.build_file_parser.BuildDirector._base_parser_geometry(tokens, _type)
+        for record in caplog.records:
+            assert record.levelname == "WARNING"
+            break
+        else:
+            assert False
 
 @pytest.fixture
 def test_molecule():
@@ -115,8 +151,9 @@ def test_system():
                                                     "BB")
   NA = MetaMolecule()
   NA.add_monomer(current=0, resname="NA", connections=[])
+
   molecules = [meta_mol_A, meta_mol_A.copy(),
-               meta_mol_B.copy(), NA, NA.copy(),
+               meta_mol_B, NA, NA.copy(),
                NA.copy(), NA.copy()]
   top = Topology(force_field=force_field)
   top.molecules = molecules
@@ -187,44 +224,96 @@ def test_distance_restraints_error(test_system, line):
    ;
    [ cylinder ]
    ; resname start stop  inside-out  x  y  z  r   z
-   ALA   2    4  in  5  5  5  5  5
+   ALA   1    4  in  5  5  5  4 4
    """,
    [0, 1],
-   [0, 1, 2, 3]),
+   [0, 1, 2]),
    # test that a different molecule is tagged
    ("""
    [ molecule ]
    BB  2  3
    [ rectangle ]
    ; resname start stop  inside-out  x  y  z a b c
-   ALA   3    6  in  5  5  5  5  5 5
+   ALA   3    6  in  5  5  5  4  4 4
    """,
    [2],
-   [2, 3, 4, 5]),
+   [2, 3, 4]),
    # test nothing is tagged based on the molname
+   # combo with mol-idx; molname must be part of
+   # the system though
    ("""
    [ molecule ]
-   CC 1 6
+   BB 0 1
    [ sphere ]
    ; resname start stop  inside-out  x  y  z r
-   ALA   2    4  in  5  5  5  5
+   ALA   2    4  in  5  5  5 4
    """,
    [],
    []),
    ))
 def test_parser(test_system, lines, tagged_mols, tagged_nodes):
-   lines = textwrap.dedent(lines).splitlines()
-   ff = vermouth.forcefield.ForceField(name='test_ff')
-   top = Topology(ff)
-   polyply.src.build_file_parser.read_build_file(lines,
+    lines = textwrap.dedent(lines).splitlines()
+    polyply.src.build_file_parser.read_build_file(lines,
                                                  test_system.molecules,
-                                                 top)
-   for idx, mol in enumerate(test_system.molecules):
-       for node in mol.nodes:
-           if "restraints" in mol.nodes[node]:
-               assert node in tagged_nodes
-               assert idx in tagged_mols
+                                                 test_system)
+    for idx in tagged_mols:
+        mol = test_system.molecules[idx]
+        restr_nodes = nx.get_node_attributes(mol, "restraints")
+        assert list(restr_nodes.keys()) == tagged_nodes
 
+@pytest.mark.parametrize('lines', (
+   # resname not found
+   """
+   [ molecule ]
+   ; name from to
+   AA    0  2
+   ;
+   [ cylinder ]
+   ; resname start stop  inside-out  x  y  z  r   z
+   ALA   2    4  in  5  5  5  4  4
+   PEG   1    2  in  5  5  5  4  4
+   """,
+   # resids don't match resnames
+   """
+   [ molecule ]
+   BB  2  3
+   [ rectangle ]
+   ; resname start stop  inside-out  x  y  z a b c
+   GLU   3    6  in  5  5  5  4  4 4
+   """,
+   # test nothing is tagged based on the molname
+   """
+   [ molecule ]
+   BB 2 3
+   [ sphere ]
+   ; resname start stop  inside-out  x  y  z r
+   GLU   5    6  in  5  5  5  4
+   """,
+   ))
+def test_parser_warnings(caplog, test_system, lines):
+    lines = textwrap.dedent(lines).splitlines()
+    with caplog.at_level(logging.WARNING):
+        polyply.src.build_file_parser.read_build_file(lines,
+                                                      test_system.molecules,
+                                                      test_system)
+        for record in caplog.records:
+            assert record.levelname == "WARNING"
+            break
+        else:
+            assert False
+
+def test_molname_error(test_system):
+    lines = """
+    [ molecule ]
+    CC 0 1
+    [ sphere ]
+    ALA   0    2  in  5  5  5  4
+    """
+    lines = textwrap.dedent(lines).splitlines()
+    with pytest.raises(IOError):
+        polyply.src.build_file_parser.read_build_file(lines,
+                                                      test_system.molecules,
+                                                      test_system)
 
 @pytest.mark.parametrize('lines, expected', (
    # basic test
@@ -258,13 +347,10 @@ def test_parser(test_system, lines, tagged_mols, tagged_nodes):
    )))
 def test_persistence_parsers(test_system, lines, expected):
    lines = textwrap.dedent(lines).splitlines()
-   ff = vermouth.forcefield.ForceField(name='test_ff')
-   top = Topology(ff)
    polyply.src.build_file_parser.read_build_file(lines,
                                                  test_system.molecules,
-                                                 top)
-   for ref, new in zip(expected, top.persistences):
-        print(ref, new)
+                                                 test_system)
+   for ref, new in zip(expected, test_system.persistences):
         for info_ref, info_new in zip(ref[:-1], new[:-1]):
             assert info_ref == info_new
         assert all(ref[-1] == new[-1])

@@ -51,10 +51,16 @@ class BuildDirector(SectionLineParser):
         tokens = line.split()
         self.current_molname = tokens[0]
         self.current_molidxs = np.arange(float(tokens[1]), float(tokens[2]), 1., dtype=int)
+        # raise error if molname not in system
+        if tokens[0] not in self.topology.mol_idx_by_name:
+            msg = "Molecule with name {name} is not part of the system."
+            raise IOError(msg.format(name=tokens[0]))
+
         for idx in self.current_molidxs:
             if idx not in self.topology.mol_idx_by_name[tokens[0]]:
-                LOGGER.warning("parsing build file: could not find molecule with name {name} and index {index}.",
-                              **{"index": idx, "name": tokens[0]})
+                msg = ("parsing build file: could not find molecule with "
+                       "name {name} and index {index}.")
+                LOGGER.warning(msg, index=idx, name=tokens[0])
 
     @SectionLineParser.section_parser('molecule', 'cylinder', geom_type="cylinder")
     @SectionLineParser.section_parser('molecule', 'sphere', geom_type="sphere")
@@ -207,7 +213,6 @@ class BuildDirector(SectionLineParser):
         if that molecule is mentioned in the build file by name.
         """
         for mol_idx, molecule in enumerate(self.molecules):
-
             if (molecule.mol_name, mol_idx) in self.build_options:
                 for option in self.build_options[(molecule.mol_name, mol_idx)]:
                     self._tag_nodes(molecule, "restraints", option, molecule.mol_name)
@@ -231,17 +236,15 @@ class BuildDirector(SectionLineParser):
                                                 [option['parameters']]
             # broadcast warning if we find the resid but it doesn't match the resname
             elif molecule.nodes[node]["resid"] in resids and not\
-                 molecule.nodes[node]["resname"] == resname:
-                 msg = "parsing build file: could not find resid {resid} with resname {resname} in molecule {molname}."
-                 LOGGER.warning(msg, **{"resid": molecule.nodes[node]["resid"], "resname": resname,
-                                          "molname": molname})
+                molecule.nodes[node]["resname"] == resname:
+                msg = "parsing build file: could not find resid {resid} with resname {resname} in molecule {molname}."
+                LOGGER.warning(msg, resid=molecule.nodes[node]["resid"], resname=resname, molname=molname)
 
             # broadcast warning if we find the resname but it doesn't match the resid
             elif molecule.nodes[node]["resname"] == resname and not\
-                 molecule.nodes[node]["resid"]:
-                 msg = "parsing build file: could not find residue {resname} with resid {resid} in molecule {molname}."
-                 LOGGER.warning(msg, **{"resid": molecule.nodes[node]["resid"], "resname": resname,
-                                        "molname": molname})
+                molecule.nodes[node]["resid"] in resids:
+                msg = "parsing build file: could not find residue {resname} with resids {resids} in molecule {molname}."
+                LOGGER.warning(msg, resids=",".join(map(str, resids)), resname=resname, molname=molname)
 
     @staticmethod
     def _base_parser_geometry(tokens, _type):
@@ -258,7 +261,52 @@ class BuildDirector(SectionLineParser):
 
         parameters.append(_type)
         geometry_def["parameters"] = parameters
+
+        is_good_geometry = _check_geometry_def(geometry_def, _type)
+        if not is_good_geometry:
+            msg = ("Geometry restriction {_type} {resname} {start} {stop} "
+                   "extends beyond definite positive coordinates relative "
+                   "to the center point {x:.3f} {y:.3f} {z:.3f}. Be aware "
+                   "polyply only builds in positive coordinate space.")
+            LOGGER.warning(msg, _type=_type, x=point[0], y=point[1], z=point[2],
+                           resname=tokens[0], start=tokens[1], stop=tokens[2])
         return geometry_def
+
+def _check_geometry_def(geom_def, geom_type):
+    """
+    Raise a warning if the point of reference
+    for the geometry type is too close to the
+    origin.
+
+    Parameters
+    ----------
+    geom_def: dict
+        dict with entries: resname, start, stop, point, parameters
+    geom_type: str
+        one of sphere, cylinder, rectangle
+    """
+    msg = ("Geometry restriction {geom_def} extends beyond definite "
+           "positive coordinates relative to the center point "
+           "{x:.3f} {y:.3f} {z:.3f}. Be aware polyply only builds "
+           "in positive coordinate space.")
+
+    point = geom_def['parameters'][1]
+    if geom_type == "sphere":
+        radius = geom_def['parameters'][2]
+        if any( i >= j for i, j in zip([radius, radius, radius], point)):
+            return False
+
+    if geom_type == "rectangle":
+        a, b, c = geom_def['parameters'][2:5]
+        if any( i >= j for i, j in zip([a, b, c], point)):
+            return False
+
+    if geom_type == "cylinder":
+        r, z = geom_def['parameters'][2:4]
+        if z >= point[2] or any(r >= j for j in point[:2]):
+            return False
+
+    return True
 
 def read_build_file(lines, molecules, topology):
     """
