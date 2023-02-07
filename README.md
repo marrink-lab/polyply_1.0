@@ -4,7 +4,7 @@
 [![Build Status](https://github.com/marrink-lab/polyply_1.0/actions/workflows/python-app.yml/badge.svg)](https://github.com/marrink-lab/polyply_1.0/actions)
 [![PyPI version](https://badge.fury.io/py/polyply.svg)](https://badge.fury.io/py/polyply)
 ![license](https://img.shields.io/github/license/marrink-lab/polyply_1.0)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/marrink-lab/polyply_1.0/Upload%20Python%20Package)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/marrink-lab/polyply_1.0/pypi_deploy.yml)
 [![arXiv](https://img.shields.io/badge/arXiv-2105.05890-b31b1b.svg)](https://arxiv.org/abs/2105.05890)
 [![DOI:10.1038/s41467-021-27627-4](https://zenodo.org/badge/DOI/10.1038/s41467-021-27627-4.svg)](https://doi.org/10.1038/s41467-021-27627-4)
 
@@ -33,11 +33,12 @@ force-field, molecule parameters and this program.
 [Submissions to Martini Polymer Library](https://github.com/marrink-lab/polyply_1.0/wiki/Submit-polymer-parameters)\
 [Tutorial: Martini Polymers](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-martini-polymer-melts)\
 [Tutorial: GROMOS Polymers](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-GROMOS-polymer-melts)\
-[Tutorial: PEGylated lipid bilayers](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-PEGylated-lipid-bilayers)
-
+[Tutorial: PEGylated lipid bilayers](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-PEGylated-lipid-bilayers)\
+[Tutorial: Single-stranded DNA](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-Single-stranded-circular-DNA)
 ## News 
-- (Feb 8) **Featured Research Article in Nature Communcations.** Our article on the polyply software suite is now featured on the [Editors' Highlights](https://www.nature.com/collections/hhfigaahch) for Structural biology, biochemistry and biophysics in Nature Communications. The Editors’ Highlights pages aims to showcase the 50 best papers recently published in an area. The development team is beyond happy to receive this honor.   
-- (May 23) **Fighting Cancer with polyply.** Dane et al. used polyply to setup simulations of vesicles and lipid nanodiscs (LNDs) containing PEGylated lipids, which are used as nanocarriers for cancer therapeutics. They find that LNDs are more effective in delivery likely due to their higher flexibility.  Check it out in [Nature Materials](https://www.nature.com/articles/s41563-022-01251-z). 
+- (Feb 8, 22') **Featured Research Article in Nature Communcations.** Our article on the polyply software suite is now featured on the [Editors' Highlights](https://www.nature.com/collections/hhfigaahch) for Structural biology, biochemistry and biophysics in Nature Communications. The Editors’ Highlights pages aims to showcase the 50 best papers recently published in an area. The development team is beyond happy to receive this honor.   
+- (May 23, 22') **Fighting Cancer with polyply.** Dane et al. used polyply to setup simulations of vesicles and lipid nanodiscs (LNDs) containing PEGylated lipids, which are used as nanocarriers for cancer therapeutics. They find that LNDs are more effective in delivery likely due to their higher flexibility.  Check it out in [Nature Materials](https://www.nature.com/articles/s41563-022-01251-z). 
+- (Jan 18, 23') **Towards whole cell simulations with polyply.** In [a perspective on whole-cell simulations](https://www.frontiersin.org/articles/10.3389/fchem.2023.1106495/full) using the Martini force field, Stevens *et al.* utilize polyply to construct the full 0.5 Mio bp chromosome of the Syn3A minimal cell. This impressive task is a good example of the power of the upcoming DNA implementation into polyply and the role of polyply in the Martini Ecosystem.
 
 ## Contributions & Support
 We are happy to accept submissions of polymer parameters to the polyply library. To submit parameters simply 

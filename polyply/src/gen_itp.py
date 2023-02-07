@@ -122,5 +122,14 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=None, lib=Non
                                             moltype=name, header=header)
     DeferredFileWriter().write()
 
+    # Print molecule Log messages
+    if meta_molecule.molecule.log_entries:
+        print("")
+    for loglevel, entries in meta_molecule.molecule.log_entries.items():
+        for entry, fmt_args in entries.items():
+            for fmt_arg in fmt_args:
+                fmt_arg = {str(k): meta_molecule.molecule.nodes[v] for k, v in fmt_arg.items()}
+                LOGGER.log(loglevel, entry, **fmt_arg, type='model')
+
 # ducktape for renaming the itp tool
 gen_itp = gen_params

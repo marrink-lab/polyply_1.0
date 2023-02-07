@@ -25,4 +25,6 @@ LOGGER.addHandler(COUNTER)
 
 LOGGER = StyleAdapter(LOGGER)
 
-LOGLEVELS = {0: logging.INFO, 1: logging.DEBUG, 2: 5}
+LOGLEVELS = {0: logging.INFO,
+             1: logging.DEBUG,
+             2: 5}
