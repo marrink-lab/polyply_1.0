@@ -81,7 +81,7 @@ PDMS +END
 [ atoms ]
 PDMS {"resname": "PDMS"}
 [ warning ]
-You should patch PDMS with a terminal residue. Use -seq PDMSter:1 PPE:4 PDMSter:1
+You should patch PDMS with a terminal residue. Use -seq PDMSter:1 PDMS:4 PDMSter:1
 [ non-edges ]
 PDMS -PDMS
 PDMS -END
