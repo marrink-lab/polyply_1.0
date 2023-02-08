@@ -1,0 +1,87 @@
+[ citations ]
+Martini3
+polyply
+M3_PDMS
+;
+[ moleculetype ]
+; molname        nrexcl
+PDMS             1
+;
+[ atoms ]
+;  id  type  resnr  residue    atom  cgnr    charge     mass
+    1    DMS      1     PDMS    PDMS   1      0.00000     72.00
+;
+[ link ]
+resname "PDMS"
+[ bonds ]
+;   i     j   funct   length   force.c.
+  PDMS   +PDMS     1    0.448  11500           ; 2
+;
+[ link ]
+resname "PDMS"
+[ angles ]
+;   i     j     k   funct     angle   force.c.
+  PDMS   +PDMS   ++PDMS       1     86     45.89           ; 2
+;
+[ link ]
+resname "PDMS"
+[ dihedrals ]
+;   i     j     k     l   funct     dihedral   force.c.   mult.
+  PDMS   +PDMS   ++PDMS   +++PDMS       1         1.18    1.4       1     ; 2
+;
+[ moleculetype ]
+PDMSter  1
+[ atoms ]
+  1    DMS      1     PDMSter     END   1      0.00000     72.00
+[ info ]
+Parameters for this model are custom and available for download at: https://github.com/marrink-lab/martini-forcefields/blob/main/martini_forcefields/regular/v3.0.0/gmx_files_contributed/DMS_martini3_v1.itp
+
+[ link ]
+resname "PDMSter|PDMS"
+[ bonds ]
+  END    +PDMS       1    0.446  11000     {"group": "END-PDMS"}
+
+[ link ]
+resname "PDMS|PDMSter"
+[ bonds ]
+  PDMS    +END       1    0.446  11000     {"group": "PDMS-END"}  
+
+
+[ link ]
+resname "PDMSter|PDMS"
+[ angles ]
+END   +PDMS   ++PDMS   1     87     78  {"group": "END-PDMS"} 
+
+[ link ]
+resname "PDMS|PDMSter"
+[ angles ]
+PDMS   +PDMS   ++END   1     87     78  {"group": "PDMS-END"} 
+
+
+[ link ]
+resname "PDMSter|PDMS"
+[ dihedrals ]
+END  +PDMS  ++PDMS  +++PDMS  1    1.85    1.2    1 {"group": "END-PDMS"}
+
+[ link ]
+resname "PDMS|PDMSter"
+[ dihedrals ]
+PDMS  +PDMS  ++PDMS  +++END  1    1.85    1.2    1 {"group": "PDMS-END"}
+
+[ link ]
+[ atoms ]
+PDMS {"resname": "PDMS"}
+[ warning ]
+You should patch PDMS with a terminal residue. Use -seq PDMSter:1 PDMS:4 PDMSter:1
+[ non-edges ]
+PDMS +PDMS
+PDMS +END
+
+[ link ]
+[ atoms ]
+PDMS {"resname": "PDMS"}
+[ warning ]
+You should patch PDMS with a terminal residue. Use -seq PDMSter:1 PDMS:4 PDMSter:1
+[ non-edges ]
+PDMS -PDMS
+PDMS -END

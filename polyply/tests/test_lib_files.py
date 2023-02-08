@@ -178,6 +178,7 @@ def _interaction_equal(interaction1, interaction2, inter_type):
      ['2016H66', 'PS'],
      ['gromos53A6', 'P3HT'],
      ['oplsaaLigParGen', 'PEO'],
+     ['martini3', 'PDMS'],
      ['martini3', 'PROT'],
      ['martini3', 'PEO'],
      ['martini3', 'PS'],
