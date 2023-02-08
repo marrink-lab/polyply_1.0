@@ -34,7 +34,7 @@ PDMSter  1
 [ atoms ]
   1    DMS      1     PDMSter     END   1      0.00000     72.00
 [ info ]
-Parameters for this model are custom and available for download here: https://github.com/marrink-lab/martini-forcefields/blob/main/martini_forcefields/regular/v3.0.0/gmx_files_contributed/DMS_martini3_v1.itp
+Parameters for this model are custom and available for download at: https://github.com/marrink-lab/martini-forcefields/blob/main/martini_forcefields/regular/v3.0.0/gmx_files_contributed/DMS_martini3_v1.itp
 
 [ link ]
 resname "PDMSter|PDMS"
