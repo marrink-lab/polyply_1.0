@@ -25,4 +25,4 @@
 |Dextran                        |DEX                      |                                                                       |[martini3](polyply/data/martini3/dextran.martini3.ff) |
 |DNA nucleobases                |Dx, Tx5, Dx3 w/ x=T,G,A,C|[parmbsc1](polyply/data/parmbsc1/dna_final.ff)                         |[martini2](polyply/data/martini2/DNA_M2.ff)           |
 |Aminoacids                     |3 letter code            |                                                                       |[martini3](polyply/data/martini3/aminoacids.ff)       |
-|PDMS                           |DMS                      |                                                                       |[martini3](polyply/data/martini3/PDMS.martini3.ff)
+|Polydimethylsiloxane  |PDMS                   |                                                                       |[martini3](polyply/data/martini3/PDMS.martini3.ff)
