@@ -24,10 +24,10 @@ from .build_file_parser import read_build_file
 from .polyply_parser import read_polyply
 
 LOGGER = StyleAdapter(get_logger(__name__))
-BUILD_FILE_PARSERS = {'bld': read_build_file}
-FORCE_FIELD_PARSERS = {'rtp': read_rtp, 'ff': read_ff, 'itp': read_polyply, 'bib': read_bib}
+BUILD_FILE_PARSERS = {'bld': read_build_file, 'rtp': None, 'ff': None, 'itp': None, 'bib': None}
+FORCE_FIELD_PARSERS = {'rtp': read_rtp, 'ff': read_ff, 'itp': read_polyply, 'bib': read_bib, 'bld': None}
 
-def determine_parser(file_, file_parsers):
+def get_parser(file_, file_parsers):
     """
     check if file can be parsed and
     if possible return the respective parser
@@ -43,8 +43,7 @@ def determine_parser(file_, file_parsers):
     if file_extension not in file_parsers:
         msg = "Cannot parse file file with extension {}".format(file_extension)
         raise IOError(msg)
-    else:
-        return file_parsers[file_extension]
+    return file_parsers[file_extension]
 
 
 def _resolve_lib_paths(lib_names, data_path):
@@ -77,7 +76,7 @@ def read_options_from_files(paths, storage_object, file_parsers):
     ----------
     paths: list[`pathlib.Path`]
            List of provided file paths
-    storage_object: topology or forcefield
+    storage_object: polyply.src.topology.Topology or vermouth.ForceField
     file_parsers: dict
         dictionary of available file parsers
 
@@ -89,9 +88,9 @@ def read_options_from_files(paths, storage_object, file_parsers):
             parser(lines, storage_object)
 
     for path in paths or []:
-        parser = determine_parser(path, file_parsers)
-
-        parse_file(parser, path, storage_object)
+        parser = get_parser(path, file_parsers)
+        if parser:
+            parse_file(parser, path, storage_object)
 
 
 def load_build_files(topology, lib_names, build_file):
@@ -101,10 +100,10 @@ def load_build_files(topology, lib_names, build_file):
     Parameters
     ----------
     topology: :class:`polyply.src.topology`
-    build_file: str
-        List of build files to parse
     lib_names: list[str]
         List of library names for which to load templates
+    build_file: str
+        List of build files to parse
 
     Returns
     -------
