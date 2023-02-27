@@ -31,6 +31,28 @@ ONE_LETTER_RNA = {"A": "A",
                   "G": "G",
                   "T": "U"}
 
+ONE_LETTER_AA = {"G": "GLY",
+                 "A": "ALA",
+                 "V": "VAL",
+                 "C": "CYS",
+                 "P": "PRO",
+                 "L": "LEU",
+                 "I": "ILE",
+                 "M": "MET",
+                 "W": "TRP",
+                 "F": "PHE",
+                 "S": "SER",
+                 "T": "THR",
+                 "Y": "TYR",
+                 "N": "ASN",
+                 "Q": "GLN",
+                 "K": "LYS",
+                 "R": "ARG",
+                 "H": "HIS",
+                 "D": "ASP",
+                 "E": "GLU",
+                 }
+
 class FileFormatError(Exception):
     """Raised when a parser fails due to invalid file format."""
 
@@ -79,7 +101,7 @@ def _parse_plain_delimited(filepath, delimiter=" "):
 
 parse_txt = _parse_plain_delimited
 
-def _parse_plain(lines, DNA=False, RNA=False):
+def _parse_plain(lines, DNA=False, RNA=False, AA=False):
     """
     Parse a plain one letter sequence block either for DNA, RNA,
     or amino-acids. Lines can be a list of strings or a string.
@@ -118,6 +140,8 @@ def _parse_plain(lines, DNA=False, RNA=False):
                 resname = ONE_LETTER_DNA[token]
             elif token in ONE_LETTER_RNA and RNA:
                 resname = ONE_LETTER_RNA[token]
+            elif token in ONE_LETTER_AA and AA:
+                resname = ONE_LETTER_AA[token]
             else:
                 msg = f"Cannot find one letter residue match for {token}"
                 raise IOError(msg)
@@ -125,8 +149,9 @@ def _parse_plain(lines, DNA=False, RNA=False):
             monomers.append(resname)
 
     # make sure to set the defaults for the DNA and RNA terminals
-    monomers[0] = monomers[0] + "5"
-    monomers[-1] = monomers[-1] + "3"
+    if RNA or DNA:
+        monomers[0] = monomers[0] + "5"
+        monomers[-1] = monomers[-1] + "3"
 
     seq_graph =  _monomers_to_linear_nx_graph(monomers)
     return seq_graph
@@ -156,20 +181,25 @@ def _identify_nucleotypes(comments):
     """
     RNA = False
     DNA = False
+    AA = False
+    print(comments)
     for comment in comments:
         if "DNA" in comment:
             DNA = True
 
         if "RNA" in comment:
             RNA = True
+            
+        if "PROTEIN" in comment:
+            AA = True
 
     if RNA and DNA:
         raise FileFormatError("Found both RNA and DNA keyword in comment. Choose one.")
 
-    if not RNA and not DNA:
+    if not RNA and not DNA and not AA:
         raise FileFormatError("Cannot identify if sequence is RNA or DNA from comment.")
 
-    return DNA, RNA
+    return DNA, RNA, AA
 
 def parse_ig(filepath):
     """
@@ -265,7 +295,7 @@ def parse_fasta(filepath):
 
     clean_lines = []
     # first line must be a comment line
-    DNA, RNA =_identify_nucleotypes([lines[0]])
+    DNA, RNA, AA =_identify_nucleotypes([lines[0]])
 
     for line in lines[1:]:
         if '>' in line:
@@ -274,7 +304,7 @@ def parse_fasta(filepath):
 
         clean_lines.append(line)
 
-    seq_graph = _parse_plain(clean_lines, RNA=RNA, DNA=DNA)
+    seq_graph = _parse_plain(clean_lines, RNA=RNA, DNA=DNA, AA=AA)
     return seq_graph
 
 def parse_json(filepath):
