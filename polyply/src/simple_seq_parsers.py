@@ -250,8 +250,8 @@ def parse_ig(filepath):
         msg = "The sequence is not complete, it does not end with 1 or 2."
         raise FileFormatError(msg)
 
-    DNA, RNA = _identify_nucleotypes(comments)
-    seq_graph = _parse_plain(clean_lines[1:], DNA=DNA, RNA=RNA)
+    DNA, RNA, AA = _identify_nucleotypes(comments)
+    seq_graph = _parse_plain(clean_lines[1:], DNA=DNA, RNA=RNA, AA=AA)
 
     if ter_char == '2':
         nnodes = len(seq_graph.nodes)
