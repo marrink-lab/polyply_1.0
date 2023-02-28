@@ -22,3 +22,6 @@ tests/test_data/gen_seq/output/*.itp
 doc/build
 doc/source/api
 doc/source/.doctrees
+
+.ipynb_checkpoints/**
+.pylintrc

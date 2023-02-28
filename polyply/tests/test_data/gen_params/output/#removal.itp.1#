@@ -1,4 +1,4 @@
-; /home/sang/miniconda3/bin/pytest
+; /Users/fabian/ProgramDev/dev_env/bin/pytest test_gen_params.py
 
 ; Please cite the following papers:
 

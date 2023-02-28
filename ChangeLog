@@ -1,0 +1,884 @@
+CHANGES
+=======
+
+* added PCBM-fullerene generation code with the polyply branch
+* added PCBM-fullerene generation code with the polyply branch
+* add comment and change if/else order when expanding multiple interactions
+* removed superfluous loop
+* fix issue in cellulose bond; bond was made between A +B instead of B +A
+* add test for CEL
+* add test for CEL
+* add preprint parameters for CEL and DEX
+* add preprint parameters for CEL and DEX
+* remove coverage file
+* make name and output file optional in gen\_params function
+* make name and output file optional
+* allow multiple type directives
+* add test multiple dihedrals
+* proper expansion of diehdral types from topology
+* Fix typo in LIBRARY.md (links to martini3 PTMA and dextran)
+* Add HEA, PAM, PMAM (gromos2016H66) to LIBRARY.md; done
+* Add more 2016H66 to LIBRARY.md
+* Add all the M3 models to LIBRARY.md
+* Add all the M2 models to the LIBRARY.md file
+* Add link to LIBRARY.md in main README.md
+* All the models as in Supp. Table 1 of the NatCommun polyply paper
+* Add column with full polymer name to LIBRARY table
+* Add draft of library table (summarizing available models)
+* Add test for PTMA M3 model (part 2/2)
+* Add test for PTMA M3 model
+* Name in citations.bib need to be {Surname, Last Name}
+* Add PTMA CG M3 model to polyply library [arXiv:2209.02072]
+* Update polyply/src/topology.py
+* Update topology.py
+* Update topology.py
+* Update topology.py
+* Update polyply/src/topology.py
+* sort graph nodes of meta-mol node attribute by index when reading positions
+* fix bug in topology reading and add test
+* fix bug in topology reading
+* address comments
+* Update polyply/src/apply\_links.py
+* Update polyply/src/apply\_links.py
+* Update .github/ISSUE\_TEMPLATE/parameter-submission.md
+* Update issue templates
+* Update python-app.yml
+* add development branch to CI
+* Update .github/CONTRIBUTING.md
+* Update .github/CONTRIBUTING.md
+* Update .github/CONTRIBUTING.md
+* Update .github/CONTRIBUTING.md
+* Update .github/CONTRIBUTING.md
+* Update issue templates
+* Create CONTRIBUTING.md
+* add TXT FASTA and IG format to gen\_params help text
+* count num fragments instead of getting it from length of list
+* more efficient parameter removal
+* add integral test that nodes can be scheduled for removal
+* add test that nodes can be scheduled for removal
+* fix bug and implement option for removing nodes
+* make sure self-links are applied
+* make volume code cleaner to read by removing continue statement
+* add test file with missing cog coords
+* raise warning if meta-mol coordinates are incomplete
+* fix typos
+* add test for two single residue mol multiblocks
+* remove prints
+* fix multi-block for single residue
+* add error message details and test for when multiblock doesn't match resgraph sequence
+* fix multiblock input
+* add tests for template and volume parsing
+* debug build file parser
+* fix generate templates
+* take care to rename self.\_gen\_temp to self.get\_temp
+* add volumes as class attribute to topology
+* update and clean generate templates
+* compute volume upon parsing
+* update doc-string and clean compute volume function
+* fix typo
+* cosmetic change to if elif else
+* fix bug in gen\_coords, add test for backmap only gen\_coords
+* fix bug in gen\_coords, add infrastruct for gen\_coord testing
+* add more clear error message
+* only have bonds and constraints make edges
+* Fix 242
+* fix type in test
+* address comment
+* address comments + map template from COG
+* handle already present volumes/templates
+* linting and implement check for defined templates/volumes
+* add parsing of volumes
+* add parsing of templates
+* add backmap key in all relevant places
+* use backmap attribute instead of build in backmap processor
+* add test for only meta-molecule coordinates
+* add test for only meta-molecule coordinates
+* allow parsing of meta\_molecule coordinates in gen\_coords and bin/polyply
+* allow parsing of meta\_molecule coordinates
+* update topology tests
+* Update polyply/src/gen\_seq.py
+* Update polyply/src/gen\_coords.py
+* Update polyply/src/gen\_coords.py
+* Update polyply/src/gen\_coords.py
+* Update polyply/src/gen\_coords.py
+* Update polyply/src/gen\_coords.py
+* Update polyply/src/gen\_coords.py
+* Update polyply/src/gen\_coords.py
+* Update polyply/src/gen\_coords.py
+* Update polyply/src/gen\_seq.py
+* Update polyply/src/gen\_itp.py
+* Update README.md
+* Update polyply/src/gen\_seq.py
+* Update polyply/src/gen\_seq.py
+* Update polyply/src/gen\_itp.py
+* Update polyply/src/gen\_coords.py
+* Update polyply/src/gen\_coords.py
+* Update polyply/src/gen\_coords.py
+* Update bin/polyply
+* change argument type for grid spacing from int to float
+* fix variable names in gen\_coords
+* update seq and param tests
+* change argument destination macros to macro\_strings to avoid conflict in gen\_seq
+* fix bugs in top-level programs
+* parse args as func variables not class attributes to gen\_coords
+* parse args as func variables not class attributes to gen\_seq
+* parse args as func variables not class attributes to gen\_itp
+* improve test gen\_params for missing edges
+* Update polyply/src/graph\_utils.py
+* remove missing\_edges from gen\_params; update test for missing edges
+* add test for missing edges
+* move missing links to graph utils
+* Add files via upload
+* Add files via upload
+* Add files via upload
+* Add files via upload
+* Add files via upload
+* Add files via upload
+* Update PPE.itp
+* Update citations.bib
+* Add files via upload
+* Delete PPE.martini3.ff
+* Delete PPEter.martini3.ff
+* Delete PPEinit.martini3.ff
+* Update PPE.itp
+* Delete PPE\_20mers.itp
+* Add files via upload
+* Add files via upload
+* Update command
+* Add files via upload
+* Update test\_lib\_files.py
+* Update test\_lib\_files.py
+* Add files via upload
+* Create command
+* Delete test2
+* Add files via upload
+* Delete test
+* Delete PPE\_20mers.itp
+* Create test2
+* Add files via upload
+* Create test
+* Update citations.bib
+* Update PPE.martini3.ff
+* Update citations.bib
+* Update citations.bib
+* Add files via upload
+* Add files via upload
+* Add files via upload
+* Small improv error message top\_parser
+* FixType2016H66
+* Update vermouth dependency
+* fix typo
+* add test for logger warning
+* use read\_itp instead of read\_polyply; difference is edges are now only made from bonds, angles, constraints
+* use read\_itp instead of read\_polyply; difference is edges are now only made from bonds, angles, constraints
+* add doc\_strings
+* better record of missing links
+* add comments
+* test logging of warning
+* fix branched test
+* fix persistence error message
+* use real path not edge-list for making end-to-end dsitances
+* update pair/exclusion in test for PS
+* update pair/exclusion in block PS
+* change resnames to macros in links for better control
+* remove incorrect dihedrals from head-tail-head PEO polyvinyl arrangement
+* add pairs of CH3 to PMMA and PMAM
+* add mPEG
+* Update persistence.py
+* Update persistence.py
+* update links
+* add PMAM; fix pair in PMMA
+* look at actual persistence length distribution before raising error/warning
+* add ig test case which fails
+* update json doc-strings
+* update doc-strings
+* add test for failure to read ig due to missing terminal digit
+* Update meta\_molecule.py
+* Delete test.csv
+* Update test\_simple\_seq\_parsers.py
+* Update meta\_molecule.py
+* drop csv support
+* fix doc-string point
+* add test for unkown file extension error
+* change file\_handle to file\_path as variable name in parse\_sequence\_files
+* fix termini also for RNA
+* change error message to FileFormatError instead if IOError
+* add doc-strings; and raise error when file-format is unkown
+* add test covering failure when default resids cannot be assigned
+* address style, and lint comments; clear up ig function
+* Update polyply/src/simple\_seq\_parsers.py
+* Update polyply/src/simple\_seq\_parsers.py
+* Update polyply/src/simple\_seq\_parsers.py
+* Update polyply/src/simple\_seq\_parsers.py
+* Update polyply/src/meta\_molecule.py
+* add charges to DT3
+* Update polyply/src/meta\_molecule.py
+* fix the linktype circle attribute
+* update doc-strings
+* fix178
+* add second sequence to trigger warning
+* merge upstream
+* raise warnings through Logger
+* add test files for simple sequence file formats
+* add test for RNA
+* remove fasta ig support of AAs
+* debug ig for circle format; add test ig circle
+* rename test to prevent overwriting
+* fix leftover commenting
+* fix test; improve error message
+* add tests for simple-seq parsers; fix bug in ig format
+* fix ig format; patch DNA terminii; add docstring to DNARNA identifier
+* include edge parsing into the json parser
+* incooperate parsers with main MetaMolecule workflow creating a more general constructor method
+* reorganize meta\_molecule constructor
+* init draft for fasta, ig, csv, txt, plain
+* add DNA citations
+* test remove comment
+* add version and put comment
+* reduce print
+* add backbone side chain angles; update exclusions
+* fix test
+* wMerge branch 'master' into news\_section
+* change # as polyply is already taken
+* change branched test
+* add library test for M2 ssDNA
+* Correct use of pytest.approx
+* Remove unneeded (invalid?) staticmethod decorators
+* Add News section
+* fix year in polyply citation
+* Update README.md
+* update polyply citation
+* update M3 citation
+* update polyply citations
+* Update README.md
+* add polyply citations
+* update README
+* add martini3 citation
+* fix #148
+* add m3beta citation
+* add Horta citation
+* Update README.md
+* Fix small typo (vinly --> vinyl); cosmetic
+* change open to deffered\_open in gen\_params
+* fix change in deferred file writing
+* Update run\_pylint.py
+* print from run\_pyling
+* Patch PSS files
+* skip  unused molecules in residue check
+* disable unfixable pylint warnings
+* some lint in bin/polyply
+* some lint
+* remove tutorial files
+* remove unused imports
+* remove print
+* add molnames
+* add logging to source file
+* fix bug in logging test; add additional test for IOerror in restraints
+* remove logging from rw, add test for restraint error in parser; fix test 1
+* logging tests for build file
+* add warnings and Errors to build file parser
+* raise Error if block is not part of the library
+* remove atype check as this will mess with the PEO of UA FFs
+* implement residue check test
+* implement residue check
+* relax restraint check; allow for branched molecules in principle
+* Bug fix regarding the use of ligand annotator
+* fix test
+* fix docstrings and nitpick
+* fix issue 160
+* address comments
+* add additional dihedrals to test-file
+* update test file
+* remove print
+* update dih function; improve template gen
+* use double dih
+* simplify compute average step length
+* implement tolerance for cycles
+* implement tolerance for distance restraints
+* completly remove pos-res
+* add error for non-linear cyclic molecules
+* deal with cycles; move to gen\_coords
+* deal with cycles bug-fix
+* deal with cycles
+* use bfs-tree path in random-walk
+* fix error raising in restraint
+* move \_find\_starting\_node
+* adjust persistence tests
+* adjust restraint tests
+* use bfs tree with restraints
+* add citations
+* adjust DNA test
+* rename DNA ff; update links for cycle; add chirality defs
+* light linting in polyply
+* light linting
+* adjust tests
+* add error when multiresidue block is not already in meta-molecule
+* add defined path to tests for restraints
+* add defined path to persistence module
+* typo fix in parser
+* set restraints along a defined path
+* don't compute distances on infinities
+* some linting
+* fix docstrings; address comments batch3
+* add some warnings for persistence
+* Fix multiple blocks from itp
+* test if error is raised
+* fix return in set\_restraints
+* use topology.molecules for restraints and build systeme
+* raise warnings and errors
+* fix minor comments
+* store restraints with topology; tests for restraints; bug fixes
+* adjust tests
+* refactor apply\_restraints part3
+* refactor apply\_restraints part2
+* refactor apply\_restraints
+* fix nameing error
+* implement other nucleobases
+* implement DT
+* change relative resid
+* test for milestone check; remove print from test presistence
+* tests for restraints and lp sampling; bug fixes
+* update test build file parser
+* remove needless statement
+* some debugging
+* implement presistence sampling part II
+* implement presistence sampling
+* refactoring restraint code
+* uncomment tests
+* clean up dihedral pattern matching; add more patterns
+* add VS1 to top-parser method dict
+* init draft
+* add amber patterns to bonded interactions
+* update top-parser
+* Add test for OPLS PEO
+* fix one incorrect dihedral in end-residues
+* add amber DNA test
+* add amber DNA ff-file
+* only check mass if reference file contains it
+* make library test stricter for dihedrals
+* clean comments for angle links
+* correct mass for P3HT in martini3
+* add format specifier to disconnected molecule logging warning
+* include chirality/links for HEA
+* fix charge assignment for neutral and charged AAs
+* fix tests apply links for patterns and non-edges
+* address comments
+* add edge to VS to remove warning
+* add tests for patterns and non-edges
+* add data files for protein test
+* implement patterns and M3 protein test
+* implement M3 disordered proteins
+* implement molmeta keyword and non-edge matching
+* support single residues
+* add parsing for non-edge directive
+* remove PPO from resnames in links
+* clean chiral-links
+* add correct masses to vinyl ether links
+* add correct masses to PEO
+* add pairs for PAM equilibriation
+* clean
+* Add badges
+* Address comments
+* Make the readme more streamline
+* Fix vermouth dependency error
+* add masses to library test
+* add masses to it
+* fix mass problem
+* fix mass problem; add PAM
+* fix wrong comment
+* add PAM to polyvinyls
+* fix mass problem polyethers; implement PPO
+* Update pypi\_deploy.yml
+* some light lint on random\_lin\_comb
+* make central repro for M3 parameters
+* rename test\_itp\_files
+* rename gen\_itp to gen\_params in library test
+* rename gen\_itp data folder
+* remove backed up files
+* frename test\_gen\_itp to test\_gen\_params
+* change gen\_itp to gen\_params
+* add all tutorial files
+* remove assert True
+* fix bug; and check meta value of interactions
+* add ifdef TI statement
+* add Dextran test to library check
+* add Dextran to m3 polymers
+* add links for PEGylated lipids and PS PEO
+* Update P3HT.itp for test (added the FLEXIBLE ifs)
+* Add ifdef FLEXIBLE to M3 P3HT
+* add PVA
+* implement PSS assuming bond-lengths are not affected too much by COG mapping
+* add parameters for PMMA
+* Update command for gromos53A6 P3HT test
+* Add test for gromos53A6 P3HT
+* Rename polyply/data folder to gromos53A6
+* Rename oplsaa LigParGen data folder (in line with newer data folder names)
+* Fix P3HT.martini3.ff (now everything works) and add reference P3HT.itp for test
+* reorganize angles in PE
+* update tests PS
+* add FLEXIBLE option for PS
+* add test M3 PE
+* implement M3 PE
+* HEA input
+* Fix centeral-->central typo
+* Convert P3HT.martini3.itp to P3HT.martini3.ff
+* Create PMA.martini3.ff
+* Update polyply
+* Update polyply
+* Add missing column to atom\_types and LigParGen citations
+* Update fudge factors
+* Add OPLS-AA LigParGen PEO to the library (ff, links, etc.)
+* Update polyply/src/meta\_molecule.py
+* remove leftover files
+* move lib tests from gen\_itp to libtest
+* fix lib-file test; automatically give resids to json graphs; test, error, and warning when resids not provided
+* complete merge master
+* small nit-pick
+* add M3 P3HT; add tests for M3
+* add M3 polymers; rename martini libraries
+* reduce gromos to minimum
+* Add decorator install criterion
+* address comments
+* Add {version: x} to AA P3HT links.ff for multiple multiplicities
+* make WEIGHTS dict
+* comments; clean up and extend map to molecule tests
+* Switch to .ff format for P3HT G53A6; add citations
+* Add DOIs to Martini 2 citations and fix typo in gen\_itp.py
+* c
+* complete merge
+* remove conflict
+* mix up node\_keys as additional check
+* remove dependancy of links on node keys
+* put multiresidue test back in
+* fix comments
+* Update polyply/src/gen\_itp.py
+* add warning for disconnected molecules
+* implement acrylates; update library; more tests
+* address comments
+* implementd stricter success criterion on the minimizer
+* update doc-string
+* adjust test input files
+* fix bugs and implement new mapping in workflow
+* improve map to molecule to recognize proteins etc. draft
+* fix test
+* add logger to gen\_itp
+* add citation infrastructure
+* add test cases for AA-charmm; flat-dih
+* increase angle/dih tolerance to 5
+* update doc-string
+* update compute\_dihedral function
+* adjust comment
+* address comments and add test
+* Rename H termini residues as Hter (instead of P3HT)
+* add test-files for GROMOS
+* add check for number of terms must be equal
+* add missing angle in CH3ter
+* update GROMOS library
+* infrastructure for testing library files
+* add error messages
+* remove proper dihedrals from structure generation
+* Implement AA P3HT (the first GROMOS 53A6 polymer)
+* merge maste
+* print gen\_itp command to file
+* typo
+* remove nproc form polyply
+* small nitpicks
+* fix edge making in links
+* fix/107
+* address comments on docstring
+* change make edges to positive criterion
+* fix logger in generate templates
+* remove processor arg from backmap call
+* choose random initial rotation for molecules
+* Small fixes to the main README file
+* Add test for PEO-PE block copolymer generation
+* Add one more link to allow building of PEO-PE block copolymers
+* address comments
+* change summation in norm\_matrix
+* rebuilt tree once when positions are removed
+* remove n-proc from test of backmapping
+* address simple comments
+* subclass ff-parser to parse edge attribtues
+* remove crude timing feature
+* use edge attributes in applying links
+* address comments
+* rebuild tree instead of looping over
+* Update pyproject.toml
+* implement Logger
+* Fix deploy
+* Update setup.py
+* delete version
+* Update setup.py
+* Fix version in metadata
+* Update pypi\_deploy.yml
+* fix deploy to run with new release
+* Update actions
+* Update pypi\_deploy.yml
+* Deploy workflow
+* lint only with one python version
+* add pylint
+* Update python-app.yml
+* Update python-app.yml
+* GH actions for testing
+* make 1level shallow copy of each molecule in system; max coords 12Mio
+* test for gen\_seq
+* get rid of need to copy nb\_matrix
+* adjust naming for PC/PE lipid head group
+* small bugs
+* testing for PEGylated lipids; PEO in martini2
+* remove memory trakcing
+* fast, linear scaleing and accurate backmapping
+* keep dihedrals from making edges
+* temp commit for rudimentary monitoring
+* much faster backmapping algorithm
+* add find edges from residue graph method
+* add new tags argument in test
+* fix bug in gen\_seq
+* remove topology attribute from molecule and only store neccessary information
+* linear scaling backmap
+* fast backmap
+* infra structure for chirality
+* add link which doesn't apply
+* fix logic
+* filter links by resname before using graph matching
+* fix splitting function; properly generates new resids
+* add new restricted scope token
+* add new token and update pypi ref
+* address comment
+* Update README.md
+* Update Readme for first release
+* replace logging in \_\_init\_\_ by print for the moment
+* introduce vermouth version; delete numba requirement
+* comment; make density and box argument required but mutually exclusive
+* set cut-off dynamically
+* more tests; build file parser
+* complete test
+* add pypi test release feature
+* line linting
+* address final comments; in lieu of missing logger clean up printing
+* address final comments
+* merge master
+* address comments
+* last comments
+* adjust rewind function
+* remove hard-wall check
+* put treshold in compute volume
+* address old test comments
+* address old rw comments
+* make numba optional everywhere; import from \_\_init\_\_
+* old comments and lint
+* lint and comments topology gen\_coords
+* lint random-walk; comments; test for graph-utils
+* lint polyply exe
+* address comments; new rw push option
+* address comments; more testing
+* fix meta\_mol expansion; add check for branching
+* fix meta\_mol expansion; add check for branching
+* address more comments
+* set build attribute by default; migrate check to helper function
+* redo split molecule; delte copy method
+* tests for gen\_coords
+* small fix; reduce gen\_coords
+* address comments re. nonbond\_engine
+* rename nonbond\_matrix to nonbond\_engine
+* rework and test build system
+* expose fudge factor for backmapping
+* expose rewind number
+* complete merge master
+* more tests and address comments
+* test for nb engine
+* test reverse link
+* minor linting
+* sane way of adding edges
+* more doc-strings and comment
+* fix small bug in VS handeling when generating bonded interactions
+* address comments
+* add tqdm package to install requirements tests
+* add tqdm package to install requirements
+* move neighbourhood to graph utils
+* rename res-fragment attribute in meta\_molecule
+* graph-matcher based apply links
+* fix bug in polyply parser; now links get edges
+* make isomorphism based link matching
+* only update interactions after we have found all replaced ones
+* make apply links much faster by only searching atoms in residues
+* create new MetaMolecules when parsing top; this is more memory efficent than a true deep-copy
+* add progress bar to links processor
+* address comments
+* comments and higher code-cov
+* fix comment
+* inital tests for system builder
+* make numba compatible with codecov LJforce
+* make numba compatible with codecov
+* tests for build file parser
+* remove prints and add comments
+* testing for annotate ligands and copy for metamol
+* more testing for random walk
+* adjust test for minimzer
+* add numba to install requirements
+* deep copy of meta-molecule
+* rewrite and testing of annotate ligands
+* exclude not defined atomtype tokens from typing
+* add martini amber and charmm tests for top-parser
+* test dir for files related to system builder
+* start for testing system builder
+* add the topology as argument to gentemplate processor
+* type the tests in linalg as floats so numba works
+* add nproc argument to backmapping
+* updated randomwalk geometrical constraints
+* tests for random walk processor
+* add magic sclaing for backmapping
+* parallel split residues
+* store command
+* geometrical restriction also for starting nodes
+* numba linalg; improved template generation for AA
+* backmap parallel option exposed to CLI
+* fix exclusions
+* backmap parallel
+* use set of trees instead of single tree; also numba improve nonbonded
+* numba and set cKDTree to unbalanced for speed
+* set proper defaults for start option
+* implement PBC for RW
+* implement build file with geometrical constraints and cylinder and sphere
+* implement build file with geometrical constraints
+* parser for build file
+* have start option; fix bug in rewind
+* fix line-breaks in test\_topology
+* change minimizer to take inter\_types; swithc of printing in random walk
+* test skipping of directives for real and make sure something is actually parsed
+* adjust parsing of atomtypes according to comment; add test for fail
+* add comment and lint
+* add exclusions for nodes that have been tagged with exclude option
+* enable merge of blocks with different nrecl
+* split syntax
+* first draft for ligand placement
+* interpret OPLS bond-types accurately
+* parse complete atomtype directive
+* add split option to structure builder
+* test for skip star comments in topology file
+* skip star comments in topology file
+* add more tests for replace; address comments
+* fix exclude for molecules with no positions
+* implement exclude option to system building
+* find proper starting node in random walk when positions are present
+* implement build res for membrane complition
+* add rewind option
+* progress bar and implement rectangular box
+* implement rectangular box
+* exclude particles from volume calculation when exactly in center
+* expose variables of structure building to CLI
+* test for skip directives
+* skip gen-born directive
+* add test for raising error when no bondedtype can be matched
+* add virtual\_sitesn to be excluded when doing gne\_bonded; remove prints
+* exclude files which are not defined
+* some more testing for generation of bonded pairs
+* implement generic dihedraltypes
+* generate bonded interactions; this makes charmm topologies work
+* keep pairs and exclusions from making edges
+* part2 of add push option
+* add push option
+* do not random-walk molecules that are complete
+* fix multi component systems
+* merge master
+* address last comments
+* address comments and lint
+* address comments
+* Update polyply/tests/test\_optimize\_geometry.py
+* small bug fixes
+* Update polyply/src/backmap.py
+* Update polyply/src/backmap.py
+* Update polyply/src/topology.py
+* adopt random-walk and built-system
+* adopt random walk to work with nonbondmatrix object
+* store all information for nonbonded interaction handling in single object called NonBondInteractionMatrix
+* init draft fast method
+* init-draft
+* resolve conflict from merge
+* adjust tolarance
+* cleaner logic for finding reference atoms and tests
+* add tests for geometry optimizaer
+* reset all VS after optimization; fixes compliance with scipy 1.5.x
+* use deferred file-writer
+* update tests
+* remove ill conversion of node to resid
+* update docstring
+* expose max\_opt flag for generating template part2
+* expose max\_opt flag for generating template
+* comments and linitng
+* use deferred file-writer
+* remove tqdm
+* fix CLI
+* Update polyply/src/generate\_templates.py
+* Update polyply/src/backmap.py
+* Update polyply/src/backmap.py
+* adjust tests
+* set build attribute at metamol level; zero resids
+* make backmapping residue based and more efficient
+* add virtual sites for edges
+* add residue based building
+* add virtual-sites3/2/3 for edge building
+* fix expand init coords for real
+* fix expand init coords
+* fix test random walk; fix doc-string
+* only generate template once per residue
+* improve initial guess of template
+* take restarting into account
+* introduce fudge factor
+* orient templates incl. AA prev
+* actually fix all merge remains
+* test more than one molecule in pdb
+* add appropiate test
+* fix reading of complete coordinate files and pdb reading of multiple molecules
+* use single random seed; linting; strip edges correctly
+* address comments
+* add appropiate test
+* fix reading of complete coordinate files and pdb reading of multiple molecules
+* update polyply
+* add modifications for termini
+* cleaning of gen\_seq
+* cleaning of bin/polyply
+* improve the sequence generator
+* add correct reference file
+* update some arguments in bin
+* split up gen\_seq; add more unit tests
+* add test for random polymers
+* some test data for the sequence generator
+* small edit to meta\_molecule
+* daft for tests
+* add sequence generation tool
+* input files for M2 PEGylated lipids and OHTer or PEO residue
+* lint; remove except
+* add replace syntax to links
+* Fix few typos in README.md
+* fix key error in topology preprocess
+* reduce step-length to 1.1 of rvdw
+* fix calculation of radius of gyration
+* fix conversion of C6/C12 to sigma epsilon and add test
+* Fix identical error in tests
+* Fix multi-residue detection in map\_to\_molecule
+* Add nargs='+' to -seq flag for multi-part polymers
+* Typo and small addition
+* add data files
+* Update README.md
+* Update README.md
+* updateminimal README
+* install vermouth for pylint test
+* exclude tests from pylint; lower pylint on score to 8
+* remove doc building form CI for the moment
+* add docs requirements
+* remove python3.5-dev
+* remove python3.5 and remove ordering issue in test\_links
+* address comments
+* add test data variable
+* install vermouth develop for testing; update setup.cfg and requirements
+* add vermouth to requirements for tests
+* setup everything fir CI and pbr
+* edit setup files to work with pbr
+* make backmapping and extract\_block dependent on atom-name instead of node-key, more tests
+* remove links form replace defines
+* address some comments
+* update setup.py
+* some linting
+* use np.average in vs builder
+* introduce explicit preprocess function to topology; raise IOError when reading Buckingham potential
+* reanming to snake-case; comments on unitsphere
+* test multiple defines in single interaction
+* raise Error if molecule or residue is disconnected
+* fix counting of atoms in backmapping
+* last comments
+* fix backmap and tests
+* add license and fix order issue in backmap
+* add license
+* small bug fixes; P3HT lysoPEG PMMA work
+* implements GROMACS VS
+* move replace\_defines to topology parser
+* replace combination rule in random-walk with the one in topology
+* merge master
+* adding doc-string for all structure related functions
+* restart minimizer upon failed optimization
+* address comments
+* implement gen-pairs, set default nb to LJ sig-eps, some comments
+* merge master
+* remove sorting of edges
+* fix ordering
+* update exec
+* add newline
+* liniting of tests
+* address comments
+* add License
+* PEP8
+* address comments
+* address comments
+* remove advanced links
+* lint test
+* reintorduce file lost in merge
+* merge master
+* implement #else statements
+* unmerge
+* fix issues in readme
+* Update README.md
+* Update README.md
+* add License text
+* Add LICENSE to polyply
+* initial README
+* implement fix for graph matching at res level
+* more tests for top-parser
+* comments linalg
+* comments topology
+* comments top\_parser/polyply\_parser/polyply/meta\_mol
+* merge upstream; enforce sorting of json graphs
+* enforce rigorous sorting when reading graphs from json
+* Update meta\_molecule.py
+* fix ordering issue
+* structure generator
+* updating gitignore
+* updating gitignore
+* some cleaning of tests; tests for topology
+* testing for topology parser
+* testing for load\_library
+* reorder parser infrastructure
+* new constructor meta\_molecule.py
+* add new arguments to polyply exec
+* fix comments
+* fix multi-residue molecule
+* change library infr.-struct
+* fix library import
+* some cleaning
+* fix making residues up reading ppy files
+* fix comments; slimmer block-to-res-graph method
+* new ff loader
+* fix #ifdef in this branch
+* small fixs
+* reorganzie filegroup
+* add itp parser for meta\_molecule
+* graph from itp file for metamol
+* exclusive arguments -seq -seqf
+* fix incorrecct ref itp file
+* some linting on tests
+* fix review comments
+* review changes & lyinting of test
+* improved multi exe
+* some linting
+* fix: vermouth order taken correctly into account
+* refactoring of apply links
+* move list-blocks and list-ffs to toplevel of parser
+* use sub-commands in executable and write integral tests for itp generator
+* Review of apply\_links
+* convert executable into subcommands
+* remove pychache
+* remove html\_cov and add to gitignore
+* final commit before pushing to GH
+* some cleaninng and travis, codecov etc
+* some cleaninng
+* treat mutliresidue as expected
+* add gitignore
+* all basic tests covered
+* secondd complete polyply run
+* first complete polyply run
+* fix on apply links
+* refactor and apply links
+* apply link processor that replaces DoLinks from vermouth
+* meta\_molecule tests, json creator
+* parser and meta\_molecule fixs
+* fully working initial draft for single molecule
