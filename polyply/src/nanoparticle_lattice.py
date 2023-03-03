@@ -1,23 +1,40 @@
-# testing out dataclasse
-from dataclasses import dataclass
+import collections
+import copy
+import itertools
+import logging  # implement logging parts here
+
+from pprint import pprint
+from typing import Any, Optional
+import textwrap
 
 import networkx as nx
 import numpy as np
 import vermouth
-from scipy.spatial import distance
-
-import polyply.src.meta_molecule
-from polyply.src.generate_templates import GenerateTemplates
-from polyply.src.processor import Processor
-from polyply.src.topology import Topology
-from polyply.src.load_library import load_library
-
 import vermouth.forcefield
 import vermouth.molecule
+from pydantic import BaseModel, validator
+from scipy.spatial import distance
+from vermouth.gmx import gro  # gro library to output the file as a gro file
 
-# import textwrap
-# from pathlib import Path
+from polyply.src.generate_templates import (
+    _expand_inital_coords,
+    _relabel_interaction_atoms,
+    find_atoms,
+    replace_defined_interaction,
+    # map_from_CoG,
+    # compute_volume,
+    # extract_block,
+    # GenerateTemplates,
+    # find_interaction_involving,
+)
+import polyply.src.meta_molecule
+from polyply.src.load_library import load_library
+from vermouth.gmx.itp import write_molecule_itp
 
+from polyply.src.meta_molecule import MetaMolecule
+from polyply.src.processor import Processor
+from polyply.src.topology import Topology
+from amber_nps import return_amber_nps_type  # this will be changed
 
 """
 Internal notes:
@@ -41,50 +58,107 @@ The program outputs LAMMPS data file "data.np" and CFG file.
 # pair_coeff       1 1 morse  10.956 1.5830 3.0242 # These paramaeters are identical as with the other orientations and visa versa
 
 
-class NanoparticleSingle:
+class NanoparticleCoordinates(Processor):
+    """
+    uses the polyply processor to read the molecule object, assign the
+    posoitonal coordinates and then utilizes networkx to assign the position attribute
+    to each atomic node
+    Parameters
+    ----------
+    Returns
+    -------
     """
 
-    This program is
-    adopting the single nanoparticle code into a python dataclass.
+    def run_molecule(self, meta_molecule):
+
+        # later we can add more complex protocols
+        init_coords = _expand_inital_coords(meta_molecule)
+        # this line adds the position to the molecule
+        nx.set_node_attributes(meta_molecule, init_coords, "position")
+        return meta_molecule
+
+
+class GoldNanoparticleSingle(Processor, BaseModel):
+    """
+    this class is also embedded with the pydantic model which gives an error in case the
+    error
+
+    this is probably rather new so I'm happy to change this back to the original base
+    class like structure as with in the other modules
+
+    Parameters
+    ----------
+
+
+    Returns
+    -------
+
     """
 
-    def __init__(self):
-        self.orientation = None
-        self.lattice_constant: float = 4.0782
-        self.box_size: int = 100
-        self.matrix: np.ndarray = np.array(
-            [[self.box_size, 0, 0], [0, self.box_size, 0], [0, 0, self.box_size]]
-        )
+    # orientation: Any
+    lattice_constant: float = 4.0782
+    box_size: int = 100
+    matrix: Any = np.array([[box_size, 0, 0], [0, box_size, 0], [0, 0, box_size]])
+    n_atom_thiol: int = 9
+    n_phi: int = 8
+    n_theta: int = 17
+    n_thiol: int = n_phi * n_theta
+    gold_layer: int = 6
+    n_gold: float = (
+        (10 * (gold_layer**3) + 11 * gold_layer) / 3 - 5 * (gold_layer**2) - 1
+    )
+    # matrix store gold atom coordinates
+    pos_gold: Any = np.zeros((int(n_gold), 3))  # TODO
+    center: list[float] = [0.5, 0.5, 0.5]  # TODO
+    phi: float = (np.sqrt(5) + 1) / 2
+    V: Any  # this should be changed from any to something more appropriate
+    E: Any  # ditto
+    F: Any  # ditto
+    # blocks and nanoparticle specific parts to work with polyply
+    force_field: Any  # this needs a custom type
+    top: Any  # this needs a custom typey
+    NP_block: Any
 
-        # number of atoms per thiol in united atom model
-        self.n_atom_thiol: int = 9
+    class Config:
+        """ """
 
-        # the aziimuthal angle and polar angle are divided evenely
-        # forming a grid, the thiol molecules are then put on these grids.
-        # The total number of thiol molecules will be the product of nphi
-        # and ntheta
-        self.n_phi: int = 8
-        self.n_theta: int = 17
-        self.n_thiol: int = self.n_phi * self.n_theta
+        arbitrary_types_allowed = True
 
-        # layer of gol atoms in gold icosahedral nanocrystal
-        # different number of gold layers wil lreult in
-        # different number of gold atoms in the nanocrystal
+    @validator("box_size")
+    def box_size_must_be_positive(cls, v):
+        """
+        ensure we dont have a weird box size
+        """
+        if v <= 0:  # if the box size is smaller than or equal to 0
+            raise ValueError("We cannot have a box size that is smaller than 0 or 0")
+        return v
 
-        # gold layer = 6
-        self.gold_layer: int = 6
-        self.n_gold: float = (
-            (10 * (self.gold_layer**3) + 11 * self.gold_layer) / 3
-            - 5 * (self.gold_layer**2)
-            - 1
-        )
+    @validator("matrix")
+    def dimension_of_matrix(cls, v):
+        """
+        return the matrix model
+        """
+        pass
+        # if v.shape != (3, 3):
+        #    raise ValueError("")
+        # return v
 
-        # matrix store gold atom coordinates
-        self.pos_gold: np.ndarray = np.zeros((int(self.n_gold), 3))  # TODO
-        self.center: list[float] = [0.5, 0.5, 0.5]  # TODO
-        self.phi: float = (np.sqrt(5) + 1) / 2
+    @validator("n_atom_thiol")
+    def n_atom_thiol_check(cls, v):
+        """
+        n_atom_thiol must be an integer
+        """
+        assert (
+            type(v) == int
+        ), "need an integer value for the number of atoms for thiols"
+        return v
 
-    def _vertices_edges(self):
+    def _set_ff(self) -> None:
+        """ """
+        self.NP_block = self.force_field[self.np_name]
+        self.ligand_block = self.force_field.blocks[self.ligand_name]
+
+    def _vertices_edges(self) -> None:
         """
         iniiate np array values
         """
@@ -169,7 +243,7 @@ class NanoparticleSingle:
         self.E = self.E * scaling
         self.F = self.F * scaling
 
-    def generate_positions(self):
+    def _generate_positions(self) -> None:
         """
         Need some general notes on how the core was generated.
         """
@@ -201,7 +275,6 @@ class NanoparticleSingle:
             ) / self.box_size + self.center[2]
 
         for N in range(3, self.gold_layer):
-
             n_atom_to_now = int(
                 ((10 * (N - 1) ** 3 + 11 * (N - 1)) / 3 - 5 * ((N - 1) ** 2) - 1)
             )
@@ -279,38 +352,225 @@ class NanoparticleSingle:
                         ]
                 n_atom_to_now += (N - 2) * (N - 3) // 2
 
+    def create_gro(
+        self, outfile: str, velocities=False, box="10.0, 10.0, 10.0"
+    ) -> None:
+        """
+        plot out the lattice in a 3D structure - generating the coordinates part is easy. Now
+        the hard part is generating the gro file
+        this is somewhat working ... nowhere near what I want - need to review the core generation code I made above
 
-class NanoparticleLatticeGenerator(Processor):
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+        """
+        velocity_fmt = ""
+        self._generate_positions()  # generate positions for the gold lattice core
+        core_numpy_coords = self.pos_gold
+        coords = [[j for j in i] for i in core_numpy_coords]
+        gold_str = [f"1AU  AU  {i + 1}" for i in range(0, len(coords))]
+
+        # just need to figure out GRO CONTENT and COORINDATES
+        velocities = [[x + 1 for x in line] for line in coords]
+        with open(str(outfile), "w") as output:
+            output.write("NP\n")
+            output.write(str(len(coords)) + "\n")
+            for atom, coords, vels in zip(gold_str, coords, velocities):
+                # print(atom, coords, vels)
+                output.write(
+                    ("{}{:8.3f}{:8.3f}{:8.3f}" + velocity_fmt + "\n").format(
+                        atom, *itertools.chain(coords, vels)
+                    )
+                )
+
+            output.write(box)
+            output.write("\n")
+
+    def _identify_attachment_index(self):
+        """
+
+        Find index of atoms that corresponds to the atom on the ligand
+        which you wish to bond with the ligand on the nanoparticle core
+
+        Parameters
+        ----------
+        Returns
+        -------
+
+        """
+        self.attachment_index = None
+        for index, entry in enumerate(self.ligand_block.atoms):
+            if entry["atomname"] == self.ligand_anchor:
+                attachment_index = index
+        return attachment_index
+
+
+class gold_models(Processor):
     """
+    we have a number of gold nanoparticle cores based on the amber forcefield
+    that is avaliable as published here:
+
+    https://pubs.acs.org/doi/abs/10.1021/acs.jctc.5b01053
+
     analyzing and creating the class depending on the
     number of atoms of gold we want
-
     """
 
-    def __init__(self, force_field):
-        self.force_field = force_field
-
-        n_atoms_gold: int = 561
-        n_atoms_S: int = 136
-        n_atom_C1: int = 952
-        n_atom_C2: int = 136  # number of CH3 per nanoparticle?
-
-    def generate_coordinates(self) -> None:
+    def __init__(self):
         """
-        I don't fully know the return type for this yet
+        Parameters
+        ----------
+        Returns
+        -------
+        """
+        # I will put a working sample here for now
+        self.sample = return_amber_nps_type(
+            "au144_OPLS_bonded"
+        )  # call the appropriate amber code type
 
+    def _extract_block_atom(self, molecule: str, atomname: str, defines: dict) -> None:
+        """
+        Given a `vermouth.molecule` and a `resname`
+        extract the information of a block from the
+        molecule definition and replace all defines
+        if any are found.
+
+        this has been adopted from the generate_templates
+        function as in that scenario it cannot distinguish
+        between different parts of a single resname. Hence,
+        this would extract the core of a single type (for
+        example, AU here) and convert that into a core
+
+        Parameters
+        ----------
+        molecule:  :class:vermouth.molecule.Molecule
+        atomname:   str
+        defines:   dict
+        dict of type define: value
+
+        Returns
+        -------
+        :class:vermouth.molecule.Block
+        """
+        nodes = find_atoms(molecule, "atype", atomname)
+        resid = molecule.nodes[nodes[0]]["resid"]
+        block = vermouth.molecule.Block()
+
+        # select all nodes with the same first resid and
+        # make sure the block node labels are atomnames
+        # also build a correspondance dict between node
+        # label in the molecule and in the block for
+        # relabeling the interactions
+        mapping = {}
+        for node in nodes:
+            attr_dict = molecule.nodes[node]
+            if attr_dict["resid"] == resid:
+                block.add_node(attr_dict["atomname"], **attr_dict)
+                mapping[node] = attr_dict["atomname"]
+
+        for inter_type in molecule.interactions:
+            for interaction in molecule.interactions[inter_type]:
+                if all(atom in mapping for atom in interaction.atoms):
+                    interaction = replace_defined_interaction(interaction, defines)
+                    interaction = _relabel_interaction_atoms(interaction, mapping)
+                    block.interactions[inter_type].append(interaction)
+
+        for inter_type in [
+            "bonds",
+            "constraints",
+            "virtual_sitesn",
+            "virtual_sites2",
+            "virtual_sites3",
+            "virtual_sites4",
+        ]:
+            block.make_edges_from_interaction_type(inter_type)
+        return block
+
+    def core_generate_coordinates(self) -> None:
+        """
+        now I need to ensure that this function is
+
+        using vermouth to strip the original amber nanoparticle itps
+        and read in as residue that can be read
+
+        Parameters
+        ----------
+        Returns
+        -------
+        """
+        name = "test"
+        self.ff = vermouth.forcefield.ForceField(name=name)
+        vermouth.gmx.itp_read.read_itp(self.sample, self.ff)
+
+        core_molecule = self.ff.blocks["NP2"].to_molecule()
+        newblock = self._extract_block_atom(core_molecule, "AU", {})
+        newblock.nrexcl = 3
+        np_molecule = newblock.to_molecule()
+        # np_molecule = NanoparticleCoordinates().run_molecule(newblock.to_molecule())
+        for node in np_molecule.nodes:
+            np_molecule.nodes[node]["resname"] = "TEST"
+        graph = MetaMolecule._block_graph_to_res_graph(np_molecule)
+        meta_mol = MetaMolecule(graph, force_field=self.ff, mol_name="test")
+        np_molecule.meta["moltype"] = "TEST"
+        meta_mol.molecule = np_molecule
+
+        self.newmolecule = np_molecule
+        self.np_top = Topology(name=name, force_field=self.ff)
+        self.np_top.molecules = [meta_mol]
+        # nx.set_node_attributes(meta_molecule, init_coords, "position")
+
+    def write_itp(self) -> None:
+        """
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+        """
+        with open("np.itp", "w") as outfile:
+            write_molecule_itp(self.newmolecule, outfile)
+
+    def create_gro(self, write_path: str) -> None:
+        """
         ideally, we generate the coordinates with this function
         and then store it within a 'coordinates' object. The form
         of which I am not certain yet.
+
+        Parameters
+        ----------
+
+        Returns
+        -------
         """
-        return
+        self.top.box = np.array([3.0, 3.0, 3.0])
+        system = self.np_top.convert_to_vermouth_system()
+        vermouth.gmx.gro.write_gro(
+            system,
+            write_path,
+            precision=7,
+            title="gold nanoparticle core",
+            box=self.top.box,
+            defer_writing=False,
+        )
+
+    def load_models(self) -> None:
+        """ """
+        pass
 
 
+# main code executable
 if __name__ == "__main__":
-    sampleNPCore = NanoparticleSingle()
-    sampleNPCore.generate_positions()
-    # test amber force field loading libraries
-    # force_field = load_library("gold", ["amber"], inpath)
-    gold = vermouth.gmx.read_gro(
-        "/home/sang/Desktop/git/polyply_1.0/polyply/data/nanoparticle_test/AMBER_AU/au102.gro"
-    )
+    sampleNPCore = GoldNanoparticleSingle()
+    sampleNPCore._generate_positions()
+    sampleNPCore.create_gro(
+        "/home/sang/Desktop/example_gold.gro"
+    )  # this works but not fully
+
+    # generate the core of the opls force field work
+    gold_model = gold_models()
+    gold_model.core_generate_coordinates()

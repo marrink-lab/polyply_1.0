@@ -27,11 +27,11 @@ import polyply.src.meta_molecule
 from polyply import TEST_DATA
 from polyply.src.topology import Topology
 
-class TestTopology:
 
+class TestTopology:
     @staticmethod
     def test_from_gmx_topfile():
-        top = Topology.from_gmx_topfile(TEST_DATA+"/topology_test/system.top", "test")
+        top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/system.top", "test")
         assert len(top.molecules) == 1
 
     @staticmethod
@@ -69,7 +69,9 @@ class TestTopology:
         to be True. In all other cases the build attribute is False and backmap is True.
         """
         top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/system.top", "test")
-        top.add_positions_from_file(TEST_DATA + "/topology_test/meta.gro", resolution="meta_mol")
+        top.add_positions_from_file(
+            TEST_DATA + "/topology_test/meta.gro", resolution="meta_mol"
+        )
         for node in top.molecules[0].nodes:
             if node != 2:
                 assert "position" in top.molecules[0].nodes[node].keys()
@@ -93,14 +95,14 @@ class TestTopology:
         pdb_mols = read_pdb(TEST_DATA + "/topology_test/test.pdb")
         for idx, meta_mol in enumerate(top.molecules):
             for node in meta_mol.molecule.nodes:
-                ref_pos = pdb_mols[idx].nodes[node]['position']
-                assert np.all(ref_pos == meta_mol.molecule.nodes[node]['position'])
+                ref_pos = pdb_mols[idx].nodes[node]["position"]
+                assert np.all(ref_pos == meta_mol.molecule.nodes[node]["position"])
 
         for meta_mol in top.molecules:
             for node in meta_mol.nodes:
-                    assert "position" in meta_mol.nodes[node].keys()
-                    assert meta_mol.nodes[node]["build"] == False
-                    assert meta_mol.nodes[node]["backmap"] == False
+                assert "position" in meta_mol.nodes[node].keys()
+                assert meta_mol.nodes[node]["build"] == False
+                assert meta_mol.nodes[node]["backmap"] == False
 
     @staticmethod
     def test_add_positions_from_file_fail():
@@ -120,44 +122,63 @@ class TestTopology:
         assert len(system.molecules) == 1
 
     @staticmethod
-    @pytest.mark.parametrize('lines, outcome', (
+    @pytest.mark.parametrize(
+        "lines, outcome",
         (
-        """
+            (
+                """
         [ defaults ]
         1.0   1.0   yes  1.0     1.0
         [ atomtypes ]
         O       8 0.000 0.000  A   2.7106496e-03  9.9002500e-07
         C       8 0.000 0.000  A   1.7106496e-03  9.9002500e-07
         """,
-        {frozenset(["O", "O"]): {"f": 1,
-                               "nb1": 2.7106496e-03,
-                               "nb2": 9.9002500e-07},
-         frozenset(["C", "C"]): {"f": 1,
-                               "nb1": 1.7106496e-03,
-                               "nb2": 9.9002500e-07},
-         frozenset(["C", "O"]): {"f": 1,
-                               "nb1": 0.0022106496,
-                               "nb2": 9.9002500e-07}}
-        ),
-        ("""
+                {
+                    frozenset(["O", "O"]): {
+                        "f": 1,
+                        "nb1": 2.7106496e-03,
+                        "nb2": 9.9002500e-07,
+                    },
+                    frozenset(["C", "C"]): {
+                        "f": 1,
+                        "nb1": 1.7106496e-03,
+                        "nb2": 9.9002500e-07,
+                    },
+                    frozenset(["C", "O"]): {
+                        "f": 1,
+                        "nb1": 0.0022106496,
+                        "nb2": 9.9002500e-07,
+                    },
+                },
+            ),
+            (
+                """
         [ defaults ]
         1.0   3.0    yes  0.5     0.5
         [ atomtypes ]
         C   C   6      12.01100     0.500       A    3.75000e-01  4.39320e-01 ; SIG
         O   O   8      15.99940    -0.500       A    2.96000e-01  8.78640e-01 ; SIG
         """,
-        {frozenset(["C", "C"]): {"f": 1,
-                               "nb1": 3.75000e-01,
-                               "nb2": 4.39320e-01},
-         frozenset(["O", "O"]): {"f": 1,
-                               "nb1": 2.96000e-01,
-                               "nb2": 8.78640e-01},
-         frozenset(["O", "C"]): {"f": 1,
-                               "nb1": 0.3355,
-                               "nb2": 0.6212923022217481}}
-        ),
-        (
-        """
+                {
+                    frozenset(["C", "C"]): {
+                        "f": 1,
+                        "nb1": 3.75000e-01,
+                        "nb2": 4.39320e-01,
+                    },
+                    frozenset(["O", "O"]): {
+                        "f": 1,
+                        "nb1": 2.96000e-01,
+                        "nb2": 8.78640e-01,
+                    },
+                    frozenset(["O", "C"]): {
+                        "f": 1,
+                        "nb1": 0.3355,
+                        "nb2": 0.6212923022217481,
+                    },
+                },
+            ),
+            (
+                """
         [ defaults ]
         1.0   1.0   yes  1.0     1.0
         [ atomtypes ]
@@ -166,21 +187,27 @@ class TestTopology:
         [ nonbond_params ]
         C    O    1     2.0     4.0
         """,
-        {frozenset(["O", "O"]): {"f": 1,
-                               "nb1": 2.7106496e-03,
-                               "nb2": 9.9002500e-07},
-         frozenset(["C", "C"]): {"f": 1,
-                               "nb1": 1.7106496e-03,
-                               "nb2": 9.9002500e-07},
-         frozenset(["C", "O"]): {"f": 1,
-                               "nb1": 2.0,
-                               "nb2": 4.0}}
-        )))
+                {
+                    frozenset(["O", "O"]): {
+                        "f": 1,
+                        "nb1": 2.7106496e-03,
+                        "nb2": 9.9002500e-07,
+                    },
+                    frozenset(["C", "C"]): {
+                        "f": 1,
+                        "nb1": 1.7106496e-03,
+                        "nb2": 9.9002500e-07,
+                    },
+                    frozenset(["C", "O"]): {"f": 1, "nb1": 2.0, "nb2": 4.0},
+                },
+            ),
+        ),
+    )
     def test_gen_pairs(lines, outcome):
         new_lines = textwrap.dedent(lines)
         new_lines = new_lines.splitlines()
-        force_field = vermouth.forcefield.ForceField(name='test_ff')
-        top =  Topology(force_field, name="test")
+        force_field = vermouth.forcefield.ForceField(name="test_ff")
+        top = Topology(force_field, name="test")
         polyply.src.top_parser.read_topology(new_lines, top)
         top.gen_pairs()
         for atom_pair in outcome:
@@ -193,9 +220,11 @@ class TestTopology:
             assert math.isclose(nb2, nb2_ref)
 
     @staticmethod
-    @pytest.mark.parametrize('lines, outcome', (
+    @pytest.mark.parametrize(
+        "lines, outcome",
         (
-        """
+            (
+                """
         [ defaults ]
         1.0   1.0   yes  1.0     1.0
         [ atomtypes ]
@@ -215,11 +244,11 @@ class TestTopology:
         [ molecules ]
         test 1
         """,
-        ["2", "100", "250"]
-        ),
-        # different location of define statement
-        (
-        """
+                ["2", "100", "250"],
+            ),
+            # different location of define statement
+            (
+                """
         [ defaults ]
         1.0   1.0   yes  1.0     1.0
         #define ga_1  100  250
@@ -239,11 +268,11 @@ class TestTopology:
         [ molecules ]
         test 1
         """,
-        ["2", "100", "250"]
-        ),
-        # two defines for one statement
-        (
-        """
+                ["2", "100", "250"],
+            ),
+            # two defines for one statement
+            (
+                """
         [ defaults ]
         1.0   1.0   yes  1.0     1.0
         #define ga_1  100
@@ -264,14 +293,15 @@ class TestTopology:
         [ molecules ]
         test 1
         """,
-        ["2", "100", "250"]
-        )
-	))
+                ["2", "100", "250"],
+            ),
+        ),
+    )
     def test_replace_defines(lines, outcome):
         new_lines = textwrap.dedent(lines)
         new_lines = new_lines.splitlines()
-        force_field = vermouth.forcefield.ForceField(name='test_ff')
-        top =  Topology(force_field, name="test")
+        force_field = vermouth.forcefield.ForceField(name="test_ff")
+        top = Topology(force_field, name="test")
         polyply.src.top_parser.read_topology(new_lines, top)
         top.replace_defines()
         assert top.molecules[0].molecule.interactions["angles"][0].parameters == outcome
@@ -283,18 +313,23 @@ class TestTopology:
         is done properly.
         """
 
-        force_field = vermouth.forcefield.ForceField(name='test_ff')
-        top =  Topology(force_field, name="test")
-        top.nonbond_params = {frozenset(["EO", "EO"]):
-                             {"nb1":6.44779031E-02 , "nb2": 4.07588234E-04}}
+        force_field = vermouth.forcefield.ForceField(name="test_ff")
+        top = Topology(force_field, name="test")
+        top.nonbond_params = {
+            frozenset(["EO", "EO"]): {"nb1": 6.44779031e-02, "nb2": 4.07588234e-04}
+        }
         top.convert_nonbond_to_sig_eps()
         assert math.isclose(top.nonbond_params[frozenset(["EO", "EO"])]["nb1"], 0.43)
-        assert math.isclose(top.nonbond_params[frozenset(["EO", "EO"])]["nb2"], 3.4*0.75)
+        assert math.isclose(
+            top.nonbond_params[frozenset(["EO", "EO"])]["nb2"], 3.4 * 0.75
+        )
 
     @staticmethod
-    @pytest.mark.parametrize('lines, outcome', (
+    @pytest.mark.parametrize(
+        "lines, outcome",
         (
-        """
+            (
+                """
         [ defaults ]
         1.0   1.0   yes  1.0     1.0
         [ bondtypes ]
@@ -311,11 +346,19 @@ class TestTopology:
         [ molecules ]
         test 1
         """,
-        {"bonds": [Interaction(atoms=(0, 1), parameters=["1", "0.1335", "502080.0"], meta={})]}
-        ),
-        # test three element define
-        (
-        """
+                {
+                    "bonds": [
+                        Interaction(
+                            atoms=(0, 1),
+                            parameters=["1", "0.1335", "502080.0"],
+                            meta={},
+                        )
+                    ]
+                },
+            ),
+            # test three element define
+            (
+                """
         [ defaults ]
         1.0   1.0   yes  1.0     1.0
         [ angletypes ]
@@ -333,12 +376,19 @@ class TestTopology:
         [ molecules ]
         test 1
         """,
-        {"angles": [Interaction(atoms=(0, 1, 2), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
-                                meta={})]}
-        ),
-        # test reverse match
-        (
-        """
+                {
+                    "angles": [
+                        Interaction(
+                            atoms=(0, 1, 2),
+                            parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                            meta={},
+                        )
+                    ]
+                },
+            ),
+            # test reverse match
+            (
+                """
         [ defaults ]
         1.0   1.0   yes  1.0     1.0
         [ angletypes ]
@@ -356,12 +406,19 @@ class TestTopology:
         [ molecules ]
         test 1
         """,
-        {"angles": [Interaction(atoms=(0, 1, 2), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
-                                meta={})]}
-        ),
-        # test generic match
-        (
-        """
+                {
+                    "angles": [
+                        Interaction(
+                            atoms=(0, 1, 2),
+                            parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                            meta={},
+                        )
+                    ]
+                },
+            ),
+            # test generic match
+            (
+                """
         [ defaults ]
         1.0   1.0   yes  1.0     1.0
         [ dihedraltypes ]
@@ -384,14 +441,24 @@ class TestTopology:
         [ molecules ]
         test 1
         """,
-        {"dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
-                                   meta={}),
-                       Interaction(atoms=(1, 2, 3, 4), parameters=["5", "120", "400", "0.0", "0.0"],
-                                   meta={})]}
-        ),
-        # test generic match plus defined match on same pattern
-        (
-        """
+                {
+                    "dihedrals": [
+                        Interaction(
+                            atoms=(0, 1, 2, 3),
+                            parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                            meta={},
+                        ),
+                        Interaction(
+                            atoms=(1, 2, 3, 4),
+                            parameters=["5", "120", "400", "0.0", "0.0"],
+                            meta={},
+                        ),
+                    ]
+                },
+            ),
+            # test generic match plus defined match on same pattern
+            (
+                """
         [ defaults ]
         1.0   1.0   yes  1.0     1.0
         [ dihedraltypes ]
@@ -413,14 +480,24 @@ class TestTopology:
         [ molecules ]
         test 1
         """,
-        {"dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
-                                   meta={}),
-                       Interaction(atoms=(1, 2, 3, 4), parameters=["1", "150", "60", "0.0", "0.0"],
-                                   meta={})]}
-        ),
-        # test priority of defined over generic match
-        (
-        """
+                {
+                    "dihedrals": [
+                        Interaction(
+                            atoms=(0, 1, 2, 3),
+                            parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                            meta={},
+                        ),
+                        Interaction(
+                            atoms=(1, 2, 3, 4),
+                            parameters=["1", "150", "60", "0.0", "0.0"],
+                            meta={},
+                        ),
+                    ]
+                },
+            ),
+            # test priority of defined over generic match
+            (
+                """
         [ defaults ]
         1.0   1.0   yes  1.0     1.0
         [ dihedraltypes ]
@@ -441,12 +518,19 @@ class TestTopology:
         [ molecules ]
         test 1
         """,
-        {"dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
-                                   meta={})]}
-        ),
-        # test reverse order for priority of defined over generic match
-        (
-        """
+                {
+                    "dihedrals": [
+                        Interaction(
+                            atoms=(0, 1, 2, 3),
+                            parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                            meta={},
+                        )
+                    ]
+                },
+            ),
+            # test reverse order for priority of defined over generic match
+            (
+                """
         [ defaults ]
         1.0   1.0   yes  1.0     1.0
         [ dihedraltypes ]
@@ -467,12 +551,19 @@ class TestTopology:
         [ molecules ]
         test 1
         """,
-        {"dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
-                                   meta={})]}
-        ),
-        # test generic improper
-        (
-        """
+                {
+                    "dihedrals": [
+                        Interaction(
+                            atoms=(0, 1, 2, 3),
+                            parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                            meta={},
+                        )
+                    ]
+                },
+            ),
+            # test generic improper
+            (
+                """
         [ defaults ]
         1.0   1.0   yes  1.0     1.0
         [ dihedraltypes ]
@@ -494,14 +585,24 @@ class TestTopology:
         [ molecules ]
         test 1
         """,
-        {"dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
-                                meta={}),
-                       Interaction(atoms=(1, 2, 3, 4), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
-                                meta={})]}
-        ),
-        # multiple matchs and pairs and a meta parameters
-        (
-        """
+                {
+                    "dihedrals": [
+                        Interaction(
+                            atoms=(0, 1, 2, 3),
+                            parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                            meta={},
+                        ),
+                        Interaction(
+                            atoms=(1, 2, 3, 4),
+                            parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                            meta={},
+                        ),
+                    ]
+                },
+            ),
+            # multiple matchs and pairs and a meta parameters
+            (
+                """
         [ defaults ]
         1.0   1.0   yes  1.0     1.0
         [ angletypes ]
@@ -531,15 +632,32 @@ class TestTopology:
         [ molecules ]
         test 1
         """,
-        {"bonds": [Interaction(atoms=(0, 1), parameters=["1", "0.1335", "502080.0"], meta={}),
-                   Interaction(atoms=(1, 2), parameters=["1", "0.1335", "502080.0"], meta={'tag': 'old', 'condition': 'ifdef'})],
-         "pairs": [Interaction(atoms=(0, 1), parameters=["1"], meta={})],
-         "angles": [Interaction(atoms=(0, 1, 2), parameters=["5", "123.50", "401.664", "0.0", "0.0"],
-                                meta={"ifdef":"angle"})]}
-        ),
-        # test bondtype usage
-        (
-        """
+                {
+                    "bonds": [
+                        Interaction(
+                            atoms=(0, 1),
+                            parameters=["1", "0.1335", "502080.0"],
+                            meta={},
+                        ),
+                        Interaction(
+                            atoms=(1, 2),
+                            parameters=["1", "0.1335", "502080.0"],
+                            meta={"tag": "old", "condition": "ifdef"},
+                        ),
+                    ],
+                    "pairs": [Interaction(atoms=(0, 1), parameters=["1"], meta={})],
+                    "angles": [
+                        Interaction(
+                            atoms=(0, 1, 2),
+                            parameters=["5", "123.50", "401.664", "0.0", "0.0"],
+                            meta={"ifdef": "angle"},
+                        )
+                    ],
+                },
+            ),
+            # test bondtype usage
+            (
+                """
         #define _FF_OPLS
         [ defaults ]
         1.0   1.0   yes  1.0     1.0
@@ -559,11 +677,19 @@ class TestTopology:
         [ molecules ]
         test 1
         """,
-        {"bonds": [Interaction(atoms=(0, 1), parameters=["1", "0.1335", "502080.0"], meta={})]}
-        ),
-        # test virtual_sites n,2,3,4 are skipped
-        (
-        """
+                {
+                    "bonds": [
+                        Interaction(
+                            atoms=(0, 1),
+                            parameters=["1", "0.1335", "502080.0"],
+                            meta={},
+                        )
+                    ]
+                },
+            ),
+            # test virtual_sites n,2,3,4 are skipped
+            (
+                """
         #define _FF_OPLS
         [ defaults ]
         1.0   1.0   yes  1.0     1.0
@@ -606,21 +732,67 @@ class TestTopology:
         [ molecules ]
         test 1
         """,
-        {"bonds": [Interaction(atoms=(0, 1), parameters=["1", "0.1335", "502080.0"], meta={}),
-                   Interaction(atoms=(0, 7), parameters=["1", "0.1335", "502080.0"], meta={}),
-                   Interaction(atoms=(0, 8), parameters=["1", "0.1335", "502080.0"], meta={}),
-                   Interaction(atoms=(1, 8), parameters=["1", "0.1335", "502080.0"], meta={}),
-                   Interaction(atoms=(7, 8), parameters=["1", "0.1335", "502080.0"], meta={})],
-         "virtual_sitesn": [Interaction(atoms=(2, 3, 3, 0, 1), parameters=["1"], meta={}),
-                            Interaction(atoms=(6, 3, 3, 7, 8), parameters=["1"], meta={})],
-         "virtual_sites4": [Interaction(atoms=(9, 3, 7, 0, 6), parameters=["1", "0.200", "0.200", "0.300"], meta={})],
-         "virtual_sites2": [Interaction(atoms=(3, 0, 8), parameters=["1", "0.5000"], meta={})],
-         "virtual_sites3": [Interaction(atoms=(4, 3, 7, 0), parameters=["1", "0.200", "0.200"], meta={}),
-                            Interaction(atoms=(5, 3, 8, 1), parameters=["1", "0.200", "0.200"], meta={})]}
-        ),
-        # test multiple dihedrals are assigned
-        (
-        """
+                {
+                    "bonds": [
+                        Interaction(
+                            atoms=(0, 1),
+                            parameters=["1", "0.1335", "502080.0"],
+                            meta={},
+                        ),
+                        Interaction(
+                            atoms=(0, 7),
+                            parameters=["1", "0.1335", "502080.0"],
+                            meta={},
+                        ),
+                        Interaction(
+                            atoms=(0, 8),
+                            parameters=["1", "0.1335", "502080.0"],
+                            meta={},
+                        ),
+                        Interaction(
+                            atoms=(1, 8),
+                            parameters=["1", "0.1335", "502080.0"],
+                            meta={},
+                        ),
+                        Interaction(
+                            atoms=(7, 8),
+                            parameters=["1", "0.1335", "502080.0"],
+                            meta={},
+                        ),
+                    ],
+                    "virtual_sitesn": [
+                        Interaction(atoms=(2, 3, 3, 0, 1), parameters=["1"], meta={}),
+                        Interaction(atoms=(6, 3, 3, 7, 8), parameters=["1"], meta={}),
+                    ],
+                    "virtual_sites4": [
+                        Interaction(
+                            atoms=(9, 3, 7, 0, 6),
+                            parameters=["1", "0.200", "0.200", "0.300"],
+                            meta={},
+                        )
+                    ],
+                    "virtual_sites2": [
+                        Interaction(
+                            atoms=(3, 0, 8), parameters=["1", "0.5000"], meta={}
+                        )
+                    ],
+                    "virtual_sites3": [
+                        Interaction(
+                            atoms=(4, 3, 7, 0),
+                            parameters=["1", "0.200", "0.200"],
+                            meta={},
+                        ),
+                        Interaction(
+                            atoms=(5, 3, 8, 1),
+                            parameters=["1", "0.200", "0.200"],
+                            meta={},
+                        ),
+                    ],
+                },
+            ),
+            # test multiple dihedrals are assigned
+            (
+                """
         [ defaults ]
         1.0   1.0   yes  2.0     1.0
         [ atomtypes ]
@@ -654,23 +826,57 @@ class TestTopology:
         [ molecules ]
         test 1
         """,
-        {"bonds": [Interaction(atoms=(0, 1), parameters=["1", "1.340000e-01", "3.681920e+05"], meta={}),
-                   Interaction(atoms=(1, 2), parameters=["1", "1.502000e-01", "3.054320e+05"], meta={}),
-                   Interaction(atoms=(2, 3), parameters=["1", "1.538000e-01", "1.861880e+05"], meta={}),],
-        "dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["9", "1.800000e+02", "3.807440e+00", "1"], meta={}),
-                      Interaction(atoms=(0, 1, 2, 3), parameters=["9", "1.800000e+02", "7.531200e-01", "2"], meta={}),
-                      Interaction(atoms=(0, 1, 2, 3), parameters=["9", "1.800000e+02", "7.112800e-01", "3"], meta={}),]}
-        )
-	))
+                {
+                    "bonds": [
+                        Interaction(
+                            atoms=(0, 1),
+                            parameters=["1", "1.340000e-01", "3.681920e+05"],
+                            meta={},
+                        ),
+                        Interaction(
+                            atoms=(1, 2),
+                            parameters=["1", "1.502000e-01", "3.054320e+05"],
+                            meta={},
+                        ),
+                        Interaction(
+                            atoms=(2, 3),
+                            parameters=["1", "1.538000e-01", "1.861880e+05"],
+                            meta={},
+                        ),
+                    ],
+                    "dihedrals": [
+                        Interaction(
+                            atoms=(0, 1, 2, 3),
+                            parameters=["9", "1.800000e+02", "3.807440e+00", "1"],
+                            meta={},
+                        ),
+                        Interaction(
+                            atoms=(0, 1, 2, 3),
+                            parameters=["9", "1.800000e+02", "7.531200e-01", "2"],
+                            meta={},
+                        ),
+                        Interaction(
+                            atoms=(0, 1, 2, 3),
+                            parameters=["9", "1.800000e+02", "7.112800e-01", "3"],
+                            meta={},
+                        ),
+                    ],
+                },
+            ),
+        ),
+    )
     def test_replace_types(lines, outcome):
         new_lines = textwrap.dedent(lines)
         new_lines = new_lines.splitlines()
-        force_field = vermouth.forcefield.ForceField(name='test_ff')
-        top =  Topology(force_field, name="test")
+        force_field = vermouth.forcefield.ForceField(name="test_ff")
+        top = Topology(force_field, name="test")
         polyply.src.top_parser.read_topology(new_lines, top)
         top.gen_bonded_interactions()
         for inter_type in outcome:
-            assert top.molecules[0].molecule.interactions[inter_type] == outcome[inter_type]
+            assert (
+                top.molecules[0].molecule.interactions[inter_type]
+                == outcome[inter_type]
+            )
 
     @staticmethod
     def test_replace_types_fail():
@@ -695,8 +901,8 @@ class TestTopology:
         """
         new_lines = textwrap.dedent(lines)
         new_lines = new_lines.splitlines()
-        force_field = vermouth.forcefield.ForceField(name='test_ff')
-        top =  Topology(force_field, name="test")
+        force_field = vermouth.forcefield.ForceField(name="test_ff")
+        top = Topology(force_field, name="test")
         polyply.src.top_parser.read_topology(new_lines, top)
         with pytest.raises(OSError):
-             top.gen_bonded_interactions()
+            top.gen_bonded_interactions()
