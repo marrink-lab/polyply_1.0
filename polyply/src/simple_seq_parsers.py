@@ -156,10 +156,10 @@ def _parse_plain(lines, DNA=False, RNA=False, AA=False):
     seq_graph =  _monomers_to_linear_nx_graph(monomers)
     return seq_graph
 
-def _identify_nucleotypes(comments):
+def _identify_residues(comments):
     """
     From a comment found in the ig or fasta file, identify if
-    the sequence is RNA or DNA sequence by checking if these
+    the sequence is RNA, DNA, or AA sequence by checking if these
     keywords are in the comment lines. Raise an error if
     none or conflicting information are found.
 
@@ -171,18 +171,18 @@ def _identify_nucleotypes(comments):
     Returns
     -------
     bool, bool
-        is it DNA, RNA
+        is it DNA, RNA, AA
 
     Raises
     ------
     FileFormatError
-        neither RNA nor DNA keywords are found
+        neither RNA nor DNA nor AA keywords are found
         both RNA and DNA are found
     """
     RNA = False
     DNA = False
     AA = False
-    print(comments)
+
     for comment in comments:
         if "DNA" in comment:
             DNA = True
@@ -250,7 +250,7 @@ def parse_ig(filepath):
         msg = "The sequence is not complete, it does not end with 1 or 2."
         raise FileFormatError(msg)
 
-    DNA, RNA, AA = _identify_nucleotypes(comments)
+    DNA, RNA, AA = _identify_residues(comments)
     seq_graph = _parse_plain(clean_lines[1:], DNA=DNA, RNA=RNA, AA=AA)
 
     if ter_char == '2':
@@ -295,7 +295,7 @@ def parse_fasta(filepath):
 
     clean_lines = []
     # first line must be a comment line
-    DNA, RNA, AA =_identify_nucleotypes([lines[0]])
+    DNA, RNA, AA =_identify_residues([lines[0]])
 
     for line in lines[1:]:
         if '>' in line:
