@@ -13,7 +13,7 @@ import vermouth
 import polyply.src.meta_molecule
 from polyply.src.topology import Topology
 from polyply.src.processor import Processor
-from polyply.src.generate_templates import GenerateTemplates
+from polyply.src.generate_templates import GenerateTemplates, find_atoms, extract_block
 
 # from polyply import TEST_DATA
 
@@ -306,6 +306,7 @@ def gen_np(
     full_np_metamol = NanoparticleGenerator(
         force_field, ligand_names, 1, ligand_anchor, None
     ).run(core_mol)
+
     # probably a good idea to let this function return a meta_molecule
     # once we have the metamolecule we can instantiate a topology object to use later
 
