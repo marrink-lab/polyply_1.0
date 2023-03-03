@@ -120,6 +120,8 @@ def _parse_plain(lines, DNA=False, RNA=False, AA=False):
         if the sequence matches DNA
     RNA: bool
         if the sequence matches RNA
+    AA: bool
+        if the sequence matches AA
 
     Returns
     -------
@@ -197,7 +199,7 @@ def _identify_residues(comments):
         raise FileFormatError("Found both RNA and DNA keyword in comment. Choose one.")
 
     if not RNA and not DNA and not AA:
-        raise FileFormatError("Cannot identify if sequence is RNA or DNA from comment.")
+        raise FileFormatError("Cannot identify if sequence is RNA, DNA, or PROTEIN, from comment.")
 
     return DNA, RNA, AA
 
@@ -267,7 +269,7 @@ def parse_ig(filepath):
 
 def parse_fasta(filepath):
     """
-    Read fasta sequence of DNA/RNA.
+    Read fasta sequence of DNA/RNA/PROTEIN.
 
     The parser automatically translates the one letter code to the
     double letter nucleobase resnames, sets special residue names

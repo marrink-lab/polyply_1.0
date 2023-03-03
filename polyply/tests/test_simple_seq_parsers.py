@@ -128,6 +128,14 @@ def test_sequence_parses_RNA(extension):
     ref_graph = _monomers_to_linear_nx_graph(monomers)
     assert nx.is_isomorphic(seq_graph, ref_graph, node_match=_node_match)
 
+def test_sequence_parses_PROTEIN(extension):
+    filepath = Path(TEST_DATA + "/simple_seq_files/test_protein."+ extension)
+    seq_graph = MetaMolecule.parsers[extension](filepath)
+    # replace below with your small protein sequence; ignore termini
+    monomers = ["G", "A", "K", "W", "N", "V", "F", "P", "S"]
+    ref_graph = _monomers_to_linear_nx_graph(monomers)
+    assert nx.is_isomorphic(seq_graph, ref_graph, node_match=_node_match)
+    
 def test_unkown_nucleotype_error():
     with pytest.raises(IOError):
         lines = ["AABBBCCTG"]
