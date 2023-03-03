@@ -131,7 +131,7 @@ def test_sequence_parses_RNA(extension):
 def test_sequence_parses_PROTEIN():
     filepath = Path(TEST_DATA + "/simple_seq_files/test_protein.fasta")
     seq_graph = MetaMolecule.parsers["fasta"](filepath)
-    monomers = ["GLY", "ALA" "LYS", "TRP", "ASN", "VAL", "PHE", "PRO", "SER"]
+    monomers = ["GLY", "ALA", "LYS", "TRP", "ASN", "VAL", "PHE", "PRO", "SER"]
     ref_graph = _monomers_to_linear_nx_graph(monomers)
     assert nx.is_isomorphic(seq_graph, ref_graph, node_match=_node_match)
     
