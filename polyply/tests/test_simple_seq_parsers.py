@@ -25,7 +25,7 @@ from polyply.src.simple_seq_parsers import (_identify_residues,
                                             _parse_plain,
                                             FileFormatError)
 
-@pytest.mark.parametrize('comments, DNA, RNA, PROTEIN', (
+@pytest.mark.parametrize('comments, DNA, RNA, AA', (
     # single DNA comment
       (["DNA lorem ipsum"],
        True,
