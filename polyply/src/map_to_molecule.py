@@ -209,8 +209,6 @@ class MapToMolecule(Processor):
         # get the first node and convert it to molecule
         start_node = node_keys[0]
         new_mol = self.force_field.blocks[self.node_to_block[start_node]].to_molecule()
-        # set the resid of the new-molecule in case we don't start with 1
-        nx.set_node_attributes(new_mol, resid_dict[start_node], "resid")
 
         # in this case the node belongs to a fragment for which there is a
         # multiresidue block
@@ -236,6 +234,9 @@ class MapToMolecule(Processor):
             if len(set(nx.get_node_attributes(new_mol, "resid").values())) > 1:
                 raise IOError(MultiblockError.format(meta_molecule.nodes[start_node]["resname"]))
 
+            # set the resid of the new-molecule in case we don't start with 1
+            nx.set_node_attributes(new_mol, resid_dict[start_node], "resid")
+
             # we store the block together with the residue node
             meta_molecule.nodes[start_node]["graph"] = new_mol.copy()
 
@@ -258,7 +259,6 @@ class MapToMolecule(Processor):
                     raise IOError(MultiblockError.format(self.node_to_block[node]))
 
                 correspondence = new_mol.merge_molecule(block)
-
             # make the residue from the correspondence
             residue = _correspondence_to_residue(meta_molecule,
                                                  new_mol,
