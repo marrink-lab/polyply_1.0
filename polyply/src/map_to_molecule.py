@@ -209,6 +209,8 @@ class MapToMolecule(Processor):
         # get the first node and convert it to molecule
         start_node = node_keys[0]
         new_mol = self.force_field.blocks[self.node_to_block[start_node]].to_molecule()
+        # set the resid of the new-molecule in case we don't start with 1
+        nx.set_node_attributes(new_mol, resid_dict[start_node], "resid")
 
         # in this case the node belongs to a fragment for which there is a
         # multiresidue block
@@ -244,7 +246,7 @@ class MapToMolecule(Processor):
             if node in self.added_fragment_nodes:
                 fragment_id = self.node_to_fragment[node]
                 correspondence = self.multiblock_correspondence[fragment_id]
-            # in this case we have to add the node from the block definitions
+           # in this case we have to add the node from the block definitions
             else:
                 block = self.force_field.blocks[self.node_to_block[node]]
                 # if the block represents more than one residue all residues
