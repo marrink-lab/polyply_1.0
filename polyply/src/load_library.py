@@ -24,10 +24,10 @@ from .build_file_parser import read_build_file
 from .polyply_parser import read_polyply
 
 LOGGER = StyleAdapter(get_logger(__name__))
-BUILD_FILE_PARSERS = {'bld': read_build_file, 'rtp': None, 'ff': None, 'itp': None, 'bib': None}
-FORCE_FIELD_PARSERS = {'rtp': read_rtp, 'ff': read_ff, 'itp': read_polyply, 'bib': read_bib, 'bld': None}
+BUILD_FILE_PARSERS = {'bld': read_build_file}
+FORCE_FIELD_PARSERS = {'rtp': read_rtp, 'ff': read_ff, 'itp': read_polyply, 'bib': read_bib}
 
-def get_parser(file_, file_parsers):
+def get_parser(file_, file_parsers, is_lib_file):
     """
     check if file can be parsed and
     if possible return the respective parser
@@ -38,15 +38,18 @@ def get_parser(file_, file_parsers):
         path to file
     file_parsers: dict
         dictionary of available file parsers
+    is_lib_file: bool
+        indicates whether the provided path is from a data library
     """
     file_extension = file_.suffix[1:]
-    if file_extension not in file_parsers:
-        msg = "Cannot parse file file with extension {}".format(file_extension)
+    if file_extension in file_parsers:
+        return file_parsers[file_extension]
+    elif not is_lib_file:
+        msg = "Cannot parse user provided file with extension {file_extension}."
         raise IOError(msg)
-    return file_parsers[file_extension]
 
 
-def _resolve_lib_paths(lib_names, data_path):
+def _resolve_lib_files(lib_names, data_path):
     """
     select the appropiate files from a file path
     according to library names given.
@@ -87,8 +90,10 @@ def read_options_from_files(paths, storage_object, file_parsers):
             lines = file_.readlines()
             parser(lines, storage_object)
 
-    for path in paths or []:
-        parser = get_parser(path, file_parsers)
+    lib_files, user_files = paths
+    for path in user_files + lib_files or []:
+        is_lib_file = path in lib_files
+        parser = get_parser(path, file_parsers, is_lib_file)
         if parser:
             parse_file(parser, path, storage_object)
 
@@ -109,8 +114,7 @@ def load_build_files(topology, lib_names, build_file):
     -------
 
     """
-    all_files = _resolve_lib_paths(lib_names, DATA_PATH)
-    all_files.extend(build_file)
+    all_files = [_resolve_lib_files(lib_names, DATA_PATH), build_file]
     read_options_from_files(all_files, topology, BUILD_FILE_PARSERS)
 
 
@@ -133,7 +137,6 @@ def load_ff_library(name, lib_names, extra_ff_file):
     :class:`vermouth.forcefield.Forcefield`
     """
     force_field = vermouth.forcefield.ForceField(name)
-    all_files = _resolve_lib_paths(lib_names, DATA_PATH)
-    all_files.extend(extra_ff_file)
+    all_files = [_resolve_lib_files(lib_names, DATA_PATH), extra_ff_file]
     read_options_from_files(all_files, force_field, FORCE_FIELD_PARSERS)
     return force_field

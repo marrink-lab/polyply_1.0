@@ -365,7 +365,7 @@ def gen_seq(name,
     macros = {}
 
     if from_file:
-        force_field = load_ff_library("seq", None, inpath)
+        force_field = load_ff_library("seq", [], inpath)
         for tag_name in from_file:
             tag, name = tag_name.split(":")
             macros[tag] = MacroFile(name, force_field)

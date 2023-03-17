@@ -269,7 +269,9 @@ def read_build_file(lines, topology, molecules=None):
     ----------
     lines: list
         list of lines of an itp file
-    force_field: :class:`vermouth.forcefield.ForceField`
+    topology: :class:`polypyl.src.topology.Topology`
+    molecules: list[:class:`~vermouth.molecule.Molecule`]
+        The molecules in the system.
     """
     if not molecules:
         molecules = topology.molecules
