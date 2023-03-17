@@ -26,40 +26,36 @@ import networkx as nx
 import vermouth
 import polyply
 from polyply import TEST_DATA
+from polyply import DATA_PATH
 from polyply.src.topology import Topology
-from polyply.src.load_library import FORCE_FIELD_PARSERS
-from polyply.src.load_library import _resolve_lib_paths
-from polyply.src.load_library import read_ff_from_files
-from polyply.src.load_library import load_build_options
-from polyply.src.load_library import check_extensions_ff
-from polyply.src.load_library import check_extensions_bld
+from polyply.src.load_library import FORCE_FIELD_PARSERS, BUILD_FILE_PARSERS
+from polyply.src.load_library import _resolve_lib_files, get_parser
+from polyply.src.load_library import load_build_files, read_options_from_files
+from polyply.src.build_file_parser import read_build_file
 
 
 @contextmanager
 def nullcontext(enter_result=None):
     yield enter_result
 
-@pytest.mark.parametrize("ff_file, expectation", [
-    [[Path('forcefield.ff')], nullcontext()],
-    [[Path('forcefield.bld')], pytest.raises(IOError)],
+@pytest.mark.parametrize("file_, file_parser, ignore_bld_files, expectation", [
+    [Path('forcefield.ff'), FORCE_FIELD_PARSERS, True, nullcontext()],
+    [Path('forcefield.bld'), FORCE_FIELD_PARSERS, True, nullcontext()],
+    [Path('forcefield.ff'), BUILD_FILE_PARSERS, False, pytest.raises(IOError)],
+    [Path('forcefield.bld'), BUILD_FILE_PARSERS, False, nullcontext()],
 ])
-def test_check_extensions_ff(ff_file, expectation):
+def test_get_parser(file_, file_parser, ignore_bld_files, expectation):
     with expectation as e:
-        check_extensions_ff(ff_file)
+        parser = get_parser(file_, file_parser, ignore_bld_files)
 
-@pytest.mark.parametrize("bld_file, expectation", [
-    [[Path('forcefield.ff')], pytest.raises(IOError)],
-    [[Path('forcefield.bld')], nullcontext()],
-])
-def test_check_extensions_bld(bld_file, expectation):
-    with expectation as e:
-        check_extensions_bld(bld_file)
 
 def test_read_ff_from_files():
     name = "ff"
     force_field = vermouth.forcefield.ForceField(name)
-    lib_files = _resolve_lib_paths([name], TEST_DATA, FORCE_FIELD_PARSERS.keys())
-    read_ff_from_files(lib_files, force_field)
+    lib_files = _resolve_lib_files([name], TEST_DATA)
+    user_files = []
+    all_files = [lib_files, user_files]
+    read_options_from_files(all_files, force_field, FORCE_FIELD_PARSERS)
 
     # Check if .ff files were parsed
     assert force_field.blocks
@@ -67,14 +63,15 @@ def test_read_ff_from_files():
 
 def test_read_build_options_from_files():
 
-    topfile = 'topology_test/system.top'
-    bldfile = 'topology_test/test.bld'
+    topfile = Path('topology_test/system.top')
+    bldfile = Path('topology_test/test.bld')
     lib_names = ['2016H66']
-    toppath = os.path.join(TEST_DATA, topfile)
+    toppath = Path(TEST_DATA).joinpath(topfile)
     topology = Topology.from_gmx_topfile(name='test', path=toppath)
     topology.preprocess()
-    bldpath = os.path.join(TEST_DATA, bldfile)
-    load_build_options(topology, lib_names, bldpath)
+
+    user_files = [Path(TEST_DATA).joinpath(bldfile)]
+    load_build_files(topology, lib_names, user_files)
 
     # check if build files are parsed
     assert topology.volumes == {'PMMA': 1.0}
