@@ -99,8 +99,8 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
                             help='input file meta-molecule (.gro)', default=None)
     file_group.add_argument('-b', dest='build', type=Path, required=False, default=[], nargs='*',
                             help=('input file; specify molecule specific building options'))
-    file_group.add_argument('-lib', dest='lib', required=False, type=Path, default=[],
-                            help='force-fields to include from library', nargs='*')
+    file_group.add_argument('-lib', dest='lib', required=False, type=Path, default=None,
+                            help='molecule templates can be loaded from force field library')
 
     topology_group = parser_gen_coords.add_argument_group('Change or modify topology')
     topology_group.add_argument('-res', dest='build_res', type=str,

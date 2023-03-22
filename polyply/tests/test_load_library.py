@@ -65,13 +65,13 @@ def test_read_build_options_from_files():
 
     topfile = Path('topology_test/system.top')
     bldfile = Path('topology_test/test.bld')
-    lib_names = ['2016H66']
+    lib_name = '2016H66'
     toppath = Path(TEST_DATA).joinpath(topfile)
     topology = Topology.from_gmx_topfile(name='test', path=toppath)
     topology.preprocess()
 
     user_files = [Path(TEST_DATA).joinpath(bldfile)]
-    load_build_files(topology, lib_names, user_files)
+    load_build_files(topology, lib_name, user_files)
 
     # check if build files are parsed
     assert topology.volumes == {'PMMA': 1.0}
