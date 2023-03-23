@@ -119,7 +119,7 @@ def load_build_files(topology, lib_name, build_file):
     read_options_from_files(all_files, topology, BUILD_FILE_PARSERS)
 
 
-def load_ff_library(name, lib_names, extra_ff_file):
+def load_ff_library(name, lib_names, extra_ff_files, force_field=None):
     """
     Load libraries and extra-files into vermouth
     force-field.
@@ -135,9 +135,9 @@ def load_ff_library(name, lib_names, extra_ff_file):
 
     Returns
     -------
-    :class:`vermouth.forcefield.Forcefield`
+    `vermouth.forcefield.Forcefield`
     """
-    force_field = vermouth.forcefield.ForceField(name)
-    all_files = [_resolve_lib_files(lib_names, DATA_PATH), extra_ff_file]
-    read_options_from_files(all_files, force_field, FORCE_FIELD_PARSERS)
-    return force_field
+    if not force_field:
+        force_field = vermouth.forcefield.ForceField(name)
+    all_files = [_resolve_lib_files(lib_names, DATA_PATH), extra_ff_files]
+    return read_options_from_files(all_files, force_field, FORCE_FIELD_PARSERS)
