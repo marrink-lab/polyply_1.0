@@ -14,6 +14,7 @@
 
 import os
 from pathlib import Path
+from collections import ChainMap
 import vermouth
 from vermouth.gmx.rtp import read_rtp
 from vermouth.citation_parser import read_bib
@@ -45,8 +46,11 @@ def get_parser(file_path, file_parsers, is_lib_file):
     if file_extension in file_parsers:
         return file_parsers[file_extension]
     elif not is_lib_file:
-        msg = "Cannot parse user provided file with extension {file_extension}."
+        msg = f"Cannot parse user provided file with extension {file_extension}."
         raise IOError(msg)
+    elif file_extension not in ChainMap(FORCE_FIELD_PARSERS, BUILD_FILE_PARSERS):
+        msg = f"File with unknown extension {file_extension} found in force field library."
+        LOGGER.warning(msg)
 
 
 def _resolve_lib_files(lib_names, data_path):
