@@ -27,21 +27,21 @@ LOGGER = StyleAdapter(get_logger(__name__))
 BUILD_FILE_PARSERS = {'bld': read_build_file}
 FORCE_FIELD_PARSERS = {'rtp': read_rtp, 'ff': read_ff, 'itp': read_polyply, 'bib': read_bib}
 
-def get_parser(file_, file_parsers, is_lib_file):
+def get_parser(file_path, file_parsers, is_lib_file):
     """
     check if file can be parsed and
     if possible return the respective parser
 
     Parameters
     ----------
-    file_: class:`pathlib.PosixPath`
+    file_path: `pathlib.PosixPath`
         path to file
     file_parsers: dict
         dictionary of available file parsers
     is_lib_file: bool
         indicates whether the provided path is from a data library
     """
-    file_extension = file_.suffix[1:]
+    file_extension = file_path.suffix[1:]
     if file_extension in file_parsers:
         return file_parsers[file_extension]
     elif not is_lib_file:
