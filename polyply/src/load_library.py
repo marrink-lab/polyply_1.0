@@ -87,6 +87,9 @@ def read_options_from_files(paths, storage_object, file_parsers):
     file_parsers: dict
         dictionary of available file parsers
 
+    Returns
+    -------
+    `polyply.src.topology.Topology` or `vermouth.forcefield.Forcefield`
     """
 
     def parse_file(parser, path, storage_object):
@@ -100,6 +103,7 @@ def read_options_from_files(paths, storage_object, file_parsers):
         parser = get_parser(path, file_parsers, is_lib_file)
         if parser:
             parse_file(parser, path, storage_object)
+    return storage_object
 
 
 def load_build_files(topology, lib_name, build_file):
