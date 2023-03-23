@@ -81,11 +81,12 @@ def read_options_from_files(paths, storage_object, file_parsers):
 
     Parameters
     ----------
-    paths: list[`pathlib.Path`]
-           List of provided file paths
-    storage_object: polyply.src.topology.Topology or vermouth.ForceField
+    paths: list[list[`pathlib.Path`], list[`pathlib.Path`]]
+           The list contains exactly two sublist, respectively list containing
+           the resolved library files and user provided files.
+    storage_object: `polyply.src.topology.Topology` or `vermouth.forcefield.Forcefield`
     file_parsers: dict
-        dictionary of available file parsers
+        Dictionary of available file parsers
 
     Returns
     -------
@@ -106,16 +107,16 @@ def read_options_from_files(paths, storage_object, file_parsers):
     return storage_object
 
 
-def load_build_files(topology, lib_name, build_file):
+def load_build_files(topology, lib_name, build_files):
     """
     Load build file options and molecule templates into topology.
 
     Parameters
     ----------
-    topology: :class:`polyply.src.topology`
-    lib_name: str
+    topology: `polyply.src.topology`
+    lib_name: `pathlib.Path`
         Library from where to load templates
-    build_file: str
+    build_files: list[`pathlib.Path`]
         List of build files to parse
 
     Returns
@@ -123,7 +124,7 @@ def load_build_files(topology, lib_name, build_file):
 
     """
     lib_name = [lib_name] if lib_name else []
-    all_files = [_resolve_lib_files(lib_name, DATA_PATH), build_file]
+    all_files = [_resolve_lib_files(lib_name, DATA_PATH), build_files]
     read_options_from_files(all_files, topology, BUILD_FILE_PARSERS)
 
 
