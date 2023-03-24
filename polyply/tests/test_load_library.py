@@ -12,26 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Test linear algebra aux functions.
+Test library loading behaviour.
 """
 
-import textwrap
+import os
+import logging
 import pytest
 from pathlib import Path
-import numpy as np
-import os
-import math
 from contextlib import contextmanager
-import networkx as nx
 import vermouth
-import polyply
 from polyply import TEST_DATA
-from polyply import DATA_PATH
 from polyply.src.topology import Topology
 from polyply.src.load_library import FORCE_FIELD_PARSERS, BUILD_FILE_PARSERS
 from polyply.src.load_library import _resolve_lib_files, get_parser
 from polyply.src.load_library import load_build_files, read_options_from_files
-from polyply.src.build_file_parser import read_build_file
 
 
 @contextmanager
@@ -49,17 +43,28 @@ def test_get_parser(file_, file_parser, ignore_bld_files, expectation):
         parser = get_parser(file_, file_parser, ignore_bld_files)
 
 
-def test_read_ff_from_files():
+def test_read_ff_from_files(caplog):
+
     name = "ff"
     force_field = vermouth.forcefield.ForceField(name)
     lib_files = _resolve_lib_files([name], TEST_DATA)
     user_files = []
     all_files = [lib_files, user_files]
-    read_options_from_files(all_files, force_field, FORCE_FIELD_PARSERS)
+
+    # Check if warning is thrown for unknown file
+    caplog.set_level(logging.WARNING)
+    with caplog.at_level(logging.WARNING):
+        read_options_from_files(all_files, force_field, FORCE_FIELD_PARSERS)
+        for record in caplog.records:
+            assert record.levelname == "WARNING"
+            break
+        else:
+            assert False
 
     # Check if .ff files were parsed
     assert force_field.blocks
     assert force_field.links
+
 
 def test_read_build_options_from_files():
 
