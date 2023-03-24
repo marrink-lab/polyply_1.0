@@ -56,6 +56,7 @@ def test_read_ff_from_files(caplog):
     msg = "File with unknown extension txt found in force field library."
     with caplog.at_level(logging.WARNING):
         read_options_from_files(all_files, force_field, FORCE_FIELD_PARSERS)
+        print(caplog.records)
         for record in caplog.records:
             if record.message == msg:
                 break
