@@ -53,11 +53,12 @@ def test_read_ff_from_files(caplog):
 
     # Check if warning is thrown for unknown file
     caplog.set_level(logging.WARNING)
+    msg = "File with unknown extension txt found in force field library."
     with caplog.at_level(logging.WARNING):
         read_options_from_files(all_files, force_field, FORCE_FIELD_PARSERS)
         for record in caplog.records:
-            assert record.levelname == "WARNING"
-            break
+            if record.message == msg:
+                break
         else:
             assert False
 
