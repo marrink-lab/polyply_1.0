@@ -22,6 +22,7 @@ from pathlib import Path
 from contextlib import contextmanager
 import vermouth
 from polyply import TEST_DATA
+from polyply.src.logging import LOGGER
 from polyply.src.topology import Topology
 from polyply.src.load_library import FORCE_FIELD_PARSERS, BUILD_FILE_PARSERS
 from polyply.src.load_library import _resolve_lib_files, get_parser
@@ -52,11 +53,12 @@ def test_read_ff_from_files(caplog):
     all_files = [lib_files, user_files]
 
     # Check if warning is thrown for unknown file
-    caplog.set_level(logging.WARNING)
+    loglevel = getattr(logging, 'WARNING')
+    LOGGER.setLevel(loglevel)
+
     msg = "File with unknown extension txt found in force field library."
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(loglevel):
         read_options_from_files(all_files, force_field, FORCE_FIELD_PARSERS)
-        print(caplog.records)
         for record in caplog.records:
             if record.message == msg:
                 break
