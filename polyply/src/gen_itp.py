@@ -104,12 +104,18 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=None, lib=Non
     LOGGER.info("applying links between residues",  type="step")
     meta_molecule = ApplyLinks().run_molecule(meta_molecule)
 
-    if idp == True:
+    if idp == True and lib[0] == 'martini3':
         meta_molecule = MakeIDP().run_molecule(meta_molecule)
         LOGGER.warning(("Backbone virtual sites for increased interactions with "
                         "water have been added. Please define this in your itp file! "
                         "Note: the addition of the virtual sites will now raise "
                         "a disjointed molecule warning. This can be ignored."))
+    elif idp == True and lib[0] != 'martini3':
+        msg = ("The IDP flag has been specified but the forcefield is not "
+               "Martini 3. The IDP functionality is not designed for other "
+               "forcefields. Please check your input!")
+        raise IOError(msg)
+
 
     # Raise warning if molecule is disconnected
     if not nx.is_connected(meta_molecule.molecule):
