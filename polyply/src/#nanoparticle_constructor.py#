@@ -321,6 +321,7 @@ def gen_np(
     # then the coordinate file
     # command = " ".join(sys.argv)
     system = np_top.convert_to_vermouth_system()
+    NanoparticleLigandCoordinates().run_system(system)
 
     vermouth.gmx.write_gro(
         system,

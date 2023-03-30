@@ -1,5 +1,13 @@
 from typing import Any, Dict, Literal
+from dataclasses import dataclass
 import textwrap
+
+
+@dataclass
+class nps_library:
+    """ """
+
+    pass
 
 
 def return_amber_nps_type(
