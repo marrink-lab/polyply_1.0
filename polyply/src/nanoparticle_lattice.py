@@ -13,10 +13,11 @@ import numpy as np
 import vermouth
 import vermouth.forcefield
 import vermouth.molecule
+from vermouth.gmx import gro  # gro library to output the file as a gro file
+from vermouth.gmx.itp import write_molecule_itp
+
 from pydantic import BaseModel, validator
 
-# from scipy.spatial import distance
-from vermouth.gmx import gro  # gro library to output the file as a gro file
 
 from polyply.src.generate_templates import (
     _expand_inital_coords,
@@ -31,7 +32,6 @@ from polyply.src.generate_templates import (
 )
 import polyply.src.meta_molecule
 from polyply.src.load_library import load_library
-from vermouth.gmx.itp import write_molecule_itp
 
 from polyply.src.meta_molecule import MetaMolecule
 from polyply.src.processor import Processor
@@ -87,9 +87,13 @@ class NanoparticleCoordinates(Processor):
 
 
 class NanoparticleIdentifySurface(Processor):
-    """ """
+    """
+    identify indices for attaching on the
+    lignads
+    """
 
-    pass
+    def run_molecule(self, meta_molecule):
+        pass
 
 
 class GoldNanoparticleSingle:
@@ -400,12 +404,12 @@ class gold_models(Processor):
         pattern:   Any
 
         """
-        # I will put a working sample here for now
         self.sample: str = return_amber_nps_type(
             "au144_OPLS_bonded"
         )  # call the appropriate amber code type
         self.ligand_path: str = "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand"
         self.ligands = ["UNK_12B037/UNK_12B037.itp", "UNK_DA2640/UNK_DA2640.itp"]
+        self.ligand_N = [10, 10]
         self.pattern: Literal["Janus", "Striped"] = "Janus"
         self.ligand_anchor_atoms: list[str] = ["S800", "S807"]
 
@@ -484,28 +488,52 @@ class gold_models(Processor):
         name = "test"
         self.ff = vermouth.forcefield.ForceField(name=name)
         vermouth.gmx.itp_read.read_itp(self.sample, self.ff)
-
+        self.NP_block = self.ff.blocks["NP2"]
         core_molecule = self.ff.blocks["NP2"].to_molecule()  # make metamolcule object
         newblock = self._extract_block_atom(
             core_molecule, "AU", {}
         )  # get only the gold atoms from the itp
         newblock.nrexcl = 3
-        np_molecule = newblock.to_molecule()
+        self.np_molecule = newblock.to_molecule()
         # np_molecule = NanoparticleCoordinates().run_molecule(newblock.to_molecule())
-        for node in np_molecule.nodes:
-            np_molecule.nodes[node]["resname"] = "TEST"
+        for node in self.np_molecule.nodes:
+            self.np_molecule.nodes[node]["resname"] = "TEST"
         graph = MetaMolecule._block_graph_to_res_graph(
-            np_molecule
+            self.np_molecule
         )  # what do we mean by a residue graph?
         meta_mol = MetaMolecule(graph, force_field=self.ff, mol_name="test")
-        np_molecule.meta[
+        self.np_molecule.meta[
             "moltype"
         ] = "TEST"  # why do we need to define this metamol again?
-        meta_mol.molecule = np_molecule
-        self.newmolecule = np_molecule
+        meta_mol.molecule = self.np_molecule
+        self.newmolecule = self.np_molecule
         self.np_top = Topology(name=name, force_field=self.ff)
         self.np_top.molecules = [meta_mol]
         # nx.set_node_attributes(meta_molecule, init_coords, "position")
+
+    def _identify_lattice_surface(self) -> None:
+        """
+        Identify atoms that we know are bonded to sulfur anchors,
+        so that we can use the indices for replacing and redesigning
+        """
+        assert "NP2" in self.ff.blocks.keys(), "we have not stored NP information"
+        surface_atom_dict = {}
+        # create dicrtiona
+        for atom in self.ff.blocks["NP2"].atoms:
+            surface_atom_dict[atom["index"]] = atom["atype"]
+        # find the AU atoms that have a bond with the S atoms
+        self.surface_atoms = []
+        for interaction_node in self.ff.blocks["NP2"].interactions["bonds"]:
+            interaction = [
+                surface_atom_dict[
+                    interaction_node.atoms[0] + 1
+                ],  # add one to ensure we have a non zero index start
+                surface_atom_dict[interaction_node.atoms[1] + 1],
+            ]
+            if "S" in interaction and "AU" in interaction:
+                self.surface_atoms.append(interaction_node.atoms[1] + 1)
+        # get only the unique atoms
+        self.surface_atoms = list(set(self.surface_atoms))
 
     def _identify_indices_for_core_attachment(self):
         """
@@ -565,6 +593,16 @@ class gold_models(Processor):
 
             self.core_indices: list[dict[int, int]] = [core_top_values, core_bot_values]
 
+        # identify the surface gold atoms
+        self._identify_lattice_surface()
+        # filter out from the Janus and non-Janus to
+        for core_index in range(0, len(self.core_indices)):
+            self.core_indices[core_index] = {
+                x: self.core_indices[core_index][x]
+                for x in self.surface_atoms
+                if x in list(self.core_indices[core_index])
+            }
+
     def _identify_attachment_index(self, ligand_block, anchor_atom):
         """
         Find index of atoms that corresponds to the atom on the ligand
@@ -580,8 +618,6 @@ class gold_models(Processor):
         """
         Read the ligand itp files to the force field and ensure we can read the blocks
         """
-        self.ligand_N = [10, 10]
-
         # if any(
         #    x > min([len(entry) for entry in self.core_indices]) for x in self.ligand_N
         # ):
@@ -618,32 +654,28 @@ class gold_models(Processor):
         scaling_factor = 0
         for key in self.ligand_block_specs.keys():
             self.ligand_block_specs[key]["scaled_ligand_index"] = [
-                (index * length + core_index) + scaling_factor
-                for index in range(0, ligand_block_specs[key]["N"])
+                (index * self.ligand_block_specs[key]["length"] + core_size)
+                + scaling_factor
+                for index in range(0, self.ligand_block_specs[key]["N"])
             ]
             scaling_factor += (
                 self.ligand_block_specs[key]["N"]
                 * self.ligand_block_specs[key]["length"]
             )
 
-    def generate_dicts() -> None:
-        self.ligand_generate_coordinates()
-        self._add_block_indices()
-
-    def _generate_ligand_np_interactions(np_molecule, core_size, N, length) -> None:
+    def _generate_ligand_np_interactions(self) -> None:
         """ """
         self.attachment_list = {}
-        for index in range(0, N):  # loop over the number of ligands we want to create
-            ligand_index = index * length  # compute starting index for each ligand
-            logging.info(
-                f"The ligand indices and core size are {ligand_index} and {core_size} respectively"
-            )
-            scaled_ligand_index = ligand_index + core_size
-            self.attachment_list.append(scaled_ligand_index)
-            # merge the relevant molecule
-            np_molecule.merge_molecule(self.ligand_block)
+        for key in self.ligand_block_specs.keys():
+            for index in range(
+                0, self.ligand_block_specs[key]["N"]
+            ):  # loop over the number of ligands we want to create
+                # ligand_index = index * length  # compute starting index for each ligand
+                # self.attachment_list.append(scaled_ligand_index)
+                # merge the relevant molecule
+                self.np_molecule.merge_molecule(self.ff.blocks[key])
 
-    def _generate_bond(self) -> None:
+    def _generate_bonds(self) -> None:
         """ """
         # get random N elements from the list
         for key in self.ligand_block_specs.keys():
@@ -652,6 +684,7 @@ class gold_models(Processor):
                     atoms=(
                         entry,
                         self.ligand_block_specs[key][index]
+                        + 1
                         + self.ligand_block_specs[key]["anchor_index"],
                     ),
                     parameters=["1", "0.0033", "5000"],
@@ -660,7 +693,16 @@ class gold_models(Processor):
 
             self.np_molecule.interactions["bonds"].append(interaction)
 
-    def run(self, core_mol):
+    def generate_dicts(self) -> None:
+        """
+        TODO
+        """
+        self.ligand_generate_coordinates()
+        self._add_block_indices()
+        self._generate_ligand_np_interactions()
+        self._generate_bonds()
+
+    def run(self, core_mol) -> None:
         """
         we have two blocks representing the blocks of the NP core and
         the ligand block. Hence, we wish to add links to the blocks
@@ -679,44 +721,18 @@ class gold_models(Processor):
             self.core_indices[0],
             self.core_indices[1],
         )
-        attachment_list = []
         # Find the indices that are equivalent to the atom on the ligand we wish to attach onto the NP
         # based on the ligands_N, and then merge onto the NP core the main ligand blocks ligand_N number of times
         scaling_factor = 0
         for index, block in enumerate(self.ligand_block_specs.keys()):
             core_size = core_size + scaling_factor
-            generate_ligand_np_interactions(
+            self.generate_ligand_np_interactions(
                 self.np_molecule, core_size, **self.ligand_block_specs[block]
             )
             scaling_factor = (
                 self.ligand_block_specs[block]["length"]
                 * self.ligand_block_specs[block]["N"]
             )
-
-        # create list of interactions for first batch of indices we have on the
-        # core surface
-        # for index, index2 in enumerate(
-        #        list(core_index_relevant.keys())[: self.ligands_N]
-        # ):
-        #    interaction = vermouth.molecule.Interaction(
-        #        atoms=(index2, attachment_list[index] + attachment_index),
-        #        parameters=["1", "0.0033", "50000"],
-        #        meta={},
-        #    )
-        #    # append onto bonds the interactions between equivalent indices
-        #    self.np_molecule.interactions["bonds"].append(interaction)
-
-        # create list for interactions for second batch of indices we have on the core surfaces
-        # for index, index2 in enumerate(
-        #    list(core_index_relevant_II.keys())[: self.ligands_N]
-        # ):
-        #    interaction = vermouth.molecule.Interaction(
-        #        atoms=(index2, atom_max + (index * length) + attachment_index),
-        #        parameters=["1", "0.0033", "50000"],
-        #        meta={},
-        #    )
-        #    # append onto bonds the interactions between equivalent indices
-        #    self.np_molecule.interactions["bonds"].append(interaction)
 
         for node in self.np_molecule.nodes:
             # change resname to moltype
@@ -725,9 +741,7 @@ class gold_models(Processor):
             self.np_molecule
         )  # generate residue graph
         # generate meta molecule from the residue graph with a new molecule name
-        self.meta_mol = MetaMolecule(
-            self.graph, force_field=self.force_field, mol_name="test"
-        )
+        self.meta_mol = MetaMolecule(self.graph, force_field=self.ff, mol_name="test")
         self.np_molecule.meta["moltype"] = "TEST"
         # reassign the molecule with the np_molecule we have defined new interactions with
         self.meta_mol.molecule = self.np_molecule
@@ -785,6 +799,4 @@ if __name__ == "__main__":
     gold_model = gold_models()
     gold_model.core_generate_coordinates()
     gold_model._identify_indices_for_core_attachment()
-    gold_model.ligand_generate_coordinates()
-
-    # gold_model.write_itp()
+    gold_model.generate_dicts()
