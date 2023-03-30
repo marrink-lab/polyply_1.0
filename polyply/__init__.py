@@ -46,6 +46,7 @@ else:
 from .src.meta_molecule import (Monomer, MetaMolecule)
 from .src.apply_links import ApplyLinks
 from .src.map_to_molecule import MapToMolecule
+from .src.idp_mods import MakeIDP
 from .src.gen_itp import gen_itp, gen_params
 from .src.gen_coords import gen_coords
 from .src.gen_seq import gen_seq

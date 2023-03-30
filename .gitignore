@@ -18,6 +18,7 @@ tests/test_data/gen_seq/output/*.itp
 
 **/htmlcov
 
+*.idea
 
 doc/build
 doc/source/api

@@ -61,6 +61,8 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
     parser_gen_itp.add_argument('-v', dest='verbosity', action='count',
                                 help='Enable debug logging output. Can be given '
                                 'multiple times.', default=0)
+    parser_gen_itp.add_argument('-idp', dest='idp', required=False, type=bool, default=False,
+                                help='Treat input sequence as IDP for Martini IDP topology generation')
 
     file_group = parser_gen_itp.add_argument_group('Input and output options')
     file_group.add_argument('-lib', dest='lib', required=False, type=str,

@@ -30,7 +30,7 @@ except ImportError:
 from vermouth.file_writer import DeferredFileWriter
 from vermouth.citation_parser import citation_formatter
 from vermouth.graph_utils import make_residue_graph
-from polyply import (MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
+from polyply import (MetaMolecule, ApplyLinks, Monomer, MapToMolecule, MakeIDP)
 from polyply.src.graph_utils import find_missing_edges
 from .load_library import load_library
 
@@ -59,7 +59,7 @@ def split_seq_string(sequence):
         monomers.append(Monomer(resname=resname, n_blocks=n_blocks))
     return monomers
 
-def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=None, lib=None, seq=None, seq_file=None):
+def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=None, lib=None, seq=None, seq_file=None, idp=False):
     """
     Top level function for running the polyply parameter generation.
     Parameters seq and seq_file are mutually exclusive. Set the other
@@ -80,6 +80,8 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=None, lib=Non
         list of strings with format "resname:#monomers"
     seqf: :class:`pathlib.Path`
         file path to valid sequence file (.json/.fasta/.ig/.txt)
+    idp: bool
+        if True, treat the input sequence as an IDP to generate using Martini IDP parameters
     """
     # Import of Itp and FF files
     LOGGER.info("reading input and library files",  type="step")
@@ -101,6 +103,13 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=None, lib=Non
     meta_molecule = MapToMolecule(force_field).run_molecule(meta_molecule)
     LOGGER.info("applying links between residues",  type="step")
     meta_molecule = ApplyLinks().run_molecule(meta_molecule)
+
+    if idp == True:
+        meta_molecule = MakeIDP().run_molecule(meta_molecule)
+        LOGGER.warning(("Backbone virtual sites for increased interactions with "
+                        "water have been added. Please define this in your itp file! "
+                        "Note: the addition of the virtual sites will now raise "
+                        "a disjointed molecule warning. This can be ignored."))
 
     # Raise warning if molecule is disconnected
     if not nx.is_connected(meta_molecule.molecule):
