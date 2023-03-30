@@ -495,20 +495,24 @@ class gold_models(Processor):
         )  # get only the gold atoms from the itp
         newblock.nrexcl = 3
         self.np_molecule = newblock.to_molecule()
-        # np_molecule = NanoparticleCoordinates().run_molecule(newblock.to_molecule())
-        for node in self.np_molecule.nodes:
-            self.np_molecule.nodes[node]["resname"] = "TEST"
-        graph = MetaMolecule._block_graph_to_res_graph(
-            self.np_molecule
-        )  # what do we mean by a residue graph?
-        meta_mol = MetaMolecule(graph, force_field=self.ff, mol_name="test")
-        self.np_molecule.meta[
-            "moltype"
-        ] = "TEST"  # why do we need to define this metamol again?
-        meta_mol.molecule = self.np_molecule
-        self.newmolecule = self.np_molecule
-        self.np_top = Topology(name=name, force_field=self.ff)
-        self.np_top.molecules = [meta_mol]
+        # self.np_molecule = NanoparticleCoordinates().run_molecule(
+        #    newblock.to_molecule()
+        # )
+
+        # for node in np_molecule.nodes:
+        #    np_molecule.nodes[node]["resname"] = "TEST"
+        # graph = MetaMolecule._block_graph_to_res_graph(
+        #    np_molecule
+        # )  # what do we mean by a residue graph?
+        # self.np_molecule = MetaMolecule(graph, force_field=self.ff, mol_name="test")
+        # np_molecule.meta[
+        #    "moltype"
+        # ] = "TEST"  # why do we need to define this metamol again?
+        # self.np_molecule.molecule = np_molecule
+
+        # self.newmolecule = self.np_molecule
+        # self.np_top = Topology(name=name, force_field=self.ff)
+        # self.np_top.molecules = [meta_mol]
         # nx.set_node_attributes(meta_molecule, init_coords, "position")
 
     def _identify_lattice_surface(self) -> None:
@@ -614,7 +618,7 @@ class gold_models(Processor):
                 attachment_index = index
         return attachment_index
 
-    def ligand_generate_coordinates(self) -> None:
+    def _ligand_generate_coordinates(self) -> None:
         """
         Read the ligand itp files to the force field and ensure we can read the blocks
         """
@@ -647,6 +651,7 @@ class gold_models(Processor):
                     ),  # store the nth atom of the ligand that correponds to anchor
                     "indices": self.core_indices[index - 1],
                 }
+        logging.info(f"{self.ligand_block_specs}")
 
     def _add_block_indices(self) -> None:
         """ """
@@ -697,7 +702,7 @@ class gold_models(Processor):
         """
         TODO
         """
-        self.ligand_generate_coordinates()
+        self._ligand_generate_coordinates()
         self._add_block_indices()
         self._generate_ligand_np_interactions()
         self._generate_bonds()
@@ -717,10 +722,6 @@ class gold_models(Processor):
         self._identify_indices_for_core_attachment()  # generate indices we want to find for core attachment
         attachment_index = self._identify_attachment_index()
         # tag on surface of the core to attach with ligands
-        core_index_relevant, core_index_relevant_II = (
-            self.core_indices[0],
-            self.core_indices[1],
-        )
         # Find the indices that are equivalent to the atom on the ligand we wish to attach onto the NP
         # based on the ligands_N, and then merge onto the NP core the main ligand blocks ligand_N number of times
         scaling_factor = 0
