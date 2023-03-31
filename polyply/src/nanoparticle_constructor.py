@@ -63,7 +63,7 @@ class NanoparticleCoordinates(Processor):
         init_coords = _expand_inital_coords(meta_molecule)
         # this line adds the position to the molecule
         nx.set_node_attributes(meta_molecule, init_coords, "position")
-        return meta_molecule
+        # return meta_molecule
 
 
 class CoordinatesGenerator(Processor):
