@@ -26,7 +26,7 @@ from polyply.src.generate_templates import (
     replace_defined_interaction,
     # map_from_CoG,
     # compute_volume,
-    # extract_block,
+    extract_block,
     # GenerateTemplates,
     # find_interaction_involving,
 )
@@ -411,7 +411,8 @@ class gold_models(Processor):
         self.ligands = ["UNK_12B037/UNK_12B037.itp", "UNK_DA2640/UNK_DA2640.itp"]
         self.ligand_N = [10, 10]
         self.pattern: Literal["Janus", "Striped"] = "Janus"
-        self.ligand_anchor_atoms: list[str] = ["S800", "S807"]
+        self.ligand_anchor_atoms: list[str] = ["S00", "S07"]
+        self.ff = vermouth.forcefield.ForceField(name="test")
 
     def _extract_block_atom(self, molecule: str, atomname: str, defines: dict) -> None:
         """
@@ -437,9 +438,12 @@ class gold_models(Processor):
         -------
         :class:vermouth.molecule.Block
         """
+        if not self.ff:
+            raise ValueError("need to initiate force field first!")
+
         nodes = find_atoms(molecule, "atype", atomname)
         resid = molecule.nodes[nodes[0]]["resid"]
-        block = vermouth.molecule.Block()
+        block = vermouth.molecule.Block(force_field=self.ff)
 
         # select all nodes with the same first resid and
         # make sure the block node labels are atomnames
@@ -485,8 +489,6 @@ class gold_models(Processor):
         -------
         :None
         """
-        name = "test"
-        self.ff = vermouth.forcefield.ForceField(name=name)
         vermouth.gmx.itp_read.read_itp(self.sample, self.ff)
         self.NP_block = self.ff.blocks["NP2"]
         core_molecule = self.ff.blocks["NP2"].to_molecule()  # make metamolcule object
@@ -494,26 +496,7 @@ class gold_models(Processor):
             core_molecule, "AU", {}
         )  # get only the gold atoms from the itp
         newblock.nrexcl = 3
-        self.np_molecule = newblock.to_molecule()
-        # self.np_molecule = NanoparticleCoordinates().run_molecule(
-        #    newblock.to_molecule()
-        # )
-
-        # for node in np_molecule.nodes:
-        #    np_molecule.nodes[node]["resname"] = "TEST"
-        # graph = MetaMolecule._block_graph_to_res_graph(
-        #    np_molecule
-        # )  # what do we mean by a residue graph?
-        # self.np_molecule = MetaMolecule(graph, force_field=self.ff, mol_name="test")
-        # np_molecule.meta[
-        #    "moltype"
-        # ] = "TEST"  # why do we need to define this metamol again?
-        # self.np_molecule.molecule = np_molecule
-
-        # self.newmolecule = self.np_molecule
-        # self.np_top = Topology(name=name, force_field=self.ff)
-        # self.np_top.molecules = [meta_mol]
-        # nx.set_node_attributes(meta_molecule, init_coords, "position")
+        self.np_molecule_new = newblock.to_molecule()
 
     def _identify_lattice_surface(self) -> None:
         """
@@ -546,13 +529,15 @@ class gold_models(Processor):
         attribute
         """
         # assign molecule object
-        np_molecule = NanoparticleCoordinates().run_molecule(
-            self.ff.blocks["NP2"].to_molecule()
-        )
+        np_molecule = NanoparticleCoordinates().run_molecule(self.np_molecule_new)
         # init_coords = expand_initial_coords(self.NP_block)
         # In the case of a spherical core, find the radius of the core
         core_numpy_coords = np.asarray(
             list((nx.get_node_attributes(np_molecule, "position").values()))
+        )
+        self.core_len = len(core_numpy_coords)
+        logging.info(
+            f"The filtered NP core has {len(core_numpy_coords)} number of atoms"
         )
         # Find the center of geometry of the core
         CoG = center_of_geometry(core_numpy_coords)
@@ -629,18 +614,18 @@ class gold_models(Processor):
 
         # ensure we have a ff initialized
         self.ligand_block_specs = {}
-        if self.ff:
-            for ligand in self.ligands:
-                with open(self.ligand_path + "/" + ligand, "r") as f:
-                    ligand_file = f.read()
-                    ligand_file = ligand_file.split("\n")
-                    # register the itp file
-                    vermouth.gmx.itp_read.read_itp(ligand_file, self.ff)
+        for ligand in self.ligands:
+            with open(self.ligand_path + "/" + ligand, "r") as f:
+                ligand_file = f.read()
+                ligand_file = ligand_file.split("\n")
+                # register the itp file
+                vermouth.gmx.itp_read.read_itp(ligand_file, self.ff)
 
-        # assert len(self.ff.blocks.keys()) == len(self.ligand_N)
+                # assert len(self.ff.blocks.keys()) == len(self.ligand_N)
         for index, block_name in enumerate(self.ff.blocks.keys()):
             if block_name != "NP2":
                 self.ligand_block_specs[block_name] = {
+                    "name": block_name,
                     "length": len(
                         list(self.ff.blocks[block_name].atoms)
                     ),  # store length of the ligand
@@ -649,9 +634,8 @@ class gold_models(Processor):
                         self.ff.blocks[block_name],
                         self.ligand_anchor_atoms[index - 1],
                     ),  # store the nth atom of the ligand that correponds to anchor
-                    "indices": self.core_indices[index - 1],
+                    "indices": self.core_indices[index - 1],  # store the
                 }
-        logging.info(f"{self.ligand_block_specs}")
 
     def _add_block_indices(self) -> None:
         """ """
@@ -675,33 +659,46 @@ class gold_models(Processor):
             for index in range(
                 0, self.ligand_block_specs[key]["N"]
             ):  # loop over the number of ligands we want to create
-                # ligand_index = index * length  # compute starting index for each ligand
-                # self.attachment_list.append(scaled_ligand_index)
-                # merge the relevant molecule
-                self.np_molecule.merge_molecule(self.ff.blocks[key])
+                self.np_molecule_new.merge_molecule(self.ff.blocks[key])
 
     def _generate_bonds(self) -> None:
         """ """
         # get random N elements from the list
         for key in self.ligand_block_specs.keys():
-            for index, entry in enumerate(self.ligand_block_specs[key]["indices"]):
+            logging.info(f"bonds for {key}")
+            for index, entry in enumerate(
+                list(self.ligand_block_specs[key]["indices"].keys())
+            ):
+                base_anchor = (
+                    self.core_len
+                    + ((index + 1) * self.ligand_block_specs[key]["length"])
+                    + self.ligand_block_specs[key]["anchor_index"]
+                )
                 interaction = vermouth.molecule.Interaction(
                     atoms=(
                         entry,
-                        self.ligand_block_specs[key][index]
-                        + 1
-                        + self.ligand_block_specs[key]["anchor_index"],
+                        base_anchor,
                     ),
                     parameters=["1", "0.0033", "5000"],
                     meta={},
                 )
+                logging.info(f"generating bonds between {entry} and {base_anchor}")
+                self.np_molecule_new.interactions["bonds"].append(interaction)
 
-            self.np_molecule.interactions["bonds"].append(interaction)
+            logging.info(
+                f"core length is {self.core_len}, number of atoms with ligands added is {self.ligand_block_specs[key]['length'] * self.ligand_block_specs[key]['N']} "
+            )
+
+            self.core_len += self.ligand_block_specs[key]["length"] * len(
+                list(self.ligand_block_specs[key]["indices"])
+            )
+            logging.info(f"core length is now {self.core_len}")
 
     def generate_dicts(self) -> None:
         """
         TODO
         """
+        self._identify_indices_for_core_attachment()
         self._ligand_generate_coordinates()
         self._add_block_indices()
         self._generate_ligand_np_interactions()
@@ -799,5 +796,5 @@ if __name__ == "__main__":
     # generate the core of the opls force field work
     gold_model = gold_models()
     gold_model.core_generate_coordinates()
-    gold_model._identify_indices_for_core_attachment()
     gold_model.generate_dicts()
+    # gold_model.generate_dicts()
