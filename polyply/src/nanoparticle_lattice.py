@@ -83,7 +83,7 @@ class NanoparticleCoordinates(Processor):
         init_coords = _expand_inital_coords(meta_molecule)
         # this line adds the position to the molecule
         nx.set_node_attributes(meta_molecule, init_coords, "position")
-        return meta_molecule
+        # return meta_molecule
 
 
 class NanoparticleIdentifySurface(Processor):
@@ -410,7 +410,7 @@ class gold_models(Processor):
         self.ligand_path: str = "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand"
         self.ligands = ["UNK_12B037/UNK_12B037.itp", "UNK_DA2640/UNK_DA2640.itp"]
         self.ligand_N = [10, 10]
-        self.pattern: Literal["Janus", "Striped"] = "Janus"
+        self.pattern: Literal["Janus", "Striped"] = "Striped"
         self.ligand_anchor_atoms: list[str] = ["S00", "S07"]
         self.ff = vermouth.forcefield.ForceField(name="test")
 
@@ -529,11 +529,12 @@ class gold_models(Processor):
         attribute
         """
         # assign molecule object
-        np_molecule = NanoparticleCoordinates().run_molecule(self.np_molecule_new)
+        NanoparticleCoordinates().run_molecule(self.np_molecule_new)
         # init_coords = expand_initial_coords(self.NP_block)
+
         # In the case of a spherical core, find the radius of the core
         core_numpy_coords = np.asarray(
-            list((nx.get_node_attributes(np_molecule, "position").values()))
+            list((nx.get_node_attributes(self.np_molecule_new, "position").values()))
         )
         self.core_len = len(core_numpy_coords)
         logging.info(
@@ -694,6 +695,25 @@ class gold_models(Processor):
             )
             logging.info(f"core length is now {self.core_len}")
 
+    def _run(self):
+        """ """
+        NanoparticleCoordinates().run_molecule(self.np_molecule_new)
+
+        for node in self.np_molecule_new.nodes:
+            # change resname to moltype
+            self.np_molecule_new.nodes[node]["resname"] = "TEST"
+
+        self.graph = MetaMolecule._block_graph_to_res_graph(
+            self.np_molecule_new
+        )  # generate residue graph
+
+        # generate meta molecule from the residue graph with a new molecule name
+        self.meta_mol = MetaMolecule(self.graph, force_field=self.ff, mol_name="sdfs")
+        self.np_molecule_new.meta["moltype"] = "TEST"
+        # reassign the molecule with the np_molecule we have defined new interactions with
+        self.meta_mol.molecule = self.np_molecule_new
+        # return self.meta_mol
+
     def generate_dicts(self) -> None:
         """
         TODO
@@ -703,60 +723,7 @@ class gold_models(Processor):
         self._add_block_indices()
         self._generate_ligand_np_interactions()
         self._generate_bonds()
-
-    def run(self, core_mol) -> None:
-        """
-        we have two blocks representing the blocks of the NP core and
-        the ligand block. Hence, we wish to add links to the blocks
-        first add connection between the blocks
-        """
-        self._set_ff()
-        self.np_molecule = self.NP_block.to_molecule()
-        ligand_len = len(list(self.ligand_block.atoms))
-        # compute the max radius of the
-        core_size = len(list(self.NP_block))
-        # self.attachment_index = 5
-        self._identify_indices_for_core_attachment()  # generate indices we want to find for core attachment
-        attachment_index = self._identify_attachment_index()
-        # tag on surface of the core to attach with ligands
-        # Find the indices that are equivalent to the atom on the ligand we wish to attach onto the NP
-        # based on the ligands_N, and then merge onto the NP core the main ligand blocks ligand_N number of times
-        scaling_factor = 0
-        for index, block in enumerate(self.ligand_block_specs.keys()):
-            core_size = core_size + scaling_factor
-            self.generate_ligand_np_interactions(
-                self.np_molecule, core_size, **self.ligand_block_specs[block]
-            )
-            scaling_factor = (
-                self.ligand_block_specs[block]["length"]
-                * self.ligand_block_specs[block]["N"]
-            )
-
-        for node in self.np_molecule.nodes:
-            # change resname to moltype
-            self.np_molecule.nodes[node]["resname"] = "TEST"
-        self.graph = MetaMolecule._block_graph_to_res_graph(
-            self.np_molecule
-        )  # generate residue graph
-        # generate meta molecule from the residue graph with a new molecule name
-        self.meta_mol = MetaMolecule(self.graph, force_field=self.ff, mol_name="test")
-        self.np_molecule.meta["moltype"] = "TEST"
-        # reassign the molecule with the np_molecule we have defined new interactions with
-        self.meta_mol.molecule = self.np_molecule
-        return self.meta_mol
-
-    def write_itp(self) -> None:
-        """
-        Parameters
-        ----------
-        None: None
-
-        Returns
-        -------
-        None
-        """
-        with open("np.itp", "w") as outfile:
-            write_molecule_itp(self.newmolecule, outfile)
+        self._run()
 
     def create_gro(self, write_path: str) -> None:
         """
@@ -773,16 +740,35 @@ class gold_models(Processor):
         None
 
         """
-        self.top.box = np.array([3.0, 3.0, 3.0])
+        self.np_top = Topology(name="nanoparticle", force_field=self.ff)
+        self.np_top.molecules = [self.meta_mol]
+        self.np_top.box = np.array([3.0, 3.0, 3.0])
         system = self.np_top.convert_to_vermouth_system()
         gro.write_gro(
             system,
             write_path,
             precision=7,
             title="gold nanoparticle core",
-            box=self.top.box,
+            box=self.np_top.box,
             defer_writing=False,
         )
+
+    def write_itp(self) -> None:
+        """
+        Parameters
+        ----------
+        None: None
+
+        Returns
+        -------
+        None
+        """
+        self.np_top = Topology(name="nanoparticle", force_field=self.ff)
+        self.np_top.molecules = [self.meta_mol]
+        self.np_top.box = np.array([3.0, 3.0, 3.0])
+
+        with open("np.itp", "w") as outfile:
+            write_molecule_itp(self.np_top.molecules[0].molecule, outfile)
 
 
 # main code executable
@@ -797,4 +783,5 @@ if __name__ == "__main__":
     gold_model = gold_models()
     gold_model.core_generate_coordinates()
     gold_model.generate_dicts()
-    # gold_model.generate_dicts()
+    # gold_model.create_gro("new.gro")
+    gold_model.write_itp()
