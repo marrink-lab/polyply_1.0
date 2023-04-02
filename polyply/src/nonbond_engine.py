@@ -323,9 +323,11 @@ class NonBondEngine():
                     if not_exceeds_max_dimensions(molecule.nodes[node]["position"], box):
                         positions[idx, :] = molecule.nodes[node]["position"]
                     else:
-                        print(molecule.nodes[node]["position"], molecule.nodes[node])
-                        msg = ("Provided coordinate exceeds maximum box dimensions."
-                               "Make sure all coordiantes are wrapped inside the box")
+                        mol_name = molecule.mol_name
+                        resname = molecule.nodes[node]['resname']
+                        msg = (f"Provided coordinate for residue {resname} in molecule {mol_name}\n"
+                               f"with molecule index {idx} exceeds maximum box dimensions.\n"
+                                "Make sure all coordiantes are wrapped inside the box.")
                         raise IOError(msg)
 
                 resname = molecule.nodes[node]["resname"]
