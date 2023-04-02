@@ -235,3 +235,38 @@ def _rotate_xyz(object_xyz, theta_x, theta_y, theta_z):
     return rotated_object
 
 rotate_xyz = jit(_rotate_xyz)
+
+def not_exceeds_max_dimensions(point, maxdim):
+    """
+    Check if point is within the compontents of
+    the maxdim vector. Note that all coodinates in
+    polyply are definiet positive.
+
+    Parameters:
+    -----------
+    point: np.ndarray
+    maxdim: np.ndarray
+
+    Returns:
+    --------
+    bool
+    """
+    return np.all(point <= maxdim) and np.all(point >= np.array([0., 0., 0.]))
+
+def pbc_complete(point, maxdim):
+    """
+    Wrap point around pbc conditions to keep
+    points from being larger than the compontents of
+    the maxdim vector. Note that all coodinates in
+    polyply are definiet positive.
+
+    Parameters:
+    -----------
+    point: np.ndarray
+    maxdim: np.ndarray
+
+    Returns:
+    --------
+    np.ndarray
+    """
+    return point % maxdim
