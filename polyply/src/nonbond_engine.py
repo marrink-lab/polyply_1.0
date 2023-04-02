@@ -16,6 +16,7 @@ import numpy as np
 import scipy.spatial
 from polyply import jit
 from .topology import lorentz_berthelot_rule
+from .linalg_functions import not_exceeds_max_dimensions
 
 def _lennard_jones_force(dist, point, ref, params):
     """
@@ -106,8 +107,8 @@ class NonBondEngine():
         self.boxsize = boxsize
 
         self.defined_idxs = [list(np.where(self.positions[:, 0].reshape(-1) != np.inf)[0])]
-        self.position_trees = [scipy.spatial.ckdtree.cKDTree(positions[self.defined_idxs[-1]],
-                                                             boxsize=boxsize)]
+        self.position_trees = [scipy.spatial.KDTree(positions[self.defined_idxs[-1]],
+                                                    boxsize=boxsize)]
 
         # given a global node index, in which tree is the position saved
         self.gndx_to_tree = {idx: 0 for idx in self.defined_idxs[0]}
@@ -131,8 +132,8 @@ class NonBondEngine():
         saved over multiple trees into a single tree.
         """
         self.defined_idxs = [list(np.where(self.positions[:, 0].reshape(-1) != np.inf)[0])]
-        self.position_trees = [scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs[-1]],
-                                                             boxsize=self.boxsize)]
+        self.position_trees = [scipy.spatial.KDTree(self.positions[self.defined_idxs[-1]],
+                                                    boxsize=self.boxsize)]
         self.gndx_to_tree = {idx: 0 for idx in self.defined_idxs[0]}
 
     def add_positions(self, point, mol_idx, node_key, start=True):
@@ -149,14 +150,14 @@ class NonBondEngine():
         if start and self.position_trees[-1].n > 5000:
             self.defined_idxs.append([gndx])
             self.gndx_to_tree[gndx] = len(self.position_trees)
-            self.position_trees.append(scipy.spatial.ckdtree.cKDTree(point.reshape(1,3),
+            self.position_trees.append(scipy.spatial.KDTree(point.reshape(1,3),
                                                                      boxsize=self.boxsize,
                                                                      balanced_tree=False,
                                                                      compact_nodes=False))
         else:
             self.defined_idxs[-1].append(gndx)
             self.gndx_to_tree[gndx] = len(self.position_trees) - 1
-            new_tree = scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs[-1]],
+            new_tree = scipy.spatial.KDTree(self.positions[self.defined_idxs[-1]],
                                                      boxsize=self.boxsize,
                                                      balanced_tree=False,
                                                      compact_nodes=False)
@@ -187,10 +188,10 @@ class NonBondEngine():
             tree_idxs.append(tree_idx)
 
         for tree_idx in tree_idxs:
-            new_tree = scipy.spatial.ckdtree.cKDTree(self.positions[self.defined_idxs[tree_idx]],
-                                                     boxsize=self.boxsize,
-                                                     balanced_tree=False,
-                                                     compact_nodes=False)
+            new_tree = scipy.spatial.KDTree(self.positions[self.defined_idxs[tree_idx]],
+                                            boxsize=self.boxsize,
+                                            balanced_tree=False,
+                                            compact_nodes=False)
             self.position_trees[tree_idx] = new_tree
 
     def pbc_min_dist(self, pos_a, pos_b):
@@ -269,8 +270,8 @@ class NonBondEngine():
         """
         exclusions = [self.nodes_to_gndx[(mol_idx, node)] for node in exclude]
 
-        ref_tree = scipy.spatial.ckdtree.cKDTree(point.reshape(1, 3),
-                                                 boxsize=self.boxsize)
+        ref_tree = scipy.spatial.KDTree(point.reshape(1, 3),
+                                        boxsize=self.boxsize)
         force = 0
         for pos_tree, defined_idxs in zip(self.position_trees, self.defined_idxs):
 
@@ -318,7 +319,14 @@ class NonBondEngine():
         for molecule in molecules:
             for node in molecule.nodes:
                 if "position" in molecule.nodes[node]:
-                    positions[idx, :] = molecule.nodes[node]["position"]
+                    # check if position is inside grid
+                    if not_exceeds_max_dimensions(molecule.nodes[node]["position"], box):
+                        positions[idx, :] = molecule.nodes[node]["position"]
+                    else:
+                        print(molecule.nodes[node]["position"], molecule.nodes[node])
+                        msg = ("Provided coordinate exceeds maximum box dimensions."
+                               "Make sure all coordiantes are wrapped inside the box")
+                        raise IOError(msg)
 
                 resname = molecule.nodes[node]["resname"]
                 atom_types.append(resname)
