@@ -17,34 +17,13 @@ import numpy as np
 from numpy.linalg import norm
 import networkx as nx
 from .processor import Processor
-from .linalg_functions import norm_sphere
-from .linalg_functions import _vector_angle_degrees
+from .linalg_functions import _vector_angle_degrees, not_exceeds_max_dimensions, norm_sphere, pbc_complete
 from .graph_utils import neighborhood
 from .meta_molecule import _find_starting_node
 """
 Processor implementing a random-walk to generate
 coordinates for a meta-molecule.
 """
-
-
-def pbc_complete(point, maxdim):
-    """
-    Wrap point around pbc conditions to keep
-    points from being larger than the compontents of
-    the maxdim vector. Note that all coodinates in
-    polyply are definiet positive.
-
-    Parameters:
-    -----------
-    point: np.ndarray
-    maxdim: np.ndarray
-
-    Returns:
-    --------
-    np.ndarray
-    """
-    return point % maxdim
-
 
 def _take_step(vectors, step_length, coord, box):
     """
@@ -68,24 +47,6 @@ def _take_step(vectors, step_length, coord, box):
     new_coord = coord + vectors[index] * step_length
     new_coord = pbc_complete(new_coord, box)
     return new_coord, index
-
-
-def not_exceeds_max_dimensions(point, maxdim):
-    """
-    Check if point is within the compontents of
-    the maxdim vector. Note that all coodinates in
-    polyply are definiet positive.
-
-    Parameters:
-    -----------
-    point: np.ndarray
-    maxdim: np.ndarray
-
-    Returns:
-    --------
-    bool
-    """
-    return np.all(point < maxdim) and np.all(point > np.array([0., 0., 0.]))
 
 def is_restricted(point, old_point, node_dict):
     """
@@ -381,7 +342,7 @@ class RandomWalk(Processor):
         if "position" not in meta_molecule.nodes[first_node]:
             constrained = fulfill_geometrical_constraints(self.start,
                                                           self.molecule.nodes[first_node])
-
+            print(constrained)
             if constrained and not self._is_overlap(self.start, first_node):
                 self.nonbond_matrix.add_positions(self.start,
                                                   self.mol_idx,
