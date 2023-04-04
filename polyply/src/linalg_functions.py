@@ -238,9 +238,9 @@ rotate_xyz = jit(_rotate_xyz)
 
 def not_exceeds_max_dimensions(point, maxdim):
     """
-    Check if point is within the compontents of
-    the maxdim vector. Note that all coodinates in
-    polyply are definiet positive.
+    Check if point is within the components of
+    the maxdim vector. Note that all coordinates in
+    polyply are positive semi-definite.
 
     Parameters:
     -----------
