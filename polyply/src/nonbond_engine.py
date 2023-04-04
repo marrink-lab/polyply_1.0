@@ -320,8 +320,16 @@ class NonBondEngine():
             for node in molecule.nodes:
                 if "position" in molecule.nodes[node]:
                     # check if position is inside grid
-                    if not_exceeds_max_dimensions(molecule.nodes[node]["position"], box):
+                    is_finite = np.isfinite(molecule.nodes[node]["position"])
+                    if not_exceeds_max_dimensions(molecule.nodes[node]["position"], box) and is_finite:
                         positions[idx, :] = molecule.nodes[node]["position"]
+                    elif not is_finite:
+                        mol_name = molecule.mol_name
+                        resname = molecule.nodes[node]['resname']
+                        msg = (f"Provided coordinate for residue {resname} in molecule {mol_name}\n"
+                               f"with molecule index {idx} is not finite. All coordinates in\n"
+                                "polyply must be positive semi-definite.")
+                        raise IOError(msg)
                     else:
                         mol_name = molecule.mol_name
                         resname = molecule.nodes[node]['resname']
