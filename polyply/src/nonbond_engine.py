@@ -320,7 +320,7 @@ class NonBondEngine():
             for node in molecule.nodes:
                 if "position" in molecule.nodes[node]:
                     # check if position is inside grid
-                    is_finite = np.isfinite(molecule.nodes[node]["position"])
+                    is_finite = np.all(np.isfinite(molecule.nodes[node]["position"]))
                     if not_exceeds_max_dimensions(molecule.nodes[node]["position"], box) and is_finite:
                         positions[idx, :] = molecule.nodes[node]["position"]
                     elif not is_finite:

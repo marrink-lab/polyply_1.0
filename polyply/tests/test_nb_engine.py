@@ -217,8 +217,17 @@ def test_LJ_force(dist, ref, expected):
      value = polyply.src.nonbond_engine._lennard_jones_force(dist, point, ref, params)
      assert np.allclose(value, expected)
 
-def test_init_coord_error(topology):
-    topology.molecules[2].nodes[0]['position'] = np.array([11., 11., 11.])
+
+@pytest.mark.parametrize('position',(
+         np.array([11., 11., 11.]),
+         np.array([9., 9., 11.]),
+         np.array([9., 11, 9.]),
+         np.array([11., 9., 9.]),
+         np.array([11., 9., -5.]),
+         np.array([np.inf, 9., 9.]),
+         np.array([9., 9., np.nan]),))
+def test_init_coord_error(topology, position):
+    topology.molecules[2].nodes[0]['position'] = position
     with pytest.raises(IOError):
         # initiate the nb_engine
         nb_engine =  NonBondEngine.from_topology(topology.molecules,
