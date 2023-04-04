@@ -127,6 +127,18 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=None, lib=Non
 
     with deferred_open(outpath, 'w') as outfile:
         header = [ ' '.join(sys.argv) + "\n" ]
+        if idp == True and lib[0] == 'martini3':
+            idp_header_msg0 = (f'This parameter file for {name} has used the Martini 3 IDP parameters. '
+                              'The additional following lines MUST be included in your master itp file:'
+                              )
+            idp_header_msg1 = 'VS 0.00 0.000 A 0.0 0.0'
+            idp_header_msg2 = 'VS    W   1 0.4650000000    0.5000000000 '
+            idp_header_msg3 = 'in the [ atomtypes ] and [ nonbond_params ] directives respectively.\n'
+            header.append(idp_header_msg0)
+            header.append(idp_header_msg1)
+            header.append(idp_header_msg2)
+            header.append(idp_header_msg3)
+
         header.append("Please cite the following papers:")
         for citation in meta_molecule.molecule.citations:
             cite_string =  citation_formatter(meta_molecule.molecule.force_field.citations[citation])
