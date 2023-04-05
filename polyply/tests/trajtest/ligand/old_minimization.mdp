@@ -1,0 +1,51 @@
+;integrator               = steep
+;nsteps                   = 10000000000000000000000
+;nstxout                  = 0
+;nstfout                  = 0
+;nstlog                   = 100 
+;
+;cutoff-scheme            = Verlet
+;nstlist                  = 20
+;ns_type                  = grid
+;pbc                      = xyz
+;verlet-buffer-tolerance  = 0.005
+;
+;coulombtype              = reaction-field 
+;rcoulomb                 = 1.1
+;epsilon_r                = 15   
+;epsilon_rf               = 0
+;vdw_type                 = cutoff  
+;vdw-modifier             = Potential-shift-verlet
+;rvdw                     = 1.1
+
+; MDP file for atomic minimization with steepest descent
+
+define = -DFLEXIBLE
+integrator = steep
+emtol = 1000
+emstep = 0.01
+nsteps = 5000
+nstenergy = 100
+nstlog = 100
+nstxout = 100
+
+; Parameters for the neighbor searching and cutoffs
+nstlist = 10
+;ns_type = grid
+pbc = xyz
+rlist = 1.0
+
+; Parameters for the electrostatics and vdw calculations
+coulombtype = PME
+rcoulomb = 1.0
+vdwtype = cutoff
+rvdw = 1.0
+DispCorr = EnerPres
+
+; Temperature and pressure coupling
+tcoupl = no
+pcoupl = no
+
+; Periodic boundary conditions
+pbc = xyz
+periodic-molecules = yes
