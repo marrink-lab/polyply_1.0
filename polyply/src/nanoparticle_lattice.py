@@ -22,11 +22,7 @@ from polyply.src.generate_templates import (
     _relabel_interaction_atoms,
     find_atoms,
     replace_defined_interaction,
-    # map_from_CoG,
-    # compute_volume,
     extract_block,
-    # GenerateTemplates,
-    # find_interaction_involving,
 )
 import polyply.src.meta_molecule
 from polyply.src.load_library import load_library
@@ -42,26 +38,29 @@ from amber_nps import return_amber_nps_type  # this will be changed
 
 logging.basicConfig(level=logging.DEBUG)
 
-"""
-Internal notes:
---------------
 
-for the UAModelSingleNP:
-
-The program outputs LAMMPS data file "data.np" and CFG configuration file 
-cfg which can be visualized with the atomeeye file 
-
-The program reads the relaxed coordinates of a single gold-alkanethiol
-nanoparticle. These coordinates are writte in the file 
-singleNP.cfg. 
-
--- notes from singleNP: 
-
-The program outputs LAMMPS data file "data.np" and CFG file. 
-
-"""
-# generate pydantic class for lennard jones parameters
-# pair_coeff       1 1 morse  10.956 1.5830 3.0242 # These paramaeters are identical as with the other orientations and visa versa
+def rotation_matrix_from_vectors(vec1: np.ndarray, vec2: np.ndarray) -> np.ndarray:
+    """
+    Find the rotation matrix that aligns vec1 to vec2
+    Args:
+    vec1:
+        A 3d "source" vector
+    vec2:
+        A 3d "destination" vector
+    Returns:
+    rotation_matrix:
+        A transform matrix (3x3) which when applied to vec1, aligns it with vec2.
+    Raises:
+    """
+    a, b = (vec1 / np.linalg.norm(vec1)).reshape(3), (
+        vec2 / np.linalg.norm(vec2)
+    ).reshape(3)
+    v = np.cross(a, b)
+    c = np.dot(a, b)
+    s = np.linalg.norm(v)
+    kmat = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
+    rotation_matrix = np.eye(3) + kmat + kmat.dot(kmat) * ((1 - c) / (s**2))
+    return rotation_matrix
 
 
 class NanoparticleCoordinates(Processor):
@@ -84,97 +83,12 @@ class NanoparticleCoordinates(Processor):
         nx.set_node_attributes(meta_molecule, init_coords, "position")
 
 
-def return_np(
-    first_atom_index_pos: np.ndarray,
-    last_atom_index_pos: np.ndarray,
-    core_center: np.ndarray,
-    core_index: np.ndarray,
-    core_coordinates: np.ndarray,
-    length: float = 1.0,
-):
-    """ """
-
-    def rotation_matrix_from_vectors(vec1: np.ndarray, vec2: np.ndarray) -> np.ndarray:
-        """
-        Find the rotation matrix that aligns vec1 to vec2
-        Args:
-        vec1:
-            A 3d "source" vector
-        vec2:
-            A 3d "destination" vector
-        Returns:
-        rotation_matrix:
-            A transform matrix (3x3) which when applied to vec1, aligns it with vec2.
-        Raises:
-        """
-        a, b = (vec1 / np.linalg.norm(vec1)).reshape(3), (
-            vec2 / np.linalg.norm(vec2)
-        ).reshape(3)
-        v = np.cross(a, b)
-        c = np.dot(a, b)
-        s = np.linalg.norm(v)
-        kmat = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
-        rotation_matrix = np.eye(3) + kmat + kmat.dot(kmat) * ((1 - c) / (s**2))
-        return rotation_matrix
-
-    # get the vector representing the ligand in space
-    ligand_alignment_vector = first_atom_index_pos - last_atom_index_pos
-    logging.info(f"Calling the rotation matrix from vector")
-    transformation_vector = rotation_matrix_from_vectors(vecLigand, vec2)
-    unit_vector = np.linalg.norm(LigandAlignmentVector)
-    vector_ligand = ligand_alignment_vector.tolist()
-
-    # TransformationVector = rotation_matrix_from_vectors(vecLigand, vec2)
-
-    for i, j in enumerate(Ligand.positions):
-        vector = (j - FirstAtomGroup.positions)[0]
-        vector[0] = LigandAlignmentVector[0] - vector[0]
-        vector[1] = LigandAlignmentVector[1] - vector[1]
-        vector[2] = LigandAlignmentVector[2] - vector[2]
-        if vector[0] == -math.inf:
-            pass
-        if vector[0] == 0.0:
-            pass
-        else:
-            TransformationList.append([vector, Ligand.atoms[i].type])
-
-    unitVector = np.linalg.norm(LigandAlignmentVector)
-    vecLigand = LigandAlignmentVector.tolist()
-
-    # Loop over the sphere and find the
-    for index in range(0, len(SphereList)):
-        vec2 = SphereList[index]
-        # Find the transformationvector for the ligand vector to vec2, which is the position of the point on sphere
-        TransformationVector = rotation_matrix_from_vectors(vecLigand, vec2)
-        # Rotate the vector
-        vec1_rot = TransformationVector.dot(
-            vecLigand
-        )  # Rotate the vector to match the surface point on the sphere
-        # Get the absolute length of the unit vector
-        unitVectorabs = np.linalg.norm(LigandAlignmentVector)
-        # Change the rotation vector in unit vector, then multiply by the absolute
-        # length of the sphere
-        vecMultiplier = vec1_rot / unitVectorabs * (np.linalg.norm(np.array(vec2))) + (
-            vec1_rot / unitVectorabs * Length
-        )
-        # Find the difference in length
-
-        Sphere.append(vec2)
-
-        # Translate the vector further out
-        for trans in TransformationList:
-            LigandAtomcoordinate = TransformationVector.dot(trans[0])
-            LigandAtomcoordinate[0] = LigandAtomcoordinate[0] + vecMultiplier[0]
-            LigandAtomcoordinate[1] = LigandAtomcoordinate[1] + vecMultiplier[1]
-            LigandAtomcoordinate[2] = LigandAtomcoordinate[2] + vecMultiplier[2]
-            LigandList.append(
-                LigandAtomcoordinate.tolist()
-            )  # Append coordinates of the
-            NameList.append(trans[1])  # Append the names of the atoms
-
-
 class PositionChange(Processor):
     """
+    Looks through the meta molecule assigned, and finds the core
+    atom to which the ligand is attached. One this has been established,
+    the
+
     Parameters
     ----------
 
@@ -182,58 +96,88 @@ class PositionChange(Processor):
     -------
     """
 
-    def __init__(self, ligand_block_specs, core_len, *args, **kwargs):
+    def __init__(self, ligand_block_specs, core_len, resname, *args, **kwargs):
         self.ligand_block_specs = ligand_block_specs
         self.core_len = core_len
+        self.resname = resname
         super().__init__(*args, **kwargs)
 
     def run_molecule(self, meta_molecule):
+
         # first we find a starting node by looping over the molecule nodes
         # finding any one with a degree that is larger than 1
         # shift coordinates - not sure how to fully do this as we have a generator
-        ligands = list(self.ligand_block_specs.keys())
-        shift_array_I = [
-            self.ligand_block_specs[ligands[0]]["indices"][key]
-            for key in list(self.ligand_block_specs[ligands[0]]["indices"].keys())
-        ]
 
-        shift_array_II = [
-            self.ligand_block_specs[ligands[1]]["indices"][key]
-            for key in list(self.ligand_block_specs[ligands[1]]["indices"].keys())
-        ]
-        unique_res = []
-        for index, node in enumerate(list(meta_molecule.nodes)):
-            unique_res.append(meta_molecule.nodes[node]["resid"])
-        unique_res = list(set(unique_res))
+        rotation_matrix_dictionary = {}
+        absolute_vectors = {}
+        ligand_head_tail_pos = {}
 
-        for resid in unique_res:
-            shift_value = np.array(
-                [
-                    random.uniform(-2.0, 2.0),
-                    random.uniform(-2.0, 2.0),
-                    random.uniform(-2.0, 2.0),
-                ]
-            )
+        # Get the ligand alignment vectors
+        core_ligand = [
+            self.ligand_block_specs[self.resname]["core"]
+            - self.ligand_block_specs[self.resname]["indices"][key]
+            for key in list(self.ligand_block_specs[self.resname]["indices"].keys())
+        ]
+        assert len(core_ligand) == len(
+            self.ligand_block_specs[self.resname]["resids"]
+        ), "The number of residues identified does not match the core zone we want to attach to!"
+
+        for resid_index, resid in enumerate(
+            self.ligand_block_specs[self.resname]["resids"]
+        ):
+            ligand_head_tail_pos[resid] = []
             for index, node in enumerate(list(meta_molecule.nodes)):
+                if (
+                    meta_molecule.nodes[node]["resid"] == resid
+                    and meta_molecule.nodes[node]["index"]
+                    == self.ligand_block_specs[self.resname]["anchor_index"] + 1
+                ):
+                    head_node = meta_molecule.nodes[node]["position"]
+                    ligand_head_tail_pos[resid].append(head_node)
+                    print("head : ", head_node)
+                if (
+                    meta_molecule.nodes[node]["resid"] == resid
+                    and meta_molecule.nodes[node]["index"]
+                    == self.ligand_block_specs[self.resname]["tail_index"] + 1
+                ):
+                    tail_node = meta_molecule.nodes[node]["position"]
+                    print("tail : ", tail_node)
+                    ligand_head_tail_pos[resid].append(tail_node)
+
+            ligand_directional_vector = (
+                ligand_head_tail_pos[resid][1] - ligand_head_tail_pos[resid][0]
+            )
+            rot_mat = rotation_matrix_from_vectors(
+                core_ligand[resid_index], ligand_directional_vector
+            )
+
+            logging.info(
+                f"The rotation matrix we have for residue {resid} is {rot_mat}"
+            )
+            rotation_matrix_dictionary[resid] = rot_mat
+            absolute_vectors[resid] = [
+                np.linalg.norm(ligand_directional_vector),
+                np.linalg.norm(core_ligand[resid_index]),
+            ]
+
+        for resid_index, resid in enumerate(
+            self.ligand_block_specs[self.resname]["resids"]
+        ):
+            for index, node in enumerate(list(meta_molecule.nodes)):
+                # pick out the residue ids
                 if meta_molecule.nodes[node]["resid"] == resid:
-                    meta_molecule.nodes[node]["position"] += shift_value
-        #
-        # for index, node in enumerate(
-        #    list(meta_molecule.nodes)[
-        #        self.core_len : self.core_len + len(shift_array_I) + 1
-        #    ]
-        # ):
-        #    print(index, meta_molecule.nodes[node], node)
-        #    shift_value = np.array([10, 10, 10])  # shift_array_I[index]
-        #    meta_molecule.nodes[node]["position"] += shift_value
-        #
-        # for index, node in enumerate(
-        #    list(meta_molecule.nodes)[len(shift_array_I) : len(shift_array_II) + 1]
-        # ):
-        #    print(index, meta_molecule.nodes[node], node)
-        #    shift_value = np.array([10, 10, 10])
-        #    # shift_value = shift_array_II[index]
-        #    meta_molecule.nodes[node]["position"] += shift_value
+                    rotated_value = rotation_matrix_dictionary[resid].dot(
+                        meta_molecule.nodes[node]["position"]
+                    )
+                    logging.info(
+                        f"Thew newly rotated ligand is {rotated_value} for residue {resid}"
+                    )
+                    meta_molecule.nodes[node]["position"] = (
+                        rotated_value
+                        / absolute_vectors[resid][0]
+                        * absolute_vectors[resid][1]
+                        + rotated_value / absolute_vectors[resid][0] * 5.0
+                    )
 
 
 class GoldNanoparticleSingle:
@@ -487,7 +431,8 @@ class GoldNanoparticleSingle:
         Plot out the lattice in a 3D structure - generating the coordinates part
         is easy. Now
         the hard part is generating the gro file
-        this is somewhat working ... nowhere near what I want - need to review the core generation code I made above
+        this is somewhat working ... nowhere near what I want - need to review
+        the core generation code I made above
 
         Parameters
         ----------
@@ -565,6 +510,7 @@ class gold_models(Processor):
         self.ligand_N = [10, 10]
         self.pattern: Literal["Janus", "Striped"] = "Striped"
         self.ligand_anchor_atoms: list[str] = ["S00", "S07"]
+        self.ligand_tail_atoms: list[str] = ["C05", "C02"]
         self.ff = vermouth.forcefield.ForceField(name="test")
 
     def _extract_block_atom(self, molecule: str, atomname: str, defines: dict) -> None:
@@ -630,7 +576,7 @@ class gold_models(Processor):
 
     def core_generate_coordinates(self) -> None:
         """
-        now I need to ensure that this function is
+        Now I need to ensure that this function is
         using vermouth to strip the original amber nanoparticle itps
         and read in as residue that can be read
 
@@ -653,6 +599,13 @@ class gold_models(Processor):
 
         core_block.nrexcl = 3
         self.np_molecule_new = core_block.to_molecule()
+        self.core_center = center_of_geometry(
+            np.asarray(
+                list(
+                    (nx.get_node_attributes(self.np_molecule_new, "position").values())
+                )
+            )
+        )
 
     def _identify_lattice_surface(self) -> None:
         """
@@ -686,8 +639,8 @@ class gold_models(Processor):
                 self.surface_atoms.append(interaction_node.atoms[1] + 1)
 
         # get only the unique atoms
-        # self.surface_atoms = list(set(self.surface_atoms))
-        self.surface_atoms = [1]
+        self.surface_atoms = list(set(self.surface_atoms))
+        # self.surface_atoms = [1]
 
     def _identify_indices_for_core_attachment(self):
         """
@@ -712,6 +665,7 @@ class gold_models(Processor):
         core_numpy_coords = np.asarray(
             list((nx.get_node_attributes(self.np_molecule_new, "position").values()))
         )
+        self.core_center = center_of_geometry(core_numpy_coords)
         logging.info(
             f"The filtered NP core has {len(core_numpy_coords)} number of atoms"
         )
@@ -828,7 +782,12 @@ class gold_models(Processor):
                         self.ff.blocks[block_name],
                         self.ligand_anchor_atoms[index - 1],
                     ),  # store the nth atom of the ligand that correponds to anchor
+                    "tail_index": self._identify_attachment_index(
+                        self.ff.blocks[block_name],
+                        self.ligand_tail_atoms[index - 1],
+                    ),  # store the nth atom of the ligand that correponds to anchor
                     "indices": self.core_indices[index - 1],  # store the
+                    "core": self.core_center,
                 }
 
     def _add_block_indices(self) -> None:
@@ -843,6 +802,7 @@ class gold_models(Processor):
         core_size = len(list(self.NP_block))
         scaling_factor = 0
         for key in self.ligand_block_specs.keys():
+
             self.ligand_block_specs[key]["scaled_ligand_index"] = [
                 (index * self.ligand_block_specs[key]["length"] + core_size)
                 + scaling_factor
@@ -864,18 +824,25 @@ class gold_models(Processor):
 
         """
         core_size = self.core
+        resid_index = 2
         for key in self.ligand_block_specs.keys():
             attachment_list = {}
-            for index in range(
-                0, len(list(self.ligand_block_specs[key]["indices"].keys())) + 1
-            ):  # loop over the number of ligands we want to create
-                self.np_molecule_new.merge_molecule(self.ff.blocks[key])
+            resids = []
+            for index, core_atom in enumerate(
+                self.ligand_block_specs[key]["indices"].keys(), 1
+            ):
+                # loop over the number of ligands we want to create
                 attachment_list[index] = [
-                    core_size + 1,
-                    core_size + 1 + self.ligand_block_specs[key]["length"],
+                    core_size,
+                    core_size + self.ligand_block_specs[key]["length"],
                 ]
                 core_size += self.ligand_block_specs[key]["length"]
+                self.np_molecule_new.merge_molecule(self.ff.blocks[key])
+                resids.append(resid_index)
+                resid_index += 1
+
             self.ligand_block_specs[key]["shift_index"] = attachment_list
+            self.ligand_block_specs[key]["resids"] = resids
 
     def _generate_bonds(self) -> None:
         """
@@ -888,6 +855,7 @@ class gold_models(Processor):
         Returns
         -------
         """
+        newcore = self.core
         # get random N elements from the list
         for key in self.ligand_block_specs.keys():
             logging.info(f"bonds for {key}")
@@ -895,8 +863,8 @@ class gold_models(Processor):
                 list(self.ligand_block_specs[key]["indices"].keys())
             ):
                 base_anchor = (
-                    self.core_len
-                    + ((index + 1) * self.ligand_block_specs[key]["length"])
+                    newcore
+                    + (index * self.ligand_block_specs[key]["length"])
                     + self.ligand_block_specs[key]["anchor_index"]
                 )
                 interaction = vermouth.molecule.Interaction(
@@ -913,8 +881,7 @@ class gold_models(Processor):
             logging.info(
                 f"core length is {self.core_len}, number of atoms with ligands added is {self.ligand_block_specs[key]['length'] * self.ligand_block_specs[key]['N']} "
             )
-
-            self.core_len += self.ligand_block_specs[key]["length"] * len(
+            newcore += self.ligand_block_specs[key]["length"] * len(
                 list(self.ligand_block_specs[key]["indices"])
             )
             logging.info(f"core length is now {self.core_len}")
@@ -933,9 +900,15 @@ class gold_models(Processor):
         # reassign the molecule with the np_molecule we have defined new interactions with
         NanoparticleCoordinates().run_molecule(self.np_molecule_new)
         # shift the positions of the ligands so that they are initiated on the surface of the NP
-        PositionChange(
-            core_len=self.core_len, ligand_block_specs=self.ligand_block_specs
-        ).run_molecule(self.np_molecule_new)
+
+        for resname in self.ligand_block_specs.keys():
+            print(resname)
+            PositionChange(
+                ligand_block_specs=self.ligand_block_specs,
+                core_len=self.core_len,
+                resname=resname,
+            ).run_molecule(self.np_molecule_new)
+
         # prepare meta molecule
         self.meta_mol.molecule = self.np_molecule_new
         # set the topology object
