@@ -258,7 +258,7 @@ def pbc_complete(point, maxdim):
     Wrap point around pbc conditions to keep
     points from being larger than the compontents of
     the maxdim vector. Note that all coodinates in
-    polyply are definiet positive.
+    polyply are positive semi-definite.
 
     Parameters:
     -----------
