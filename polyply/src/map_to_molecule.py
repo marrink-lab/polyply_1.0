@@ -247,7 +247,7 @@ class MapToMolecule(Processor):
             if node in self.added_fragment_nodes:
                 fragment_id = self.node_to_fragment[node]
                 correspondence = self.multiblock_correspondence[fragment_id]
-           # in this case we have to add the node from the block definitions
+            # in this case we have to add the node from the block definitions
             else:
                 block = self.force_field.blocks[self.node_to_block[node]]
                 # if the block represents more than one residue all residues
