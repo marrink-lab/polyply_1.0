@@ -256,7 +256,6 @@ class MapToMolecule(Processor):
                     raise IOError(MultiblockError.format(self.node_to_block[node]))
 
                 correspondence = new_mol.merge_molecule(block)
-
             # make the residue from the correspondence
             residue = _correspondence_to_residue(meta_molecule,
                                                  new_mol,
