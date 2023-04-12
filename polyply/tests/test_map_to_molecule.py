@@ -442,3 +442,45 @@ def test_error_missing_residues_multi(lines, monomers, from_itp):
     # map to molecule
     with pytest.raises(IOError):
         polyply.src.map_to_molecule.MapToMolecule(ff).run_molecule(meta_mol)
+
+
+@pytest.mark.parametrize('nmon, resids', (
+    (4, (1, 2, 3, 4)),
+    (4, (100, 101, 102, 103)),
+# gaps are not supported at the moment
+#    (4, (1, 2, 5, 6)),
+    (4, (1, 3, 2, 4)),
+    ))
+def test_resid_assigment(nmon, resids):
+    """
+    Test if the resids are assigned correctly
+    to the high-res molecule and graph fragment.
+    """
+    lines ="""
+    [ moleculetype ]
+    ; name nexcl.
+    PEO         1
+    ;
+    [ atoms ]
+    1  SN1a    1   R2   C1  1   0.000  45
+    """
+    lines = textwrap.dedent(lines).splitlines()
+    ff = vermouth.forcefield.ForceField(name='test_ff')
+    polyply.src.polyply_parser.read_polyply(lines, ff)
+    # build the meta-molecule
+    meta_mol = MetaMolecule(name="test", force_field=ff)
+    nodes = list(range(0, nmon))
+    node_to_resid = dict(zip(nodes, resids))
+    for node, resid in node_to_resid.items():
+        meta_mol.add_monomer(node, "PEO", [])
+        meta_mol.nodes[node]['resid'] = resid
+    meta_mol.add_edges_from(zip(nodes[:-1], nodes[1:]))
+
+    # map to molecule
+    new_meta_mol = polyply.src.map_to_molecule.MapToMolecule(ff).run_molecule(meta_mol)
+    # check that the resids are set correctly
+    for node in new_meta_mol.nodes:
+        ref_resid = node_to_resid[node]
+        assert new_meta_mol.nodes[node]['resid'] == ref_resid
+        attr_node = list(new_meta_mol.nodes[node]['graph'].nodes)[0]
+        assert new_meta_mol.nodes[node]['graph'].nodes[attr_node]['resid'] == ref_resid

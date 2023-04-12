@@ -234,6 +234,9 @@ class MapToMolecule(Processor):
             if len(set(nx.get_node_attributes(new_mol, "resid").values())) > 1:
                 raise IOError(MultiblockError.format(meta_molecule.nodes[start_node]["resname"]))
 
+            # set the resid of the new-molecule in case we don't start with 1
+            nx.set_node_attributes(new_mol, resid_dict[start_node], "resid")
+
             # we store the block together with the residue node
             meta_molecule.nodes[start_node]["graph"] = new_mol.copy()
 
