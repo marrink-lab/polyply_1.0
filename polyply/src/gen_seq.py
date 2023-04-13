@@ -226,6 +226,10 @@ def generate_seq_graph(sequence, macros, connects):
     `:class:networkx.graph`
     """
     seq_graph = nx.Graph()
+    if sequence is None:
+        msg = ("sequence is empty; you need to provide a sequence to gen_seq")
+        raise IOError(msg)
+
     for idx, macro_name in enumerate(sequence):
         sub_graph = macros[macro_name].gen_graph()
 
