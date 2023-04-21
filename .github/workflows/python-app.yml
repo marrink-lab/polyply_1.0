@@ -31,6 +31,7 @@ jobs:
         pip install -r requirements-tests.txt
         
     - name: Run pytest with codecoverage
+    - uses: codecov/codecov-action@v3
       run: |
         pytest --cov polyply
         codecov/codecov-action@v3 --omit='*/bin/pytest'
