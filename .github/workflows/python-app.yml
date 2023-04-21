@@ -32,7 +32,7 @@ jobs:
         
     - name: Run pytest with codecoverage
       run: |
-        pytest --cov polyply --hypothesis-show-statistics
+        pytest --cov polyply
         codecov/codecov-action@v3 --omit='*/bin/pytest'
         
   lint:
