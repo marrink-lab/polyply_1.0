@@ -32,9 +32,8 @@ jobs:
         
     - name: Run pytest with codecoverage
       run: |
-        coverage run --source=polyply $(which pytest) -vv polyply
-        coverage report --omit='*/bin/pytest'
-        codecov
+        pytest --cov polyply --hypothesis-show-statistics
+        codecov/codecov-action@v3 --omit='*/bin/pytest'
         
   lint:
     runs-on: ubuntu-latest
