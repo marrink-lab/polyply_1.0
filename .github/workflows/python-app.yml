@@ -31,11 +31,13 @@ jobs:
         pip install -r requirements-tests.txt
         
     - name: Run pytest with codecoverage
-      run: |
-        coverage run --source=polyply $(which pytest) -vv polyply
-        coverage report --omit='*/bin/pytest'
-        codecov
-        
+      run:  pytest --cov polyply
+    - name: Upload coverage codecov   
+      uses: codecov/codecov-action@v3 
+      with:
+            gcov_ignore: '*/bin/pytest'
+            verbose: true
+
   lint:
     runs-on: ubuntu-latest
 
