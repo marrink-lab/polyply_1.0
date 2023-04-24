@@ -34,6 +34,8 @@ jobs:
       run:  pytest --cov polyply
     - name: Upload coverage codecov   
       uses: codecov/codecov-action@v3 
+      with:
+            gcov_ignore: '*/bin/pytest'
         
   lint:
     runs-on: ubuntu-latest
