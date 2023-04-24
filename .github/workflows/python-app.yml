@@ -33,7 +33,7 @@ jobs:
     - name: Run pytest with codecoverage
       run:  pytest --cov polyply
     - name: Upload coverage codecov   
-      uses: codecov/codecov-action@v3 --omit='*/bin/pytest'
+      uses: codecov/codecov-action@v3 
         
   lint:
     runs-on: ubuntu-latest
