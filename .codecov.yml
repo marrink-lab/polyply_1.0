@@ -10,4 +10,6 @@ coverage:
         patch:
             default:
                 target: 90
+ignore:
+   - polyply/src/tests
 comment: off
