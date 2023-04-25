@@ -32,7 +32,10 @@ jobs:
     - name: Upload coverage codecov   
       uses: codecov/codecov-action@v3 
       with:
-            gcov_ignore: '*/bin/pytest'
+            verbose: true
+            token: ${{ secrets.CODECOV_TOKEN }}
+            files: ./coverage.xml
+            fail_ci_if_error: true
             verbose: true
   
   deploy:
