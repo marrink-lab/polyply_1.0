@@ -105,6 +105,13 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=None, lib=Non
     meta_molecule = ApplyLinks().run_molecule(meta_molecule)
 
     if idp == True and lib[0] == 'martini3':
+        LOGGER.info("checking IDP sequence for QA...", type="step")
+        if seq:
+            check = MakeIDP().check_seq(sequence = split_seq_string(seq))
+        elif seq_file:
+            check = MakeIDP().check_seq(sequence_file = seq_file)
+        LOGGER.info(check, type="step")
+
         meta_molecule = MakeIDP().run_molecule(meta_molecule)
         LOGGER.warning(("Backbone virtual sites for increased interactions with "
                         "water have been added. Please define this in your itp file! "
