@@ -59,7 +59,7 @@ def split_seq_string(sequence):
         monomers.append(Monomer(resname=resname, n_blocks=n_blocks))
     return monomers
 
-def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=None, lib=None, seq=None, seq_file=None, idp=False):
+def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=None, lib=None, seq=None, seq_file=None, idp=False, idp_override=False):
     """
     Top level function for running the polyply parameter generation.
     Parameters seq and seq_file are mutually exclusive. Set the other
@@ -105,11 +105,11 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=None, lib=Non
     meta_molecule = ApplyLinks().run_molecule(meta_molecule)
 
     if idp == True and lib[0] == 'martini3':
-        LOGGER.info("checking IDP sequence for QA...", type="step")
+        LOGGER.info("checking IDP sequence to ensure disorder", type="step")
         if seq:
-            check = MakeIDP().check_seq(sequence = split_seq_string(seq))
+            check = MakeIDP().check_seq(sequence = split_seq_string(seq), idp_override=idp_override)
         elif seq_file:
-            check = MakeIDP().check_seq(sequence_file = seq_file)
+            check = MakeIDP().check_seq(sequence_file = seq_file, idp_override=idp_override)
         LOGGER.info(check, type="step")
 
         meta_molecule = MakeIDP().run_molecule(meta_molecule)

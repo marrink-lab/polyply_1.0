@@ -71,15 +71,21 @@ class MakeIDP(Processor):
             disorder = meta.predict_disorder_domains(single_letter_seq)
             seq_len = len(single_letter_seq)
 
-            #Firstly, terminate the program if there are any ordered domains in the sequence
+            #Check if there are any folded domains in the sequence
             if len(disorder.folded_domain_boundaries)>0:
-                msg = "Sequence doesn't appear disordered, will terminate here"
-                raise IOError(msg)
+                #if there are but the override flag is given, ignore this
+                if idp_override == True:
+                    return("Sequence doesn't appear disordered but will ignore")
+                #otherwise terminate the parameter generation here with a warning
+                else:
+                    msg = "Sequence doesn't appear disordered, will terminate here"
+                    raise IOError(msg)
 
             # if there are no folded domains in the sequence, that should mean that there is only a single disordered one
             # check that this is indeed the case, and then end this check
-            assert disorder.disordered_domain_boundaries[0][1] == seq_len
-            return("Sequence looks disordered to me, will proceed with modifications")
+            else:
+                assert disorder.disordered_domain_boundaries[0][1] == seq_len
+                return("Sequence looks disordered to me, will proceed with modifications")
 
 
     def run_molecule(self, meta_molecule):
