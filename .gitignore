@@ -3,6 +3,8 @@ est.pdb
 **.pyc
 **.bak
 
+*.idea
+
 **.lprof
 polyply.egg-info
 

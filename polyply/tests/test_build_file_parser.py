@@ -217,8 +217,8 @@ def test_parser(test_system, lines, tagged_mols, tagged_nodes):
    ff = vermouth.forcefield.ForceField(name='test_ff')
    top = Topology(ff)
    polyply.src.build_file_parser.read_build_file(lines,
-                                                 test_system.molecules,
-                                                 top)
+                                                 top,
+                                                 test_system.molecules)
    for idx, mol in enumerate(test_system.molecules):
        for node in mol.nodes:
            if "restraints" in mol.nodes[node]:
@@ -261,8 +261,8 @@ def test_persistence_parsers(test_system, lines, expected):
    ff = vermouth.forcefield.ForceField(name='test_ff')
    top = Topology(ff)
    polyply.src.build_file_parser.read_build_file(lines,
-                                                 test_system.molecules,
-                                                 top)
+                                                 top,
+                                                 test_system.molecules)
    for ref, new in zip(expected, top.persistences):
         print(ref, new)
         for info_ref, info_new in zip(ref[:-1], new[:-1]):
@@ -286,8 +286,8 @@ def test_volume_parsing(test_system, line, expected):
     lines = textwrap.dedent(line)
     lines = lines.splitlines()
     polyply.src.build_file_parser.read_build_file(lines,
-                                                  test_system.molecules,
-                                                  test_system)
+                                                  test_system,
+                                                  test_system.molecules)
     assert test_system.volumes == expected
 
 @pytest.mark.parametrize('line, names, edges, positions, out_vol', (
@@ -401,8 +401,8 @@ def test_template_volume_parsing(test_system, line, names, edges, positions, out
     lines = textwrap.dedent(line)
     lines = lines.splitlines()
     polyply.src.build_file_parser.read_build_file(lines,
-                                                  test_system.molecules,
-                                                  test_system)
+                                                  test_system,
+                                                  test_system.molecules)
     for mol in test_system.molecules:
         assert len(mol.templates) == len(names)
         for idx, name in enumerate(names):

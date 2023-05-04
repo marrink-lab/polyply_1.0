@@ -24,7 +24,7 @@ from pathlib import Path
 import numpy as np
 import polyply
 from polyply import (gen_itp, gen_coords, gen_seq, DATA_PATH)
-from polyply.src.load_library import load_library
+from polyply.src.load_library import load_ff_library
 from polyply.src.logging import LOGGER, LOGLEVELS
 
 VERSION = 'polyply version {}'.format(polyply.__version__) # pylint: disable=consider-using-f-string
@@ -69,10 +69,10 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
                            help='Override sequence analysis for idp parameter adjustments')
 
     file_group = parser_gen_itp.add_argument_group('Input and output options')
-    file_group.add_argument('-lib', dest='lib', required=False, type=str,
+    file_group.add_argument('-lib', dest='lib', required=False, type=Path, default=[],
                             help='force-fields to include from library', nargs='*')
-    file_group.add_argument('-f', dest='inpath', required=False, type=Path,
-                            help='Input file (ITP|FF)', nargs="*")
+    file_group.add_argument('-f', dest='inpath', type=Path, required=False, default=[],
+                            help='Input file (ITP|FF)', nargs='*')
     file_group.add_argument('-o', dest='outpath', type=Path,
                             help='Output ITP (ITP)', default=Path('polymer.itp'))
     seq_group = file_group.add_mutually_exclusive_group(required=True)
@@ -87,7 +87,7 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
     #           Input Arguments for the coordinate generation tool
     # ============================================================================
 
-    parser_gen_coords.add_argument('-name', required=True, type=str, dest="name",
+    parser_gen_coords.add_argument('-name', required=False, type=str, dest="name", default='molname',
                                    help="name of the final molecule")
 
     parser_gen_coords.add_argument('-v', dest='verbosity', action='count',
@@ -97,14 +97,16 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
     file_group = parser_gen_coords.add_argument_group('Input and output files')
     file_group.add_argument('-p', dest='toppath', required=False, type=Path,
                             help='topology file (.top)')
-    file_group.add_argument('-o', dest='outpath', type=Path,
+    file_group.add_argument('-o', dest='outpath', type=Path, default='coords.gro',
                             help='output GRO (.gro)')
     file_group.add_argument('-c', dest='coordpath', type=Path,
                             help='input file molecules (.gro)', default=None)
     file_group.add_argument('-mc', dest='coordpath_meta', type=Path,
                             help='input file meta-molecule (.gro)', default=None)
-    file_group.add_argument('-b', dest='build', type=Path, default=None,
+    file_group.add_argument('-b', dest='build', type=Path, required=False, default=[], nargs='*',
                             help=('input file; specify molecule specific building options'))
+    file_group.add_argument('-lib', dest='lib', required=False, type=Path, default=None,
+                            help='molecule templates can be loaded from force field library')
 
     topology_group = parser_gen_coords.add_argument_group('Change or modify topology')
     topology_group.add_argument('-res', dest='build_res', type=str,
@@ -201,7 +203,7 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
                                   "is <tag:molecule name>.")
 
     seq_group = parser_gen_seq.add_argument_group('Definition of sequence')
-    seq_group.add_argument('-seq', dest='seq', nargs='+', type=str,
+    seq_group.add_argument('-seq', dest='seq', nargs='+', type=str, required=True,
                            help="Define the sequence order in which to combine macros."
                                 "The format is <macro_tag, macro_tag, ...>. For example, "
                                 "to combine three blocks called A, B, which are defined by the "
@@ -244,7 +246,7 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
         parser.exit()
 
     if args.list_blocks:
-        force_field = load_library("libs", args.list_blocks, [])
+        force_field = load_ff_library("libs", args.list_blocks, [])
         msg = 'The following Blocks are present in the following libraries: {}:'
         print(msg.format(args.list_blocks))
         for block in force_field.blocks:

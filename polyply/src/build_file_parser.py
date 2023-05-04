@@ -260,7 +260,7 @@ class BuildDirector(SectionLineParser):
         geometry_def["parameters"] = parameters
         return geometry_def
 
-def read_build_file(lines, molecules, topology):
+def read_build_file(lines, topology, molecules=None):
     """
     Parses `lines` of itp format and adds the
     molecule as a block to `force_field`.
@@ -269,7 +269,12 @@ def read_build_file(lines, molecules, topology):
     ----------
     lines: list
         list of lines of an itp file
-    force_field: :class:`vermouth.forcefield.ForceField`
+    topology: :class:`polypyl.src.topology.Topology`
+    molecules: list[:class:`~vermouth.molecule.Molecule`]
+        The molecules in the system.
     """
+    if not molecules:
+        molecules = topology.molecules
+
     director = BuildDirector(molecules, topology)
     return list(director.parse(iter(lines)))

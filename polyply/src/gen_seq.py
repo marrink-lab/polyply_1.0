@@ -17,7 +17,7 @@ import json
 import networkx as nx
 from networkx.readwrite import json_graph
 from vermouth.graph_utils import make_residue_graph
-from .load_library import load_library
+from .load_library import load_ff_library
 from .generate_templates import find_atoms
 
 
@@ -226,6 +226,10 @@ def generate_seq_graph(sequence, macros, connects):
     `:class:networkx.graph`
     """
     seq_graph = nx.Graph()
+    if sequence is None:
+        msg = ("sequence is empty; you need to provide a sequence to gen_seq")
+        raise IOError(msg)
+
     for idx, macro_name in enumerate(sequence):
         sub_graph = macros[macro_name].gen_graph()
 
@@ -306,7 +310,7 @@ def _tag_nodes(graph, tags, seed=None):
 def gen_seq(name,
             outpath,
             seq,
-            inpath=None,
+            inpath=[],
             macro_strings=[],
             from_file=None,
             connects=[],
@@ -365,7 +369,7 @@ def gen_seq(name,
     macros = {}
 
     if from_file:
-        force_field = load_library("seq", None, inpath)
+        force_field = load_ff_library("seq", [], inpath)
         for tag_name in from_file:
             tag, name = tag_name.split(":")
             macros[tag] = MacroFile(name, force_field)
