@@ -5,7 +5,7 @@ import logging  # implement logging parts here
 import random
 
 from pprint import pprint
-from typing import Any, Literal
+from typing import Any, Literal, Dict
 from scipy.spatial import distance
 
 import networkx as nx
@@ -35,7 +35,6 @@ from polyply.src.linalg_functions import center_of_geometry
 from amber_nps import return_amber_nps_type  # this will be changed
 
 # logging configuration
-
 logging.basicConfig(level=logging.DEBUG)
 
 
@@ -96,13 +95,22 @@ class PositionChange(Processor):
     -------
     """
 
-    def __init__(self, ligand_block_specs, core_len, resname, *args, **kwargs):
+    def __init__(
+        self,
+        ligand_block_specs: Dict[str, Any],
+        core_len: int,
+        resname: str,
+        original_coordinates: Dict[str, str],
+        *args,
+        **kwargs,
+    ):
         self.ligand_block_specs = ligand_block_specs
         self.core_len = core_len
         self.resname = resname
+        self.original_coordinates = original_coordinates
         super().__init__(*args, **kwargs)
 
-    def run_molecule(self, meta_molecule):
+    def run_molecule(self, meta_molecule) -> None:
 
         # first we find a starting node by looping over the molecule nodes
         # finding any one with a degree that is larger than 1
@@ -112,7 +120,13 @@ class PositionChange(Processor):
         absolute_vectors = {}
         ligand_head_tail_pos = {}
 
-        # Get the ligand alignment vectors
+        # Get the ligand alignment vectors for the gro file, to readjust the ligand coordinates
+        # once we rotate it properly around the nanoparticle core
+        ligand_positions = self.original_coordinates[self.resname]
+        ligand_incremental_positions = [
+            ligand_positions.nodes[node] for node in list(ligand_positions.nodes)
+        ]
+
         core_ligand = [
             self.ligand_block_specs[self.resname]["core"]
             - self.ligand_block_specs[self.resname]["indices"][key]
@@ -121,6 +135,20 @@ class PositionChange(Processor):
         assert len(core_ligand) == len(
             self.ligand_block_specs[self.resname]["resids"]
         ), "The number of residues identified does not match the core zone we want to attach to!"
+
+        # reassign the coordinates to match the original gromacs coordinates
+        for resid_index, resid in enumerate(
+            self.ligand_block_specs[self.resname]["resids"]
+        ):
+            # for each
+            for index, node in enumerate(list(meta_molecule.nodes)):
+                if meta_molecule.nodes[node]["resid"] == resid:
+                    # according to index, change the value
+                    for pos_index, lig in enumerate(ligand_incremental_positions):
+                        if meta_molecule.nodes[node]["atomname"] == lig["atomname"]:
+                            meta_molecule.nodes[node]["position"] = np.array(
+                                lig["position"]
+                            )
 
         for resid_index, resid in enumerate(
             self.ligand_block_specs[self.resname]["resids"]
@@ -134,27 +162,26 @@ class PositionChange(Processor):
                 ):
                     head_node = meta_molecule.nodes[node]["position"]
                     ligand_head_tail_pos[resid].append(head_node)
-                    print("head : ", head_node)
                 if (
                     meta_molecule.nodes[node]["resid"] == resid
                     and meta_molecule.nodes[node]["index"]
                     == self.ligand_block_specs[self.resname]["tail_index"] + 1
                 ):
                     tail_node = meta_molecule.nodes[node]["position"]
-                    print("tail : ", tail_node)
                     ligand_head_tail_pos[resid].append(tail_node)
 
             ligand_directional_vector = (
                 ligand_head_tail_pos[resid][1] - ligand_head_tail_pos[resid][0]
             )
             rot_mat = rotation_matrix_from_vectors(
-                core_ligand[resid_index], ligand_directional_vector
+                ligand_directional_vector, core_ligand[resid_index]
             )
 
             logging.info(
                 f"The rotation matrix we have for residue {resid} is {rot_mat}"
             )
             rotation_matrix_dictionary[resid] = rot_mat
+
             absolute_vectors[resid] = [
                 np.linalg.norm(ligand_directional_vector),
                 np.linalg.norm(core_ligand[resid_index]),
@@ -166,17 +193,24 @@ class PositionChange(Processor):
             for index, node in enumerate(list(meta_molecule.nodes)):
                 # pick out the residue ids
                 if meta_molecule.nodes[node]["resid"] == resid:
+
                     rotated_value = rotation_matrix_dictionary[resid].dot(
                         meta_molecule.nodes[node]["position"]
                     )
+
                     logging.info(
                         f"Thew newly rotated ligand is {rotated_value} for residue {resid}"
                     )
-                    meta_molecule.nodes[node]["position"] = (
-                        rotated_value
-                        / absolute_vectors[resid][0]
-                        * absolute_vectors[resid][1]
-                        + rotated_value / absolute_vectors[resid][0] * 5.0
+
+                    # what are we trying to do here?
+                    meta_molecule.nodes[node][
+                        "position"
+                    ] = rotated_value / absolute_vectors[resid][0] * absolute_vectors[
+                        resid
+                    ][
+                        1
+                    ] + (
+                        rotated_value / absolute_vectors[resid][0] * 3.0
                     )
 
 
@@ -640,11 +674,10 @@ class gold_models(Processor):
 
         # get only the unique atoms
         self.surface_atoms = list(set(self.surface_atoms))
-        # self.surface_atoms = [1]
 
     def _identify_indices_for_core_attachment(self):
         """
-        based on the coordinates of the NP core provided,
+        Based on the coordinates of the NP core provided,
         this function could just return a list - not sure it has to be a class
         attribute
 
@@ -661,7 +694,6 @@ class gold_models(Processor):
         # init_coords = expand_initial_coords(self.NP_block)
         NanoparticleCoordinates().run_molecule(self.np_molecule_new)
         # In the case of a spherical core, find the radius of the core
-        keys = [atom[0] for atom in self.np_molecule_new.atoms]
         core_numpy_coords = np.asarray(
             list((nx.get_node_attributes(self.np_molecule_new, "position").values()))
         )
@@ -672,7 +704,11 @@ class gold_models(Processor):
         # Find the center of geometry of the core
         center_np = center_of_geometry(core_numpy_coords)
         # Compute the radius
-        radius = distance.euclidean(center_np, core_numpy_coords[0])
+        radius_list = []
+        for coord in core_numpy_coords:
+            radius = distance.euclidean(center_np, coord)
+            radius_list.append(radius)
+        radius = max(radius_list)
         # Find indices in the case of Janus and Striped particles
         length = radius * 2
         minimum_threshold, maximum_threshold = min(core_numpy_coords[:, 2]), max(
@@ -723,7 +759,12 @@ class gold_models(Processor):
                 if x in list(self.core_indices[core_index])
             }
 
-    def _identify_attachment_index(self, ligand_block, anchor_atom):
+        # self.core_indices = [
+        #    dict(list(self.core_indices[0].items())[0:25]),
+        #    dict(list(self.core_indices[1].items())[0:25]),
+        # ]
+
+    def _identify_attachment_index(self, ligand_block, anchor_atom: str) -> int:
         """
         Find index of atoms that corresponds to the atom on the ligand
         which you wish to bond with the ligand on the nanoparticle core
@@ -846,8 +887,6 @@ class gold_models(Processor):
 
     def _generate_bonds(self) -> None:
         """
-
-
         Parameters
         ----------
         None: None
@@ -872,7 +911,7 @@ class gold_models(Processor):
                         entry,
                         base_anchor,
                     ),
-                    parameters=["1", "0.0033", "5000"],
+                    parameters=["1", "0.0013", "500000.00"],
                     meta={},
                 )
                 logging.info(f"generating bonds between {entry} and {base_anchor}")
@@ -901,12 +940,22 @@ class gold_models(Processor):
         NanoparticleCoordinates().run_molecule(self.np_molecule_new)
         # shift the positions of the ligands so that they are initiated on the surface of the NP
 
+        # TODO - change the position of these
+        self.original_coordinates = {
+            "12B": gro.read_gro(
+                "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand/UNK_12B037/UNK_12B037.gro"
+            ),
+            "DA": gro.read_gro(
+                "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand/UNK_DA2640/UNK_DA2640.gro"
+            ),
+        }
+
         for resname in self.ligand_block_specs.keys():
-            print(resname)
             PositionChange(
                 ligand_block_specs=self.ligand_block_specs,
                 core_len=self.core_len,
                 resname=resname,
+                original_coordinates=self.original_coordinates,
             ).run_molecule(self.np_molecule_new)
 
         # prepare meta molecule
@@ -930,18 +979,10 @@ class gold_models(Processor):
 
     def create_gro(self, write_path: str) -> None:
         """
-        ideally, we generate the coordinates with this function
+        Generate the gro file from the nanoparticle we have created.
+        Ideally, we generate the coordinates with this function
         and then store it within a 'coordinates' object. The form
         of which I am not certain yet.
-
-        Parameters
-        ----------
-        write_path : str
-
-        Returns
-        -------
-        None
-
         """
         system = self.np_top.convert_to_vermouth_system()
         gro.write_gro(
@@ -955,13 +996,7 @@ class gold_models(Processor):
 
     def write_itp(self) -> None:
         """
-        Parameters
-        ----------
-        None: None
-
-        Returns
-        -------
-        None
+        Generate the itp file for the nanoparticle
         """
         self.np_top = Topology(name="nanoparticle", force_field=self.ff)
         self.np_top.molecules = [self.meta_mol]

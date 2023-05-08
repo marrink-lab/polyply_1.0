@@ -1,0 +1,66 @@
+; 
+; MDP file for GMX 4.6.7
+;
+
+integrator              = md                ; 
+dt                      = 0.002             ; ps 
+nsteps                  = 50000000          ; total time: 100 ns
+tinit                   = 0                 ; initial time, ps
+nstcomm                 = 1                 ; freq. for cm-motion removal
+ld_seed                 = -1
+
+; Bond constraints
+continuation            = yes               ; continue from npt equilibration
+constraints             = all-bonds         ; constrain hydrogen bond lengths
+constraint_algorithm    = lincs             ; default
+lincs_order             = 4                 ; default
+
+; X/V/F/E outputs
+nstxout                 = 500000            ; pos out   ---  1000  ps
+nstvout                 = 500000            ; vel out   ---  1000  ps
+nstfout                 = 0                 ; force out ---  no
+nstlog                  = 10000             ; energies to log (20 ps)
+nstenergy               = 10000             ; energies to energy file
+nstxtcout               = 10000             ; xtc, 10 ps
+xtc_precision           = 1000
+
+; Neighbour list
+ns_type                 = grid              ; neighlist type
+nstlist                 = 5                 ; Freq. to update neighbour list
+rlist                   = 0.8               ; nm (cutoff for short-range NL)
+
+; Coulomb interactions
+coulombtype             = Reaction-field    ; Particle Mesh Ewald
+epsilon_rf              = 5.6               ; ClBz
+rcoulomb                = 1.4               ; nm (direct space sum cut-off)
+optimize_fft            = yes               ; optimal FFT plan for the grid
+
+; van der Waals interactions
+vdwtype                 = Cut-off           ; Van der Waals interactions
+rvdw                    = 1.4               ; nm (LJ cut-off)
+DispCorr                = EnerPres          ; use dispersion correction
+
+; Temperature coupling 
+Tcoupl                  = Berendsen         ; This is ignored with sd integrator
+tc-grps                 = System            ; 
+tau_t                   = 0.1               ; ps, recommended value for sd
+ref_t                   = 298.15               ; K
+
+; Energy monitoring
+energygrps              = System
+
+; Pressure coupling 
+Pcoupl                  = Berendsen
+Pcoupltype              = isotropic         ; 
+tau_p                   = 0.5               ; ps
+compressibility         = 7.45e-5           ; 1/bar (ClBz @ 1 atm, 300 K) CRC Handbook
+ref_p                   = 1.0               ; bar
+refcoord_scaling        = all
+
+; Generate velocites in the beginning
+gen_vel                 = no                ; continue from npt equilibration
+gen_temp                = 298.0
+gen_seed                = 438721
+
+
+
