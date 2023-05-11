@@ -104,7 +104,7 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=None, lib=Non
     LOGGER.info("applying links between residues",  type="step")
     meta_molecule = ApplyLinks().run_molecule(meta_molecule)
 
-    if idp == True and lib[0] == 'martini3':
+    if idp == True and str(lib[0]) == 'martini3':
         LOGGER.info("checking IDP sequence to ensure disorder", type="step")
         if seq:
             check = MakeIDP().check_seq(sequence = split_seq_string(seq), idp_override=idp_override)
@@ -117,7 +117,7 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=None, lib=Non
                         "water have been added. Please define this in your itp file! "
                         "Note: the addition of the virtual sites will now raise "
                         "a disjointed molecule warning. This can be ignored."))
-    elif idp == True and lib[0] != 'martini3':
+    elif idp == True and str(lib[0]) != 'martini3':
         msg = ("The IDP flag has been specified but the forcefield is not "
                "Martini 3. The IDP functionality is not designed for other "
                "forcefields. Please check your input!")
