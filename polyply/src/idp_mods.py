@@ -136,6 +136,12 @@ class MakeIDP(Processor):
                                                    parameters=['1'],
                                                    meta = {'group': 'VS for increased IDP interactions'}
                                                    )
+                                                   
+            meta_molecule.molecule.add_interaction('position_restraints',
+                                                   atoms=[i],
+                                                   parameters=['1', '1000', '1000', '1000'],
+                                                   meta = {'ifdef': 'POSRES'}
+                                                   )
 
             current_len += 1
 
