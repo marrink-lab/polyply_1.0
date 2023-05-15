@@ -270,3 +270,131 @@ def pbc_complete(point, maxdim):
     np.ndarray
     """
     return point % maxdim
+
+def _norm_matrix(matrix):
+    norm = np.sum(matrix * matrix)
+    return norm
+norm_matrix = jit(_norm_matrix)
+
+def _rotate_xyz(object_xyz, theta_x, theta_y, theta_z):
+    """
+    Rotate `object_xyz` around angles `theta_x`, `theta_y`
+    and `theta_z` around the x,y,z axis respectively and
+    return coordinates of the rotated object. Note
+    object_xyz needs to be in column vector format i.e.
+    of numpy shape (3, N).
+
+    Parameters:
+    ----------
+    object_xyz: numpy.ndarray
+        coordinates of the object
+    thata_x: float
+    thata_y: float
+    thata_z: float
+        angles in degrees
+    """
+    # convert all angles to degree
+    #theta_z, theta_y, theta_x = np.deg2rad(theta_z), np.deg2rad(theta_y), np.deg2rad(theta_x)
+    # compute rotatin matrix around z
+    sin_z = np.sin(theta_z)
+    cos_z = np.cos(theta_z)
+    rot_z = np.array([[cos_z, -1.0*sin_z, 0.0], [sin_z, cos_z , 0.0], [0.0, 0.0, 1.0]], dtype=np.float64)
+    # compute rotation matrix around y
+    cos_y = np.cos(theta_y)
+    sin_y = np.sin(theta_y)
+    rot_y = np.array([[cos_y, 0.0, sin_y], [0.0, 1.0, 0.0], [-sin_y, 0.0, cos_y]], dtype=np.float64)
+    # compute rotation matrix around x
+    cos_x = np.cos(theta_x)
+    sin_x = np.sin(theta_x)
+    rot_x = np.array([[1.0, 0.0, 0.0], [0.0, cos_x, -sin_x], [0.0, sin_x, cos_x]], dtype=np.float64)
+    # consecutively multiply all matrices and the object matrix
+    rotated_object = matrix_multiplication(rot_z, rot_y, rot_x, object_xyz)
+    return rotated_object
+
+rotate_xyz = jit(_rotate_xyz)
+
+def _rotate_from_vect(object_xyz, vect):
+    """
+    Rotate `object_xyz` by angle 'norm(vect)' around
+    `vect` and return coordinates of the rotated object.
+    Note object_xyz needs to be in column vector format
+    i.e. of numpy shape (3, N).
+
+    Parameters:
+    ----------
+    object_xyz: numpy.ndarray
+        coordinates of the object
+    vect: numpy.ndarray
+        rotation vector
+    """
+    theta = norm(vect)
+    vect = u_vect(vect)
+    cross_product_matrix = np.array([[0, -vect[2], vect[1]],
+                                    [vect[2], 0, -vect[0]],
+                                    [-vect[1], vect[0], 0]])
+
+    # Construct rotation matrix
+    Rotation =  cos(theta) * np.identity(3) + \
+                sin(theta) * cross_product_matrix + \
+                (1-cos(theta)) * np.outer(vect, vect)
+    # Multiply rotation matrix with object matrix
+    rotated_object = np.dot(Rotation, object_xyz)
+    return rotated_object
+
+rotate_from_vect = jit(_rotate_from_vect)
+
+def _finite_difference_O1(X):
+    """
+    Numerical derivative of function values X
+    using a 1st order approximation method.
+
+    Parameters
+    ---------
+    X: numpy.ndarray
+        Function values, a ndarray of shape (N, 3)
+
+    Returns
+    ---------
+    dX: numpy.ndarray
+        Derivatives, a ndarray of shape (N, 3)
+    """
+    dX = np.zeros_like(X)
+    # Calculate tangent boundary points
+    dX[0] = X[1] - X[0]
+    dX[-1] = X[-1] - X[-2]
+
+    # Calculate tangent interior points
+    for i in range(1, len(X) - 1):
+        dX[i] = (X[i+1] - X[i-1])/2
+    return dX
+
+finite_difference_O1 = jit(_finite_difference_O1)
+
+def _finite_difference_O5(X):
+    """
+    Numerical derivative of function values X
+    using a 5th order approximation method.
+
+    Parameters
+    ---------
+    X: numpy.ndarray
+        Function values, a ndarray of shape (N, 3)
+
+    Returns
+    ---------
+    dX: numpy.ndarray
+        Derivatives, a ndarray of shape (N, 3)
+    """
+    dX = np.zeros_like(X)
+    # Calculate tangent boundary points
+    dX[0] = -25*X[0] + 48*X[1] - 36*X[2] + 16*X[3] - 3*X[4]
+    dX[1] = -3*X[0] - 10*X[1] + 18*X[2] - 6*X[3] + X[4]
+    dX[-2] = 3*X[-1] + 10*X[-2] - 18*X[-3] + 6*X[-4] - X[-5]
+    dX[-1] = 25*X[-1] - 48*X[-2] + 36*X[-3] - 16*X[-4] + 3*X[-5]
+
+    # Calculate tangent interior points
+    for i in range(2, len(X) - 2):
+        dX[i] = X[i-2] - 8 * X[i-1] + 8 * X[i+1] - X[i+2]
+    return dX / 12
+
+finite_difference_O5 = jit(_finite_difference_O5)

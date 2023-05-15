@@ -116,6 +116,7 @@ def gen_coords(toppath,
                max_force=5*10**4.0,
                nrewind=5,
                lib=None,
+               protocol='bonds',
                bfudge=0.4):
     """
     Subprogram for coordinate generation which implements the default
@@ -261,7 +262,7 @@ def gen_coords(toppath,
                 nrewind=nrewind).run_system(topology.molecules)
     ligand_annotator.split_ligands()
     LOGGER.info("backmapping to target resolution",  type="step")
-    Backmap(fudge_coords=bfudge).run_system(topology)
+    Backmap(fudge_coords=bfudge, protocol=protocol).run_system(topology)
     # Write output
     LOGGER.info("writing output",  type="step")
     command = ' '.join(sys.argv)
