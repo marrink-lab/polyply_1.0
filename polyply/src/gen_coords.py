@@ -236,6 +236,16 @@ def gen_coords(toppath,
         LOGGER.info("loading grid",  type="step")
         grid = np.loadtxt(grid)
 
+    # where to get the box size from
+    if box and any(topology.box != box):
+        msg = ("a box is provided via the -box command line "
+               "and the starting coordinates. We take the "
+               "the box of starting coordinates as correct. ")
+        LOGGER.info(msg,  type="warning")
+        box = topology.box
+    elif topology.box is not None:
+        box = topology.box
+
     # do a sanity check
     LOGGER.info("checking residue integrity",  type="step")
     check_residue_equivalence(topology)
