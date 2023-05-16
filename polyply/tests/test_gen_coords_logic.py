@@ -47,6 +47,30 @@ def test_no_positions_generated(tmp_path, monkeypatch):
         assert np.all(molecule_out.nodes[node]['position'] ==
                       molecule_in.nodes[node]['position'])
 
+@pytest.mark.parametrize('box_input, box_ref', [
+                        # box from input coordinates
+                        (None, np.array([11.0, 11.0, 11.0])),
+                        # box from input coordinates overwrites
+                        (np.array([5.0, 5.0, 5.0]), np.array([11.0, 11.0, 11.0])),
+                        ])
+def test_box_input(tmp_path, monkeypatch, box_input, box_ref):
+    """
+    All positions are defined none have to be created. Should run through without
+    errors and preserve all positions given in the input to rounding accuracy.
+    """
+    monkeypatch.chdir(tmp_path)
+    top_file = TEST_DATA + "/topology_test/system.top"
+    pos_file = TEST_DATA + "/topology_test/complete.gro"
+    out_file = tmp_path / "out.gro"
+    gen_coords(toppath=top_file,
+               coordpath=pos_file,
+               outpath=out_file,
+               name="test",
+               box=box_input
+               )
+    molecule_out = read_gro(out_file, exclude=())
+    assert np.array_equal(molecule_out.box, box_ref)
+
 def test_backmap_only(tmp_path, monkeypatch):
     """
     Only meta_mol positions are defined so others have to be backmapped.
