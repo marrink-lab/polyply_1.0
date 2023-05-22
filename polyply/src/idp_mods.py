@@ -145,4 +145,46 @@ class MakeIDP(Processor):
 
             current_len += 1
 
+        #sort out the IDP scfix
+        #first get the resids and the indices of the SC1 beads in the protein
+        SC1_inds = [j for j in meta_molecule.molecule.nodes if meta_molecule.molecule.nodes[j]['atomname'] == 'SC1']
+        SC1_resids = [meta_molecule.molecule.nodes[j]['resid'] for j in meta_molecule.molecule.nodes if meta_molecule.molecule.nodes[j]['atomname'] == 'SC1']
+        BB_resids = [meta_molecule.molecule.nodes[j]['resid'] for j in meta_molecule.molecule.nodes if meta_molecule.molecule.nodes[j]['atomname'] == 'BB']
+
+        scfix = []
+        for k,l in enumerate(SC1_resids[:-1]):
+            #make sure the residues are consecutive
+            if SC1_resids[k+1] - SC1_resids[k] == 1:
+                
+                #get the atom numbers of the 4 atoms we need
+                SC1_1 = SC1_inds[k]
+                BB_1 = BB_inds[np.where(np.array(BB_resids, dtype = int) == l)[0][0]]
+                BB_2 = BB_inds[np.where(np.array(BB_resids, dtype = int) == l+1)[0][0]]
+                SC1_2 = SC1_inds[k+1]
+                
+                to_append = [SC1_1, BB_1, BB_2, SC1_2]
+                if len(to_append) == 4:
+                    scfix.append(to_append)
+        print(scfix)
+        
+        #add the SC1-BB-BB-SC1 dihedrals where we need them
+        for i in scfix:
+            meta_molecule.molecule.add_interaction('dihedrals',
+                                                    atoms = i,
+                                                    parameters = ['1', '30', '0.85', '1'],
+                                                    meta={'group': 'IDP SC1-BB-BB-SC1 dihedrals'}
+                                                    )
+            
+            meta_molecule.molecule.add_interaction('dihedrals',
+                                                    atoms = i,
+                                                    parameters = ['1', '0', '0.80', '1'],
+                                                    meta={'group': 'IDP SC1-BB-BB-SC1 dihedrals'}
+                                                    )
+            
+            meta_molecule.molecule.add_interaction('dihedrals',
+                                                    atoms = i,
+                                                    parameters = ['1', '105', '-1.55', '2'],
+                                                    meta={'group': 'IDP SC1-BB-BB-SC1 dihedrals'}
+                                                    )
+            
         return meta_molecule
