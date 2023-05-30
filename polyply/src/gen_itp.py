@@ -102,6 +102,12 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[], lib=None,
     LOGGER.info("applying links between residues",  type="step")
     meta_molecule = ApplyLinks().run_molecule(meta_molecule)
 
+    #Check missing edges and raise issues if links between amino acids are not applied.
+    #Bug if the backbone is correct links between amino acids in a chain are not applied correctly
+    for missing in find_missing_edges(meta_molecule, meta_molecule.molecule):
+        msg = "Link between residue {idxA} {resA} and residue {idxB} {resB} was not applied."
+        LOGGER.warning(msg, **missing)
+    
     # Raise warning if molecule is disconnected
     if not nx.is_connected(meta_molecule.molecule):
         LOGGER.warning("Your molecule consists of disjoint parts."
