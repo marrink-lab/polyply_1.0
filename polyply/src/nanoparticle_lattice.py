@@ -33,6 +33,7 @@ from polyply.src.topology import Topology
 from polyply.src.linalg_functions import center_of_geometry
 
 from amber_nps import return_amber_nps_type  # this will be changed
+from CG_nps import return_cg_nps_type
 
 # logging configuration
 logging.basicConfig(level=logging.DEBUG)
@@ -111,7 +112,7 @@ class PositionChange(Processor):
         super().__init__(*args, **kwargs)
 
     def run_molecule(self, meta_molecule) -> None:
-
+        """ """
         # first we find a starting node by looping over the molecule nodes
         # finding any one with a degree that is larger than 1
         # shift coordinates - not sure how to fully do this as we have a generator
@@ -502,7 +503,7 @@ class GoldNanoparticleSingle:
             output.write("\n")
 
 
-class gold_models(Processor):
+class nanoparticle_models(Processor):
     """
     We have a number of gold nanoparticle cores based on the amber forcefield
     that is avaliable as published here:
@@ -523,7 +524,21 @@ class gold_models(Processor):
     None
     """
 
-    def __init__(self):
+    def __init__(
+        self,
+        sample,
+        np_component,
+        np_atype,
+        ligand_path,
+        ligands,
+        ligand_N,
+        pattern,
+        ligand_anchor_atoms,
+        ligand_tail_atoms,
+        ff_name="test",
+        original_coordinates=None,
+        identify_surface=False,
+    ):
         """
         Main class for making the gold nanoparticles.
 
@@ -536,16 +551,38 @@ class gold_models(Processor):
         ligand_anchor_atoms:
 
         """
-        self.sample: str = return_amber_nps_type(
-            "au144_OPLS_bonded"
-        )  # call the appropriate amber code type
-        self.ligand_path: str = "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand"
-        self.ligands = ["UNK_12B037/UNK_12B037.itp", "UNK_DA2640/UNK_DA2640.itp"]
-        self.ligand_N = [10, 10]
-        self.pattern: Literal["Janus", "Striped"] = "Striped"
-        self.ligand_anchor_atoms: list[str] = ["S00", "S07"]
-        self.ligand_tail_atoms: list[str] = ["C05", "C02"]
-        self.ff = vermouth.forcefield.ForceField(name="test")
+        self.sample = sample
+        self.np_component = np_component
+        self.np_atype = np_atype
+        self.ligand_path = ligand_path
+        self.ligands = ligands
+        self.ligand_N = ligand_N
+        self.pattern = pattern
+        self.ligand_anchor_atoms = ligand_anchor_atoms
+        self.ligand_tail_atoms = ligand_tail_atoms
+        self.ff = vermouth.forcefield.ForceField(name=ff_name)
+        self.identify_surface = identify_surface
+        self.original_coordinates = original_coordinates
+        # self.sample: str = return_amber_nps_type(
+        #    "au144_OPLS_bonded"
+        # )  # call the appropriate amber code type
+        # self.ligand_path: str = "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand"
+        # self.ligands = ["UNK_12B037/UNK_12B037.itp", "UNK_DA2640/UNK_DA2640.itp"]
+        # self.ligand_N = [10, 10]
+        # self.pattern: Literal["Janus", "Striped"] = "Striped"
+        # self.ligand_anchor_atoms: list[str] = ["S00", "S07"]
+        # self.ligand_tail_atoms: list[str] = ["C05", "C02"]
+        # self.ff = vermouth.forcefield.ForceField(name="test")
+        # self.original_coordinates: Dict[str, str] = {
+        #    "12B": gro.read_gro(
+        #        "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand/UNK_12B037/UNK_12B037.gro"
+        #    ),
+        #    "DA": gro.read_gro(
+        #        "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand/UNK_DA2640/UNK_DA2640.gro"
+        #    ),
+        # }
+
+    # where we store the original coordinates of the ligands (gro)
 
     def _extract_block_atom(self, molecule: str, atomname: str, defines: dict) -> None:
         """
@@ -623,16 +660,19 @@ class gold_models(Processor):
         :None
         """
         vermouth.gmx.itp_read.read_itp(self.sample, self.ff)
-        self.NP_block = self.ff.blocks["NP2"]
-        core_molecule = self.ff.blocks["NP2"].to_molecule()  # make metamolcule object
+        self.NP_block = self.ff.blocks[self.np_component]
+        core_molecule = self.ff.blocks[
+            self.np_component
+        ].to_molecule()  # make metamolcule object
         core_block = self._extract_block_atom(
-            core_molecule, "AU", {}
+            core_molecule, self.np_atype, {}
         )  # get only the gold atoms from the itp
         self.core_block = core_block
         self.core_len, self.core = len(core_block), len(core_block)
-
-        core_block.nrexcl = 3
+        core_block.nrexcl = 1
         self.np_molecule_new = core_block.to_molecule()
+        # Generate the positions
+        NanoparticleCoordinates().run_molecule(self.np_molecule_new)
         self.core_center = center_of_geometry(
             np.asarray(
                 list(
@@ -654,15 +694,17 @@ class gold_models(Processor):
         -------
 
         """
-        assert "NP2" in self.ff.blocks.keys(), "we have not stored NP information"
+        assert (
+            self.np_component in self.ff.blocks.keys()
+        ), "we have not stored NP information"
         surface_atom_dict = {}
         # create dictionary
-        for atom in self.ff.blocks["NP2"].atoms:
+        for atom in self.ff.blocks[self.np_component].atoms:
             surface_atom_dict[atom["index"]] = atom["atype"]
 
         # find the AU atoms that have a bond with the S atoms
         self.surface_atoms = []
-        for interaction_node in self.ff.blocks["NP2"].interactions["bonds"]:
+        for interaction_node in self.ff.blocks[self.np_component].interactions["bonds"]:
             interaction = [
                 surface_atom_dict[
                     interaction_node.atoms[0] + 1
@@ -736,6 +778,7 @@ class gold_models(Processor):
                 else:
                     core_ceiling_values[index] = entry
             self.core_indices = [core_striped_values, core_ceiling_values]
+
         # return the Janus pattern
         elif self.pattern == "Janus":
             core_top_values = {}
@@ -749,15 +792,16 @@ class gold_models(Processor):
 
             self.core_indices: list[dict[int, int]] = [core_top_values, core_bot_values]
 
-        # identify the surface gold atoms
-        self._identify_lattice_surface()
-        # filter out from the Janus and non-Janus to
-        for core_index in range(0, len(self.core_indices)):
-            self.core_indices[core_index] = {
-                x: self.core_indices[core_index][x]
-                for x in self.surface_atoms
-                if x in list(self.core_indices[core_index])
-            }
+        if self.identify_surface:
+            # identify the surface gold atoms
+            self._identify_lattice_surface()
+            # filter out from the Janus and non-Janus to
+            for core_index in range(0, len(self.core_indices)):
+                self.core_indices[core_index] = {
+                    x: self.core_indices[core_index][x]
+                    for x in self.surface_atoms
+                    if x in list(self.core_indices[core_index])
+                }
 
         # self.core_indices = [
         #    dict(list(self.core_indices[0].items())[0:25]),
@@ -810,8 +854,11 @@ class gold_models(Processor):
                 vermouth.gmx.itp_read.read_itp(ligand_file, self.ff)
 
                 # assert len(self.ff.blocks.keys()) == len(self.ligand_N)
+        # what are we doing here?
+
         for index, block_name in enumerate(self.ff.blocks.keys()):
-            if block_name != "NP2":
+            print(index, block_name)
+            if block_name != self.np_component:
                 NanoparticleCoordinates().run_molecule(self.ff.blocks[block_name])
                 self.ligand_block_specs[block_name] = {
                     "name": block_name,
@@ -930,6 +977,7 @@ class gold_models(Processor):
         for node in self.np_molecule_new.nodes:
             # change resname to moltype
             self.np_molecule_new.nodes[node]["resname"] = "TEST"
+
         self.graph = MetaMolecule._block_graph_to_res_graph(
             self.np_molecule_new
         )  # generate residue graph
@@ -939,16 +987,7 @@ class gold_models(Processor):
         # reassign the molecule with the np_molecule we have defined new interactions with
         NanoparticleCoordinates().run_molecule(self.np_molecule_new)
         # shift the positions of the ligands so that they are initiated on the surface of the NP
-
         # TODO - change the position of these
-        self.original_coordinates = {
-            "12B": gro.read_gro(
-                "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand/UNK_12B037/UNK_12B037.gro"
-            ),
-            "DA": gro.read_gro(
-                "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand/UNK_DA2640/UNK_DA2640.gro"
-            ),
-        }
 
         for resname in self.ligand_block_specs.keys():
             PositionChange(
@@ -1007,15 +1046,69 @@ class gold_models(Processor):
 
 # main code executable
 if __name__ == "__main__":
+    # generate the core of the opls force field work
+    gold_model = nanoparticle_models(
+        return_amber_nps_type("au144_OPLS_bonded"),
+        "NP2",
+        "AU",
+        "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand",
+        ["UNK_12B037/UNK_12B037.itp", "UNK_DA2640/UNK_DA2640.itp"],
+        [10, 10],
+        "Striped",
+        ["S00", "S07"],
+        ["C05", "C02"],
+        "test",
+        {
+            "12B": gro.read_gro(
+                "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand/UNK_12B037/UNK_12B037.gro"
+            ),
+            "DA": gro.read_gro(
+                "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand/UNK_DA2640/UNK_DA2640.gro"
+            ),
+        },
+    )
+    # gold_model.core_generate_coordinates()
+    # gold_model.generate_dicts()
+    # gold_model.create_gro("new.gro")
+    # gold_model.write_itp()
+
+    # unfinished part of the code..
     # sampleNPCore = GoldNanoparticleSingle()
     # sampleNPCore._generate_positions()
     # sampleNPCore.create_gro(
     #    "/home/sang/Desktop/example_gold.gro"
     # )  # this works but not fully
 
-    # generate the core of the opls force field work
-    gold_model = gold_models()
-    gold_model.core_generate_coordinates()
-    gold_model.generate_dicts()
-    gold_model.create_gro("new.gro")
-    gold_model.write_itp()
+    # generate the PCBM nanoparticle in martini
+
+# constructing the PCBM
+PCBM_ligand_gro = "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/PCBM_CG/PCBM_ligand.gro"
+# Creating the PCBM model
+PCBM_model = nanoparticle_models(
+    return_cg_nps_type("F16"),
+    "F16",
+    "CNP",
+    "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/PCBM_CG/",
+    ["PCBM_ligand.itp"],
+    [1, 1],
+    "Striped",
+    ["C4", "N1"],
+    ["C4", "N1"],
+    ff_name="test",
+    original_coordinates={
+        "PCBM": gro.read_gro(PCBM_ligand_gro),
+    },
+    identify_surface=False,
+)
+
+PCBM_model.core_generate_coordinates()
+# PCBM_model.generate_dicts()
+PCBM_model._identify_indices_for_core_attachment()
+PCBM_model._ligand_generate_coordinates()
+PCBM_model._add_block_indices()
+PCBM_model._generate_ligand_np_interactions()
+PCBM_model._generate_bonds()
+PCBM_model._run()  # doesn't quite work yet.
+
+PCBM_model.create_gro("PCBM.gro")
+PCBM_model.write_itp()
