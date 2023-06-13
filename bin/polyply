@@ -23,7 +23,7 @@ import argparse
 from pathlib import Path
 import numpy as np
 import polyply
-from polyply import (gen_itp, gen_coords, gen_seq, DATA_PATH)
+from polyply import (gen_itp, gen_coords, gen_seq, itp_to_ff, DATA_PATH)
 from polyply.src.load_library import load_ff_library
 from polyply.src.logging import LOGGER, LOGLEVELS
 
@@ -51,6 +51,7 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
     parser_gen_itp = subparsers.add_parser('gen_params', aliases=['gen_itp'])
     parser_gen_coords = subparsers.add_parser('gen_coords')
     parser_gen_seq = subparsers.add_parser('gen_seq')
+    parser_itp_ff = subparsers.add_parser('itp_to_ff')
 
     # =============================================================================
     # Input Arguments for the itp generation tool
@@ -224,6 +225,24 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
                                 "<0:chiral:R-0.5,S-0.5>",
                            default=[])
     parser_gen_seq.set_defaults(func=gen_seq)
+
+    # =============================================================================
+    # Input Arguments for the itp to ff tool
+    # =============================================================================
+
+    parser_itp_ff.add_argument('-v', dest='verbosity', action='count',
+                                help='Enable debug logging output. Can be given '
+                                'multiple times.', default=0)
+
+    parser_itp_ff.add_argument('-i', dest="itppath")
+    parser_itp_ff.add_argument('-sm', dest="fragment_smiles", nargs='*')
+    parser_itp_ff.add_argument('-rn', dest="resnames", nargs='*')
+    parser_itp_ff.add_argument('-tp',dest="term_prefix", default="ter")
+    parser_itp_ff.add_argument('-o', dest="outpath", type=Path)
+    parser_itp_ff.add_argument('-c', dest="charge", type=float, default=0.0)
+
+    parser_itp_ff.set_defaults(func=itp_to_ff)
+
 
     # ============================================================================
     # Deal with queries of the polyply library
