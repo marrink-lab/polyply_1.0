@@ -281,6 +281,13 @@ def equalize_charges(molecule, target_charge=0):
 def handle_chirality(molecule, chiral_centers):
     pass
 
+def hcount(molecule, node):
+    hcounter = 0
+    for node in molecule.neighbors(node):
+        if molecule.nodes[node]["element"] == "H":
+            hcounter+= 1
+    return hcounter
+
 def itp_to_ff(itppath, fragment_smiles, resnames, term_prefix, outpath, charge=0):
     """
     Main executable for itp to ff tool.
@@ -293,7 +300,7 @@ def itp_to_ff(itppath, fragment_smiles, resnames, term_prefix, outpath, charge=0
     # read the target fragments and convert to graph
     fragment_graphs = []
     for resname, smile in zip(resnames, fragment_smiles):
-        fragment_graph = pysmiles.read_smiles(smile)
+        fragment_graph = pysmiles.read_smiles(smile, explicit_hydrogen=True)
         nx.set_node_attributes(fragment_graph, resname, "resname")
         fragment_graphs.append(fragment_graph)
 
@@ -306,13 +313,8 @@ def itp_to_ff(itppath, fragment_smiles, resnames, term_prefix, outpath, charge=0
         new_block.nrexcl = mol.nrexcl
         force_field.blocks[name] = new_block
 
-    for node in mol.nodes:
-        if mol.nodes[node]['resid'] == 3:
-            print(mol.nodes[node])
-    print("\n\n")
-    for node in mol.nodes:
-        if mol.nodes[node]['resid'] == 4:
-            print(mol.nodes[node])
+#    for node in mol.nodes:
+#        print(mol.nodes[node])
 
     force_field.links = extract_links(mol)
 

@@ -225,4 +225,5 @@ def find_one_ismags_match(graph1, graph2, node_match):
         mapping = next(raw_matches)
         return mapping
     except StopIteration:
+        raise IOError("no match_found")
         return None
