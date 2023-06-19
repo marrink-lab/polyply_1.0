@@ -22,7 +22,7 @@ def _element_match(node1, node2):
     Checks if the element attribute of two nodes
     is the same.
 
-    Returns:
+    Returns
     --------
     bool
     """
@@ -30,9 +30,38 @@ def _element_match(node1, node2):
 
 class FragmentFinder():
     """
-    Find, label and extract unique fragments from a vermouth.molecule.Molecule.
+    This class enables finding and labelling of fragments
+    in the all-atom description of molecules. Fragments are
+    small networkx graphs. It makes a number of implicit
+    assumptions:
 
-    Wrire process HERE
+    - the molecule is connected and acyclic
+    - the residue graph of the molecule is linear
+    - the nodes by index increase with increasing resid order
+    - the graphs provided as fragment graphs follow the sequence
+      of residues. For example, given a polymer A5-B2-C3-A3
+      residue sequence, fragments should be provided as a list
+      A,B,C,A. The length of the block does not matter.
+
+    The algorithm loops over the fragments and finds a match
+    between a fragment and the molecule graph using a subgraph
+    isomorphism based on the element attribute. This match is
+    then used to set the degree attribute on the fragment. Next
+    all other subgraph isomorphisms are found under the condition
+    that each found match must connected to the previous residue.
+    Nodes are labelled with a resid and resname. This part is done
+    by the `self.label_fragment_from_graph` class method.
+
+    Subsequently, the algorithm proceeds to merge all left-over
+    atoms to the residue they are connected with assining a resid
+    and resname from that residue. This procedure is done by
+    `self.label_unmatched_atoms`.
+
+    Finally, the code goes over all residues and assigns a prefix to
+    all terminal residues. In addition residues with the same resname
+    are compared to each other using a subgraph isomorphism and if
+    they are not isomorphic as result of assigning left-over atoms,
+    the resname is appended by a number.
     """
 
     def __init__(self, molecule, prefix):
@@ -44,6 +73,28 @@ class FragmentFinder():
         Parameters
         ----------
         molecule: :class:`vermouth.molecule.Molecule`
+        prefix: str
+            the prefix used to label termini
+
+        Attributes
+        ----------
+        max_by_resid: dict[int][int]
+            number of atoms by resid
+        ter_prefix: str
+            the terminal prefix
+        resid: int
+            highest resid
+        assigned_atoms: list[`abc.hashable`]
+            atoms assinged to residues
+        molecule: :class:`vermouth.molecule.Molecule`
+            the molecule to match against
+        known_atom: `abc.hashable`
+            any atom that has been matched to a fragment
+        match_keys: `list[str]`
+            molecule properties to use in matching the fragment
+            graphs in the second stage.
+        masses_to_elements: dict[int][str]
+            matches masses to elements
         """
         self.max_by_resid = {}
         self.ter_prefix = prefix
@@ -54,6 +105,7 @@ class FragmentFinder():
         self.known_atom = None
         self.match_keys = ['element', 'mass', 'degree'] #, 'charge']
         self.masses_to_element = {16: "O",
+                                  14: "N",
                                   12: "C",
                                   32: "S",
                                    1: "H"}
@@ -74,6 +126,7 @@ class FragmentFinder():
                 return False
         return True
 
+    # this could be a property??
     def make_res_graph(self):
         self.res_graph = make_residue_graph(self.molecule)
 
@@ -84,6 +137,11 @@ class FragmentFinder():
         matching. This is a safety measure because even though
         the fragment graph is subgraph isomorphic the underlying
         itp parameters might not be.
+
+        Parameters
+        -----------
+        fragment_graph: 'nx.Graph'
+            must have attributes element for each node
         """
         # find subgraph isomorphic matches to the target fragment
         # based on the element only
@@ -100,6 +158,13 @@ class FragmentFinder():
         """
         Check if the atoms in the lists current or
         prev are connected.
+
+        Parameters
+        ----------
+        current: list[abc.hashable]
+            list of current nodes
+        prev: list[abc.hashable]
+            list of prev nodes
         """
         for node in current:
             for neigh_node in self.molecule.neighbors(node):
@@ -109,8 +174,8 @@ class FragmentFinder():
 
     def label_fragment_from_graph(self, fragment_graph):
         """
-        For the `self.molecule` label all atoms that match
-        the `fragment_graph` with a resid attribute and set
+        For the `self.molecule` label all atoms, that match
+        the `fragment_graph`, with a resid attribute and set
         the atom-name to the element name plus index relative
         to the atoms in the fragment.
 
@@ -133,9 +198,12 @@ class FragmentFinder():
         # the below statement scales super duper extra poorly
         resname = list(nx.get_node_attributes(fragment_graph, "resname").values())[0]
         raw_matchs = list(GM.subgraph_isomorphisms_iter())
+        print('\n', resname)
         # loop over all matchs and check if the atoms are already
         # assigned - symmetric matches must be skipped
         for current_match in raw_matchs:
+            if resname == "OH":
+                print(current_match)
             # the graph matcher can return the matchs in any order so we need to sort them
             # according to our tempalte molecule
             rev_current_match = {val: key for key, val in current_match.items()}
@@ -172,6 +240,9 @@ class FragmentFinder():
         fragment_graphs: list[nx.Graph]
         """
         for fragment_graph in fragment_graphs:
+            labeldict = nx.get_node_attributes(fragment_graph, "element")
+            nx.draw(fragment_graph, labels=labeldict, with_labels=True,  pos=nx.kamada_kawai_layout(fragment_graph))
+            plt.show()
             self.label_fragment_from_graph(fragment_graph)
 
     def label_unmatched_atoms(self):
@@ -207,8 +278,9 @@ class FragmentFinder():
         list[nx.Graph]
             all unique fragment graphs
         """
-       # nx.draw(self.molecule, with_labels=True,  pos=nx.kamada_kawai_layout(self.molecule))
-       # plt.show()
+        labeldict = nx.get_node_attributes(self.molecule, "element")
+        nx.draw(self.molecule, labels=labeldict, with_labels=True,  pos=nx.kamada_kawai_layout(self.molecule))
+        plt.show()
         # first we find and label all fragments in the molecule
         self.label_fragments_from_graph(fragment_graphs)
        # labeldict = nx.get_node_attributes(self.molecule, "atomname")
@@ -249,9 +321,17 @@ class FragmentFinder():
                 unique_fragments[resname] = fragment
 
         print("--")
-        resid_col = {0: "r", 1: "g", 2:"b", 3:"c", 4:"m", 5:"y", 6:"orange", 7:"pink"}
-        labeldict = nx.get_node_attributes(self.molecule, "atomname")
+        resid_col = {}
         resids  = nx.get_node_attributes(self.molecule, "resid")
+        one = True
+        for resid in set(resids.values()):
+            if one:
+                resid_col[resid] = 'tab:red'
+                one = False
+            else:
+                resid_col[resid] = 'tab:blue'
+                one = True
+        labeldict = nx.get_node_attributes(self.molecule, "atomname")
         colors = [resid_col[resid] for node, resid in resids.items()]
         print(colors)
         print(labeldict)
