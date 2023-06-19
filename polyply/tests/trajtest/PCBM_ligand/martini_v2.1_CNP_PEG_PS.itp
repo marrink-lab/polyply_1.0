@@ -43,8 +43,8 @@
 ;
 
 
-;[ defaults ]
-;1	1
+[ defaults ]
+1	1
 
 [ atomtypes ]
 ; Currently eighteen particle types are defined, divided into four main categories 
