@@ -218,6 +218,12 @@ def test_label_unmatched_atoms(smiles, resnames, remove, new_name):
       {},
       {"CH3ter":0, "PE": 1}
      ),
+     # different fragments with same resname
+     (["[CH3]O[CH2]", "[CH2]O[CH2]", "[CH3]"],
+      ["PEO", "PEO", "CH3"],
+      {3:2},
+      {"PEOter": 0, "PEOter_1": (1,2)}
+     ),
      # do not match termini
      (["[CH3]", "[CH2]O[CH2]", "[CH2]O[CH2]", "[CH2]O[CH2]", "[CH3]"],
       ["CH3", "PEO", "PEO", "PEO", "CH3"],
@@ -248,6 +254,7 @@ def test_extract_fragments(smiles, resnames, remove, uni_frags):
     frag_finder = polyply.src.fragment_finder.FragmentFinder(molecule, "ter")
     fragments = frag_finder.extract_unique_fragments(match_mols)
     frag_finder.match_keys = ['element', 'mass', 'resname']
+    assert len(fragments) == len(uni_frags)
     for resname, graph in fragments.items():
         if type(uni_frags[resname]) == tuple:
            new_smiles = [smiles[idx] for idx in uni_frags[resname]]
