@@ -169,7 +169,8 @@ class TestGenTemps:
          polyply.src.polyply_parser.read_polyply(lines, ff)
          block = ff.blocks['test']
          molecule = block.to_molecule()
-         new_block = extract_block(molecule, "GLY", {})
+         nodes = find_atoms(molecule, "resname", "GLY")
+         new_block = extract_block(molecule, nodes=nodes, defines={})
          for node in ff.blocks["GLY"]:
              atomname = ff.blocks["GLY"].nodes[node]["atomname"]
              assert ff.blocks["GLY"].nodes[node] == new_block.nodes[atomname]
