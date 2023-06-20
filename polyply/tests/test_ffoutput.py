@@ -76,7 +76,6 @@ def test_ffoutput(tmp_path, libname):
     """
     Check if we can write and reread our own ff-libraries.
     """
-    tmp_path = "/coarse/fabian/current-projects/polymer_itp_builder/polyply_2.0/polyply/tests/test_data/tmp"
     lib_path = Path(polyply.DATA_PATH) / libname
     for idx, _file in enumerate(lib_path.iterdir()):
         if _file.suffix == ".ff":
