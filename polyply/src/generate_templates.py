@@ -235,7 +235,7 @@ def _relabel_interaction_atoms(interaction, mapping):
     new_interaction = interaction._replace(atoms=new_atoms)
     return new_interaction
 
-def extract_block(molecule, resname, defines):
+def extract_block(molecule, nodes, defines={}):
     """
     Given a `vermouth.molecule` and a `resname`
     extract the information of a block from the
@@ -245,7 +245,9 @@ def extract_block(molecule, resname, defines):
     Parameters
     ----------
     molecule:  :class:vermouth.molecule.Molecule
-    resname:   str
+    nodes: abc.hashable
+        the nodes corresponding to the block to
+        extract
     defines:   dict
       dict of type define: value
 
@@ -253,8 +255,8 @@ def extract_block(molecule, resname, defines):
     -------
     :class:vermouth.molecule.Block
     """
-    nodes = find_atoms(molecule, "resname", resname)
     resid = molecule.nodes[nodes[0]]["resid"]
+    resname = molecule.nodes[nodes[0]]["resname"]
     block = vermouth.molecule.Block()
 
     # select all nodes with the same first resid and
@@ -324,7 +326,8 @@ class GenerateTemplates(Processor):
 
         for resname in resnames:
             if resname not in self.templates:
-                block = extract_block(meta_molecule.molecule, resname,
+                nodes_from_block = find_atoms(meta_molecule.molecule, "resname", resname)
+                block = extract_block(meta_molecule.molecule, nodes_from_block,
                                       self.topology.defines)
 
                 opt_counter = 0
