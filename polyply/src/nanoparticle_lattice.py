@@ -65,6 +65,35 @@ def rotation_matrix_from_vectors(vec1: np.ndarray, vec2: np.ndarray) -> np.ndarr
     return rotation_matrix
 
 
+# def process_atoms(P5AtomsPositionArray, P5ID):
+#    DuplicateArray = []
+#
+#    def print_constraint(index, index2):
+#        print(P5ID[index], P5ID[index2], 1, distarray[0][index2] / 10, 5000)
+#
+#    def check_and_add(sortedInput):
+#        if sortedInput not in DuplicateArray:
+#            DuplicateArray.append(sortedInput)
+#            print_constraint(index, index2)
+#
+#    for index, atom in enumerate(P5AtomsPositionArray):
+#        distarray = distance_array(atom, P5AtomsPositionArray)
+#        for index2, entry in enumerate(distarray[0]):
+#            if index == index2:
+#                continue  # Skip if looking at the same index
+#            if distarray[0][index2] / 10 >= 0.7:
+#                continue  # Skip if bond length is more than 0.7
+#            if index == 1:
+#                print_constraint(index, index2)
+#                sortedInput = sorted([P5ID[index], P5ID[index2]])
+#                DuplicateArray.append(sortedInput)
+#            elif index > 1:
+#                sortedInput = sorted([P5ID[index], P5ID[index2]])
+#                check_and_add(sortedInput)
+#
+#    return DuplicateArray
+
+
 def create_pattern(
     pattern: str,
     core_numpy_coords,
@@ -160,11 +189,11 @@ class PositionChange(Processor):
         ligand_incremental_positions = [
             ligand_positions.nodes[node] for node in list(ligand_positions.nodes)
         ]
+        zeroth_position = ligand_incremental_positions[0]["position"]
 
         # compute the ligand representing the direction pointing from the
         # center of the nanoparticle core to the core atom where the
         # ligand is attached.
-
         core_ligand = [
             self.ligand_block_specs[self.resname]["core"]
             - self.ligand_block_specs[self.resname]["indices"][key]
@@ -188,11 +217,14 @@ class PositionChange(Processor):
                         if meta_molecule.nodes[node]["atomname"] == lig["atomname"]:
                             meta_molecule.nodes[node]["position"] = np.array(
                                 lig["position"]
-                            )
+                            ) - np.array(zeroth_position)
 
+        # Loop over the residue ids for the ligands
         for resid_index, resid in enumerate(
             self.ligand_block_specs[self.resname]["resids"]
         ):
+            # assign ligand_head tail positional list to store the new position of
+            # ligand that has its coordinates changed as with above
             ligand_head_tail_pos[resid] = []
             for index, node in enumerate(list(meta_molecule.nodes)):
                 if (
@@ -210,9 +242,12 @@ class PositionChange(Processor):
                     tail_node = meta_molecule.nodes[node]["position"]
                     ligand_head_tail_pos[resid].append(tail_node)
 
+            # Get the ligand directional vector
             ligand_directional_vector = (
                 ligand_head_tail_pos[resid][1] - ligand_head_tail_pos[resid][0]
             )
+
+            # This should be the transformation vector
             rot_mat = rotation_matrix_from_vectors(
                 ligand_directional_vector, core_ligand[resid_index]
             )
@@ -220,6 +255,7 @@ class PositionChange(Processor):
             logging.info(
                 f"The rotation matrix we have for residue {resid} is {rot_mat}"
             )
+            # store the transformational matrix for that particular ligand
             rotation_matrix_dictionary[resid] = rot_mat
 
             absolute_vectors[resid] = [
@@ -231,26 +267,38 @@ class PositionChange(Processor):
             self.ligand_block_specs[self.resname]["resids"]
         ):
             for index, node in enumerate(list(meta_molecule.nodes)):
-                # pick out the residue ids
-                if meta_molecule.nodes[node]["resid"] == resid:
+                # pick out the residue ids for the ligand of interest
 
+                if meta_molecule.nodes[node]["resid"] == resid:
                     rotated_value = rotation_matrix_dictionary[resid].dot(
                         meta_molecule.nodes[node]["position"]
                     )
-
                     logging.info(
                         f"Thew newly rotated ligand is {rotated_value} for residue {resid}"
                     )
 
-                    # what are we trying to do here?
-                    meta_molecule.nodes[node][
-                        "position"
-                    ] = rotated_value / absolute_vectors[resid][0] * absolute_vectors[
-                        resid
-                    ][
-                        1
-                    ] + (
-                        rotated_value / absolute_vectors[resid][0] * 1.0
+                    modifier = rotated_value / absolute_vectors[resid][
+                        0
+                    ] * np.linalg.norm(ligand_directional_vector) + (
+                        rotation_matrix_dictionary[resid].dot(ligand_directional_vector)
+                        / absolute_vectors[resid][0]
+                        * 1.5
+                    )
+                    logging.info("Need to put in some logging notifiers here")
+
+                    # Modify x cartesian coordinates
+                    meta_molecule.nodes[node]["position"][0] = (
+                        rotated_value[0] + modifier[0]
+                    )
+
+                    # Modify y cartesian coordinates
+                    meta_molecule.nodes[node]["position"][1] = (
+                        rotated_value[1] + modifier[1]
+                    )
+
+                    # Modify z cartesian coordinates
+                    meta_molecule.nodes[node]["position"][2] = (
+                        rotated_value[2] + modifier[2]
                     )
 
 
@@ -1080,8 +1128,8 @@ class nanoparticle_models(Processor):
         )
         self.np_molecule_new.meta["moltype"] = "TEST"
         # reassign the molecule with the np_molecule we have defined new interactions with
-        NanoparticleCoordinates().run_molecule(self.np_molecule_new)
 
+        NanoparticleCoordinates().run_molecule(self.np_molecule_new)
         # shift the positions of the ligands so that they are initiated on the surface of the NP
         for resname in self.ligand_block_specs.keys():
             PositionChange(

@@ -38,7 +38,7 @@ GROMACS:      gmx mdrun, version 2022.5
 Executable:   /home/sang/Desktop/gromacs-2022.5/build/bin/gmx
 Data prefix:  /home/sang/Desktop/gromacs-2022.5 (source tree)
 Working dir:  /home/sang/Desktop/git/polyply_1.0/polyply/tests/trajtest/PCBM_ligand
-Process ID:   12516
+Process ID:   39035
 Command line:
   gmx mdrun -s new.tpr -v -x traj.xtc -c out.gro
 
@@ -146,7 +146,7 @@ Input Parameters:
    comm-mode                      = Linear
    nstcomm                        = 100
    bd-fric                        = 0
-   ld-seed                        = 771735420
+   ld-seed                        = -358878281
    emtol                          = 100000
    emstep                         = 0.0001
    niter                          = 20
@@ -380,7 +380,7 @@ Note that activating steepest-descent energy minimization via the integrator .md
 Initiating Steepest Descents
 
 Atom distribution over 1 domains: av 21 stddev 0 min 21 max 21
-Started Steepest Descents on rank 0 Mon Jun 19 16:12:04 2023
+Started Steepest Descents on rank 0 Tue Jun 20 13:24:56 2023
 
 
 Steepest Descents:
@@ -391,19 +391,19 @@ Steepest Descents:
 
    Energies (kJ/mol)
            Bond       G96Angle        LJ (SR)  Disper. corr.   Coulomb (SR)
-    1.21095e+05    7.03980e+01   -3.57943e+00    8.43167e-01    0.00000e+00
+    1.02417e+05    3.09941e+01    6.52098e+00    8.43167e-01    0.00000e+00
    Coul. recip.      Potential Pres. DC (bar) Pressure (bar)   Constr. rmsd
-    0.00000e+00    1.21164e+05   -2.98907e-03   -1.81427e+03    4.38276e-03
+    0.00000e+00    1.02456e+05   -2.98907e-03   -1.59344e+03    1.28225e-04
 
 
 Steepest Descents converged to Fmax < 100000 in 1 steps
-Potential Energy  =  1.2116370e+05
-Maximum force     =  8.8485953e+04 on atom 20
-Norm of force     =  2.5843091e+04
+Potential Energy  =  1.0245623e+05
+Maximum force     =  6.2152301e+04 on atom 20
+Norm of force     =  2.1274788e+04
 
     D O M A I N   D E C O M P O S I T I O N   S T A T I S T I C S
 
  av. #atoms communicated per step for force:  2 x 0.0
 
-Finished mdrun on rank 0 Mon Jun 19 16:12:04 2023
+Finished mdrun on rank 0 Tue Jun 20 13:24:56 2023
 
