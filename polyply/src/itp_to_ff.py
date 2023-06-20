@@ -21,7 +21,7 @@ import vermouth
 from vermouth.forcefield import ForceField
 from vermouth.molecule import Interaction
 from polyply.src.topology import Topology
-from polyply.src.generate_templates import _relabel_interaction_atoms
+from polyply.src.generate_templates import extract_block
 from polyply.src.fragment_finder import FragmentFinder
 from polyply.src.ffoutput import ForceFieldDirectiveWriter
 
@@ -96,57 +96,6 @@ def _extract_edges_from_shortest_path(atoms, block, min_resid):
                 had_edges.append(edge)
                 resnames.update(zip(link_names, [ block.nodes[node]["resname"] for node in edge]))
     return final_atoms, edges, resnames
-
-def extract_block(molecule, nodes, defines):
-    """
-    Given a `vermouth.molecule` and a `resname`
-    extract the information of a block from the
-    molecule definition and replace all defines
-    if any are found.
-
-    Parameters
-    ----------
-    molecule:  :class:vermouth.molecule.Molecule
-    resname:   str
-    defines:   dict
-      dict of type define: value
-
-    Returns
-    -------
-    :class:vermouth.molecule.Block
-    """
-    resid = molecule.nodes[nodes[0]]["resid"]
-    block = vermouth.molecule.Block()
-
-    # select all nodes with the same first resid and
-    # make sure the block node labels are atomnames
-    # also build a correspondance dict between node
-    # label in the molecule and in the block for
-    # relabeling the interactions
-    mapping = {}
-    for node in nodes:
-        attr_dict = molecule.nodes[node]
-        if attr_dict["resid"] == resid:
-            block.add_node(attr_dict["atomname"], **attr_dict)
-            mapping[node] = attr_dict["atomname"]
-
-    for inter_type in molecule.interactions:
-        for interaction in molecule.interactions[inter_type]:
-            if all(atom in mapping for atom in interaction.atoms):
-                interaction = _relabel_interaction_atoms(interaction, mapping)
-                block.interactions[inter_type].append(interaction)
-
-    for inter_type in ["bonds", "constraints", "virtual_sitesn",
-                       "virtual_sites2", "virtual_sites3", "virtual_sites4"]:
-        block.make_edges_from_interaction_type(inter_type)
-
-    if not nx.is_connected(block):
-        msg = ('\n Residue {} with id {} consistes of two disconnected parts. '
-               'Make sure all atoms/particles in a residue are connected by bonds,'
-               ' constraints or virual-sites.')
-        raise IOError(msg.format(resname, resid))
-
-    return block
 
 def extract_links(molecule):
     """
