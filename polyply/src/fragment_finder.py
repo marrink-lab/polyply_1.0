@@ -326,15 +326,7 @@ class FragmentFinder():
             # here we extract the fragments and set appropiate residue names
             for other_frag in unique_fragments.values():
                 if nx.is_isomorphic(fragment, other_frag, node_match=self._node_match):
-                    # it can happen that two fragments are completely isomorphic but have different
-                    # atom names because we don't know the order of atoms when looping over the molecule
-                    # and setting the names. In this case we simply take the atom-names of the known
-                    # fragment. Better ideas anyone?
-                    mapping = find_one_ismags_match(fragment, other_frag, self._node_match)
-                    if mapping:
-                        for source, target in mapping.items():
-                            self.molecule.nodes[target]['atomname'] = self.molecule.nodes[source]['atomname']
-                        break
+                    break
             else:
                 if resname in unique_fragments:
                     resname = resname + "_" + str(had_resnames[resname] + 1)
@@ -344,5 +336,7 @@ class FragmentFinder():
                     had_resnames[resname] = 0
                 unique_fragments[resname] = fragment
 
+        # remake the residue graph since some resnames have changed
+        self.make_res_graph()
         return unique_fragments
 

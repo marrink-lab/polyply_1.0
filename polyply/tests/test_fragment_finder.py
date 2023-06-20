@@ -253,9 +253,9 @@ def test_extract_fragments(smiles, resnames, remove, uni_frags):
 
     frag_finder = polyply.src.fragment_finder.FragmentFinder(molecule, "ter")
     fragments = frag_finder.extract_unique_fragments(match_mols)
-    frag_finder.match_keys = ['element', 'mass', 'resname']
     assert len(fragments) == len(uni_frags)
     for resname, graph in fragments.items():
+        frag_finder.match_keys = ['element', 'mass', 'resname']
         if type(uni_frags[resname]) == tuple:
            new_smiles = [smiles[idx] for idx in uni_frags[resname]]
            new_resnames = [resnames[idx] for idx in uni_frags[resname]]
@@ -267,3 +267,10 @@ def test_extract_fragments(smiles, resnames, remove, uni_frags):
         # graphs used to make the match
         nx.set_node_attributes(ref, resname, "resname")
         assert nx.is_isomorphic(ref, graph, node_match=frag_finder._node_match)
+        # make sure all molecule nodes are named correctly
+        frag_finder.match_keys = ['atomname', 'resname']
+        for node in frag_finder.res_graph:
+           resname_mol = frag_finder.res_graph.nodes[node]["resname"]
+           if resname == resname_mol:
+               target = frag_finder.res_graph.nodes[node]["graph"]
+               assert nx.is_isomorphic(target, graph, node_match=frag_finder._node_match)
