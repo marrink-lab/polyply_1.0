@@ -234,7 +234,7 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
                                 help='Enable debug logging output. Can be given '
                                 'multiple times.', default=0)
 
-    parser_itp_ff.add_argument('-i', dest="itppath")
+    parser_itp_ff.add_argument('-i', dest="itppath", type=Path)
     parser_itp_ff.add_argument('-sm', dest="fragment_smiles", nargs='*')
     parser_itp_ff.add_argument('-rn', dest="resnames", nargs='*')
     parser_itp_ff.add_argument('-tp',dest="term_prefix", default="ter")
