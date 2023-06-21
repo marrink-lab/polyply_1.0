@@ -20,6 +20,7 @@ import pysmiles
 import vermouth
 from vermouth.forcefield import ForceField
 from vermouth.molecule import Interaction
+from vermouth.gmx.itp_read import read_itp
 from polyply.src.topology import Topology
 from polyply.src.generate_templates import extract_block
 from polyply.src.fragment_finder import FragmentFinder
@@ -241,10 +242,20 @@ def itp_to_ff(itppath, fragment_smiles, resnames, term_prefix, outpath, charge=0
     """
     Main executable for itp to ff tool.
     """
-    # read the target itp-file
-    top = Topology.from_gmx_topfile(itppath, name="test")
-    mol = top.molecules[0].molecule
-    mol = equalize_charges(mol, target_charge=charge)
+    if itppath.suffix == ".top":
+        # read the topology file
+        top = Topology.from_gmx_topfile(itppath, name="test")
+        mol = top.molecules[0].molecule
+        mol = equalize_charges(mol, target_charge=charge)
+
+    if itppath.suffix == ".itp":
+        with open(itppath, "r") as _file:
+            lines = _file.readlines()
+        force_field = ForceField("tmp")
+        read_itp(lines, force_field)
+        block = next(iter(force_field.blocks.values()))
+        mol = block.to_molecule()
+        mol.make_edges_from_interaction_type(type_="bonds")
 
     # read the target fragments and convert to graph
     fragment_graphs = []
