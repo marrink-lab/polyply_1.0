@@ -326,7 +326,11 @@ class FragmentFinder():
             # here we extract the fragments and set appropiate residue names
             for other_frag in unique_fragments.values():
                 if nx.is_isomorphic(fragment, other_frag, node_match=self._node_match):
-                    break
+                    mapping = find_one_ismags_match(fragment, other_frag, self._node_match)
+                    if mapping:
+                        for source, target in mapping.items():
+                            self.molecule.nodes[target]['atomname'] = self.molecule.nodes[source]['atomname']
+                        break
             else:
                 if resname in unique_fragments:
                     resname = resname + "_" + str(had_resnames[resname] + 1)
@@ -339,4 +343,3 @@ class FragmentFinder():
         # remake the residue graph since some resnames have changed
         self.make_res_graph()
         return unique_fragments
-
