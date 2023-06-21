@@ -24,6 +24,7 @@ from polyply.src.topology import Topology
 from polyply.src.generate_templates import extract_block
 from polyply.src.fragment_finder import FragmentFinder
 from polyply.src.ffoutput import ForceFieldDirectiveWriter
+from polyply.tests.test_lib_files import _interaction_equal 
 
 def diffs_to_prefix(atoms, resid_diffs):
     """
@@ -160,9 +161,8 @@ def extract_links(molecule):
            #         print(kdx, link_inter.atoms, patterns[pattern].get(inter_type, []), "\n")
 
                 for other_inter in patterns[pattern].get(inter_type, []):
-                    if other_inter.atoms == link_inter.atoms:
-                        if  other_inter.parameters == link_inter.parameters:
-                            break
+                    if _interaction_equal(other_inter, link_inter, inter_type):
+                        break
                 else:
                     patterns[pattern][inter_type].append(link_inter)
                     resnames_for_patterns[pattern].update(resnames)
