@@ -3,13 +3,6 @@ from dataclasses import dataclass
 import textwrap
 
 
-@dataclass
-class nps_library:
-    """ """
-
-    pass
-
-
 def return_amber_nps_type(
     np_type: Literal[
         "au144_amber_nonbonded",
