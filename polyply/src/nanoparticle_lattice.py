@@ -93,7 +93,6 @@ def create_np_pattern(
     pattern: Literal[None, "Striped", "Janus"],
     core_numpy_coords: np.ndarray,
     length: int,
-    threshold: float,
     minimum_threshold: float,
     maximum_threshold: float,
 ) -> List[np.ndarray]:
@@ -102,7 +101,9 @@ def create_np_pattern(
 
     Striped-X, Striped-Y, Stiped-Z  - maybe make the patterns for this?
 
+    This is a potential part for expansion
     """
+
     if pattern == None:
         core_values = {}
         for index, entry in enumerate(core_numpy_coords):
@@ -605,7 +606,7 @@ class GoldNanoparticleSingle:
             output.write("\n")
 
 
-class nanoparticle_models(Processor):
+class NanoparticleModels(Processor):
     """
     We have a number of gold nanoparticle cores based on the amber forcefield
     that is avaliable as published here:
@@ -637,6 +638,7 @@ class nanoparticle_models(Processor):
         pattern,
         ligand_anchor_atoms,
         ligand_tail_atoms,
+        nrexcl,
         ff_name="test",
         length=2.5,
         original_coordinates=None,
@@ -663,6 +665,7 @@ class nanoparticle_models(Processor):
         self.pattern = pattern
         self.ligand_anchor_atoms = ligand_anchor_atoms
         self.ligand_tail_atoms = ligand_tail_atoms
+        self.nrexcl = nrexcl
         self.ff = vermouth.forcefield.ForceField(name=ff_name)
         self.length = length
         self.identify_surface = identify_surface
@@ -763,7 +766,7 @@ class nanoparticle_models(Processor):
 
         self.core_block = core_block
         self.core_len, self.core = len(core_block), len(core_block)
-        core_block.nrexcl = 1
+        core_block.nrexcl = self.nrexcl
         self.np_molecule_new = core_block.to_molecule()
         # Generate the positions for the core and assign as position elements
         NanoparticleCoordinates().run_molecule(self.np_molecule_new)
@@ -850,6 +853,7 @@ class nanoparticle_models(Processor):
         )
         # Find the center of geometry of the core
         center_np = center_of_geometry(core_numpy_coords)
+
         # Compute the radius
         radius_list = []
         for coord in core_numpy_coords:
@@ -866,39 +870,13 @@ class nanoparticle_models(Processor):
         )
 
         # the logic of this part takes from the original NPMDPackage code
-        if self.pattern == None:
-            core_values = {}
-            for index, entry in enumerate(core_numpy_coords):
-                core_values[index] = entry
-            self.core_indices = [core_values]
-
-        # return the Striped pattern
-        elif self.pattern == "Striped":
-            core_striped_values = {}
-            core_ceiling_values = {}
-            threshold = length / 3  # divide nanoparticle region into 3
-            for index, entry in enumerate(core_numpy_coords):
-                if (
-                    entry[2] > minimum_threshold + threshold
-                    and entry[2] < maximum_threshold - threshold
-                ):
-                    core_striped_values[index] = entry
-                else:
-                    core_ceiling_values[index] = entry
-            self.core_indices = [core_striped_values, core_ceiling_values]
-
-        # return the Janus pattern
-        elif self.pattern == "Janus":
-            core_top_values = {}
-            core_bot_values = {}
-            threshold = length / 2  # divide nanoparticle region into 2
-            for index, entry in enumerate(core_numpy_coords):
-                if entry[2] > minimum_threshold + threshold:
-                    core_top_values[index] = entry
-                else:
-                    core_bot_values[index] = entry
-
-            self.core_indices: list[dict[int, int]] = [core_top_values, core_bot_values]
+        self.core_indices = create_np_pattern(
+            self.pattern,
+            core_numpy_coords,
+            length,
+            minimum_threshold,
+            maximum_threshold,
+        )
 
         # Can definitely add more potential patterns here
 
@@ -1054,7 +1032,7 @@ class nanoparticle_models(Processor):
 
         """
         core_size = self.core  # get the core size
-        resid_index = 3  # 3 for PCBM for some reason..
+        resid_index = 2  # 3 for PCBM for some reason..
         for key in self.ligand_block_specs.keys():
             attachment_list = {}
             resids = []
@@ -1078,7 +1056,7 @@ class nanoparticle_models(Processor):
                 )  # append to block
 
                 resids.append(resid_index)  # why is this 2?
-                resid_index += 2
+                resid_index += 1
 
             self.ligand_block_specs[key]["shift_index"] = attachment_list
             self.ligand_block_specs[key]["resids"] = resids
@@ -1092,7 +1070,7 @@ class nanoparticle_models(Processor):
         Returns
         -------
         """
-        newcore = self.core
+        core_size = self.core
         # get random N elements from the list
         for key in self.ligand_block_specs.keys():
             logging.info(f"bonds for {key}")
@@ -1103,7 +1081,7 @@ class nanoparticle_models(Processor):
             for index, entry in enumerate(adjusted_N_indices):
 
                 base_anchor = (
-                    newcore
+                    core_size
                     + (index * self.ligand_block_specs[key]["length"])
                     + self.ligand_block_specs[key]["anchor_index"]
                 )
@@ -1126,7 +1104,7 @@ class nanoparticle_models(Processor):
             logging.info(
                 f"core length is {self.core_len}, number of atoms with ligands added is {self.ligand_block_specs[key]['length'] * self.ligand_block_specs[key]['N']} "
             )
-            newcore += self.ligand_block_specs[key]["length"] * len(
+            core_size += self.ligand_block_specs[key]["length"] * len(
                 list(self.ligand_block_specs[key]["indices"])
             )
             logging.info(f"core length is now {self.core_len}")
@@ -1201,17 +1179,17 @@ class nanoparticle_models(Processor):
         """
         Generate the itp file for the nanoparticle
         """
-        self.np_top = Topology(name="nanoparticle", force_field=self.ff)
-        self.np_top.molecules = [self.meta_mol]
-        self.np_top.box = np.array([30.0, 30.0, 30.0])
-        with open("np.itp", "w") as outfile:
+        # self.np_top = Topology(name="nanoparticle", force_field=self.ff)
+        # self.np_top.molecules = [self.meta_mol]
+        # self.np_top.box = np.array([30.0, 30.0, 30.0])
+        with open("NP.itp", "w") as outfile:
             write_molecule_itp(self.np_top.molecules[0].molecule, outfile)
 
 
 # main code executable
 if __name__ == "__main__":
     # The gold nanoparticle - generate the core of the opls force field work
-    gold_model = nanoparticle_models(
+    gold_model = NanoparticleModels(
         return_amber_nps_type("au144_OPLS_bonded"),
         "NP2",
         "AU",
@@ -1222,6 +1200,7 @@ if __name__ == "__main__":
         "Striped",
         ["S00", "S07"],
         ["C05", "C02"],
+        3,
         # ["S07"],
         # ["C02"],
         "test",
@@ -1239,7 +1218,7 @@ if __name__ == "__main__":
     # PCBM nanoparticle (Coarse-grained) - constructing the PCBM
     PCBM_ligand_gro = "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/PCBM_CG/PCBM_ligand.gro"
     ## Creating the PCBM model
-    PCBM_model = nanoparticle_models(
+    PCBM_model = NanoparticleModels(
         return_cg_nps_type("F16"),
         "F16",
         "CNP",
@@ -1249,6 +1228,7 @@ if __name__ == "__main__":
         "Striped",
         ["C4"],
         ["N1"],
+        1,
         ff_name="test",
         original_coordinates={
             "PCBM": gro.read_gro(PCBM_ligand_gro),
@@ -1256,16 +1236,16 @@ if __name__ == "__main__":
         identify_surface=False,
     )
 
-    # gold_model.core_generate_coordinates()
-    # gold_model._identify_indices_for_core_attachment()
-    # gold_model._ligand_generate_coordinates()
-    # gold_model._add_block_indices()  # Not sure whether we need this now ...
-    # gold_model._generate_ligand_np_interactions()
-    # gold_model._generate_bonds()
-    # gold_model._initiate_nanoparticle_coordinates()  # doesn't quite work yet.
+    gold_model.core_generate_coordinates()
+    gold_model._identify_indices_for_core_attachment()
+    gold_model._ligand_generate_coordinates()
+    gold_model._add_block_indices()  # Not sure whether we need this now ...
+    gold_model._generate_ligand_np_interactions()
+    gold_model._generate_bonds()
+    gold_model._initiate_nanoparticle_coordinates()  # doesn't quite work yet.
     # Generating output files
-    # gold_model.create_gro("gold.gro")
-    # gold_model.write_itp()
+    gold_model.create_gro("gold.gro")
+    gold_model.write_itp()
 
     # Generate PCBM
     PCBM_model.core_generate_coordinates()
