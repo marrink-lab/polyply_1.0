@@ -3,21 +3,15 @@ from dataclasses import dataclass
 import textwrap
 
 
-@dataclass
-class nps_library:
-    """ """
-
-    pass
-
-
 def return_cg_nps_type(
     np_type: Literal[
         "F16",
     ]
 ) -> str:
     """
-    return the main base of the gold nanoparticles
-    need to implement mypy type of work here
+    return the main base of the carbon nanoparticles (F16)
+    and other 'raw' types of cores here that can be expanded
+    as needed
     """
     np_dict = {}
     # from https://pubs.acs.org/doi/pdf/10.1021/jp301094m
