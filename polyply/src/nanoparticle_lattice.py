@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Literal
 import itertools
 import logging  # implement logging parts here
 
@@ -89,8 +89,8 @@ def rotation_matrix_from_vectors(vec1: np.ndarray, vec2: np.ndarray) -> np.ndarr
 #    return DuplicateArray
 
 
-def create_pattern(
-    pattern: str,
+def create_np_pattern(
+    pattern: Literal[None, "Striped", "Janus"],
     core_numpy_coords: np.ndarray,
     length: int,
     threshold: float,
@@ -102,9 +102,14 @@ def create_pattern(
 
     Striped-X, Striped-Y, Stiped-Z  - maybe make the patterns for this?
 
-
     """
-    if pattern == "Striped":
+    if pattern == None:
+        core_values = {}
+        for index, entry in enumerate(core_numpy_coords):
+            core_values[index] = entry
+            core_indices = [core_values]
+
+    elif pattern == "Striped":
         core_striped_values = {}
         core_ceiling_values = {}
         threshold = length / 3  # divide nanoparticle region into 3
@@ -114,13 +119,21 @@ def create_pattern(
                 and entry[2] < maximum_threshold - threshold
             ):
                 core_striped_values[index] = entry
-        else:
-            core_ceiling_values[index] = entry
-            core_indices = [core_striped_values, core_ceiling_values]
+            else:
+                core_ceiling_values[index] = entry
+                core_indices = [core_striped_values, core_ceiling_values]
+
     elif pattern == "Janus":
-        pass
-    else:
-        pass
+        core_top_values = {}
+        core_bot_values = {}
+        threshold = length / 2  # divide nanoparticle region into 2
+        for index, entry in enumerate(core_numpy_coords):
+            if entry[2] > minimum_threshold + threshold:
+                core_top_values[index] = entry
+            else:
+                core_bot_values[index] = entry
+
+        core_indices: list[dict[int, int]] = [core_top_values, core_bot_values]
 
     return core_indices
 
@@ -1041,7 +1054,7 @@ class nanoparticle_models(Processor):
 
         """
         core_size = self.core  # get the core size
-        resid_index = 2
+        resid_index = 3  # 3 for PCBM for some reason..
         for key in self.ligand_block_specs.keys():
             attachment_list = {}
             resids = []
@@ -1065,7 +1078,7 @@ class nanoparticle_models(Processor):
                 )  # append to block
 
                 resids.append(resid_index)  # why is this 2?
-                resid_index += 1
+                resid_index += 2
 
             self.ligand_block_specs[key]["shift_index"] = attachment_list
             self.ligand_block_specs[key]["resids"] = resids
@@ -1232,7 +1245,7 @@ if __name__ == "__main__":
         "CNP",
         "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/PCBM_CG/",
         ["PCBM_ligand.itp"],
-        [1],
+        [2],
         "Striped",
         ["C4"],
         ["N1"],
