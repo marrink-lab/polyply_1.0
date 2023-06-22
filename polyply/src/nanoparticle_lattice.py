@@ -1,14 +1,8 @@
-import collections
-import copy
+from typing import List, Dict, Any
 import itertools
-
 import logging  # implement logging parts here
-import random
 
-from pprint import pprint
-from typing import Any, Literal, Dict
 from scipy.spatial import distance
-
 import networkx as nx
 import numpy as np
 import vermouth
@@ -26,16 +20,17 @@ from polyply.src.generate_templates import (
     replace_defined_interaction,
     extract_block,
 )
+
 import polyply.src.meta_molecule
 from polyply.src.load_library import load_library
-
 from polyply.src.meta_molecule import MetaMolecule
 from polyply.src.processor import Processor
 from polyply.src.topology import Topology
 from polyply.src.linalg_functions import center_of_geometry
 
+# Nanoparticle types
 from amber_nps import return_amber_nps_type  # this will be changed
-from CG_nps import return_cg_nps_type  # this needs to be changed as well
+from cg_nps import return_cg_nps_type  # this needs to be changed as well
 
 # logging configuration
 logging.basicConfig(level=logging.INFO)
@@ -96,14 +91,17 @@ def rotation_matrix_from_vectors(vec1: np.ndarray, vec2: np.ndarray) -> np.ndarr
 
 def create_pattern(
     pattern: str,
-    core_numpy_coords,
-    length,
-    threshold,
-    minimum_threshold,
-    maximum_threshold,
-) -> None:
+    core_numpy_coords: np.ndarray,
+    length: int,
+    threshold: float,
+    minimum_threshold: float,
+    maximum_threshold: float,
+) -> List[np.ndarray]:
     """
     Output pattern for decorating the nanoparticle core.
+
+    Striped-X, Striped-Y, Stiped-Z  - maybe make the patterns for this?
+
 
     """
     if pattern == "Striped":
@@ -120,6 +118,8 @@ def create_pattern(
             core_ceiling_values[index] = entry
             core_indices = [core_striped_values, core_ceiling_values]
     elif pattern == "Janus":
+        pass
+    else:
         pass
 
     return core_indices
@@ -164,6 +164,7 @@ class PositionChange(Processor):
         core_len: int,
         resname: str,
         original_coordinates: Dict[str, str],
+        length: float,
         *args,
         **kwargs,
     ):
@@ -171,6 +172,7 @@ class PositionChange(Processor):
         self.core_len = core_len
         self.resname = resname
         self.original_coordinates = original_coordinates
+        self.length = length
         super().__init__(*args, **kwargs)
 
     def run_molecule(self, meta_molecule) -> None:
@@ -244,7 +246,7 @@ class PositionChange(Processor):
 
             # Get the ligand directional vector
             ligand_directional_vector = (
-                ligand_head_tail_pos[resid][1] - ligand_head_tail_pos[resid][0]
+                ligand_head_tail_pos[resid][0] - ligand_head_tail_pos[resid][1]
             )
 
             # This should be the transformation vector
@@ -282,7 +284,7 @@ class PositionChange(Processor):
                     ] * np.linalg.norm(ligand_directional_vector) + (
                         rotation_matrix_dictionary[resid].dot(ligand_directional_vector)
                         / absolute_vectors[resid][0]
-                        * 1.5
+                        * self.length
                     )
                     logging.info("Need to put in some logging notifiers here")
 
@@ -623,11 +625,12 @@ class nanoparticle_models(Processor):
         ligand_anchor_atoms,
         ligand_tail_atoms,
         ff_name="test",
+        length=2.5,
         original_coordinates=None,
         identify_surface=False,
     ):
         """
-        Main class for making the gold nanoparticles.
+        Main class for making the ligand-functionalized nanoparticles.
 
         Parameters
         ----------
@@ -648,6 +651,7 @@ class nanoparticle_models(Processor):
         self.ligand_anchor_atoms = ligand_anchor_atoms
         self.ligand_tail_atoms = ligand_tail_atoms
         self.ff = vermouth.forcefield.ForceField(name=ff_name)
+        self.length = length
         self.identify_surface = identify_surface
         self.original_coordinates = original_coordinates
 
@@ -973,6 +977,7 @@ class nanoparticle_models(Processor):
                         list(self.ff.blocks[block_name].atoms)
                     ),  # store length of the ligand
                     "N": self.ligand_N[
+                        # ligand_index
                         ligand_index
                     ],  # store number of ligands of that type to attach onto the core.
                     "anchor_index": self._identify_attachment_index(
@@ -1036,7 +1041,7 @@ class nanoparticle_models(Processor):
 
         """
         core_size = self.core  # get the core size
-        resid_index = 3  #
+        resid_index = 3  # 3 for PCBM for some reason..
         for key in self.ligand_block_specs.keys():
             attachment_list = {}
             resids = []
@@ -1137,6 +1142,7 @@ class nanoparticle_models(Processor):
                 core_len=self.core_len,
                 resname=resname,
                 original_coordinates=self.original_coordinates,
+                length=self.length,
             ).run_molecule(self.np_molecule_new)
 
         # prepare meta molecule
@@ -1197,12 +1203,15 @@ if __name__ == "__main__":
         "AU",
         "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand",
         ["UNK_12B037/UNK_12B037.itp", "UNK_DA2640/UNK_DA2640.itp"],
-        [10, 10],
+        # ["UNK_DA2640/UNK_DA2640.itp"],
+        [20, 20],
         "Striped",
         ["S00", "S07"],
         ["C05", "C02"],
+        # ["S07"],
+        # ["C02"],
         "test",
-        {
+        original_coordinates={
             "12B": gro.read_gro(
                 "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand/UNK_12B037/UNK_12B037.gro"
             ),
@@ -1210,11 +1219,12 @@ if __name__ == "__main__":
                 "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand/UNK_DA2640/UNK_DA2640.gro"
             ),
         },
+        identify_surface=True,
     )
 
     # PCBM nanoparticle (Coarse-grained) - constructing the PCBM
     PCBM_ligand_gro = "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/PCBM_CG/PCBM_ligand.gro"
-    # Creating the PCBM model
+    ## Creating the PCBM model
     PCBM_model = nanoparticle_models(
         return_cg_nps_type("F16"),
         "F16",
@@ -1232,6 +1242,18 @@ if __name__ == "__main__":
         identify_surface=False,
     )
 
+    # gold_model.core_generate_coordinates()
+    # gold_model._identify_indices_for_core_attachment()
+    # gold_model._ligand_generate_coordinates()
+    # gold_model._add_block_indices()  # Not sure whether we need this now ...
+    # gold_model._generate_ligand_np_interactions()
+    # gold_model._generate_bonds()
+    # gold_model._initiate_nanoparticle_coordinates()  # doesn't quite work yet.
+    # Generating output files
+    # gold_model.create_gro("gold.gro")
+    # gold_model.write_itp()
+
+    # Generate PCBM
     PCBM_model.core_generate_coordinates()
     PCBM_model._identify_indices_for_core_attachment()
     PCBM_model._ligand_generate_coordinates()
@@ -1242,12 +1264,6 @@ if __name__ == "__main__":
     # Generating output files
     PCBM_model.create_gro("PCBM.gro")
     PCBM_model.write_itp()
-
-    # -------------------------------------
-    # gold_model.core_generate_coordinates()
-    # gold_model.generate_dicts()
-    # gold_model.create_gro("new.gro")
-    # gold_model.write_itp()
 
     # unfinished part of the code..
     # sampleNPCore = GoldNanoparticleSingle()
