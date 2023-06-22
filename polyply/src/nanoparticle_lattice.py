@@ -1041,7 +1041,7 @@ class nanoparticle_models(Processor):
 
         """
         core_size = self.core  # get the core size
-        resid_index = 3  # 3 for PCBM for some reason..
+        resid_index = 2
         for key in self.ligand_block_specs.keys():
             attachment_list = {}
             resids = []
@@ -1120,13 +1120,14 @@ class nanoparticle_models(Processor):
 
     def _initiate_nanoparticle_coordinates(self):
         """ """
-        for node in self.np_molecule_new.nodes:
-            # change resname to moltype
-            self.np_molecule_new.nodes[node]["resname"] = "TEST"
+        # for node in self.np_molecule_new.nodes:
+        #    # change resname to moltype
+        #    self.np_molecule_new.nodes[node]["resname"] = "TEST"
 
         self.graph = MetaMolecule._block_graph_to_res_graph(
             self.np_molecule_new
         )  # generate residue graph
+
         # generate meta molecule fro the residue graph with a new molecule name
         self.meta_mol = MetaMolecule(
             self.graph, force_field=self.ff, mol_name="random_name"

@@ -26,11 +26,11 @@ PCBM                 1
 [ atoms ]
 ;   nr       type  resnr residue  atom    cgnr     charge       mass  
 ;
-    1        SC5      2   PCBM    C1     1          0         45
-    2        SC5      2   PCBM    C2     2          0         45
-    3        SC5      2   PCBM    C3     3          0         45
-    4         C1      2   PCBM    C4     4          0         72
-    5         Na      2   PCBM    N1     5          0         72
+    1        SC5      1   PCBM    C1     1          0         45
+    2        SC5      1   PCBM    C2     2          0         45
+    3        SC5      1   PCBM    C3     3          0         45
+    4         C1      1   PCBM    C4     4          0         72
+    5         Na      1   PCBM    N1     5          0         72
 
 [ bonds ]
 ;         i           j    funct      length   force_k
