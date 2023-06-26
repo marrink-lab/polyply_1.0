@@ -200,6 +200,7 @@ def extract_links(molecule):
                 link.interactions[inter_type].append(interaction)
 
         links.append(link)
+    print("--test--")
     print(links)
     return links
 
