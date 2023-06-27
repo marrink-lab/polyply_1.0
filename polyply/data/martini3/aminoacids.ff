@@ -147,7 +147,7 @@ ILE                1
 ;id type resnr residu atom cgnr   charge
  1   $prot_default_bb_type   1     ILE     BB     1      0    
  2   SC2  1     ILE     SC1    1      0    
- 3    VS  1     LEU     CA     1      0   0
+ 3    VS  1     ILE     CA     1      0   0
 [ virtual_sitesn ]
 3 1 -- 1
 
@@ -799,6 +799,8 @@ resname $protein_resnames
 [ exclusions ]
 #meta {"comment": "CA-BB-same"}
 CA  BB
+[ edges ]
+CA BB
 
 [ link ]
 resname $protein_resnames
