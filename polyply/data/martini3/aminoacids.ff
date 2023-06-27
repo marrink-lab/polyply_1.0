@@ -797,7 +797,8 @@ SC1 BB +BB +SC1 9  100 -1.5 2 {"group": "idp-fix-chris", "version": 2, "comment"
 [ link ]
 resname $protein_resnames
 [ exclusions ]
-CA  BB {"comment": "CA-BB-same"}
+#meta {"comment": "CA-BB-same"}
+CA  BB
 
 [ link ]
 resname $protein_resnames
@@ -806,7 +807,8 @@ CA { }
 BB { }
 +BB { }
 [ exclusions ]
-CA +BB {"comment": "CA-BB"}
+#meta {"comment": "CA-BB"}
+CA +BB
 [ edges ]
 BB +BB
 
