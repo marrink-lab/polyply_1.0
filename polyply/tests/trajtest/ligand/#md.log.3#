@@ -38,7 +38,7 @@ GROMACS:      gmx mdrun, version 2022.5
 Executable:   /home/sang/Desktop/gromacs-2022.5/build/bin/gmx
 Data prefix:  /home/sang/Desktop/gromacs-2022.5 (source tree)
 Working dir:  /home/sang/Desktop/git/polyply_1.0/polyply/tests/trajtest/ligand
-Process ID:   20410
+Process ID:   19753
 Command line:
   gmx mdrun -s new.tpr -v -x out.xtc -c out.gro
 
@@ -146,7 +146,7 @@ Input Parameters:
    comm-mode                      = Linear
    nstcomm                        = 100
    bd-fric                        = 0
-   ld-seed                        = -637600485
+   ld-seed                        = -1620148269
    emtol                          = 100000
    emstep                         = 0.0001
    niter                          = 20
@@ -374,7 +374,7 @@ Note that activating steepest-descent energy minimization via the integrator .md
 Initiating Steepest Descents
 
 Atom distribution over 1 domains: av 788 stddev 0 min 788 max 788
-Started Steepest Descents on rank 0 Mon Jun 26 15:53:00 2023
+Started Steepest Descents on rank 0 Mon Jun 26 15:50:21 2023
 
 
 Steepest Descents:
@@ -387,7 +387,7 @@ Steepest Descents:
            Bond          Angle Ryckaert-Bell. Per. Imp. Dih.          LJ-14
     1.00256e+08    1.21167e+04    5.52526e+02    8.06366e+01    2.89614e+10
      Coulomb-14        LJ (SR)  Disper. corr.   Coulomb (SR)   Coul. recip.
-   -2.74247e+03    9.23100e+22    6.95320e+01    1.84006e+03    4.29539e+03
+   -2.74247e+03    9.23100e+22    6.95320e+01    1.84006e+03    4.29538e+03
       Potential Pres. DC (bar) Pressure (bar)
     9.23100e+22   -5.15018e-04    4.90500e+19
 
@@ -429,5 +429,5 @@ Norm of force     =            inf
 
  av. #atoms communicated per step for force:  2 x 0.0
 
-Finished mdrun on rank 0 Mon Jun 26 15:53:14 2023
+Finished mdrun on rank 0 Mon Jun 26 15:50:37 2023
 

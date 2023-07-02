@@ -2,7 +2,7 @@
 ;	File 'mdout.mdp' was generated
 ;	By user: sang (1000)
 ;	On host: sang-Lenovo-IdeaPad-S540-15IML
-;	At date: Thu Apr 27 22:44:46 2023
+;	At date: Mon Jun 26 15:52:47 2023
 ;
 ;	Created by:
 ;	                     :-) GROMACS - gmx grompp, 2022.5 (-:
@@ -11,7 +11,7 @@
 ;	Data prefix:  /home/sang/Desktop/gromacs-2022.5 (source tree)
 ;	Working dir:  /home/sang/Desktop/git/polyply_1.0/polyply/tests/trajtest/ligand
 ;	Command line:
-;	  gmx grompp -f minimization.mdp -c new.gro -p system.top -maxwarn 100 -o new.tpr
+;	  gmx grompp -f minimization.mdp -c out.gro -p system.top -o new.tpr -maxwarn 20
 
 ; VARIOUS PREPROCESSING OPTIONS
 ; Preprocessor information: use cpp syntax.
@@ -169,7 +169,7 @@ annealing-temp           =
 ; GENERATE VELOCITIES FOR STARTUP RUN
 gen-vel                  = no
 gen-temp                 = 300
-gen-seed                 = 1181745065
+gen-seed                 = -299106433
 
 ; OPTIONS FOR BONDS    
 constraints              = none
