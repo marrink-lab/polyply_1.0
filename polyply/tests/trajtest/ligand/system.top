@@ -3,8 +3,9 @@
   1             1               yes              1.0     1.0  
 
 #include "ffgmxnb_v2.itp"
-#include "NP.itp"
-  
+#include "gold.itp"
+;#include "FF.itp"
+
 [ system ]
 ; name
 TEST_1

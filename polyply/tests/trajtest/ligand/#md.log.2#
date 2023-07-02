@@ -38,7 +38,7 @@ GROMACS:      gmx mdrun, version 2022.5
 Executable:   /home/sang/Desktop/gromacs-2022.5/build/bin/gmx
 Data prefix:  /home/sang/Desktop/gromacs-2022.5 (source tree)
 Working dir:  /home/sang/Desktop/git/polyply_1.0/polyply/tests/trajtest/ligand
-Process ID:   20410
+Process ID:   197756
 Command line:
   gmx mdrun -s new.tpr -v -x out.xtc -c out.gro
 
@@ -146,7 +146,7 @@ Input Parameters:
    comm-mode                      = Linear
    nstcomm                        = 100
    bd-fric                        = 0
-   ld-seed                        = -637600485
+   ld-seed                        = -4198450
    emtol                          = 100000
    emstep                         = 0.0001
    niter                          = 20
@@ -181,9 +181,9 @@ Input Parameters:
    DispCorr                       = EnerPres
    table-extension                = 1
    fourierspacing                 = 0.12
-   fourier-nx                     = 432
-   fourier-ny                     = 432
-   fourier-nz                     = 432
+   fourier-nx                     = 256
+   fourier-ny                     = 256
+   fourier-nz                     = 256
    pme-order                      = 4
    ewald-rtol                     = 1e-05
    ewald-rtol-lj                  = 0.001
@@ -322,7 +322,7 @@ NOTE: Periodic molecules are present in this system. Because of this, the domain
 Minimum cell size due to bonded interactions: 0.525 nm
 Using 0 separate PME ranks because: there are too few total ranks for efficient splitting
 Optimizing the DD grid for 1 cells with a minimum initial size of 0.525 nm
-The maximum allowed number of cells is: X 95 Y 95 Z 95
+The maximum allowed number of cells is: X 57 Y 57 Z 57
 Domain decomposition grid 1 x 1 x 1, separate PME ranks 0
 PME domain decomposition: 1 x 1 x 1
 
@@ -374,7 +374,7 @@ Note that activating steepest-descent energy minimization via the integrator .md
 Initiating Steepest Descents
 
 Atom distribution over 1 domains: av 788 stddev 0 min 788 max 788
-Started Steepest Descents on rank 0 Mon Jun 26 15:53:00 2023
+Started Steepest Descents on rank 0 Sun Jun 25 16:33:02 2023
 
 
 Steepest Descents:
@@ -385,11 +385,11 @@ Steepest Descents:
 
    Energies (kJ/mol)
            Bond          Angle Ryckaert-Bell. Per. Imp. Dih.          LJ-14
-    1.00256e+08    1.21167e+04    5.52526e+02    8.06366e+01    2.89614e+10
+    3.73279e+07    1.12695e+04    5.35162e+02    8.28231e+01    2.84847e+17
      Coulomb-14        LJ (SR)  Disper. corr.   Coulomb (SR)   Coul. recip.
-   -2.74247e+03    9.23100e+22    6.95320e+01    1.84006e+03    4.29539e+03
+   -2.76237e+03    1.81042e+19    5.54599e+01    2.40249e+03    5.18078e+03
       Potential Pres. DC (bar) Pressure (bar)
-    9.23100e+22   -5.15018e-04    4.90500e+19
+    1.83891e+19   -1.10385e-02    4.52404e+16
 
            Step           Time
               1        1.00000
@@ -421,13 +421,13 @@ You could also be lucky that switching to double precision is sufficient to
 obtain finite forces.
 
 Steepest Descents did not converge to Fmax < 100000 in 8 steps.
-Potential Energy  =  9.2309966e+22
-Maximum force     =            inf on atom 193
+Potential Energy  =  1.8389071e+19
+Maximum force     =            inf on atom 776
 Norm of force     =            inf
 
     D O M A I N   D E C O M P O S I T I O N   S T A T I S T I C S
 
  av. #atoms communicated per step for force:  2 x 0.0
 
-Finished mdrun on rank 0 Mon Jun 26 15:53:14 2023
+Finished mdrun on rank 0 Sun Jun 25 16:33:05 2023
 
