@@ -7,6 +7,7 @@ import numpy as np
 import vermouth
 import vermouth.forcefield
 import vermouth.molecule
+
 from polyply.src.generate_templates import (
     _expand_inital_coords,
     _relabel_interaction_atoms,
@@ -21,8 +22,11 @@ from polyply.src.linalg_functions import center_of_geometry
 from polyply.src.meta_molecule import MetaMolecule
 from polyply.src.processor import Processor
 from polyply.src.topology import Topology
+
 from pydantic import BaseModel, validator
-from scipy.spatial import distance
+
+from scipy.spatial import distance, ConvexHull
+
 from vermouth.gmx import gro  # gro library to output the file as a gro file
 from vermouth.gmx.itp import write_molecule_itp
 
@@ -157,7 +161,37 @@ class NanoparticleCoordinates(Processor):
         nx.set_node_attributes(meta_molecule, init_coords, "position")
 
 
-class PositionChange(Processor):
+class PositionChangeCore(Processor):
+    """
+    Reestablishing the core positions from the
+    """
+
+    def __init__(self, gro_path: str, atom: str, atom_2: str):
+        self.gro_path = gro_path
+        self.atom = atom
+        self.atom_2 = atom_2
+
+    def run_molecule(self, meta_molecule) -> None:
+        """
+        Adjust the core components as necessary
+        """
+        gro_loaded = gro.read_gro(self.gro_path)
+        core_incremental_positions = [
+            gro_loaded.nodes[node] for node in list(gro_loaded.nodes)
+        ]
+        original_atomic_coordinates = [
+            atom[1]["position"]
+            for atom in gro_loaded.atoms
+            if atom[1]["resname"] == self.atom
+        ]
+        for index, node in enumerate(list(meta_molecule.nodes)):
+            if meta_molecule.nodes[index + 1]["atype"] == self.atom_2:
+                meta_molecule.nodes[index + 1][
+                    "position"
+                ] = original_atomic_coordinates[index]
+
+
+class PositionChangeLigand(Processor):
     """
     Looks through the meta molecule assigned, and finds the core
     atom to which the ligand is attached. One this has been established,
@@ -177,6 +211,7 @@ class PositionChange(Processor):
         resname: str,
         original_coordinates: Dict[str, str],
         length: float,
+        option: str = "ligand",
         *args,
         **kwargs,
     ):
@@ -185,6 +220,7 @@ class PositionChange(Processor):
         self.resname = resname
         self.original_coordinates = original_coordinates
         self.length = length
+        self.option = option
         super().__init__(*args, **kwargs)
 
     def run_molecule(self, meta_molecule) -> None:
@@ -638,7 +674,7 @@ class NanoparticleModels(Processor):
         ligand_tail_atoms,
         nrexcl,
         ff_name="test",
-        length=5.5,
+        length=2.5,
         original_coordinates=None,
         identify_surface=False,
     ):
@@ -804,12 +840,24 @@ class NanoparticleModels(Processor):
         # Create the lattice atoms for the core
         np_core = [
             entry
-            for entry in self.np_molecule_new.atom
+            for entry in self.np_molecule_new.atoms
             if entry[1]["resname"] == self.np_component
         ]
 
         # Isolate just the newly generated coordinates of the outward coordinates
         core_matrix = np.array([atom[1]["position"] for atom in np_core])
+
+        # Find the surface core atoms
+        # ---------------------------
+        # Compute the convex hull
+        hull = ConvexHull(core_matrix)
+        # Get the indices of the surface atoms
+        surface_atoms_indices = hull.vertices
+        # Get the surface atoms
+        surface_atoms = core_matrix[surface_atoms_indices]
+        # ---------------------------
+
+        print(core_matrix, surface_atoms)
 
         for interaction_node in self.ff.blocks[self.np_component].interactions["bonds"]:
             logging.info(f"Printing {interaction_node}")
@@ -819,6 +867,7 @@ class NanoparticleModels(Processor):
                 ],  # add one to ensure we have a non zero index start
                 surface_atom_dict[interaction_node.atoms[1] + 1],
             ]
+            print(interaction)
             if "S" in interaction and "AU" in interaction:
                 self.surface_atoms.append(interaction_node.atoms[1] + 1)
 
@@ -888,7 +937,6 @@ class NanoparticleModels(Processor):
         )
 
         # Can definitely add more potential patterns here
-
         if (
             self.identify_surface
         ):  # filter out the surface indices based on whether we think they are on the surface
@@ -1136,8 +1184,15 @@ class NanoparticleModels(Processor):
 
         NanoparticleCoordinates().run_molecule(self.np_molecule_new)
         # shift the positions of the ligands so that they are initiated on the surface of the NP
+
+        # PositionChangeCore(
+        #    "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/au144_pet60.gro",
+        #    "CLU",
+        #    "AU",
+        # ).run_molecule(self.np_molecule_new)
+
         for resname in self.ligand_block_specs.keys():
-            PositionChange(
+            PositionChangeLigand(
                 ligand_block_specs=self.ligand_block_specs,
                 core_len=self.core_len,
                 resname=resname,
@@ -1168,6 +1223,10 @@ class NanoparticleModels(Processor):
         and then store it within a 'coordinates' object. The form
         of which I am not certain yet.
         """
+        self.np_top = Topology(name="nanoparticle", force_field=self.ff)
+        self.np_top.molecules = [self.meta_mol]
+        self.np_top.box = np.array([40.0, 40.0, 40.0])
+
         system = self.np_top.convert_to_vermouth_system()
         gro.write_gro(
             system,
@@ -1182,9 +1241,7 @@ class NanoparticleModels(Processor):
         """
         Generate the itp file for the nanoparticle
         """
-        self.np_top = Topology(name="nanoparticle", force_field=self.ff)
-        self.np_top.molecules = [self.meta_mol]
-        self.np_top.box = np.array([40.0, 40.0, 40.0])
+        # self.np_top = Topology(name="nanoparticle", force_field=self.ff)
         with open(f"{file_name}.itp", "w") as outfile:
             write_molecule_itp(self.np_top.molecules[0].molecule, outfile)
 
@@ -1199,13 +1256,11 @@ if __name__ == "__main__":
         "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand",
         ["UNK_12B037/UNK_12B037.itp", "UNK_DA2640/UNK_DA2640.itp"],
         # ["UNK_DA2640/UNK_DA2640.itp"],
-        [5, 5],
+        [2, 2],
         "Striped",
         ["S00", "S07"],
         ["C05", "C02"],
         3,
-        # ["S07"],
-        # ["C02"],
         "test",
         original_coordinates={
             "12B": gro.read_gro(
@@ -1215,7 +1270,7 @@ if __name__ == "__main__":
                 "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand/UNK_DA2640/UNK_DA2640.gro"
             ),
         },
-        identify_surface=True,
+        identify_surface=False,
     )
 
     # PCBM nanoparticle (Coarse-grained) - constructing the PCBM
@@ -1236,19 +1291,19 @@ if __name__ == "__main__":
         original_coordinates={
             "PCBM": gro.read_gro(PCBM_ligand_gro),
         },
-        identify_surface=False,
+        identify_surface=True,
     )
 
-    # AUNP_model.core_generate_coordinates()
-    # AUNP_model._identify_indices_for_core_attachment()
-    # AUNP_model._ligand_generate_coordinates()
-    # AUNP_model._add_block_indices()  # Not sure whether we need this now ...
-    # AUNP_model._generate_ligand_np_interactions()
-    # AUNP_model._generate_bonds()
-    # AUNP_model._initiate_nanoparticle_coordinates()  # doesn't quite work yet.
-    ## Generating output files
-    # AUNP_model.write_itp("gold.itp")
-    # AUNP_model.create_gro("gold.gro")
+    AUNP_model.core_generate_coordinates()
+    AUNP_model._identify_indices_for_core_attachment()
+    AUNP_model._ligand_generate_coordinates()
+    AUNP_model._add_block_indices()  # Not sure whether we need this now ...
+    AUNP_model._generate_ligand_np_interactions()
+    AUNP_model._generate_bonds()
+    AUNP_model._initiate_nanoparticle_coordinates()  # doesn't quite work yet.
+    # Generating output files
+    AUNP_model.create_gro("gold.gro")
+    AUNP_model.write_itp("gold.itp")
 
     # Generate PCBM
     PCBM_model.core_generate_coordinates()
@@ -1258,7 +1313,7 @@ if __name__ == "__main__":
     PCBM_model._generate_ligand_np_interactions()
     PCBM_model._generate_bonds()
     PCBM_model._initiate_nanoparticle_coordinates()  # doesn't quite work yet.
-    # Generating output files
+    ## Generating output files
     PCBM_model.write_itp("PCBM.itp")
     PCBM_model.create_gro("PCBM.gro")
 
