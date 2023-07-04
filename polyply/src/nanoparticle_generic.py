@@ -34,6 +34,36 @@ from cg_nps import return_cg_nps_type  # this needs to be changed as well
 logging.basicConfig(level=logging.INFO)
 
 
-def create_generic_cores() -> np.ndarray:
-    """ """
-    pass
+class CentralCoreGenerator:
+    """
+    Generation of the structure of the center core of the NP.
+    Initially, we will be using the f
+    """
+
+    def __init__(self, filename, points, R, outputPDB, center):
+        self.points = points
+        self.R = R
+        self.outputPDB = outputPDB
+        self.center = center
+        self.output = open(filename + ".itp", "w")
+
+    def Nanoparticle_Base_Fibonacci_Sphere(self, samples: int = 1) -> np.ndarray:
+        """
+        Function to create even points on a sphere for the base of a Nanoparticle.
+        """
+        points = []
+        phi = math.pi * (3.0 - math.sqrt(5.0))  # golden angle in radians
+        for i in range(samples):
+            y = (
+                1 - (i / float(samples - 1)) * 2
+            )  # y goes from 1 to -1 radius = math.sqrt(1 - y * y) # radius at y
+            theta = phi * i  # golden angle increment
+            x = math.cos(theta) * radius
+            z = math.sin(theta) * radius
+            points.append((x, y, z))
+        # Return the surface points on the sphere
+        self.points = points
+
+    def _create_polyply_object(self) -> Any:
+        """ """
+        pass

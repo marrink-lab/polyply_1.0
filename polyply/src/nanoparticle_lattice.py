@@ -1131,14 +1131,17 @@ class NanoparticleModels(Processor):
                         entry,
                         base_anchor,
                     ),
+                    # bonding parameters to add in for the head of the ligands to the nanoparticle core
                     parameters=[
                         "1",
                         "0.0013",
                         "500000.00",
-                    ],  # these are default parameters which need to change
+                    ],
                     meta={},
                 )
+
                 logging.info(f"generating bonds between {entry} and {base_anchor}")
+
                 self.np_molecule_new.interactions["bonds"].append(interaction)
 
             logging.info(
@@ -1226,7 +1229,7 @@ class NanoparticleModels(Processor):
         Generate the itp file for the nanoparticle
         """
         # self.np_top = Topology(name="nanoparticle", force_field=self.ff)
-        with open(f"{file_name}.itp", "w") as outfile:
+        with open(f"{file_name}", "w") as outfile:
             write_molecule_itp(self.np_top.molecules[0].molecule, outfile)
 
 
@@ -1256,27 +1259,6 @@ if __name__ == "__main__":
         },
         identify_surface=False,
     )
-
-    # PCBM nanoparticle (Coarse-grained) - constructing the PCBM
-    PCBM_ligand_gro = "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/PCBM_CG/PCBM_ligand.gro"
-    ## Creating the PCBM model
-    PCBM_model = NanoparticleModels(
-        return_cg_nps_type("F16"),
-        "F16",
-        "CNP",
-        "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/PCBM_CG/",
-        ["PCBM_ligand.itp"],
-        [4],
-        "Striped",
-        ["C4"],
-        ["N1"],
-        1,
-        ff_name="test",
-        original_coordinates={
-            "PCBM": gro.read_gro(PCBM_ligand_gro),
-        },
-        identify_surface=False,
-    )
     # AUNP_model.core_generate_coordinates()
     # AUNP_model._identify_indices_for_core_attachment()
     # AUNP_model._ligand_generate_coordinates()
@@ -1288,6 +1270,26 @@ if __name__ == "__main__":
     # AUNP_model.create_gro("gold.gro")
     # AUNP_model.write_itp("gold.itp")
 
+    # PCBM nanoparticle (Coarse-grained) - constructing the PCBM
+    PCBM_ligand_gro = "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/PCBM_CG/PCBM_ligand.gro"
+    ## Creating the PCBM model
+    PCBM_model = NanoparticleModels(
+        return_cg_nps_type("F16"),
+        "F16",
+        "CNP",
+        "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/PCBM_CG/",
+        ["PCBM_ligand.itp"],
+        [1],
+        "Striped",
+        ["C4"],
+        ["N1"],
+        1,
+        ff_name="test",
+        original_coordinates={
+            "PCBM": gro.read_gro(PCBM_ligand_gro),
+        },
+        identify_surface=False,
+    )
     # Generate PCBM
     PCBM_model.core_generate_coordinates()
     PCBM_model._identify_indices_for_core_attachment()
