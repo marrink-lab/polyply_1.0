@@ -67,3 +67,291 @@ class CentralCoreGenerator:
     def _create_polyply_object(self) -> Any:
         """ """
         pass
+
+
+class GoldNanoparticleSingle:
+    """
+    this class is also embedded with the pydantic model which gives an error in case the
+    error
+
+    this is probably rather new so I'm happy to change this back to the original base
+    class like structure as with in the other modules
+
+    Parameters
+    ----------
+    Returns
+    -------
+    """
+
+    def __init__(self):
+        # orientation: Any
+        self.lattice_constant: float = 4.0782
+        self.box_size: int = 100
+        self.matrix: Any = np.array(
+            [[self.box_size, 0, 0], [0, self.box_size, 0], [0, 0, self.box_size]]
+        )
+        self.n_atom_thiol: int = 9
+        self.n_phi: int = 8
+        self.n_theta: int = 17
+        self.n_thiol: int = self.n_phi * self.n_theta
+        self.gold_layer: int = 6
+        self.n_gold: float = (
+            (10 * (self.gold_layer**3) + 11 * self.gold_layer) / 3
+            - 5 * (self.gold_layer**2)
+            - 1
+        )
+        # matrix store gold atom coordinates
+        self.pos_gold: Any = np.zeros((int(self.n_gold), 3))  # TODO
+        self.center: list[float] = [0.5, 0.5, 0.5]  # TODO
+        self.phi: float = (np.sqrt(5) + 1) / 2
+        self.V: Any  # this should be changed from any to something more appropriate
+        self.E: Any  # ditto
+        self.F: Any  # ditto
+        # blocks and nanoparticle specific parts to work with polyply
+        self.force_field: Any  # this needs a custom type
+        self.top: Any  # this needs a custom typey
+        self.NP_block: Any
+
+    def _set_ff(self) -> None:
+        """ """
+        logging.info("defining the nanoparticle and ligand block")
+        self.NP_block = self.force_field[self.np_name]
+        self.ligand_block = self.force_field.blocks[self.ligand_name]
+
+    def _vertices_edges(self) -> None:
+        """
+        iniiate np array values
+        """
+        logging.info("defining V E and F")
+        self.V = np.zeros((12, 3))
+        self.E = np.zeros((2, 3, 30))
+        self.F = np.zeros((3, 3, 20))
+
+        self.V[0, :] = [1, 0, self.phi]
+        self.V[1, :] = [-1, 0, self.phi]
+        self.V[2, :] = [-1, self.phi, 1]
+        self.V[3, :] = [self.phi, -1, 0]
+        self.V[4, :] = [self.phi, 1, 0]
+        self.V[5, :] = [0, self.phi, 1]
+        # -ve persions of the phi values
+        self.V[6:, :] = -self.V[:6, :]
+
+        self.E[0, :, 0] = [1, 0, self.phi]
+        self.E[0, :, 1] = [1, 0, self.phi]
+        self.E[0, :, 2] = [1, 0, self.phi]
+        self.E[0, :, 3] = [1, 0, self.phi]
+        self.E[0, :, 4] = [1, 0, self.phi]
+        self.E[0, :, 5] = [0, self.phi, 1]
+        self.E[0, :, 6] = [0, self.phi, 1]
+        self.E[0, :, 7] = [0, self.phi, 1]
+        self.E[0, :, 8] = [0, self.phi, 1]
+        self.E[0, :, 9] = [self.phi, 1, 0]
+        self.E[0, :, 10] = [self.phi, 1, 0]
+        self.E[0, :, 11] = [self.phi, 1, 0]
+        self.E[0, :, 13] = [1, 0, -self.phi]
+        self.E[0, :, 14] = [0, self.phi, -1]
+        self.E[1, :, 0] = [-1, 0, self.phi]
+        self.E[1, :, 1] = [0, -self.phi, 1]
+        self.E[1, :, 2] = [self.phi, -1, 0]
+        self.E[1, :, 3] = [self.phi, 1, 0]
+        self.E[1, :, 4] = [0, self.phi, 1]
+        self.E[1, :, 5] = [self.phi, 1, 0]
+        self.E[1, :, 6] = [0, self.phi, -1]
+        self.E[1, :, 7] = [-self.phi, 1, 0]
+        self.E[1, :, 8] = [-1, 0, self.phi]
+        self.E[1, :, 9] = [self.phi, -1, 0]
+        self.E[1, :, 10] = [1, 0, -self.phi]
+        self.E[1, :, 11] = [0, self.phi, -1]
+        self.E[1, :, 12] = [1, 0, -self.phi]
+        self.E[1, :, 13] = [0, self.phi, -1]
+        self.E[1, :, 14] = [-self.phi, 1, 0]
+        self.E[:, :, 15:] = -self.E[:, :, :15]
+
+        self.F[1, :, 0] = [1, 0, self.phi]
+        self.F[1, :, 0] = [-1, 0, self.phi]
+        self.F[2, :, 0] = [0, -self.phi, 1]
+        self.F[0, :, 1] = [1, 0, self.phi]
+        self.F[1, :, 1] = [0, -self.phi, 1]
+        self.F[2, :, 1] = [self.phi, -1, 0]
+        self.F[0, :, 2] = [1, 0, self.phi]
+        self.F[1, :, 2] = [self.phi, -1, 0]
+        self.F[2, :, 2] = [self.phi, 1, 0]
+        self.F[0, :, 3] = [1, 0, self.phi]
+        self.F[1, :, 3] = [self.phi, 1, 0]
+        self.F[2, :, 3] = [0, self.phi, 1]
+        self.F[0, :, 4] = [1, 0, self.phi]
+        self.F[1, :, 4] = [0, self.phi, 1]
+        self.F[2, :, 4] = [-1, 0, self.phi]
+        self.F[0, :, 5] = [0, self.phi, 1]
+        self.F[1, :, 5] = [self.phi, 1, 0]
+        self.F[2, :, 5] = [0, self.phi, -1]
+        self.F[0, :, 6] = [0, self.phi, 1]
+        self.F[1, :, 6] = [0, self.phi, -1]
+        self.F[2, :, 6] = [-self.phi, 1, 0]
+        self.F[0, :, 7] = [0, self.phi, 1]
+        self.F[1, :, 7] = [-self.phi, 1, 0]
+        self.F[2, :, 7] = [-1, 0, self.phi]
+        self.F[0, :, 8] = [self.phi, 1, 0]
+        self.F[1, :, 8] = [self.phi, -1, 0]
+        self.F[2, :, 8] = [1, 0, -self.phi]
+        self.F[0, :, 9] = [self.phi, 1, 0]
+        self.F[1, :, 9] = [1, 0, -self.phi]
+        self.F[2, :, 9] = [0, self.phi, -1]
+        self.F[:, :, 10:] = -self.F[:, :, :10]
+
+        scaling = self.lattice_constant / np.sqrt(2 * (1 + self.phi * self.phi))
+        self.V = self.V * scaling
+        self.E = self.E * scaling
+        self.F = self.F * scaling
+
+    def _generate_positions(self) -> None:
+        """
+        Need some general notes on how the core was generated.
+        """
+        self._vertices_edges()  # need brief description of this function does
+        self.pos_gold[0, :] = self.center
+
+        # coordinates of the second innermost layer atoms
+        for i in range(12):
+            self.pos_gold[i + 1, 0] = self.V[i, 0] / self.box_size + self.center[0]
+            self.pos_gold[i + 1, 1] = self.V[i, 1] / self.box_size + self.center[1]
+            self.pos_gold[i + 1, 2] = self.V[i, 2] / self.box_size + self.center[2]
+
+        # coordinates of the third innermost layer atoms
+        for i in range(12):
+            self.pos_gold[i + 13, 0] = self.V[i, 0] * 2 / self.box_size + self.center[0]
+            self.pos_gold[i + 13, 1] = self.V[i, 1] * 2 / self.box_size + self.center[1]
+            self.pos_gold[i + 13, 2] = self.V[i, 2] * 2 / self.box_size + self.center[2]
+
+        # coordinates of the fourth innermost layer atoms
+        for i in range(30):
+            self.pos_gold[i + 25, 0] = (
+                self.E[0, 0, i] + self.E[1, 0, i]
+            ) / self.box_size + self.center[0]
+            self.pos_gold[i + 25, 1] = (
+                self.E[0, 1, i] + self.E[1, 1, i]
+            ) / self.box_size + self.center[1]
+            self.pos_gold[i + 25, 2] = (
+                self.E[0, 2, i] + self.E[1, 2, i]
+            ) / self.box_size + self.center[2]
+
+        for N in range(3, self.gold_layer):
+            n_atom_to_now = int(
+                ((10 * (N - 1) ** 3 + 11 * (N - 1)) / 3 - 5 * ((N - 1) ** 2) - 1)
+            )
+
+            for i in range(12):
+                self.pos_gold[n_atom_to_now + i][0] = (
+                    self.V[i][0] * (N - 1) / self.box_size + self.center[0]
+                )
+                self.pos_gold[n_atom_to_now + i][1] = (
+                    self.V[i][1] * (N - 1) / self.box_size + self.center[1]
+                )
+                self.pos_gold[n_atom_to_now + i][2] = (
+                    self.V[i][2] * (N - 1) / self.box_size + self.center[2]
+                )
+            n_atom_to_now = n_atom_to_now + 12
+
+            for i in range(30):
+                for j in range(N - 2):
+                    self.pos_gold[n_atom_to_now + (i - 1) * (N - 2) + j][0] = (
+                        self.E[0][0][i] * (N - 1)
+                        + (self.E[1][0][i] - self.E[0][0][i]) * j
+                    ) / self.box_size + self.center[0]
+                    self.pos_gold[n_atom_to_now + (i - 1) * (N - 2) + j][1] = (
+                        self.E[0][1][i] * (N - 1)
+                        + (self.E[1][1][i] - self.E[0][1][i]) * j
+                    ) / self.box_size + self.center[1]
+                    self.pos_gold[n_atom_to_now + (i - 1) * (N - 2) + j][2] = (
+                        self.E[0][2][i] * (N - 1)
+                        + (self.E[1][2][i] - self.E[0][2][i]) * j
+                    ) / self.box_size + self.center[2]
+
+            n_atom_to_now = n_atom_to_now + 30 * (N - 2)
+
+            for i in range(20):
+                for m in range(N - 3):
+                    for n in range(N - m - 2):
+                        self.pos_gold[
+                            n_atom_to_now + (2 * N - m - 4) * (m - 1) // 2 + n, 0
+                        ] = (
+                            self.F[0, 0, i] * (N - 1)
+                            + (self.F[1, 0, i] * (N - 1) - self.F[0, 0, i] * (N - 1))
+                            * m
+                            / (N - 1)
+                            + (self.F[2, 0, i] * (N - 1) - self.F[0, 0, i] * (N - 1))
+                            * n
+                            / (N - 1)
+                        ) / self.box_size + self.center[
+                            0
+                        ]
+                        self.pos_gold[
+                            n_atom_to_now + (2 * N - m - 4) * (m - 1) // 2 + n, 1
+                        ] = (
+                            self.F[0, 1, i] * (N - 1)
+                            + (self.F[1, 1, i] * (N - 1) - self.F[0, 1, i] * (N - 1))
+                            * m
+                            / (N - 1)
+                            + (self.F[2, 1, i] * (N - 1) - self.F[0, 1, i] * (N - 1))
+                            * n
+                            / (N - 1)
+                        ) / self.box_size + self.center[
+                            1
+                        ]
+                        self.pos_gold[
+                            n_atom_to_now + (2 * N - m - 4) * (m - 1) // 2 + n, 2
+                        ] = (
+                            self.F[0, 2, i] * (N - 1)
+                            + (self.F[1, 2, i] * (N - 1) - self.F[0, 2, i] * (N - 1))
+                            * m
+                            / (N - 1)
+                            + (self.F[2, 2, i] * (N - 1) - self.F[0, 2, i] * (N - 1))
+                            * n
+                            / (N - 1)
+                        ) / self.box_size + self.center[
+                            2
+                        ]
+                n_atom_to_now += (N - 2) * (N - 3) // 2
+
+    def create_gro(
+        self, outfile: str, velocities: bool = False, box: str = "5.0, 5.0, 5.0"
+    ) -> None:
+        """
+        Plot out the lattice in a 3D structure - generating the coordinates part
+        is easy. Now
+        the hard part is generating the gro file
+        this is somewhat working ... nowhere near what I want - need to review
+        the core generation code I made above
+
+        Parameters
+        ----------
+        outfile: str
+        velocities: bool
+        box: str
+
+        Returns
+        -------
+        None
+
+        """
+        logging.info("Creating the main gromacs file")
+        velocity_fmt = ""
+        self._generate_positions()  # generate positions for the gold lattice core
+        # logging.info("put log here")
+        core_numpy_coords = self.pos_gold
+        coords = [[j for j in i] for i in core_numpy_coords]
+        gold_str = [f"1AU  AU  {i + 1}" for i in range(0, len(coords))]
+        # just need to figure out GRO CONTENT and COORINDATES
+        velocities = [[x + 1 for x in line] for line in coords]
+        with open(str(outfile), "w") as output:
+            output.write("NP\n")
+            output.write(str(len(coords)) + "\n")
+            for atom, coords, vels in zip(gold_str, coords, velocities):
+                output.write(
+                    ("{}{:8.3f}{:8.3f}{:8.3f}" + velocity_fmt + "\n").format(
+                        atom, *itertools.chain(coords, vels)
+                    )
+                )
+
+            output.write(box)
+            output.write("\n")
