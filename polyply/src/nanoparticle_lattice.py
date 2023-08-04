@@ -15,6 +15,7 @@ from polyply.src.generate_templates import (
     find_atoms,
     replace_defined_interaction,
 )
+
 from polyply.src.linalg_functions import center_of_geometry
 
 # import polyply.src.meta_molecule
@@ -1002,6 +1003,7 @@ if __name__ == "__main__":
         },
         identify_surface=False,
     )
+
     # Generate PCBM
     PCBM_model.core_generate_coordinates()
     PCBM_model._identify_indices_for_core_attachment()
@@ -1010,6 +1012,7 @@ if __name__ == "__main__":
     PCBM_model._generate_ligand_np_interactions()
     PCBM_model._generate_bonds()
     PCBM_model._initiate_nanoparticle_coordinates()  # doesn't quite work yet.
+
     # Generating output files
     PCBM_model.create_gro("PCBM.gro")
     PCBM_model.write_itp("PCBM.itp")
