@@ -63,7 +63,8 @@ class TOPDirector(SectionLineParser):
         }
         self.pragma_actions = {
             '#define': self.parse_define,
-            '#include': self.parse_include
+            '#include': self.parse_include,
+            '#error': self.parse_error,
         }
 
     def dispatch(self, line):
@@ -391,10 +392,29 @@ class TOPDirector(SectionLineParser):
         Parses the lines of the [atoms] directive.
         """
         self.current_itp.append(line)
+    def parse_error(self, line, lineno=0):
+        """
+        Parse the #error statement.
+        """
+        if self.current_meta:
+           # the #error is between ifdef
+           # however tag is not in defines we have
+           # read so the error is not triggered.
+           if self.current_meta["condition"] == "ifdef"\
+              and self.current_meta["tag"] not in self.topology.defines:
+                 return
+           # the current file is between ifndef
+           # so if tag is defined we ignore this file
+           elif self.current_meta["condition"] == "ifndef"\
+              and self.current_meta["tag"] in self.topology.defines:
+                 return
+        # we remove the #error
+        msg = line[7:]
+        raise NotImplementedError(msg)
 
     def parse_define(self, line):
         """
-        Parse define statemetns
+        Parse define statements
         """
         tokens = line.split()
 
