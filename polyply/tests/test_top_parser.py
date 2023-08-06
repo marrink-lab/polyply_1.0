@@ -384,6 +384,54 @@ class TestTopParsing:
                                 "gen-pairs":'no',
                                 "fudgeLJ":1.0,
                                 "fudgeQQ":1.0}
+    @staticmethod
+    @pytest.mark.parametrize('lines', (
+         """
+         #define GMXERROR
+         #ifdef GMXERROR
+         #error "This will raise an error."
+         #endif
+         """,
+         """
+         #error This will raise an error
+         """,
+    ))
+    def test_error_parsing(lines):
+        """
+        Test that the #error pragma raises an error.
+        """
+        new_lines = textwrap.dedent(lines)
+        new_lines = new_lines.splitlines()
+        force_field = vermouth.forcefield.ForceField(name='test_ff')
+        top = Topology(force_field, name="test")
+        with pytest.raises(NotImplementedError):
+            polyply.src.top_parser.read_topology(new_lines, top)
+
+    @staticmethod
+    @pytest.mark.parametrize('lines', (
+         """
+         #define NOERROR
+         #ifdef GMXERROR
+         #error "This will raise an error."
+         #endif
+         """,
+         """
+         #define NOERROR
+         #ifndef NOERROR
+         #error This will raise an error.
+         #endif
+         """,
+    ))
+    def test_error_skipped(lines):
+        """
+        Test that the #error pragma is skipped when not defined.
+        """
+        new_lines = textwrap.dedent(lines)
+        new_lines = new_lines.splitlines()
+        force_field = vermouth.forcefield.ForceField(name='test_ff')
+        top = Topology(force_field, name="test")
+        polyply.src.top_parser.read_topology(new_lines, top)
+        assert top.defines == {'NOERROR': True}
 
 def test_consistency():
     """
