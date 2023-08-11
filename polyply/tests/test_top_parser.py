@@ -393,7 +393,7 @@ class TestTopParsing:
          #endif
          """,
          """
-         #error This will raise an error
+         #error "This will raise an error."
          """,
     ))
     def test_error_parsing(lines):
@@ -404,8 +404,9 @@ class TestTopParsing:
         new_lines = new_lines.splitlines()
         force_field = vermouth.forcefield.ForceField(name='test_ff')
         top = Topology(force_field, name="test")
-        with pytest.raises(NotImplementedError):
+        with pytest.raises(NotImplementedError) as err_info:
             polyply.src.top_parser.read_topology(new_lines, top)
+        assert str(err_info.value) == "\"This will raise an error.\""
 
     @staticmethod
     @pytest.mark.parametrize('lines', (
