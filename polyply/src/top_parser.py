@@ -392,6 +392,7 @@ class TOPDirector(SectionLineParser):
         Parses the lines of the [atoms] directive.
         """
         self.current_itp.append(line)
+
     def parse_error(self, line, lineno=0):
         """
         Parse the #error statement.
