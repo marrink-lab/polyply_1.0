@@ -60,7 +60,7 @@ def split_seq_string(sequence):
         monomers.append(Monomer(resname=resname, n_blocks=n_blocks))
     return monomers
 
-def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[], lib=None, seq=None, seq_file=None):
+def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[], lib=None, seq=None, seq_file=None, dsdna=False):
     """
     Top level function for running the polyply parameter generation.
     Parameters seq and seq_file are mutually exclusive. Set the other
@@ -98,7 +98,7 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[], lib=None,
         meta_molecule = MetaMolecule.from_sequence_file(force_field, seq_file, name)
 
     # Generate complementary DNA strand
-    if args.dsdna:
+    if dsdna:
         complement_dsDNA(meta_molecule)
 
     # Do transformationa and apply link
@@ -109,12 +109,13 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[], lib=None,
 
     # Raise warning if molecule is disconnected
     if not nx.is_connected(meta_molecule.molecule):
-        n_components = len(list(nx.connected_components(meta_molecule.molecule)))
-        msg = "You molecule consists of {:d} disjoint parts. Perhaps links were not applied correctly."
-        if dsdna and n_components != 2:
-            LOGGER.warning(msg, (n_components))
-        if not dsdna:
-            LOGGER.warning(msg, (n_components))
+        n_parts = len(list(nx.connected_components(meta_molecule.molecule)))
+        LOGGER.warning(f"Your molecule consists of {n_parts} disjoint parts."
+                        "Perhaps links were not applied correctly.")
+        msg = "Missing link between residue {idxA} {resA} and residue {idxB} {resB}"
+        if (dsdna and n_parts != 2) or not dsdna:
+            for missing in find_missing_edges(meta_molecule, meta_molecule.molecule):
+                LOGGER.warning(msg, **missing)
 
     with deferred_open(outpath, 'w') as outfile:
         header = [ ' '.join(sys.argv) + "\n" ]
