@@ -133,7 +133,7 @@ class MetaMolecule(nx.Graph):
         that matches may only refer to already existing nodes.
         But connections can be an empty list.
         """
-        self.add_node(current, resname=resname, build=True)
+        self.add_node(current, resname=resname, build=True, backmap=True)
         for edge in connections:
             if self.has_node(edge[0]) and self.has_node(edge[1]):
                 self.add_edge(edge[0], edge[1])
