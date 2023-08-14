@@ -398,14 +398,15 @@ class TOPDirector(SectionLineParser):
         Parse the #error statement.
         """
         if self.current_meta:
-           # the #error is between ifdef
-           # however tag is not in defines we have
-           # read so the error is not triggered.
+           # In this case the #error is enclosed in an
+           # #ifdef statement. However tag of the #ifdef
+           # has not been defined previously. Thus the
+           # error is not triggered.
            if self.current_meta["condition"] == "ifdef"\
               and self.current_meta["tag"] not in self.topology.defines:
                  return
-           # the current file is between ifndef
-           # so if tag is defined we ignore this file
+           # the #error file is enlosed in an #ifndef
+           # so if tag is defined, we ignore this #error
            elif self.current_meta["condition"] == "ifndef"\
               and self.current_meta["tag"] in self.topology.defines:
                  return
