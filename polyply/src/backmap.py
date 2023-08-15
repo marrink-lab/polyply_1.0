@@ -11,17 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import multiprocessing
-import itertools
-import numpy as np
-import scipy.optimize
-import networkx as nx
-from tqdm import tqdm
-from polyply import jit
+
 from .processor import Processor
-from .generate_templates import find_atoms
-from .linalg_functions import rotate_xyz
-from .graph_utils import find_connecting_edges
 from .orient_by_bonds import orient_by_bonds
 """
 Processor implementing a template based back
@@ -29,32 +20,16 @@ mapping to lower resolution coordinates for
 a meta molecule.
 """
 
-def orient_template(meta_molecule, current_node, template, built_nodes, protocol):
-    """
-    Given a `template` and a `node` of a `meta_molecule` at lower resolution
-    find the orientation of the template by a chosen protocol.
+"""
+BACKMAPPING_MODE contains a set of implemented backmapping modes.
 
-    Available protocols:
-        - by optimizing bonded interactions (i.e. 'orient_by_bonds' / 'default')
+Available modes:
+    - automatically selecting a backmapping method (i.e. 'automatic') [UNDER CONSTRUCTION!!]
+    - by optimizing bonded interactions (i.e. 'orient_by_bonds')
 
-    Parameters:
-    -----------
-    meta_molecule: :class:`polyply.src.meta_molecule`
-    current_node:
-        node key of the node in meta_molecule to which template referes to
-    template: dict[collections.abc.Hashable, np.ndarray]
-        dict of positions referring to the lower resolution atoms of node
-    built_nodes: list
-        list of meta_molecule node keys of residues that are already built
+"""
 
-    Returns:
-    --------
-    dict
-        the oriented template
-    """
-
-    if protocol == "default":
-        return orient_by_bonds(meta_molecule, current_node, template, built_nodes)
+BACKMAPPING_MODE = {'automatic': orient_by_bonds, 'by-bonds': orient_by_bonds}
 
 class Backmap(Processor):
     """
@@ -63,10 +38,10 @@ class Backmap(Processor):
     for the lower resolution molecule associated with the MetaMolecule.
     """
 
-    def __init__(self, fudge_coords=0.4, protocol='default', *args, **kwargs):
+    def __init__(self, fudge_coords=0.4, bmode='automatic', *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fudge_coords = fudge_coords
-        self.protocol = protocol
+        self.bmode = bmode
 
     def _place_init_coords(self, meta_molecule):
         """
@@ -87,10 +62,9 @@ class Backmap(Processor):
                 resid = meta_molecule.nodes[node]["resid"]
                 high_res_atoms = meta_molecule.nodes[node]["graph"].nodes
 
-                template = orient_template(meta_molecule, node,
-                                           meta_molecule.templates[resname],
-                                           built_nodes,
-                                           self.protocol)
+                template = BACKMAPPING_MODE[self.bmode](meta_molecule, node,
+                                                        meta_molecule.templates[resname],
+                                                        built_nodes)
 
                 for atom_high  in high_res_atoms:
                     atomname = meta_molecule.molecule.nodes[atom_high]["atomname"]
