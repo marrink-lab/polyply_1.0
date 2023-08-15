@@ -18,7 +18,7 @@ import vermouth
 from vermouth.parser_utils import SectionLineParser
 from vermouth.log_helpers import StyleAdapter, get_logger
 from .template import Template
-from .generate_templates import compute_volume
+from .generate_templates import compute_volume, map_from_CoG
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
@@ -184,13 +184,20 @@ class BuildDirector(SectionLineParser):
         Templates
         ---------
         - compute volume from template if it is not defined yet
+        - store coordinates as vectors from center of geometry
         """
         if previous_section == ["template", "bonds"]:
+            # Load coordinates into template
             coords = nx.get_node_attributes(self.current_template, "position")
+            self.current_template.positions = coords
+
+            # Center template on CoG
+            mapped_coords = map_from_CoG(self.current_template)
+            self.current_template.positions = mapped_coords
+
             # if the volume is not defined yet compute the volume, this still
             # can be overwritten by an explicit volume directive later
             resname = self.current_template.resname
-            self.current_template.positions = coords
             if resname not in self.topology.volumes:
                 self.topology.volumes[resname] = compute_volume(self.current_template,
                                                                 self.topology.nonbond_params)
