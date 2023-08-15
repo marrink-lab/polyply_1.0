@@ -1,0 +1,26 @@
+[ moleculetype ]
+; name nexcl.
+PE         1
+;
+[ atoms ]
+1  C1    1   PE   CH2  1   0.000  45
+
+[ bonds ]
+; 
+1  2   1   0.46 2000
+;
+[ angles ]
+;    
+1       2       3      2       180.00        82
+;
+[ dihedrals ]
+1  2  3  4     11  -19.665600       0.5092800      1.12000000     -4.40827012E-02 -2.01571006E-02   0.0000000
+;
+[ exclusions ]
+1  2
+1  3
+1  4
+[ citation ]
+Martini2
+PP_PE_M2
+polyply

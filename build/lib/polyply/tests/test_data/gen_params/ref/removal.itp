@@ -1,0 +1,20 @@
+; /Users/fabian/ProgramDev/dev_env/bin/polyply gen_params -f ../input/test_removal.ff -seq PEO:3 -o removal.itp -name test -vv
+
+; Please cite the following papers:
+
+[ moleculetype ]
+testref 1
+
+[ atoms ]
+1 SN1a 1 PEO EO 1 0.0 45.0
+2 SN2a 1 PEO EP 1 0.0 45.0
+3 SN1a 2 PEO EO 2 0.0 45.0
+4 SN2a 2 PEO EP 2 0.0 45.0
+5 SN1a 3 PEO EO 3 0.0 45.0
+
+[ bonds ]
+1 2 1 0.44 7000
+3 4 1 0.44 7000
+2 3 1 0.37 7000
+4 5 1 0.37 7000
+

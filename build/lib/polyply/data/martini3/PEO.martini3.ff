@@ -1,0 +1,50 @@
+[ citations ]
+Martini3
+polyply
+
+[ moleculetype ]
+; name nexcl.
+PEO         1
+;
+[ atoms ]
+1  SN3r    1   PEO   EC  1   0.000  45
+;
+[ moleculetype ]
+; name nexcl.
+OHter         1
+;
+[ atoms ]
+1  TP1    1   OHter   OH  1   0.000  36
+;
+[ link ]
+resname "PEO|OHter"
+[ bonds ]
+OH >EC 1 0.29 7000
+[ angles ]
+OH  >EC >>EC    2   127.00  110.0 {"comment": "central-angle", "version":"2"}
+
+[ link ]
+resname "PEO|OHter"
+[ bonds ]
+>EC >>OH  1 0.29 7000
+[ angles ]
+EC >EC >>OH    2   127.00  110.0 {"comment": "central-angle", "version":"2"}
+
+[ link ]
+resname "PEO"
+[ atoms ]
+EC { }
+>EC { }
+[ bonds ]
+; back bone bonds
+EC  >EC     1   0.36   7000 {"comment": "central-bond"}
+
+[ link ]
+resname "PEO"
+[ dihedrals ]
+EC >EC >>EC >>>EC  11 8 0.6570 -1.3278 -0.43661278 1.0808704 0.680055 {"ifndef": "TI"}
+
+[ link ]
+resname "PEO"
+[ angles ]
+EC  >EC >>EC    2   123.00  80 {"comment": "central-angle", "version":"1"}

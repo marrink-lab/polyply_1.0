@@ -1,0 +1,49 @@
+; ----------------------------------------------------------------------------------------
+;   MARTINI Topology for [6,6]-phenyl-C61-butyric acid methyl ester (PCBM)
+; ----------------------------------------------------------------------------------------
+;
+; Description:
+;   See [DOI: 10.1021/jacs.6b11717].
+; Parameterization:
+;   See [DOI: 10.1021/jacs.6b11717].
+; Reference(s):
+;   R Alessandri, JJ Uusitalo, AH de Vries, RWA Havenith, SJ Marrink, Bulk Heterojunction Morphologies with Atomistic Resolution
+;   from Coarse-Grain Solvent Evaporation Simulations, JACS 2017, 139, 3697 [DOI: 10.1021/jacs.6b11717]
+; Warning(s)/Note(s):
+;   Martini C60 fullerene model from Monticelli, et al. :
+;   - J Wong-ekkabut, S Baoukina, W Triampo, IM Tang, DP Tieleman, L Monticelli, Computer simulation study of fullerene 
+;     translocation through lipid membranes, Nat. Nanotechnol. 2008, 3, 363-368 [DOI: 10.1038/nnano.2008.130] 
+;   - L. Monticelli, On Atomistic and Coarse-Grained Models for C60 Fullerene, JCTC 2012, 8, 1370-1378 [DOI: 10.1021/ct3000102]
+; Updated:
+;   2016.11.11
+;
+; ----------------------------------------------------------------------------------------
+; 
+[ moleculetype ]
+; Name            nrexcl
+PCBM                 1
+
+[ atoms ]
+;   nr       type  resnr residue  atom    cgnr     charge       mass  
+;
+    1        SC5      1   PCBM    C1     1          0         45
+    2        SC5      1   PCBM    C2     2          0         45
+    3        SC5      1   PCBM    C3     3          0         45
+    4         C1      1   PCBM    C4     4          0         72
+    5         Na      1   PCBM    N1     5          0         72
+
+[ bonds ]
+;         i           j    funct      length   force_k
+; side chain
+   1   4    1    0.300        20000
+   4   5    1    0.390         2500   
+
+[constraints]
+;   i    j  funct length
+   1   2    1   0.270
+   1   3    1   0.270
+   2   3    1   0.270
+         
+[angles]
+;   i    j    k   funct   angle   force_k
+   1   4   5    2       140       25.0

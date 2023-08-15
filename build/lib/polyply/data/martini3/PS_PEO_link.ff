@@ -1,0 +1,15 @@
+[ citations ]
+Martini3
+polyply
+
+[ link ]
+resname "PS|PEO"
+[ bonds ]
+;  ai  aj   funct
+B    +EC   1     0.30 5000  {"comment": "link"}
+
+[ link ]
+resname "PEO|PS"
+[ bonds ]
+;  ai  aj   funct
+EC    +B   1     0.30 5000 {"comment": "link"}

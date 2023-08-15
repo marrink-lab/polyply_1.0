@@ -1,0 +1,75 @@
+;
+; Martini model for dextran
+;
+[ citations ]
+Martini3
+polyply
+M3_sugars
+
+[ moleculetype ]
+; molname    nrexcl
+  DEX   3
+
+[ atoms ]
+; nr type resnr residue    atom cgnr charge mass
+  1  SP4r   1   DEX    A    1    0  54.0
+  2  SP4r   1   DEX    B    2    0  54.0
+  3  SP1r   1   DEX    C    3    0  54.0
+  4  TC4    1   DEX    VS   4    0  0.00
+[ bonds ]
+; residue internal bonds
+  A   B   1    0.345 10000 {"ifdef": "FLEXIBLE"}
+  A   C   1    0.460 10000 {"ifdef": "FLEXIBLE"}
+  B   C   1    0.368 10000 {"ifdef": "FLEXIBLE"}
+[ constraints ]
+; i  j  funct length
+  A   B   1    0.345 {"ifndef": "FLEXIBLE"}
+  A   C   1    0.460 {"ifndef": "FLEXIBLE"}
+  B   C   1    0.368 {"ifndef": "FLEXIBLE"}
+[ virtual_sitesn ]
+VS A B C -- 1
+[ exclusions ]
+VS A B C
+[ edges ]
+A VS
+
+;============================================================
+;                   ALPHA 1,6 LINK
+;============================================================
+
+[ link ]
+; alpha 1->6
+resname "DEX"
+[ atoms ]
+A  { }
+B  { }
+C  {"replace": {"atype": "SN6r"}}
++A {"replace": {"atype": "SN6"}}
++B { }
++C { }
+
+[ bonds ]
+; i  j  funct  length  force constant
+  C  +A   1      0.375  6500 {"group": "a16"}
+
+[ angles ]
+; i  j  k funct angle force con.
+A   C  +A  10  115   160 {"group": "ACA - a16"}
+C  +A  +C  10  68    320 {"group": "CAC - a16"}
+C  +A  +B  2   100   180 {"group": "CAB - a16"}
+B   C  +A  2   120    50 {"group": "BCA - a16"}
+
+[ dihedrals ]
+A C  +A  +C 9 0 12 1 {"version": "1", "group": "ACAC - a16"}
+A C  +A  +C 9 0  8 2 {"version": "2", "group": "ACAC - a16"}
+
+[ dihedral_restraints ]
+A  C  +A  +C 1 -120 0.0 4.9 {"group": "ACAC - a16"}
+
+[ link ]
+resname "DEX"
+[ dihedrals ]
+C  +A  +C ++A 9 0   4 4 {"version": "1", "group": "CACA - a16"}
+C  +A  +C ++A 9 90  4 6 {"version": "2", "group": "CACA - a16"}
+[ dihedral_restraints ]
+C  +A  +C  ++A 1 -135 0.0 1.5 {"version": "1", "group": "CACA - a16"}

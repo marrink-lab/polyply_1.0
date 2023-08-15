@@ -1,0 +1,32 @@
+
+; Copyright 2020 University of Groningen
+;
+; Licensed under the Apache License, Version 2.0 (the "License");
+; you may not use this file except in compliance with the License.
+; You may obtain a copy of the License at
+;
+;    http://www.apache.org/licenses/LICENSE-2.0
+;
+; Unless required by applicable law or agreed to in writing, software
+; distributed under the License is distributed on an "AS IS" BASIS,
+; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+; See the License for the specific language governing permissions and
+; limitations under the License.
+
+
+; polyply-itp
+
+[ moleculetype ]
+PEO 1
+
+[ atoms ]
+ 1 SN1a  1 PEO EO  1 0.0 45.0
+ 2 SN1a  2 PEO EO  2 0.0 45.0
+ 3 SN1a  3 PEO EO  3 0.0 45.0
+
+[ bonds ]
+ 1  2 1 0.37 7000
+ 2  3 1 0.37 7000
+
+[ angles ]
+ 1  2  3 2 135.00 50

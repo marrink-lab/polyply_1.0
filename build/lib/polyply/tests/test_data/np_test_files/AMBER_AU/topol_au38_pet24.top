@@ -1,0 +1,28 @@
+
+; Include forcefield parameters
+#include "./amber99sb-ildn_modified.ff/forcefield.itp"
+
+; Include water topology
+#include "./amber99sb-ildn_modified.ff/tip3p.itp"
+
+#ifdef POSRES_WATER
+; Position restraint for each water oxygen
+[ position_restraints ]
+;  i funct       fcx        fcy        fcz
+   1    1       1000       1000       1000
+#endif
+
+; Include topology for ions
+#include "./amber99sb-ildn_modified.ff/ions.itp"
+
+;Include Aucluster topology
+#include "au38_pet24.itp"
+
+
+[ system ]
+; Name
+au33_pet24
+
+[ molecules ]
+; Compound        #mols
+au38_pet24	    1

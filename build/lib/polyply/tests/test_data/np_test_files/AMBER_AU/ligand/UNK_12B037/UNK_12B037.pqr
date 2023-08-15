@@ -1,0 +1,35 @@
+REMARK LIGPARGEN GENERATED PQR FILE
+ATOM      1  S00 UNK     1       1.000   1.000   0.000 -0.2481 2.0204
+ATOM      2  C01 UNK     1      -0.813   1.000   0.000 -0.1155 1.9643
+ATOM      3  C02 UNK     1      -1.379   1.000   1.395 -0.0786 1.9924
+ATOM      4  C03 UNK     1      -1.604   2.208   2.072 -0.1248 1.9924
+ATOM      5  C04 UNK     1      -2.127   2.208   3.366 -0.1490 1.9924
+ATOM      6  C05 UNK     1      -2.431   1.002   3.995 -0.1383 1.9924
+ATOM      7  C06 UNK     1      -2.212  -0.202   3.330 -0.1489 1.9924
+ATOM      8  C07 UNK     1      -1.689  -0.207   2.038 -0.1246 1.9924
+ATOM      9  H08 UNK     1       1.146   1.002  -1.332  0.1404 0.0000
+ATOM     10  H09 UNK     1      -1.165   0.122  -0.552  0.1150 1.4031
+ATOM     11  H0A UNK     1      -1.167   1.879  -0.550  0.1150 1.4031
+ATOM     12  H0B UNK     1      -1.370   3.157   1.593  0.1533 1.3582
+ATOM     13  H0C UNK     1      -2.296   3.149   3.881  0.1513 1.3582
+ATOM     14  H0D UNK     1      -2.838   1.003   5.002  0.1495 1.3582
+ATOM     15  H0E UNK     1      -2.448  -1.143   3.821  0.1506 1.3582
+ATOM     16  H0F UNK     1      -1.523  -1.156   1.534  0.1527 1.3582
+TER 
+CONECT    1    2 
+CONECT    2    3 
+CONECT    3    4 
+CONECT    4    5 
+CONECT    5    6 
+CONECT    6    7 
+CONECT    3    8 
+CONECT    1    9 
+CONECT    2   10 
+CONECT    2   11 
+CONECT    4   12 
+CONECT    5   13 
+CONECT    6   14 
+CONECT    7   15 
+CONECT    8   16 
+CONECT    7    8 
+END

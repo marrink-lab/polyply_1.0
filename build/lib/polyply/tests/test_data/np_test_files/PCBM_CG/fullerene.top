@@ -1,0 +1,15 @@
+; fullerenes require special interactions:
+#include "martini_v2.1_CNP.itp"
+; fullerene topology:
+#include "fullerene.itp"
+; octane topology: 
+#include "martini_v2.0_solvents.itp"
+
+[ system ]
+; name
+fullerenes in octane
+
+[ molecules ]
+; name    number
+F16           64
+OCT         1152

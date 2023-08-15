@@ -1,0 +1,18 @@
+; Include forcefield parameters
+#include "p3ht_gromos_v_2017RA-JACS.ff/forcefield.itp"
+
+
+; Include chain topologies
+#include "pcbm.itp"
+#include "p3ht_n24_2017RA-JACS.itp"
+#include "clbenzene.itp"
+
+[ system ]
+; Name
+A P3HT(24-mer) and a PCBM molecules in cholobenzene solution
+
+[ molecules ]
+; Compound        #mols
+P3HT                1
+PCBM                1
+CB               1862
