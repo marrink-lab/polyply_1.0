@@ -14,6 +14,7 @@
 
 from .processor import Processor
 from .orient_by_bonds import orient_by_bonds
+from .orient_by_frames import orient_by_frames
 """
 Processor implementing a template based back
 mapping to lower resolution coordinates for
@@ -26,10 +27,12 @@ BACKMAPPING_MODE contains a set of implemented backmapping modes.
 Available modes:
     - automatically selecting a backmapping method (i.e. 'automatic') [UNDER CONSTRUCTION!!]
     - by optimizing bonded interactions (i.e. 'orient_by_bonds')
+    - by user-defined frames (i.e. 'orient_by_frame')
 
 """
 
-BACKMAPPING_MODE = {'automatic': orient_by_bonds, 'by-bonds': orient_by_bonds}
+BACKMAPPING_MODE = {'automatic': orient_by_bonds, 'by-bonds': orient_by_bonds,
+                    'by-frame': orient_by_frames}
 
 class Backmap(Processor):
     """
