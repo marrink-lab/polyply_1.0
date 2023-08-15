@@ -1,7 +1,7 @@
 import numpy as np
-import networkx as nx
+import vermouth
 
-class Template(nx.Graph):
+class Template(vermouth.molecule.Block):
     """
     A class for storing  residue template information.
 
