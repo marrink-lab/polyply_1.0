@@ -1,7 +1,6 @@
 import numpy as np
 import scipy.optimize
 import networkx as nx
-from .generate_templates import find_atoms
 from .linalg_functions import rotate_xyz
 from .graph_utils import find_connecting_edges
 from .linalg_functions import norm_matrix
