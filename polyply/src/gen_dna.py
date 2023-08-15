@@ -79,7 +79,7 @@ def complement_dsDNA(meta_molecule):
         try:
             resname = BASE_LIBRARY[meta_molecule.nodes[next_node]["resname"]]
         except KeyError:
-            msg = ("Trying to complete a dsDNA strand. However, resname { } with resid {} "
+            msg = ("Trying to complete a dsDNA strand. However, resname {resname} with resid {resid} "
                     "does not match any of the known base-pair resnames. Note that polyply "
                     "at the moment only allows base-pair completion for molecules that only "
                     "consist of dsDNA. Please conact the developers if you whish to create a "
@@ -87,7 +87,7 @@ def complement_dsDNA(meta_molecule):
 
             resname = meta_molecule.nodes[next_node]["resname"]
             resid = meta_molecule.nodes[next_node]["resid"]
-            raise IOError(msg.format(resname, resid))
+            raise IOError(msg.format(resname=resname, resid=resid))
 
         if next_node not in correspondance:
             new_node = total + 1
