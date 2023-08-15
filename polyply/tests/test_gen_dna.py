@@ -63,3 +63,30 @@ def test_complement_dsDNA(extra_edges, termini, expect_ter):
             assert new_edge_attrs[(idx, jdx)] == edge_attr[(jdx, idx)]
 
     assert len(list(nx.connected_components(test_DNA_mol))) == 2
+
+
+def test_complement_dsDNA():
+    """
+    Test that an unkown residue generates an error when
+    passed to gen_dna processor.
+    """
+    test_DNA_mol = MetaMolecule()
+    nodes = range(0, 6)
+    test_DNA_mol.add_edges_from(zip(nodes[:-1], nodes[1:]))
+    resnames = {0: "DA", 1: "DG", 2: "DT", 3: "DC", 4: "XX", 5: "DT"}
+    nx.set_node_attributes(test_DNA_mol, resnames, "resname")
+    nx.set_node_attributes(test_DNA_mol, dict(zip(nodes, range(1, 7))), "resid")
+    edge_attr = dict(zip(zip(nodes[:-1], nodes[1:]), ["A", "B", "C", "D"]))
+    nx.set_edge_attributes(test_DNA_mol, edge_attr, "test")
+
+    with pytest.raises(IOError) as context:
+        complement_dsDNA(test_DNA_mol)
+
+    msg = ("Trying to complete a dsDNA strand. However, resname XX with resid 5 "
+           "does not match any of the known base-pair resnames. Note that polyply "
+           "at the moment only allows base-pair completion for molecules that only "
+           "consist of dsDNA. Please conact the developers if you whish to create a "
+           "more complicated molecule.")
+
+    assert str(context.value) == msg
+
