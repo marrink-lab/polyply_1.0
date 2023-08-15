@@ -15,6 +15,7 @@ import networkx as nx
 import numpy as np
 import vermouth
 from vermouth.log_helpers import StyleAdapter, get_logger
+from .template import Template
 from .minimizer import optimize_geometry
 from .processor import Processor
 from .linalg_functions import (u_vect, center_of_geometry,
@@ -190,7 +191,7 @@ def compute_volume(block, nonbond_params, treshold=1e-18):
 
     return radgyr
 
-def map_from_CoG(coords):
+def map_from_CoG(block):
     """
     Compute the center of geometry
     of `coords` and return each position
@@ -207,13 +208,12 @@ def map_from_CoG(coords):
     dict
      dictionary of node idx and CoG vector
     """
-    points = np.array(list(coords.values()))
+    points = block.positions_arr
     res_center_of_geometry = center_of_geometry(points)
     out_vectors = {}
-    for key, coord in coords.items():
+    for key, coord in block.positions.items():
         diff = coord - res_center_of_geometry
         out_vectors[key] = diff
-
     return out_vectors
 
 def _relabel_interaction_atoms(interaction, mapping):
@@ -255,7 +255,7 @@ def extract_block(molecule, resname, defines):
     """
     nodes = find_atoms(molecule, "resname", resname)
     resid = molecule.nodes[nodes[0]]["resid"]
-    block = vermouth.molecule.Block()
+    block = Template(resname=resname)
 
     # select all nodes with the same first resid and
     # make sure the block node labels are atomnames
@@ -340,6 +340,7 @@ class GenerateTemplates(Processor):
                                                         ["bonds", "constraints", "angles", "dihedrals"])
 
                     if success:
+                        block.positions = coords
                         break
                     elif opt_counter > self.max_opt:
                         LOGGER.warning("Failed to optimize structure for block {}.", resname)
@@ -351,10 +352,10 @@ class GenerateTemplates(Processor):
 
                 if resname not in self.volumes:
                     self.volumes[resname] = compute_volume(block,
-                                                           coords,
                                                            self.topology.nonbond_params)
-                coords = map_from_CoG(coords)
-                self.templates[resname] = coords
+                mapped_coords = map_from_CoG(block)
+                block.positions = mapped_coords
+                self.templates[resname] = block
 
     def run_molecule(self, meta_molecule):
         """
