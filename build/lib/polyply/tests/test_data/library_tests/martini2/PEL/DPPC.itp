@@ -1,0 +1,42 @@
+[moleculetype]
+; molname      nrexcl
+  DPPC          1
+
+[atoms]
+; id 	type 	resnr 	residu 	atom 	cgnr 	charge
+1     C1   1 DPPC  C1A 1  0.000    72 
+2     C1   1 DPPC  C2A 2  0.000    72 
+3     C1   1 DPPC  C3A 3  0.000    72 
+4     C1   1 DPPC  C4A 4  0.000    72 
+5     C1   1 DPPC  C1B 5  0.000    72 
+6     C1   1 DPPC  C2B 6  0.000    72 
+7     C1   1 DPPC  C3B 7  0.000    72 
+8     C1   1 DPPC  C4B 8  0.000    72 
+9     Na   1 DPPC  GL2 9  0.000    72 
+10    Na   1 DPPC  GL1 10 0.000    72 
+11    Qa   1 DPPC  PO4 11 -1.00    72 
+12    Q0   1 DPPC  NC3 12  1.000    72 
+
+[bonds]
+;  i  j 	funct 	length 	force.c.
+1     2     1  0.47     1250    
+2     3     1  0.47     1250    
+3     4     1  0.47     1250    
+5     6     1  0.47     1250    
+6     7     1  0.47     1250    
+7     8     1  0.47     1250    
+9     5     1  0.47     1250    
+10    1     1  0.47     1250    
+10    9     1  0.37     1250    
+11    10    1  0.47     1250    
+12    11    1  0.47     1250    
+[angles]
+;  i  j  k 	funct 	angle 	force.c.
+1     2     3     2  180.0    25.0    
+2     3     4     2  180.0    25.0    
+5     6     7     2  180.0    25.0    
+6     7     8     2  180.0    25.0    
+9     5     6     2  180.0    25.0    
+10    1     2     2  180.0    25.0    
+11    10    1     2  180.0    25.0    
+11    10    9     2  120.0    25.0    

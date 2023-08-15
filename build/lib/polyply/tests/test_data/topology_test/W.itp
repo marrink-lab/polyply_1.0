@@ -1,0 +1,11 @@
+
+;;;;;; WATER (representing 4 molecules)
+
+[ moleculetype ]
+; molname  	nrexcl
+  W  	    	1
+
+[ atoms ]
+;id     type    resnr   residu  atom    cgnr    charge
+ 1      W      1        W       W      1       0
+

@@ -1,0 +1,14 @@
+[ defaults ]
+; nbfunc        comb-rule       gen-pairs       fudgeLJ fudgeQQ
+  1             1               yes              1.0     1.0  
+
+#include "FF.itp"
+#include "NP.itp"
+  
+[ system ]
+; name
+TEST_1
+
+[ molecules ]
+; name	number
+TEST         1

@@ -1,0 +1,258 @@
+#!python
+
+# Copyright 2020 University of Groningen
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""
+Perform the parsing and input redirect for the
+different subcommands. This is the main executable.
+"""
+import os
+import argparse
+from pathlib import Path
+import numpy as np
+import polyply
+from polyply import (gen_itp, gen_coords, gen_seq, DATA_PATH)
+from polyply.src.load_library import load_library
+from polyply.src.logging import LOGGER, LOGLEVELS
+
+VERSION = 'polyply version {}'.format(polyply.__version__) # pylint: disable=consider-using-f-string
+
+def main(): # pylint: disable=too-many-locals,too-many-statements
+    """
+    Parses commandline arguments and call relevant sub_programs.
+    """
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+
+    parser.add_argument('-V', '--version', action='version', version=VERSION)
+    ff_group = parser.add_argument_group('Library Files')
+    ff_group.add_argument('-list-lib', action='store_true', dest='list_ff',
+                          help='List all known force fields, and exit.')
+    ff_group.add_argument('-list-blocks', type=str, dest='list_blocks',
+                          help='List all Blocks known to the'
+                          ' force field selected, and exit.', nargs='*')
+
+    subparsers = parser.add_subparsers()
+
+    # List of Subparsers for the different tools
+    parser_gen_itp = subparsers.add_parser('gen_params', aliases=['gen_itp'])
+    parser_gen_coords = subparsers.add_parser('gen_coords')
+    parser_gen_seq = subparsers.add_parser('gen_seq')
+
+    # =============================================================================
+    # Input Arguments for the itp generation tool
+    # =============================================================================
+
+    parser_gen_itp.add_argument('-name', required=False, type=str, dest="name",
+                                help="name of the final molecule", default='polymer')
+    parser_gen_itp.add_argument('-v', dest='verbosity', action='count',
+                                help='Enable debug logging output. Can be given '
+                                'multiple times.', default=0)
+
+    file_group = parser_gen_itp.add_argument_group('Input and output options')
+    file_group.add_argument('-lib', dest='lib', required=False, type=str,
+                            help='force-fields to include from library', nargs='*')
+    file_group.add_argument('-f', dest='inpath', required=False, type=Path,
+                            help='Input file (ITP|FF)', nargs="*")
+    file_group.add_argument('-o', dest='outpath', type=Path,
+                            help='Output ITP (ITP)', default=Path('polymer.itp'))
+    seq_group = file_group.add_mutually_exclusive_group(required=True)
+    seq_group.add_argument('-seq', dest='seq', type=str, nargs='+',
+                           help='A linear sequence of residue names.')
+    seq_group.add_argument('-seqf', dest='seq_file', type=Path,
+                           help='A graph input file (JSON|TXT|FASTA|IG)')
+
+    parser_gen_itp.set_defaults(func=gen_itp)
+
+    # ============================================================================
+    #           Input Arguments for the coordinate generation tool
+    # ============================================================================
+
+    parser_gen_coords.add_argument('-name', required=True, type=str, dest="name",
+                                   help="name of the final molecule")
+
+    parser_gen_coords.add_argument('-v', dest='verbosity', action='count',
+                                   help='Enable debug logging output. Can be given '
+                                   'multiple times.', default=0)
+
+    file_group = parser_gen_coords.add_argument_group('Input and output files')
+    file_group.add_argument('-p', dest='toppath', required=False, type=Path,
+                            help='topology file (.top)')
+    file_group.add_argument('-o', dest='outpath', type=Path,
+                            help='output GRO (.gro)')
+    file_group.add_argument('-c', dest='coordpath', type=Path,
+                            help='input file molecules (.gro)', default=None)
+    file_group.add_argument('-mc', dest='coordpath_meta', type=Path,
+                            help='input file meta-molecule (.gro)', default=None)
+    file_group.add_argument('-b', dest='build', type=Path, default=None,
+                            help=('input file; specify molecule specific building options'))
+
+    topology_group = parser_gen_coords.add_argument_group('Change or modify topology')
+    topology_group.add_argument('-res', dest='build_res', type=str,
+                                help='list of residues to built', default=[], nargs='+')
+    topology_group.add_argument('-ign', dest='ignore', type=str,
+                                help='molecules to ignore when building structure',
+                                default=[], nargs='+')
+    topology_group.add_argument('-cycles', dest='cycles', type=str,
+                                help='molecule names of cyclic molecules',
+                                default=[], nargs='+')
+    topology_group.add_argument('-cycle_tol', dest='cycle_tol', type=float,
+                                help='tolerance in nm for cycles to be closed (def. 0)',
+                                default=0.0)
+    topology_group.add_argument('-split', dest='split', nargs='+', type=str, default=[],
+                                help=('split single residue into more residues. The syntax is '
+                                      '<resname>:<new_resname>-<atom1>,<atom2><etc>:<new_resname> '
+                                      'Note that all atoms of the old residues need to be in at '
+                                      'most one new residue and must all be accounted for.'))
+    topology_group.add_argument('-lig', dest='ligands', nargs='+', type=lambda s: s.split(':'),
+                                default=[],
+                                help=('Specify ligands of molecules which should be placed close '
+                                      'to a specific molecule. The format is as follows: '
+                                      '<mol_name>#<mol_idx>-<resname>#<resid>:<mol_name>#<mol_idx>-<resname>#<resid>. '# pylint: disable=line-too-long
+                                      'Elements of the specification can be omitted as required. '
+                                      'Note mol_name and resname cannot contain the characters '
+                                      '# and -.'))
+
+    system_group = parser_gen_coords.add_argument_group('Options for system generation')
+    system_group.add_argument('-gs', dest='grid_spacing', type=float,
+                              help='grid spacing (nm)', default=0.2)
+    system_group.add_argument('-grid', dest='grid', type=str,
+                              help='file with grid-points', default=None)
+    system_group.add_argument('-mi', dest='maxiter', type=int,
+                              help='max number of trys to grow a molecule', default=800)
+    system_group.add_argument('-start', dest='start', nargs='+', type=str,
+                              default=[],
+                              help=('Specify which residue to build first. The syntax is '
+                                    '<mol_name>#<mol_idx>-<resname>#<resid>. Parts of this '
+                                    'specification may be omitted. '
+                                    'Note mol_name and resname cannot contain the characters # '
+                                    ' and -.'))
+
+    sys_req_group = system_group.add_mutually_exclusive_group(required=True)
+    sys_req_group.add_argument('-dens', dest='density', type=float,
+                              help='density of system (kg/m3)', default=None)
+    sys_req_group.add_argument('-box', dest='box', type=lambda s: np.array(s, dtype=float),
+                              help='rectangluar box x y z (nm)', default=None, nargs=3)
+
+    random_walk_group = parser_gen_coords.add_argument_group('Options for random walk')
+    random_walk_group.add_argument('-mir', dest='maxiter_random', type=int,
+                                   help='max number of trys to place a residue', default=100)
+    random_walk_group.add_argument('-sf', dest='step_fudge', type=float,
+                                   help='scale step length in random walk by fudge factor',
+                                   default=1.0)
+    random_walk_group.add_argument('-mf', dest='max_force', type=float, default=5*10**4.0,
+                                   help='max force to allow in residue placing (kJ /(mol*nm))')
+    random_walk_group.add_argument('-nr', dest='nrewind', type=int, default=5,
+                                   help=('number of residues to trace back '
+                                         ' when RW fails in first attempt'))
+
+    backmap_group = parser_gen_coords.add_argument_group('Options for backmapping')
+    backmap_group.add_argument('-back_fudge', dest='bfudge', type=float, default=0.4,
+                               help='factor by which to scale the coordinates when backmapping.')
+
+    parser_gen_coords.set_defaults(func=gen_coords)
+
+    # ============================================================================
+    #           Input Arguments for the sequence generation tool
+    # ============================================================================
+
+    parser_gen_seq.add_argument('-name', required=True, type=str, dest="name",
+                                help="name of the final molecule")
+    parser_gen_seq.add_argument('-v', dest='verbosity', action='count',
+                                help='Enable debug logging output. Can be given '
+                                'multiple times.', default=0)
+
+    file_group = parser_gen_seq.add_argument_group('Input and output files')
+    file_group.add_argument('-f', dest='inpath', required=False, type=Path,
+                            help='force-field files (.ff|.itp)', nargs='*')
+    file_group.add_argument('-o', dest='outpath', type=Path,
+                            help='output file (.json)', required=True)
+
+    macro_group = parser_gen_seq.add_argument_group('Definitions of macros')
+    macro_group.add_argument('-from_string', dest='macro_strings', nargs='+', type=str,
+                             help=("Define small polymer fragments: "
+                                   "the format is <tag>:<#blocks>:<#branches>:<residues> "
+                                   "where residues has the format <resname-probability>. "
+                                   "Examples are linear PEG of length 10 <A:10:1:PEG-1.0> "
+                                   "or a random copolymer of PS-PEG <A:10:1:PS-0.5,PEG-0.5>. "
+                                   "But we can also generate branched polymer with 3 generations "
+                                   "using <A:3:3:NR3-1.>."), default=[])
+    macro_group.add_argument('-from_file', dest='from_file', nargs='+', type=str,
+                             help="Use a molecule defined in an input file as fragment. The format "
+                                  "is <tag:molecule name>.")
+
+    seq_group = parser_gen_seq.add_argument_group('Definition of sequence')
+    seq_group.add_argument('-seq', dest='seq', nargs='+', type=str,
+                           help="Define the sequence order in which to combine macros."
+                                "The format is <macro_tag, macro_tag, ...>. For example, "
+                                "to combine three blocks called A, B, which are defined by the "
+                                "macro syntax use <A, B, A> and define how they are connected "
+                                "using the connects flag.")
+    seq_group.add_argument('-connects', dest='connects', nargs='+', type=str,
+                           help="Provide connect records for sequence. "
+                                "The format is <seq-index:seq-index:res_id-res_id>. "
+                                "For example if we want to connect the first and third "
+                                "block in a sequence, using a connection between the second "
+                                "and third residue in these blocks respectively the input "
+                                "would be <1:3:2-3>.", default=[])
+    seq_group.add_argument('-modf_ter', dest='modifications', nargs='+', type=str,
+                           help="change the resname of terminii of a specific block "
+                                "in the sequence. The format is <SeqID:new_resname>.",
+                           default=[])
+    seq_group.add_argument('-label', dest='tags', nargs='+', type=str,
+                           help="set one or more labels for the residues. Labels can be "
+                                "referred to in the ff input files and used as a selector "
+                                "for applying links. See the workflow documentation for "
+                                "more information. Labels can also be applied statistically. "
+                                "The syntax is <SeqID:label:value-probability,value-probability>"
+                                "For example setting the chirality on PS could be done this way "
+                                "<0:chiral:R-0.5,S-0.5>",
+                           default=[])
+    parser_gen_seq.set_defaults(func=gen_seq)
+
+    # ============================================================================
+    # Deal with queries of the polyply library
+    # ============================================================================
+
+    args = parser.parse_args()
+
+    if args.list_ff:
+        libs = os.listdir(DATA_PATH)
+        libs = [lib for lib in libs if not lib.startswith("__")]
+        print('The following libraries are known:')
+        for idx, ff_name in enumerate(libs):
+            print('{:3d}. {}'.format(idx, ff_name)) # pylint: disable=consider-using-f-string
+        parser.exit()
+
+    if args.list_blocks:
+        force_field = load_library("libs", args.list_blocks, [])
+        msg = 'The following Blocks are present in the following libraries: {}:'
+        print(msg.format(args.list_blocks))
+        for block in force_field.blocks:
+            print(block)
+        parser.exit()
+
+    LOGGER.setLevel(LOGLEVELS[args.verbosity])
+    args_dict = vars(args)
+    subprogram = args_dict['func']
+    for remove_args in ['list_ff', 'list_blocks', 'verbosity', 'func']:
+        del args_dict[remove_args]
+
+    subprogram(**args_dict)
+
+
+if __name__ == '__main__':
+    main()

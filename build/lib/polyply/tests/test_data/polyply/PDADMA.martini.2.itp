@@ -1,0 +1,51 @@
+; Copyright 2020 University of Groningen
+;
+; Licensed under the Apache License, Version 2.0 (the "License");
+; you may not use this file except in compliance with the License.
+; You may obtain a copy of the License at
+;
+;    http://www.apache.org/licenses/LICENSE-2.0
+;
+; Unless required by applicable law or agreed to in writing, software
+; distributed under the License is distributed on an "AS IS" BASIS,
+; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+; See the License for the specific language governing permissions and
+; limitations under the License.
+; POLY(DIALLYLDIMETHYLAMMONIUM)
+;
+; NUMBER OF MONOMERS:           30
+;
+;
+; If you use those parameters, please cite:
+;
+; M. Voegele, J. Smiatek, C. Holm
+; Coarse-grained simulations of polyelectrolyte complexes: MARTINI models for poly(styrene sulfonate) and poly(diallyldimethylammonium)
+; The Journal of Chemical Physics 143(24):243151, December 2015.
+; DOI: 10.1063/1.4937805
+;
+;
+;
+[ moleculetype ]
+; molname  nrexcl
+PDADMA30            2
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge      mass
+   1     SC1            1  DADMA      B1       1     0.00000E+00    45
+   2     SC1            1  DADMA      B2       2     0.00000E+00    45
+   3     SQd            1  DADMA      N        3     1.00000E+00    45
+;
+[ bonds ]
+;  ai  aj   funct
+   2     4    1     0.270000 8000.000000
+;
+[ constraints ]
+;  ai  aj  funct length
+   1     2    1     0.270000
+   2     3    1     0.270000
+   3     1    1     0.270000
+;
+[ angles ]
+;  ai  aj  ak  funct
+   1     2     4    1   136.000000  100.000000
+   2     4     5    1   136.000000  100.000000

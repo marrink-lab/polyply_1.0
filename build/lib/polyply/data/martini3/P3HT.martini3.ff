@@ -1,0 +1,70 @@
+[ citations ]
+Martini3
+polyply
+; ;;;;; poly(3-hexyl-thiophene) (P3HT)
+;
+[ moleculetype ]
+; Name            nrexcl
+P3HT               1
+;
+[ atoms ]
+;  nr  type  resnr residue  atom  cgnr    charge   mass
+    1   TC6    1    P3HT     S1    1        0        36
+    2   TC5    1    P3HT     C2    2        0        36
+    3   TC5    1    P3HT     C3    3        0        36
+    4     U    1    P3HT     V4    4        0        0  
+    5   SC2    1    P3HT     C5    5        0        54
+    6   SC2    1    P3HT     C6    6        0        54
+;
+[ bonds ]
+;  atoms    funct  length       force_k
+    5    6    1    0.360         5000 
+;
+[ constraints ]
+;   i    j  funct length
+; thiophene
+    1    2    1   0.270  {"ifndef": "FLEXIBLE"}
+    1    3    1   0.270  {"ifndef": "FLEXIBLE"}
+    2    3    1   0.280  {"ifndef": "FLEXIBLE"}
+; thiophene-hexyl        
+    3    5    1   0.285  {"ifndef": "FLEXIBLE"}
+;
+[ bonds ]
+;   i    j  funct length
+; thiophene
+    1    2    1   0.270 100000  {"ifdef": "FLEXIBLE"}
+    1    3    1   0.270 100000  {"ifdef": "FLEXIBLE"}
+    2    3    1   0.280 100000  {"ifdef": "FLEXIBLE"}
+; thiophene-hexyl               
+    3    5    1   0.285 100000  {"ifdef": "FLEXIBLE"}
+;
+[ angles ]
+;   i    j    k   funct   angle   force_k
+    1    3    5    2       180      250 
+    3    5    6    1       155       25 
+;
+[ virtual_sitesn ]
+;  VS bead at the centre of geometry of the thiophene
+    4    1   2   3 -- 1
+
+[ link ]
+resname "P3HT"
+[ bonds ]
+   V4  +V4    1    0.380        50000
+[ angles ]
+   C2   C3  +V4    1       160      180
+   V4  +C2  +C3    1       160      180
+[ dihedrals ]
+;   i    j    k    l  funct  ref.angle   force_k
+   S1   V4  +V4  +S1    9       0.0      1.8  1   {"version":"1"}
+   S1   V4  +V4  +S1    9       0.0     -9.5  2   {"version":"2"}
+[ exclusions ]
+; between nearest-neighbor thiophenes 
+   S1  +S1 +C2 +C3 
+   C2  +S1 +C2 +C3 
+   C3  +S1 +C2 +C3 
+[ link ]
+; for bonded potentials involving three residues
+resname "P3HT"
+[ angles ]
+  V4  +V4 ++V4    1       158      180  {"comment": "connection i-j-k"} 

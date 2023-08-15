@@ -1,0 +1,35 @@
+REMARK LIGPARGEN GENERATED PDB FILE
+ATOM      1  S00 UNK     1       1.000   1.000   0.000
+ATOM      2  C01 UNK     1      -0.813   1.000   0.000
+ATOM      3  C02 UNK     1      -1.379   1.000   1.395
+ATOM      4  C03 UNK     1      -1.604   2.208   2.072
+ATOM      5  C04 UNK     1      -2.127   2.208   3.366
+ATOM      6  C05 UNK     1      -2.431   1.002   3.995
+ATOM      7  C06 UNK     1      -2.212  -0.202   3.330
+ATOM      8  C07 UNK     1      -1.689  -0.207   2.038
+ATOM      9  H08 UNK     1       1.146   1.002  -1.332
+ATOM     10  H09 UNK     1      -1.165   0.122  -0.552
+ATOM     11  H0A UNK     1      -1.167   1.879  -0.550
+ATOM     12  H0B UNK     1      -1.370   3.157   1.593
+ATOM     13  H0C UNK     1      -2.296   3.149   3.881
+ATOM     14  H0D UNK     1      -2.838   1.003   5.002
+ATOM     15  H0E UNK     1      -2.448  -1.143   3.821
+ATOM     16  H0F UNK     1      -1.523  -1.156   1.534
+TER 
+CONECT    1    2 
+CONECT    2    3 
+CONECT    3    4 
+CONECT    4    5 
+CONECT    5    6 
+CONECT    6    7 
+CONECT    3    8 
+CONECT    1    9 
+CONECT    2   10 
+CONECT    2   11 
+CONECT    4   12 
+CONECT    5   13 
+CONECT    6   14 
+CONECT    7   15 
+CONECT    8   16 
+CONECT    7    8 
+END

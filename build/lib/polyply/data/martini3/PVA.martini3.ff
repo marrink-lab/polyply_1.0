@@ -1,0 +1,21 @@
+[ citations ]
+Martini3
+polyply
+;
+[ moleculetype ]
+PVA 1
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge    mass 
+   1    SP2r          1  PVA       VNL       1     0.0   45
+
+[ link ]
+resname "PVA"
+[ bonds ]
+VNL     +VNL    1     0.30 8000
+
+
+[ link ]
+resname "PVA"
+[ angles ]
+VNL  +VNL  ++VNL  2  135 40

@@ -1,0 +1,51 @@
+#Remarks LigParGen generated for Q (by Leela Dodda and Israel Cabeza de Vaca)
+
+{UNK}
+[atoms]
+       1    O00   O800  -0.4980 
+       2    C01   C801   0.1374 
+       3    C02   C802  -0.2453 
+       4    C03   C803  -0.1003 
+       5    C04   C804  -0.1661 
+       6    C05   C805  -0.0549 
+       7    C06   C806  -0.1218 
+       8    S07   S807  -0.2510 
+       9    C08   C808  -0.1828 
+      10    H09   H809   0.4298 
+      11    H0A   H810   0.1521 
+      12    H0B   H811   0.1549 
+      13    H0C   H812   0.1577 
+      14    H0D   H813   0.1341 
+      15    H0E   H814   0.1341 
+      16    H0F   H815   0.1540 
+      17    H0G   H816   0.1662 
+[bonds]
+     C01      O00
+     C02      C01
+     C03      C02
+     C04      C03
+     C05      C04
+     C06      C05
+     S07      C06
+     C08      C01
+     H09      O00
+     H0A      C02
+     H0B      C03
+     H0C      C04
+     H0D      C06
+     H0E      C06
+     H0F      S07
+     H0G      C08
+     C08      C05
+[impropers]
+C08   C01   O00   C02 
+H0A   C02   C01   C03 
+H0B   C03   C02   C04 
+H0C   C04   C03   C05 
+H0D   C06   C05   S07 
+H0E   C06   C05   S07 
+H0G   C08   C01   C05 
+C08   C05   C04   C06 
+[charge_groups]
+ O00 C01 C02 C03 C04 C05 C06 S07 C08 H09 H0A H0B H0C H0D H0E H0F H0G
+*------------------------------------------------------------------

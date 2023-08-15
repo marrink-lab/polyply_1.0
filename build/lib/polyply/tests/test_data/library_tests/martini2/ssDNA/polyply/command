@@ -1,0 +1,4 @@
+polyply gen_params -lib martini2 -seqf ../ssDNA.json -o ssDNA.itp -name ssDNA
+
+
+

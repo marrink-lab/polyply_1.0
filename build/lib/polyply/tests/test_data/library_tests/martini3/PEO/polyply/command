@@ -1,0 +1,1 @@
+polyply gen_params -lib martini3 -seq PEO:6 -o PEO.itp -name PEO

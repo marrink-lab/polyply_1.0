@@ -1,0 +1,16 @@
+;[ defaults ]
+; nbfunc        comb-rule       gen-pairs       fudgeLJ fudgeQQ
+;  1             1               yes              1.0     1.0  
+;#include "martini_v3.0.0.itp"
+
+#include "martini_v2.1_CNP_PEG_PS.itp"
+#include "F16.itp"
+#include "np.itp"
+
+[ system ]
+; name
+TEST_1
+
+[ molecules ]
+; name	number
+TEST         1
