@@ -191,7 +191,7 @@ def _identify_residues(comments):
 
         if "RNA" in comment:
             RNA = True
-            
+
         if "PROTEIN" in comment:
             AA = True
 
@@ -253,6 +253,9 @@ def parse_ig(filepath):
         raise FileFormatError(msg)
 
     DNA, RNA, AA = _identify_residues(comments)
+    if set(clean_lines[0]) == set(['A', 'C', 'G', 'T']):
+        LOGGER.warning("Found only the letters A, C, G, T on first line. Are you missing the title line in your .ig file?")
+
     seq_graph = _parse_plain(clean_lines[1:], DNA=DNA, RNA=RNA, AA=AA)
 
     if ter_char == '2':
