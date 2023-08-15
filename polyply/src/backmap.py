@@ -32,10 +32,10 @@ a meta molecule.
 def orient_template(meta_molecule, current_node, template, built_nodes, protocol):
     """
     Given a `template` and a `node` of a `meta_molecule` at lower resolution
-    find the orientation of the template by chosen a protocol.
+    find the orientation of the template by a chosen protocol.
 
     Available protocols:
-        - by optimizing bonded interactions (i.e. 'default')
+        - by optimizing bonded interactions (i.e. 'orient_by_bonds' / 'default')
 
     Parameters:
     -----------
