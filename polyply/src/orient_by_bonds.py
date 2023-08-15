@@ -1,15 +1,10 @@
 import numpy as np
 import scipy.optimize
 import networkx as nx
-from polyply import jit
 from .generate_templates import find_atoms
 from .linalg_functions import rotate_xyz
 from .graph_utils import find_connecting_edges
-
-def _norm_matrix(matrix):
-    norm = np.sum(matrix * matrix)
-    return norm
-norm_matrix = jit(_norm_matrix)
+from .linalg_functions import norm_matrix
 
 def orient_by_bonds(meta_molecule, current_node, template, built_nodes):
     """
