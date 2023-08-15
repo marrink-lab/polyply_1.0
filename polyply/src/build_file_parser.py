@@ -17,7 +17,8 @@ import networkx as nx
 import vermouth
 from vermouth.parser_utils import SectionLineParser
 from vermouth.log_helpers import StyleAdapter, get_logger
-from .generate_templates import map_from_CoG, compute_volume
+from .template import Template
+from .generate_templates import compute_volume
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
@@ -138,9 +139,8 @@ class BuildDirector(SectionLineParser):
         'resname ALA' for example.
         """
         # we only need the residue name
-        name = line.split()[1]
-        self.current_template = vermouth.molecule.Block()
-        self.current_template.name = name
+        resname = line.split()[1]
+        self.current_template = Template(resname=resname)
 
     @SectionLineParser.section_parser('template', 'atoms')
     def _template_atoms(self, line, lineno=0):
@@ -184,21 +184,17 @@ class BuildDirector(SectionLineParser):
         Templates
         ---------
         - compute volume from template if it is not defined yet
-        - store coordinates as vectors from center of geometry
         """
         if previous_section == ["template", "bonds"]:
             coords = nx.get_node_attributes(self.current_template, "position")
             # if the volume is not defined yet compute the volume, this still
             # can be overwritten by an explicit volume directive later
-            resname = self.current_template.name
+            resname = self.current_template.resname
+            self.current_template.positions = coords
             if resname not in self.topology.volumes:
                 self.topology.volumes[resname] = compute_volume(self.current_template,
-                                                                coords,
-                                                                self.topology.nonbond_params,)
-            # internally a template is defined as vectors from the
-            # center of geometry
-            mapped_coords = map_from_CoG(coords)
-            self.templates[resname] = mapped_coords
+                                                                self.topology.nonbond_params)
+            self.templates[resname] = self.current_template
             self.current_template = None
 
     def finalize(self, lineno=0):

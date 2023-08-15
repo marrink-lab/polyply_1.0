@@ -144,7 +144,7 @@ def _good_impropers(coords, block):
                 return False
     return True
 
-def compute_volume(block, coords, nonbond_params, treshold=1e-18):
+def compute_volume(block, nonbond_params, treshold=1e-18):
     """
     Given a `block`, which has the coordinates `coords`,
     compute the radius of gyration taking into account
@@ -169,13 +169,13 @@ def compute_volume(block, coords, nonbond_params, treshold=1e-18):
     -------
     radius of gyration
     """
-    n_atoms = len(coords)
-    points = np.array(list(coords.values()))
+    n_atoms = len(block)
+    points = block.positions_arr
     res_center_of_geometry = center_of_geometry(points)
     geom_vects = np.zeros((n_atoms, 3))
     idx = 0
 
-    for node, coord in coords.items():
+    for node, coord in block.positions.items():
         atom_key = block.nodes[node]["atype"]
         rad = float(nonbond_params[frozenset([atom_key, atom_key])]["nb1"])
         diff = coord - res_center_of_geometry

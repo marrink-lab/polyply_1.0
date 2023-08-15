@@ -64,7 +64,7 @@ def orient_by_bonds(meta_molecule, current_node, template, built_nodes):
             atom_name = meta_molecule.molecule.nodes[current_atom]["atomname"]
 
             # record the coordinates of the atom that is rotated
-            opt_coords[:, ndx] = template[atom_name]
+            opt_coords[:, ndx] = template.positions[atom_name]
 
             # given the reference atom that already exits translate it to the origin
             # of the rotation, this will be the reference point for rotation
@@ -78,7 +78,7 @@ def orient_by_bonds(meta_molecule, current_node, template, built_nodes):
             cg_node = ref_nodes[ndx] #find_atoms(meta_molecule, "resid", ref_resid)[0]
 
             # record the coordinates of the atom that is rotated
-            opt_coords[:, ndx] = template[atom_name]
+            opt_coords[:, ndx] = template.positions[atom_name]
 
             # as the reference atom is not built take the cg node as reference point
             # for rotation; translate it to origin
@@ -103,8 +103,8 @@ def orient_by_bonds(meta_molecule, current_node, template, built_nodes):
     # 5. write the template as array and rotate it corrsponding to the result above
     template_arr = np.zeros((3, len(template)))
     key_to_ndx = {}
-    for ndx, key in enumerate(template.keys()):
-        template_arr[:, ndx] = template[key]
+    for ndx, key in enumerate(template.positions.keys()):
+        template_arr[:, ndx] = template.positions[key]
         key_to_ndx[key] = ndx
 
     angles = opt_results['x']
