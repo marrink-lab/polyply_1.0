@@ -20,6 +20,8 @@ class Template(vermouth.molecule.Block):
         Numpy array which stores the n-atom positions.
 
     """
+    __slots__ = ["resname", "frame", "positions_arr", "_positions"]
+
     def __init__(self, resname, frame=np.eye(3), positions={}, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.resname = resname
