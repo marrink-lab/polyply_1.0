@@ -30,7 +30,6 @@ def _dna_edge_iterator(meta_molecule, source):
     while True:
         neighbors = meta_molecule.neighbors(source)
         src_resid = meta_molecule.nodes[source]["resid"]
-        count += 1
         for next_node in neighbors:
             next_resid = meta_molecule.nodes[next_node]["resid"]
             diff = src_resid - next_resid
@@ -42,9 +41,8 @@ def _dna_edge_iterator(meta_molecule, source):
             if next_resid > src_resid and next_node == first_node:
                 yield (source, next_node)
                 return
-
-            if count > len(meta_molecule.nodes):
-                return
+        else:
+            return
 
 def complement_dsDNA(meta_molecule):
     """

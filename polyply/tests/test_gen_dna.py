@@ -61,11 +61,10 @@ def test_complement_dsDNA(extra_edges, termini, expect_ter):
             assert new_edge_attrs[(idx, jdx)] == edge_attr[(idx, jdx)]
         else:
             assert new_edge_attrs[(idx, jdx)] == edge_attr[(jdx, idx)]
-
     assert len(list(nx.connected_components(test_DNA_mol))) == 2
 
 
-def test_complement_dsDNA():
+def test_complement_dsDNA_error():
     """
     Test that an unkown residue generates an error when
     passed to gen_dna processor.
@@ -87,6 +86,4 @@ def test_complement_dsDNA():
            "at the moment only allows base-pair completion for molecules that only "
            "consist of dsDNA. Please conact the developers if you whish to create a "
            "more complicated molecule.")
-
     assert str(context.value) == msg
-
