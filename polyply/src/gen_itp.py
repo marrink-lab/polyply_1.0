@@ -108,14 +108,9 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[], lib=None,
     meta_molecule = ApplyLinks().run_molecule(meta_molecule)
 
     # Raise warning if molecule is disconnected
-    if not nx.is_connected(meta_molecule.molecule):
-        n_parts = len(list(nx.connected_components(meta_molecule.molecule)))
-        LOGGER.warning(f"Your molecule consists of {n_parts} disjoint parts."
-                        "Perhaps links were not applied correctly.")
-        msg = "Missing link between residue {idxA} {resA} and residue {idxB} {resB}"
-        if (dsdna and n_parts != 2) or not dsdna:
-            for missing in find_missing_edges(meta_molecule, meta_molecule.molecule):
-                LOGGER.warning(msg, **missing)
+    msg = "Missing a link between residue {idxA} {resA} and residue {idxB} {resB}."
+    for missing in find_missing_edges(meta_molecule, meta_molecule.molecule):
+        LOGGER.warning(msg, **missing)
 
     with deferred_open(outpath, 'w') as outfile:
         header = [ ' '.join(sys.argv) + "\n" ]
