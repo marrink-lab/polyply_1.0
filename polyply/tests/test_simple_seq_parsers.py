@@ -15,6 +15,7 @@
 Test that sequence files are properly read.
 """
 from pathlib import Path
+import logging
 import pytest
 import networkx as nx
 from polyply import TEST_DATA
@@ -134,8 +135,21 @@ def test_sequence_parses_PROTEIN():
     monomers = ["GLY", "ALA", "LYS", "TRP", "ASN", "VAL", "PHE", "PRO", "SER"]
     ref_graph = _monomers_to_linear_nx_graph(monomers)
     assert nx.is_isomorphic(seq_graph, ref_graph, node_match=_node_match)
-    
+
 def test_unkown_nucleotype_error():
     with pytest.raises(IOError):
         lines = ["AABBBCCTG"]
         _parse_plain(lines, DNA=True, RNA=False)
+
+def test_ig_warning(caplog):
+    ref_msg = ("Found only the letters A, C, G, T on first line."
+               " Are you missing the title line in your .ig file?")
+    filepath = Path(TEST_DATA + "/simple_seq_files/test_ig_warning.ig")
+    with caplog.at_level(logging.WARNING):
+        seq_graph = MetaMolecule.parsers["ig"](filepath)
+        for record in caplog.records:
+            assert str(record.msg) == ref_msg
+            assert record.levelname == "WARNING"
+            break
+        else:
+            assert False

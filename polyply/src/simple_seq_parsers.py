@@ -253,7 +253,7 @@ def parse_ig(filepath):
         raise FileFormatError(msg)
 
     DNA, RNA, AA = _identify_residues(comments)
-    if set(clean_lines[0]) == set(['A', 'C', 'G', 'T']):
+    if set(clean_lines[0]).issubset(set(['A', 'C', 'G', 'T'])):
         LOGGER.warning("Found only the letters A, C, G, T on first line. Are you missing the title line in your .ig file?")
 
     seq_graph = _parse_plain(clean_lines[1:], DNA=DNA, RNA=RNA, AA=AA)
