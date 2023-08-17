@@ -238,19 +238,19 @@ def gen_coords(toppath,
 
     # where to get the box size from
     if box is not None and not np.array_equal(topology.box, box):
-        msg = ("a box is provided via the -box command line "
-               "and the starting coordinates. We take the "
+        msg = ("A box is provided via the -box command line "
+               "and the starting coordinates. We consider the "
                "the box of starting coordinates as correct. ")
-        LOGGER.info(msg,  type="warning")
+        LOGGER.warning(msg,  type="warning")
         box = topology.box
     elif topology.box is not None:
         box = topology.box
         if density is not None:
-            msg = ("a density is provided via the command line, "
+            msg = ("A density is provided via the command line, "
                    "but the starting coordinates define a box."
-                    "Will try to pack all molecules in box provied with"
-                   "with starting coordinates")
-            LOGGER.info(msg,  type="warning")
+                   "Will try to pack all molecules in the box "
+                   "provied with starting coordinates.")
+            LOGGER.warning(msg,  type="warning")
 
     # do a sanity check
     LOGGER.info("checking residue integrity",  type="step")
