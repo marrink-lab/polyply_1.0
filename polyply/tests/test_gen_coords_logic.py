@@ -47,29 +47,50 @@ def test_no_positions_generated(tmp_path, monkeypatch):
         assert np.all(molecule_out.nodes[node]['position'] ==
                       molecule_in.nodes[node]['position'])
 
-@pytest.mark.parametrize('box_input, box_ref', [
+@pytest.mark.parametrize('box_input, box_ref, density, warning', [
                         # box from input coordinates
-                        (None, np.array([11.0, 11.0, 11.0])),
+                        (None, np.array([11.0, 11.0, 11.0]), None, None),
                         # box from input coordinates overwrites
-                        (np.array([5.0, 5.0, 5.0]), np.array([11.0, 11.0, 11.0])),
+                        (np.array([5.0, 5.0, 5.0]), np.array([11.0, 11.0, 11.0]), None, "warn1"),
+                        # box from input coordinates and density from CLI
+                        (None, np.array([11.0, 11.0, 11.0]), 1000, "warn2"),
                         ])
-def test_box_input(tmp_path, monkeypatch, box_input, box_ref):
+def test_box_input(tmp_path, monkeypatch, caplog, box_input, box_ref, density, warning):
     """
-    All positions are defined none have to be created. Should run through without
-    errors and preserve all positions given in the input to rounding accuracy.
+    Here we test that the correct box is chosen, in case there
+    are conflicting inputs.
     """
+    warnings = {"warn1": ("A box is provided via the -box command line "
+                          "and the starting coordinates. We consider the "
+                          "the box of starting coordinates as correct. "),
+                "warn2": ("A density is provided via the command line, "
+                          "but the starting coordinates define a box."
+                          "Will try to pack all molecules in the box "
+                          "provied with starting coordinates."),}
+
     monkeypatch.chdir(tmp_path)
     top_file = TEST_DATA + "/topology_test/system.top"
     pos_file = TEST_DATA + "/topology_test/complete.gro"
     out_file = tmp_path / "out.gro"
-    gen_coords(toppath=top_file,
-               coordpath=pos_file,
-               outpath=out_file,
-               name="test",
-               box=box_input
-               )
-    molecule_out = read_gro(out_file, exclude=())
-    assert np.array_equal(molecule_out.box, box_ref)
+
+    with caplog.at_level(logging.WARNING):
+        gen_coords(toppath=top_file,
+                   coordpath=pos_file,
+                   outpath=out_file,
+                   name="test",
+                   box=box_input,
+                   density=density,)
+
+        molecule_out = read_gro(out_file, exclude=())
+        assert np.array_equal(molecule_out.box, box_ref)
+        if warning:
+            for record in caplog.records:
+                print(record)
+                if record.levelname == "WARNING":
+                    assert str(record.msg) == warnings[warning]
+                    break
+            else:
+                assert False
 
 def test_backmap_only(tmp_path, monkeypatch):
     """
