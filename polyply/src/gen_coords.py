@@ -245,7 +245,7 @@ def gen_coords(toppath,
         box = topology.box
     elif topology.box is not None:
         box = topology.box
-        if dens is not None:
+        if density is not None:
             msg = ("a density is provided via the command line, "
                    "but the starting coordinates define a box."
                     "Will try to pack all molecules in box provied with"
