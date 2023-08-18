@@ -21,7 +21,15 @@ def orient_by_frames(meta_molecule, current_node, template, built_nodes):
         the oriented template
     """
 
-    template_rotated_arr = (template.frame @ template.positions_arr.T).T
+    # This is a temporary solution, it looks a bit silly. In the end the template will be
+    # stored in each meta_molecule node.
+    base_vector =  meta_molecule.nodes[current_node]["base vector"]
+    base_normal_vector = meta_molecule.nodes[current_node]["base normal vector"]
+    base_binormal_vector = np.cross(base_normal_vector, base_vector)
+    template.frame = np.array([base_vector, base_binormal_vector, base_normal_vector]).T
+
+    # Orient template to frame by tranforming each position vector
+    template_rotated_arr =  np.einsum('ij, kj -> ki', template.frame, template.positions_arr)
 
     # Write the rotated template back as dictionary
     template_rotated = {}
