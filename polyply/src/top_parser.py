@@ -63,7 +63,8 @@ class TOPDirector(SectionLineParser):
         }
         self.pragma_actions = {
             '#define': self.parse_define,
-            '#include': self.parse_include
+            '#include': self.parse_include,
+            '#error': self.parse_error,
         }
 
     def dispatch(self, line):
@@ -356,7 +357,7 @@ class TOPDirector(SectionLineParser):
         atoms, params = self._split_atoms_and_parameters(line.split(),
                                                          self.atom_idxs[section_name])
 
-        self.topology.types[inter_type][tuple(atoms)] = (params, self.current_meta)
+        self.topology.types[inter_type][tuple(atoms)].append((params, self.current_meta))
 
 
     @SectionLineParser.section_parser('implicit_genborn_params')
@@ -392,9 +393,30 @@ class TOPDirector(SectionLineParser):
         """
         self.current_itp.append(line)
 
+    def parse_error(self, line, lineno=0):
+        """
+        Parse the #error statement.
+        """
+        if self.current_meta:
+           # In this case the #error is enclosed in an
+           # #ifdef statement. However tag of the #ifdef
+           # has not been defined previously. Thus the
+           # error is not triggered.
+           if self.current_meta["condition"] == "ifdef"\
+              and self.current_meta["tag"] not in self.topology.defines:
+                 return
+           # the #error file is enlosed in an #ifndef
+           # so if tag is defined, we ignore this #error
+           elif self.current_meta["condition"] == "ifndef"\
+              and self.current_meta["tag"] in self.topology.defines:
+                 return
+        # we remove the #error
+        msg = line[7:]
+        raise NotImplementedError(msg)
+
     def parse_define(self, line):
         """
-        Parse define statemetns
+        Parse define statements
         """
         tokens = line.split()
 

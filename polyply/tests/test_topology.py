@@ -617,6 +617,49 @@ class TestTopology:
          "virtual_sites2": [Interaction(atoms=(3, 0, 8), parameters=["1", "0.5000"], meta={})],
          "virtual_sites3": [Interaction(atoms=(4, 3, 7, 0), parameters=["1", "0.200", "0.200"], meta={}),
                             Interaction(atoms=(5, 3, 8, 1), parameters=["1", "0.200", "0.200"], meta={})]}
+        ),
+        # test multiple dihedrals are assigned
+        (
+        """
+        [ defaults ]
+        1.0   1.0   yes  2.0     1.0
+        [ atomtypes ]
+        CTL2     6    12.0110     -0.100     A    3.58141284692e-01    2.343040e-01
+        CEL1     6    12.0110     -0.150     A    3.72395664183e-01    2.845120e-01
+        [ bondtypes ]
+        CEL1    CEL1     1  1.340000e-01  3.681920e+05
+        CEL1    CTL2     1  1.502000e-01  3.054320e+05
+        CTL2    CTL2     1  1.538000e-01  1.861880e+05
+        [ dihedraltypes ]
+        CEL1    CEL1    CTL2    CTL2     9  1.800000e+02  3.807440e+00      1
+        CEL1    CEL1    CTL2    CTL2     9  1.800000e+02  7.531200e-01      2
+        CEL1    CEL1    CTL2    CTL2     9  1.800000e+02  7.112800e-01      3
+
+        [ moleculetype ]
+        test 3
+        [ atoms ]
+        ; CEL1    CEL1    CTL2    CTL2
+        1       CEL1      1     POPC    C12      2     0.000000    12.0110   ; qtot -0.700
+        2       CEL1      1     POPC    C12      2     0.000000    12.0110   ; qtot -0.700
+        3       CTL2      1     POPC    C12      2     0.000000    12.0110   ; qtot -0.700
+        4       CTL2      1     POPC    C12      2     0.000000    12.0110   ; qtot -0.700
+        [ bonds ]
+        1   2 1
+        2   3 1
+        3   4 1
+        [ dihedrals ]
+        1 2 3 4  9
+        [ system ]
+        some title
+        [ molecules ]
+        test 1
+        """,
+        {"bonds": [Interaction(atoms=(0, 1), parameters=["1", "1.340000e-01", "3.681920e+05"], meta={}),
+                   Interaction(atoms=(1, 2), parameters=["1", "1.502000e-01", "3.054320e+05"], meta={}),
+                   Interaction(atoms=(2, 3), parameters=["1", "1.538000e-01", "1.861880e+05"], meta={}),],
+        "dihedrals": [Interaction(atoms=(0, 1, 2, 3), parameters=["9", "1.800000e+02", "3.807440e+00", "1"], meta={}),
+                      Interaction(atoms=(0, 1, 2, 3), parameters=["9", "1.800000e+02", "7.531200e-01", "2"], meta={}),
+                      Interaction(atoms=(0, 1, 2, 3), parameters=["9", "1.800000e+02", "7.112800e-01", "3"], meta={}),]}
         )
 	))
     def test_replace_types(lines, outcome):

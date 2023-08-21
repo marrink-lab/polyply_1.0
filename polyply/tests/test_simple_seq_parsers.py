@@ -20,37 +20,54 @@ import networkx as nx
 from polyply import TEST_DATA
 from polyply.src.meta_molecule import MetaMolecule
 from .example_fixtures import example_meta_molecule
-from polyply.src.simple_seq_parsers import (_identify_nucleotypes,
+from polyply.src.simple_seq_parsers import (_identify_residues,
                                             _monomers_to_linear_nx_graph,
                                             _parse_plain,
                                             FileFormatError)
 
-@pytest.mark.parametrize('comments, DNA, RNA', (
+@pytest.mark.parametrize('comments, DNA, RNA, AA', (
     # single DNA comment
       (["DNA lorem ipsum"],
        True,
+       False,
        False
       ),
     # single RNA comment
       (["RNA lorem ipsum"],
        False,
-       True
+       True,
+       False
       ),
     # single DNA comment multiple lines
       (["lorem ipsum", "random line DNA", "DNA another line"],
        True,
+       False,
        False
       ),
     # single RNA comment multiple lines
       (["lorem ipsum", "random line RNA", "RNA another line"],
        False,
+       True,
+       False
+      ),
+    # single AA comment
+      (['lorem ipsum PROTEIN'],
+       False,
+       False,
        True
       ),
-     ))
-def test_identify_nucleotypes(comments, DNA, RNA):
-    out_DNA, out_RNA = _identify_nucleotypes(comments)
+    # singe AA comment multiple lines
+      (["lorem ipsum", "random line PROTEIN", "PROTEIN another line"],
+       False,
+       False,
+       True
+      ),
+      ))
+def test_identify_nucleotypes(comments, DNA, RNA, AA):
+    out_DNA, out_RNA, out_AA = _identify_residues(comments)
     assert out_DNA == DNA
     assert out_RNA == RNA
+    assert out_AA == AA
 
 @pytest.mark.parametrize('comments', (
     # both DNA and RNA are defined
@@ -60,7 +77,7 @@ def test_identify_nucleotypes(comments, DNA, RNA):
      ))
 def test_identify_nucleotypes_fail(comments):
     with pytest.raises(FileFormatError):
-        _identify_nucleotypes(comments)
+        _identify_residues(comments)
 
 def _node_match(nodeA, nodeB):
     resname = nodeA["resname"] == nodeB["resname"]
@@ -111,6 +128,13 @@ def test_sequence_parses_RNA(extension):
     ref_graph = _monomers_to_linear_nx_graph(monomers)
     assert nx.is_isomorphic(seq_graph, ref_graph, node_match=_node_match)
 
+def test_sequence_parses_PROTEIN():
+    filepath = Path(TEST_DATA + "/simple_seq_files/test_protein.fasta")
+    seq_graph = MetaMolecule.parsers["fasta"](filepath)
+    monomers = ["GLY", "ALA", "LYS", "TRP", "ASN", "VAL", "PHE", "PRO", "SER"]
+    ref_graph = _monomers_to_linear_nx_graph(monomers)
+    assert nx.is_isomorphic(seq_graph, ref_graph, node_match=_node_match)
+    
 def test_unkown_nucleotype_error():
     with pytest.raises(IOError):
         lines = ["AABBBCCTG"]
