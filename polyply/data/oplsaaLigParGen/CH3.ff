@@ -6,10 +6,10 @@
 CH3a                  3
 [ atoms ]
 ;   nr       type  resnr residue  atom   cgnr     charge       mass  
-     1   opls_800      1   CH3a    C1      1    -0.3029    12.0110
-     2   opls_805      1   CH3a    H2      2     0.0694     1.0080 
-     3   opls_805      1   CH3a    H3      3     0.0694     1.0080 
-     4   opls_805      1   CH3a    H4      4     0.0694     1.0080 
+     1   opls_135      1   CH3a    C1      1    -0.3029    12.0110
+     2   opls_140      1   CH3a    H2      2     0.0694     1.0080 
+     3   opls_140      1   CH3a    H3      3     0.0694     1.0080 
+     4   opls_140      1   CH3a    H4      4     0.0694     1.0080 
 [ bonds ]
 ;  ai    aj  funct       c0      c1
     2     1     1      0.1090 284512.000 
@@ -29,10 +29,10 @@ CH3a                  3
 CH3b                  3
 [ atoms ]
 ;   nr       type  resnr residue  atom   cgnr     charge       mass  
-     1   opls_800      1   CH3b    C1      1    -0.1854    12.0110
-     2   opls_805      1   CH3b    H2      2     0.0386     1.0080 
-     3   opls_805      1   CH3b    H3      3     0.0386     1.0080 
-     4   opls_805      1   CH3b    H4      4     0.0386     1.0080 
+     1   opls_135      1   CH3b    C1      1    -0.1854    12.0110
+     2   opls_140      1   CH3b    H2      2     0.0386     1.0080 
+     3   opls_140      1   CH3b    H3      3     0.0386     1.0080 
+     4   opls_140      1   CH3b    H4      4     0.0386     1.0080 
 [ bonds ]
 ;  ai    aj  funct       c0      c1
     2     1     1      0.1090 284512.000 
