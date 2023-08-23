@@ -160,3 +160,15 @@ resname "PTMA|CH3b"
    C01   +H4    1  {"comment":"beta-C-link", "group": "termini"}
    H38   +H4    1  {"comment":"beta-C-link", "group": "termini"}
    H39   +H4    1  {"comment":"beta-C-link", "group": "termini"}
+
+[ link ]
+[ atoms ]
+C01 {"resname": "PTMA"}
+[ warning ]
+You should patch PTMA with a CH3-terminal residues. Use -seq CH3a:1 PTMA:4 CH3b:1
+
+[ link ]
+[ atoms ]
+C17 {"resname": "PTMA"}
+[ warning ]
+You should patch PTMA with a CH3-terminal residues. Use -seq CH3a:1 PTMA:4 CH3b:1
