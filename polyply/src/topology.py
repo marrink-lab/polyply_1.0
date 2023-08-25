@@ -40,16 +40,14 @@ COORD_PARSERS = {"pdb": read_pdb,
 def _coord_parser(path, extension):
     reader = COORD_PARSERS[extension]
     molecules = reader(path, exclude=())
-    box = None
     if extension == "pdb":
-        if hasattr(reader, "cryst"):
-            box = np.array([reader.cryst[item] for item in ['a', 'b', 'c', 'alpha', 'beta', 'gamma']])
         molecule = molecules[0]
         for new_mol in molecules[1:]:
             molecule.merge_molecule(new_mol)
     else:
         molecule = molecules
-        box = molecule.box
+
+    box = molecule.box
     positions = np.array(list(nx.get_node_attributes(molecule, "position").values()))
     return positions, box
 
