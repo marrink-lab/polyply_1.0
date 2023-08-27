@@ -1,6 +1,9 @@
 [ moleculetype ]
 ; name nexcl.
 PTMA     2
+
+[ info ] 
+Nonbonded interaction potentials (and example run) can be found at: https://doi.org/10.5281/zenodo.8287521
  
 [ atoms ]
 ; id  type  resnr  residu atom  cgnr  charge  mass
