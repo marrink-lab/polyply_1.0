@@ -426,6 +426,12 @@ class ApplyLinks(Processor):
         for edge in link.edges:
             molecule.add_edge(link_to_mol[edge[0]], link_to_mol[edge[1]])
 
+        # put the log messages
+        for loglevel, entries in link.log_entries.items():
+            for entry, fmt_args in entries.items():
+                fmt_args = fmt_args + [link_to_mol]
+                molecule.log_entries[loglevel][entry] += fmt_args
+
     def run_molecule(self, meta_molecule):
         """
         Given a meta_molecule the function iterates over all edges

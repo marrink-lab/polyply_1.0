@@ -1,0 +1,6 @@
+[ template ]
+resname PEO
+[ atoms ]
+COC EO 1.0 1.0 1.0
+[ volumes ]
+PEO 1

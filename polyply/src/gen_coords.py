@@ -26,7 +26,7 @@ from .backmap import Backmap
 from .topology import Topology
 from .build_system import BuildSystem
 from .annotate_ligands import AnnotateLigands, parse_residue_spec, _find_nodes
-from .build_file_parser import read_build_file
+from .load_library import load_build_files
 from .check_residue_equivalence import check_residue_equivalence
 
 LOGGER = StyleAdapter(get_logger(__name__))
@@ -98,7 +98,7 @@ def gen_coords(toppath,
                name,
                coordpath=None,
                coordpath_meta=None,
-               build=None,
+               build=[],
                build_res=[],
                ignore=[],
                cycles=[],
@@ -115,6 +115,7 @@ def gen_coords(toppath,
                step_fudge=1.0,
                max_force=5*10**4.0,
                nrewind=5,
+               lib=None,
                bfudge=0.4):
     """
     Subprogram for coordinate generation which implements the default
@@ -223,12 +224,9 @@ def gen_coords(toppath,
                    "residues. Polyply will built the missing residues.")
             LOGGER.warning(msg)
 
-    # load in built file
-    if build:
-        LOGGER.info("reading build file",  type="step")
-        with open(build) as build_file:
-            lines = build_file.readlines()
-            read_build_file(lines, topology.molecules, topology)
+    # load in build file
+    LOGGER.info("reading build options",  type="step")
+    load_build_files(topology, lib, build)
 
     # collect all starting points for the molecules
     start_dict = find_starting_node_from_spec(topology, start)

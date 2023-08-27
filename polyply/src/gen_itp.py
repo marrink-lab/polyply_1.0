@@ -17,6 +17,7 @@ High level API for the polyply itp generator
 """
 import sys
 import networkx as nx
+from pathlib import Path
 import vermouth
 import vermouth.forcefield
 from vermouth.log_helpers import StyleAdapter, get_logger
@@ -31,7 +32,7 @@ from vermouth.citation_parser import citation_formatter
 from vermouth.graph_utils import make_residue_graph
 from polyply import (MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
 from polyply.src.graph_utils import find_missing_edges
-from .load_library import load_library
+from .load_library import load_ff_library
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
@@ -58,7 +59,7 @@ def split_seq_string(sequence):
         monomers.append(Monomer(resname=resname, n_blocks=n_blocks))
     return monomers
 
-def gen_params(name, outpath, inpath=None, lib=None, seq=None, seq_file=None):
+def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[], lib=None, seq=None, seq_file=None):
     """
     Top level function for running the polyply parameter generation.
     Parameters seq and seq_file are mutually exclusive. Set the other
@@ -82,7 +83,7 @@ def gen_params(name, outpath, inpath=None, lib=None, seq=None, seq_file=None):
     """
     # Import of Itp and FF files
     LOGGER.info("reading input and library files",  type="step")
-    force_field = load_library(name, lib, inpath)
+    force_field = load_ff_library(name, lib, inpath)
 
     # Generate the MetaMolecule
     if seq:
@@ -120,6 +121,15 @@ def gen_params(name, outpath, inpath=None, lib=None, seq=None, seq_file=None):
         vermouth.gmx.itp.write_molecule_itp(meta_molecule.molecule, outfile,
                                             moltype=name, header=header)
     DeferredFileWriter().write()
+
+    # Print molecule Log messages
+    if meta_molecule.molecule.log_entries:
+        print("")
+    for loglevel, entries in meta_molecule.molecule.log_entries.items():
+        for entry, fmt_args in entries.items():
+            for fmt_arg in fmt_args:
+                fmt_arg = {str(k): meta_molecule.molecule.nodes[v] for k, v in fmt_arg.items()}
+                LOGGER.log(loglevel, entry, **fmt_arg, type='model')
 
 # ducktape for renaming the itp tool
 gen_itp = gen_params

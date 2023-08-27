@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import json
+from pathlib import Path
 import networkx as nx
 from networkx.readwrite import json_graph
 import pytest
@@ -181,7 +182,7 @@ def test_tag_nodes(tags, expected, seed):
           seq=["A", "B"]),
      TEST_DATA + "/gen_seq/ref/PEO_PS_ref.json"),
     (dict(outpath=TEST_DATA + "/gen_seq/output/lysoPEG.json",
-          inpath=[TEST_DATA + "/gen_seq/input/molecule_0.itp"],
+          inpath=[Path(TEST_DATA + "/gen_seq/input/molecule_0.itp")],
           macro_strings=["A:5:1:PEG-1.0"],
           from_file=["PROT:molecule_0"],
           name="test",
