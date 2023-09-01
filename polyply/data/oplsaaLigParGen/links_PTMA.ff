@@ -165,10 +165,16 @@ resname "PTMA|CH3b"
 [ atoms ]
 C01 {"resname": "PTMA"}
 [ warning ]
-You should patch PTMA with a CH3-terminal residues. Use -seq CH3a:1 PTMA:4 CH3b:1
+You should patch PTMA with a CH3a-terminal residue. Use -seq CH3a:1 PTMA:4 CH3b:1
+[ non-edges ]
+C01 -C1
+C01 -C17
 
 [ link ]
 [ atoms ]
 C17 {"resname": "PTMA"}
 [ warning ]
-You should patch PTMA with a CH3-terminal residues. Use -seq CH3a:1 PTMA:4 CH3b:1
+You should patch PTMA with a CH3b-terminal residue. Use -seq CH3a:1 PTMA:4 CH3b:1
+[ non-edges ]
+C17 +C1
+C17 +C01
