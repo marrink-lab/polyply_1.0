@@ -17,7 +17,8 @@ import networkx as nx
 import vermouth
 from vermouth.parser_utils import SectionLineParser
 from vermouth.log_helpers import StyleAdapter, get_logger
-from .generate_templates import map_from_CoG, compute_volume
+from .template import Template
+from .generate_templates import compute_volume, map_from_CoG
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
@@ -138,9 +139,8 @@ class BuildDirector(SectionLineParser):
         'resname ALA' for example.
         """
         # we only need the residue name
-        name = line.split()[1]
-        self.current_template = vermouth.molecule.Block()
-        self.current_template.name = name
+        resname = line.split()[1]
+        self.current_template = Template(resname=resname)
 
     @SectionLineParser.section_parser('template', 'atoms')
     def _template_atoms(self, line, lineno=0):
@@ -187,18 +187,21 @@ class BuildDirector(SectionLineParser):
         - store coordinates as vectors from center of geometry
         """
         if previous_section == ["template", "bonds"]:
+            # Load coordinates into template
             coords = nx.get_node_attributes(self.current_template, "position")
+            self.current_template.positions = coords
+
+            # Center template on CoG
+            mapped_coords = map_from_CoG(self.current_template)
+            self.current_template.positions = mapped_coords
+
             # if the volume is not defined yet compute the volume, this still
             # can be overwritten by an explicit volume directive later
-            resname = self.current_template.name
+            resname = self.current_template.resname
             if resname not in self.topology.volumes:
                 self.topology.volumes[resname] = compute_volume(self.current_template,
-                                                                coords,
-                                                                self.topology.nonbond_params,)
-            # internally a template is defined as vectors from the
-            # center of geometry
-            mapped_coords = map_from_CoG(coords)
-            self.templates[resname] = mapped_coords
+                                                                self.topology.nonbond_params)
+            self.templates[resname] = self.current_template
             self.current_template = None
 
     def finalize(self, lineno=0):

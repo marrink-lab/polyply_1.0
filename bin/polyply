@@ -162,7 +162,11 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
                                          ' when RW fails in first attempt'))
 
     backmap_group = parser_gen_coords.add_argument_group('Options for backmapping')
-    backmap_group.add_argument('-back_fudge', dest='bfudge', type=float, default=0.4,
+    backmap_group.add_argument('-bm_mode', dest='bmode', type=str, default='automatic',
+                               choices=['automatic', 'by-bonds', 'by-frame'],
+                               help='choose which backmapping mode to use.')
+
+    backmap_group.add_argument('-bm_fudge', dest='bfudge', type=float, default=0.4,
                                help='factor by which to scale the coordinates when backmapping.')
 
     parser_gen_coords.set_defaults(func=gen_coords)

@@ -116,6 +116,7 @@ def gen_coords(toppath,
                max_force=5*10**4.0,
                nrewind=5,
                lib=None,
+               bmode='automatic',
                bfudge=0.4):
     """
     Subprogram for coordinate generation which implements the default
@@ -185,6 +186,8 @@ def gen_coords(toppath,
     nrewind: int
         Number of residues to trace back when random walk step fails in first
         attempt. The default is 5.
+    bmode: str
+        Name of the chosen backmapping mode
     bfudge: float
         Fudge factor by which to scale the coordinates of the residues
         during the backmapping step. 1 will result in to-scale coordinates
@@ -261,7 +264,7 @@ def gen_coords(toppath,
                 nrewind=nrewind).run_system(topology.molecules)
     ligand_annotator.split_ligands()
     LOGGER.info("backmapping to target resolution",  type="step")
-    Backmap(fudge_coords=bfudge).run_system(topology)
+    Backmap(fudge_coords=bfudge, bmode=bmode).run_system(topology)
     # Write output
     LOGGER.info("writing output",  type="step")
     command = ' '.join(sys.argv)

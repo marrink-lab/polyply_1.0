@@ -25,12 +25,14 @@ from vermouth.system import System
 from vermouth.forcefield import ForceField
 from vermouth.gmx.gro import read_gro
 from vermouth.pdb import read_pdb
+from vermouth.oxDNA import read_oxDNA
 from vermouth.molecule import Interaction
 from .top_parser import read_topology
 from .linalg_functions import center_of_geometry
 
 COORD_PARSERS = {"pdb": read_pdb,
-                 "gro": read_gro}
+                 "gro": read_gro,
+                 "oxdna": read_oxDNA}
 
 # small wrapper that is neccessiataed
 # by the fact that gro and pdb readers
@@ -40,7 +42,13 @@ COORD_PARSERS = {"pdb": read_pdb,
 def _coord_parser(path, extension):
     reader = COORD_PARSERS[extension]
     molecules = reader(path, exclude=())
-    if extension == "pdb":
+    if extension == "oxdna":
+        molecule = molecules
+        positions = np.array(list(nx.get_node_attributes(molecule, "position").values()))
+        base_vector = np.array(list(nx.get_node_attributes(molecule, "base vector").values()))
+        base_normal_vector = np.array(list(nx.get_node_attributes(molecule, "base normal vector").values()))
+        return positions, base_vector, base_normal_vector
+    elif extension == "pdb":
         molecule = molecules[0]
         for new_mol in molecules[1:]:
             molecule.merge_molecule(new_mol)
@@ -425,7 +433,10 @@ class Topology(System):
         """
         path = Path(path)
         extension = path.suffix.casefold()[1:]
-        positions = _coord_parser(path, extension)
+        if extension == "oxdna":
+            positions, base_vector, base_normal_vector = _coord_parser(path, extension)
+        else:
+            positions = _coord_parser(path, extension)
         max_coords = len(positions)
         total = 0
         for meta_mol in self.molecules:
@@ -447,6 +458,9 @@ class Topology(System):
                 # in that case we only want to backmap
                 elif resolution == 'meta_mol':
                     meta_mol.nodes[meta_node]["position"] = positions[total]
+                    if extension == "oxdna":
+                        meta_mol.nodes[meta_node]["base vector"] = base_vector[total]
+                        meta_mol.nodes[meta_node]["base normal vector"] = base_normal_vector[total]
                     meta_mol.nodes[meta_node]["backmap"] = True
                     meta_mol.nodes[meta_node]["build"] = False
                     total += 1
