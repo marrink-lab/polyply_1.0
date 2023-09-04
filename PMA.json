@@ -1,0 +1,1005 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 0
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 1
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 2
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 3
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 4
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 5
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 6
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 7
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 8
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 9
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 10
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 11
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 12
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 13
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 14
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 15
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 16
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 17
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 18
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 19
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 20
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 21
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 22
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 23
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 24
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 25
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 26
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 27
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 28
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 29
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 30
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 31
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 32
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 33
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 34
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 35
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 36
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 37
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 38
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 39
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 40
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 41
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 42
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 43
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 44
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 45
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 46
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 47
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 48
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 49
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 50
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 51
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 52
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 53
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 54
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 55
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 56
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 57
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 58
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 59
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 60
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 61
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 62
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 63
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 64
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 65
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 66
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 67
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 68
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 69
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 70
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 71
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 72
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 73
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 74
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 75
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 76
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 77
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 78
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 79
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 80
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 81
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 82
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 83
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 84
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 85
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 86
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 87
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 88
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 89
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 90
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 91
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 92
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 93
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 94
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 95
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 96
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "R",
+      "id": 97
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 98
+    },
+    {
+      "resname": "PMA",
+      "seqid": 0,
+      "chiral": "S",
+      "id": 99
+    }
+  ],
+  "links": [
+    {
+      "source": 0,
+      "target": 1
+    },
+    {
+      "source": 1,
+      "target": 2
+    },
+    {
+      "source": 2,
+      "target": 3
+    },
+    {
+      "source": 3,
+      "target": 4
+    },
+    {
+      "source": 4,
+      "target": 5
+    },
+    {
+      "source": 5,
+      "target": 6
+    },
+    {
+      "source": 6,
+      "target": 7
+    },
+    {
+      "source": 7,
+      "target": 8
+    },
+    {
+      "source": 8,
+      "target": 9
+    },
+    {
+      "source": 9,
+      "target": 10
+    },
+    {
+      "source": 10,
+      "target": 11
+    },
+    {
+      "source": 11,
+      "target": 12
+    },
+    {
+      "source": 12,
+      "target": 13
+    },
+    {
+      "source": 13,
+      "target": 14
+    },
+    {
+      "source": 14,
+      "target": 15
+    },
+    {
+      "source": 15,
+      "target": 16
+    },
+    {
+      "source": 16,
+      "target": 17
+    },
+    {
+      "source": 17,
+      "target": 18
+    },
+    {
+      "source": 18,
+      "target": 19
+    },
+    {
+      "source": 19,
+      "target": 20
+    },
+    {
+      "source": 20,
+      "target": 21
+    },
+    {
+      "source": 21,
+      "target": 22
+    },
+    {
+      "source": 22,
+      "target": 23
+    },
+    {
+      "source": 23,
+      "target": 24
+    },
+    {
+      "source": 24,
+      "target": 25
+    },
+    {
+      "source": 25,
+      "target": 26
+    },
+    {
+      "source": 26,
+      "target": 27
+    },
+    {
+      "source": 27,
+      "target": 28
+    },
+    {
+      "source": 28,
+      "target": 29
+    },
+    {
+      "source": 29,
+      "target": 30
+    },
+    {
+      "source": 30,
+      "target": 31
+    },
+    {
+      "source": 31,
+      "target": 32
+    },
+    {
+      "source": 32,
+      "target": 33
+    },
+    {
+      "source": 33,
+      "target": 34
+    },
+    {
+      "source": 34,
+      "target": 35
+    },
+    {
+      "source": 35,
+      "target": 36
+    },
+    {
+      "source": 36,
+      "target": 37
+    },
+    {
+      "source": 37,
+      "target": 38
+    },
+    {
+      "source": 38,
+      "target": 39
+    },
+    {
+      "source": 39,
+      "target": 40
+    },
+    {
+      "source": 40,
+      "target": 41
+    },
+    {
+      "source": 41,
+      "target": 42
+    },
+    {
+      "source": 42,
+      "target": 43
+    },
+    {
+      "source": 43,
+      "target": 44
+    },
+    {
+      "source": 44,
+      "target": 45
+    },
+    {
+      "source": 45,
+      "target": 46
+    },
+    {
+      "source": 46,
+      "target": 47
+    },
+    {
+      "source": 47,
+      "target": 48
+    },
+    {
+      "source": 48,
+      "target": 49
+    },
+    {
+      "source": 49,
+      "target": 50
+    },
+    {
+      "source": 50,
+      "target": 51
+    },
+    {
+      "source": 51,
+      "target": 52
+    },
+    {
+      "source": 52,
+      "target": 53
+    },
+    {
+      "source": 53,
+      "target": 54
+    },
+    {
+      "source": 54,
+      "target": 55
+    },
+    {
+      "source": 55,
+      "target": 56
+    },
+    {
+      "source": 56,
+      "target": 57
+    },
+    {
+      "source": 57,
+      "target": 58
+    },
+    {
+      "source": 58,
+      "target": 59
+    },
+    {
+      "source": 59,
+      "target": 60
+    },
+    {
+      "source": 60,
+      "target": 61
+    },
+    {
+      "source": 61,
+      "target": 62
+    },
+    {
+      "source": 62,
+      "target": 63
+    },
+    {
+      "source": 63,
+      "target": 64
+    },
+    {
+      "source": 64,
+      "target": 65
+    },
+    {
+      "source": 65,
+      "target": 66
+    },
+    {
+      "source": 66,
+      "target": 67
+    },
+    {
+      "source": 67,
+      "target": 68
+    },
+    {
+      "source": 68,
+      "target": 69
+    },
+    {
+      "source": 69,
+      "target": 70
+    },
+    {
+      "source": 70,
+      "target": 71
+    },
+    {
+      "source": 71,
+      "target": 72
+    },
+    {
+      "source": 72,
+      "target": 73
+    },
+    {
+      "source": 73,
+      "target": 74
+    },
+    {
+      "source": 74,
+      "target": 75
+    },
+    {
+      "source": 75,
+      "target": 76
+    },
+    {
+      "source": 76,
+      "target": 77
+    },
+    {
+      "source": 77,
+      "target": 78
+    },
+    {
+      "source": 78,
+      "target": 79
+    },
+    {
+      "source": 79,
+      "target": 80
+    },
+    {
+      "source": 80,
+      "target": 81
+    },
+    {
+      "source": 81,
+      "target": 82
+    },
+    {
+      "source": 82,
+      "target": 83
+    },
+    {
+      "source": 83,
+      "target": 84
+    },
+    {
+      "source": 84,
+      "target": 85
+    },
+    {
+      "source": 85,
+      "target": 86
+    },
+    {
+      "source": 86,
+      "target": 87
+    },
+    {
+      "source": 87,
+      "target": 88
+    },
+    {
+      "source": 88,
+      "target": 89
+    },
+    {
+      "source": 89,
+      "target": 90
+    },
+    {
+      "source": 90,
+      "target": 91
+    },
+    {
+      "source": 91,
+      "target": 92
+    },
+    {
+      "source": 92,
+      "target": 93
+    },
+    {
+      "source": 93,
+      "target": 94
+    },
+    {
+      "source": 94,
+      "target": 95
+    },
+    {
+      "source": 95,
+      "target": 96
+    },
+    {
+      "source": 96,
+      "target": 97
+    },
+    {
+      "source": 97,
+      "target": 98
+    },
+    {
+      "source": 98,
+      "target": 99
+    }
+  ]
+}
