@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+* removed . files that are too large!
+* removed some datetime libraries not being utilized
+* added new functionalities to ensure gro files are correctly generated
+* updated much of the functions as required - further changes to be made
 * added PCBM-fullerene generation code with the polyply branch
 * added PCBM-fullerene generation code with the polyply branch
 * add comment and change if/else order when expanding multiple interactions
