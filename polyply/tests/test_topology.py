@@ -46,6 +46,10 @@ class TestTopology:
         """
         top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/system.top", "test")
         top.add_positions_from_file(TEST_DATA + "/topology_test/test.gro")
+
+        # check that the box is correctly read
+        assert np.allclose(top.box, np.array([10.0, 11.0, 12.0]))
+
         for node in top.molecules[0].molecule.nodes:
             if node < 14:
                 assert "position" in top.molecules[0].molecule.nodes[node].keys()
@@ -70,6 +74,10 @@ class TestTopology:
         """
         top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/system.top", "test")
         top.add_positions_from_file(TEST_DATA + "/topology_test/meta.gro", resolution="meta_mol")
+
+        # check that the box is correctly read
+        assert np.allclose(top.box, np.array([10.0, 11.0, 12.0]))
+
         for node in top.molecules[0].nodes:
             if node != 2:
                 assert "position" in top.molecules[0].nodes[node].keys()
@@ -89,6 +97,9 @@ class TestTopology:
         """
         top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/pdb.top", "test")
         top.add_positions_from_file(TEST_DATA + "/topology_test/test.pdb")
+
+        # check that the box is correctly read
+        assert np.allclose(top.box, np.array([11.8249, 12.0688, 11.0944]))
 
         pdb_mols = read_pdb(TEST_DATA + "/topology_test/test.pdb")
         for idx, meta_mol in enumerate(top.molecules):
