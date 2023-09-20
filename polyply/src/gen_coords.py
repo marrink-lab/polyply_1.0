@@ -116,7 +116,8 @@ def gen_coords(toppath,
                max_force=5*10**4.0,
                nrewind=5,
                lib=None,
-               bfudge=0.4):
+               bfudge=0.4,
+               max_bend=0):
     """
     Subprogram for coordinate generation which implements the default
     polyply workflow for structure generation. In general, a topology
@@ -189,6 +190,8 @@ def gen_coords(toppath,
         Fudge factor by which to scale the coordinates of the residues
         during the backmapping step. 1 will result in to-scale coordinates
         but will likely generate overlaps.
+    max_bend: float
+        persistence legnth determine max bending
     """
 
     # Read in the topology
@@ -258,6 +261,7 @@ def gen_coords(toppath,
                 ignore=ignore,
                 grid=grid,
                 cycles=cycles,
+                max_bend=max_bend,
                 nrewind=nrewind).run_system(topology.molecules)
     ligand_annotator.split_ligands()
     LOGGER.info("backmapping to target resolution",  type="step")
