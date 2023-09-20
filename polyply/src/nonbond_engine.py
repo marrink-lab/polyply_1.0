@@ -11,12 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import random
 import itertools
 import numpy as np
 import scipy.spatial
 from polyply import jit
 from .topology import lorentz_berthelot_rule
-from .linalg_functions import not_exceeds_max_dimensions
+from .linalg_functions import angle, not_exceeds_max_dimensions
 
 def _lennard_jones_force(dist, point, ref, params):
     """
@@ -77,6 +78,8 @@ class NonBondEngine():
                  nodes_to_idx,
                  atom_types,
                  interaction_matrix,
+                 bending_matrix,
+                 torsion_matrix,
                  cut_off,
                  boxsize):
         """
@@ -93,6 +96,12 @@ class NonBondEngine():
              Dict mapping the atom_types to LJ type interaction parameters,
              that is sigma, epsilon or C6, C12 depending on the potential
              used. Currently only the sigma epsilon form is implemented.
+        bending_matrix: dict[frozenset(str, str), float]
+             Dict mapping the residue types to a bending constant for the
+             bending probability
+        torsion_matrix: dict[frozenset(str, str), float]
+             Dict mapping the residue types to a torsion constant for the
+             torsion probability
         cut_off: float
              cut-off for which to compute the interaction in nm
         boxsize: np.ndarray
@@ -103,6 +112,8 @@ class NonBondEngine():
         self.nodes_to_gndx = nodes_to_idx
         self.atypes = np.asarray(atom_types, dtype=str)
         self.interaction_matrix = interaction_matrix
+        self.bending_matrix = bending_matrix
+        self.torsion_matrix = torsion_matrix
         self.cut_off = cut_off
         self.boxsize = boxsize
 
@@ -292,6 +303,25 @@ class NonBondEngine():
                     force += POTENTIAL_FUNC[potential](dist, point, self.positions[gndx_pair], params)
         return force
 
+    def compute_bending_probability(self, point, mol_idx, node_a, node_b, node_c):
+        # get the atom types aka resnames
+        typea = self.atypes[self.nodes_to_gndx[(mol_idx, node_a)]]
+        typeb = self.atypes[self.nodes_to_gndx[(mol_idx, node_b)]]
+        typec = self.atypes[self.nodes_to_gndx[(mol_idx, node_c)]]
+        # get the bending constant
+        lp = self.bending_matrix[frozenset([typea, typeb, typec])]
+        # get the missing postions
+        B_pos = self.get_point(mol_idx, node_b)
+        C_pos = self.get_point(mol_idx, node_c)
+        # compute angle
+        ang_val = angle(point, B_pos, C_pos)
+        # compute probability
+        prob = np.exp(lp*ang_val/180)/(180*(np.exp(lp)-1)/lp)
+        # compute test_prob
+        test_prob = random.uniform(np.exp(lp*1/180)/(180*(np.exp(lp)-1)/lp),
+                                   np.exp(lp*179/180)/(180*(np.exp(lp)-1)/lp))
+        return prob, test_prob
+
     @classmethod
     def from_topology(cls, molecules, topology, box):
         """
@@ -360,5 +390,7 @@ class NonBondEngine():
         # dynamically set the cut-off as twice the largest vdw-radius
         cut_off = max(list(inter_matrix.values()))[0] * 2.
         nonbond_matrix = cls(positions, nodes_to_gndx,
-                             atom_types, inter_matrix, cut_off=cut_off, boxsize=box)
+                             atom_types, inter_matrix,
+                             cut_off=cut_off, boxsize=box,
+                             torsion_matrix=None, bending_matrix=topology.bending)
         return nonbond_matrix

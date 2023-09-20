@@ -213,6 +213,10 @@ class Topology(System):
         A dictionary of all typed parameter
     defines: list
         A list of everything that is defined
+    volumes: dict
+        Volume constants for meta-models
+    bending: dict
+        Sequence dependent bending constants for meta-model
     """
 
     def __init__(self, force_field, name=None):
@@ -228,6 +232,7 @@ class Topology(System):
         self.persistences = []
         self.distance_restraints = defaultdict(dict)
         self.volumes = {}
+        self.bending = {}
 
     def preprocess(self):
         """

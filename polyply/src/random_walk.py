@@ -281,34 +281,22 @@ class RandomWalk(Processor):
 
         return True
 
-    def __find_neighborpos(self, node):
-        npos = None
-        for neighbor in self.molecule.neighbors[node]:
-            try:
-                npos = self.nonbond_matrix.get_point(self.mol_idx, neighbor)
-                break
-            except KeyError:
-                continue
-        return npos
-
     def bendiness(self, point, node):
-        lp = self.max_bend
-        B_neigh = list(self.molecule.search_tree.predecessors(node))
+        """
+        Perform Monte-Carlo like sampling of bending potential.
+        """
+        b_nodes = list(self.molecule.search_tree.predecessors(node))
 
-        if len(B_neigh) == 1:
-            B = B_neigh[0]
+        if len(b_nodes) == 1:
+            b_node = b_nodes[0]
         else:
             return True
 
-        C_neigh = list(self.molecule.search_tree.predecessors(B))
-        if len(C_neigh) == 1:
-            C = C_neigh[0]
-            B_pos = self.nonbond_matrix.get_point(self.mol_idx, B)
-            C_pos = self.nonbond_matrix.get_point(self.mol_idx, C)
-            ang_val = angle(point, B_pos, C_pos)
-            prob = np.exp(lp*ang_val/180)/(180*(np.exp(lp)-1)/lp)
-            test_prob = random.uniform(np.exp(lp*1/180)/(180*(np.exp(lp)-1)/lp),
-                                       np.exp(lp*179/180)/(180*(np.exp(lp)-1)/lp))
+        c_nodes = list(self.molecule.search_tree.predecessors(b_node))
+        if len(c_nodes) == 1:
+            c_node = c_nodes[0]
+            prob, test_prob = self.nonbond_matrix.compute_bending_probability(point, self.mol_idx, node, b_node, c_node)
+
             if self.prev_prob < prob:
                 self.prev_prob = prob
                 return True
