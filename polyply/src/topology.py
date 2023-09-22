@@ -215,8 +215,8 @@ class Topology(System):
         A dictionary of all typed parameter
     defines: list
         A list of everything that is defined
-    box: np.array(6,1)
-        Box coordinates as x,y,z, alpha, beta, gamma
+    box: np.array(3,1)
+        Box vectors as a, b, c in nanometers
     """
 
     def __init__(self, force_field, name=None):
