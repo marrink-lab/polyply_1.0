@@ -249,7 +249,7 @@ def gen_coords(toppath,
             msg = ("A density is provided via the command line, "
                    "but the starting coordinates define a box."
                    "Will try to pack all molecules in the box "
-                   "provied with starting coordinates.")
+                   "provided with starting coordinates.")
             LOGGER.warning(msg,  type="warning")
 
     # do a sanity check
