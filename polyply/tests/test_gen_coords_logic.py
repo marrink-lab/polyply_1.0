@@ -55,7 +55,7 @@ def test_no_positions_generated(tmp_path, monkeypatch):
                         # box from input coordinates and density from CLI
                         (None, np.array([11.0, 11.0, 11.0]), 1000, "warn2"),
                         ])
-def test_box_input(tmp_path, monkeypatch, caplog, box_input, box_ref, density, warning):
+def test_box_input(tmp_path, caplog, box_input, box_ref, density, warning):
     """
     Here we test that the correct box is chosen, in case there
     are conflicting inputs.
@@ -66,9 +66,8 @@ def test_box_input(tmp_path, monkeypatch, caplog, box_input, box_ref, density, w
                 "warn2": ("A density is provided via the command line, "
                           "but the starting coordinates define a box."
                           "Will try to pack all molecules in the box "
-                          "provied with starting coordinates."),}
+                          "provided with starting coordinates."),}
 
-    monkeypatch.chdir(tmp_path)
     top_file = TEST_DATA + "/topology_test/system.top"
     pos_file = TEST_DATA + "/topology_test/complete.gro"
     out_file = tmp_path / "out.gro"
@@ -85,12 +84,15 @@ def test_box_input(tmp_path, monkeypatch, caplog, box_input, box_ref, density, w
         assert np.array_equal(molecule_out.box, box_ref)
         if warning:
             for record in caplog.records:
-                print(record)
                 if record.levelname == "WARNING":
                     assert str(record.msg) == warnings[warning]
                     break
             else:
                 assert False
+        else:
+            for record in caplog.records:
+                if record.levelname == "WARNING":
+                    assert False
 
 def test_backmap_only(tmp_path, monkeypatch):
     """
