@@ -430,8 +430,7 @@ class Topology(System):
         """
         path = Path(path)
         extension = path.suffix.casefold()[1:]
-        positions, box = _coord_parser(path, extension)
-        self.box = box
+        positions, self.box = _coord_parser(path, extension)
         max_coords = len(positions)
         total = 0
         for meta_mol in self.molecules:
