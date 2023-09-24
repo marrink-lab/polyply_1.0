@@ -182,7 +182,7 @@ class BuildDirector(SectionLineParser):
         directive and stores it.
         """
         resA, resB, resC, bending_const = line.split()
-        self.topology.bending[frozenset([resA, resB, resC])] = float(bending_const)
+        self.topology.bending[(resA, resB, resC)] = float(bending_const)
 
     def finalize_section(self, previous_section, ended_section):
         """
