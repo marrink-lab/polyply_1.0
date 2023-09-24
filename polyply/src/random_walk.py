@@ -248,6 +248,7 @@ class RandomWalk(Processor):
         self.nrewind = nrewind
         self.placed_nodes = []
         self.max_bend = max_bend
+        self.prev_prob = 1
 
     def _rewind(self, current_step):
         nodes = [node for _, node in self.placed_nodes[-self.nrewind:-1]]
@@ -283,28 +284,38 @@ class RandomWalk(Processor):
 
     def bendiness(self, point, node):
         """
-        Perform Monte-Carlo like sampling of bending potential.
+        Perform Monte-Carlo like sampling of bending probability.
         """
-        b_nodes = list(self.molecule.search_tree.predecessors(node))
-
-        if len(b_nodes) == 1:
-            b_node = b_nodes[0]
-        else:
-            return True
-
+        b_node = list(self.molecule.search_tree.predecessors(node))[0]
         c_nodes = list(self.molecule.search_tree.predecessors(b_node))
         if len(c_nodes) == 1:
             c_node = c_nodes[0]
-            prob, test_prob = self.nonbond_matrix.compute_bending_probability(point, self.mol_idx, node, b_node, c_node)
+            # get the atom types aka resnames
+            typea = self.molecule.nodes[node]['resname']
+            typeb = self.molecule.nodes[b_node]['resname']
+            typec = self.molecule.nodes[c_node]['resname']
+            # get the bending constant
+            lp = self.nonbond_matrix.bending_matrix.get((typea, typeb, typec), None)
+            if lp:
+                prob = self.nonbond_matrix.compute_bending_probability(lp,
+                                                                       point,
+                                                                       self.mol_idx,
+                                                                       b_node,
+                                                                       c_node)
+                if self.prev_prob < prob:
+                    self.prev_prob = prob
+                    return True
 
-            if self.prev_prob < prob:
-                self.prev_prob = prob
-                return True
+                # compute test probability from uniform sampling of prob function
+                test_prob = random.uniform(np.exp(lp*1/180)/(180*(np.exp(lp)-1)/lp),
+                                           np.exp(lp*179/180)/(180*(np.exp(lp)-1)/lp))
+                if prob > test_prob:
+                    self.prev_prob = prob
+                    return True
 
-            elif prob > test_prob:
-                return True
-        else:
-            return True
+                return False
+
+        return True
 
     def update_positions(self, vector_bundle, current_node, prev_node):
         """
@@ -384,7 +395,6 @@ class RandomWalk(Processor):
         count = 0
         path = list(meta_molecule.search_tree.edges)
         step_count = 0
-        self.prev_prob = 1
         while step_count < len(path):
             prev_node, current_node = path[step_count]
             print(step_count)
