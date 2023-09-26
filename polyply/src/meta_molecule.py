@@ -122,7 +122,7 @@ class MetaMolecule(nx.Graph):
                 self.max_resid = self.nodes[node]["resid"]
 
     def add_node(self, *args, **kwargs):
-        self.max_resid = self.max_resid + 1
+        self.max_resid += 1
         kwargs["resid"] = self.max_resid
         super().add_node(*args, **kwargs)
 
