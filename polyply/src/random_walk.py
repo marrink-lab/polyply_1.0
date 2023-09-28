@@ -397,7 +397,6 @@ class RandomWalk(Processor):
         step_count = 0
         while step_count < len(path):
             prev_node, current_node = path[step_count]
-            print(step_count)
             if not meta_molecule.nodes[current_node]["build"]:
                 step_count += 1
                 continue
