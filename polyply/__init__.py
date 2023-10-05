@@ -19,7 +19,7 @@ __version__ = pbr.version.VersionInfo('polyply').release_string()
 
 # Find the data directory once.
 try:
-    import importlib.resources import files, as_file
+    from importlib.resources import files, as_file
     import atexit
     from contextlib import ExitStack
 except ImportError:
