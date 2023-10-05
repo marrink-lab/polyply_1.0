@@ -96,7 +96,8 @@ def test_monomers_to_linear_nx_graph(example_meta_molecule):
       "fasta"
      ))
 def test_sequence_parses(extension):
-    filepath = Path(TEST_DATA / "simple_seq_files/test."+ extension)
+    part_path =  "simple_seq_files/test." + extension
+    filepath = TEST_DATA / part_path
     seq_graph = MetaMolecule.parsers[extension](filepath)
     monomers = ["DA5", "DT", "DC", "DG", "DT", "DA", "DC", "DA", "DT3"]
     ref_graph = _monomers_to_linear_nx_graph(monomers)
@@ -123,7 +124,8 @@ def test_ig_termination_fail():
       "fasta"
      ))
 def test_sequence_parses_RNA(extension):
-    filepath = Path(TEST_DATA / "simple_seq_files/test_RNA."+ extension)
+    part_path = "simple_seq_files/test_RNA." + extension
+    filepath = TEST_DATA / part_path
     seq_graph = MetaMolecule.parsers[extension](filepath)
     monomers = ["A5", "U", "C", "G", "U", "A", "C", "A", "U3"]
     ref_graph = _monomers_to_linear_nx_graph(monomers)
