@@ -29,7 +29,7 @@ except ImportError:
     del Path
 else:
     ref_data = files('polyply') / 'data'
-    ref_test = files('polyply') / 'test'
+    ref_test = files('polyply') / 'test/test_data'
     file_manager = ExitStack()
     atexit.register(file_manager.close)
     DATA_PATH = file_manager.enter_context(as_file(ref_data))
