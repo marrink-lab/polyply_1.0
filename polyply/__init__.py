@@ -23,10 +23,10 @@ try:
     import atexit
     from contextlib import ExitStack
 except ImportError:
-    import os
-    DATA_PATH = os.path.join(os.path.dirname(__file__), 'data')
-    TEST_DATA = os.path.join(os.path.dirname(__file__), 'tests/test_data')
-    del os
+    from pathlib import Path
+    DATA_PATH = Path(__file__).parent / 'data'
+    TEST_DATA = Path(__file__).parent / 'tests/test_data')
+    del Path
 else:
     ref_data = files('polyply') / 'data'
     ref_test = files('polyply') / 'test'
