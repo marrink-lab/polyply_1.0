@@ -25,58 +25,51 @@ from polyply import gen_params, TEST_DATA, MetaMolecule
 from polyply.src.graph_utils import find_missing_edges
 from polyply.src.logging import LOGGER
 
-@pytest.mark.parametrize('inpath, seq, seqf, name, outpath, ref_file', (
+@pytest.mark.parametrize('inpath, seq, seqf, name, ref_file', (
     ([TEST_DATA / "gen_params/input/PEO.martini.3.itp"],
      ["PEO:10"],
      None,
      "PEO",
-     TEST_DATA / "gen_params/output/PEO_out.itp",
      TEST_DATA / "gen_params/ref/PEO_10.itp"),
     ([TEST_DATA / "gen_params/input/PS.martini.2.itp"],
      None,
      TEST_DATA / "gen_params/input/PS.json",
      "PS",
-     TEST_DATA / "gen_params/output/PS_out.itp",
      TEST_DATA / "gen_params/ref/PS_10.itp"),
     ([TEST_DATA / "gen_params/input/P3HT.martini.2.itp"],
      ["P3HT:10"],
      None,
      "P3HT",
-     TEST_DATA / "gen_params/output/P3HT_out.itp",
      TEST_DATA / "gen_params/ref/P3HT_10.itp"),
     ([TEST_DATA / "gen_params/input/PPI.ff"],
      None,
      TEST_DATA / "gen_params/input/PPI.json",
      "PPI",
-     TEST_DATA / "gen_params/output/PPI_out.itp",
      TEST_DATA / "gen_params/ref/G3.itp"),
     ([TEST_DATA / "gen_params/input/test.ff"],
      ["N1:1", "N2:1", "N1:1", "N2:1", "N3:1"],
      None,
      "test",
-     TEST_DATA / "gen_params/output/test_out.itp",
      TEST_DATA / "gen_params/ref/test_rev.itp"),
     # check if edge attributes are parsed and properly applied
     ([TEST_DATA / "gen_params/input/test_edge_attr.ff"],
      None,
      TEST_DATA / "gen_params/input/test_edge_attr.json",
      "test",
-     TEST_DATA / "gen_params/output/test_edge_attr_out.itp",
      TEST_DATA / "gen_params/ref/test_edge_attr_ref.itp"),
     # check if nodes can be removed
     ([TEST_DATA / "gen_params/input/removal.ff"],
      ["PEO:3"],
      None,
      "test",
-     TEST_DATA / "gen_params/output/removal.itp",
      TEST_DATA / "gen_params/ref/removal.itp")
     ))
-def test_gen_params(inpath, seq, seqf, name, outpath, ref_file):
-    gen_params(inpath=inpath, seq=seq, seq_file=seqf, name=name, outpath=outpath)
+def test_gen_params(inpath, seq, seqf, name, ref_file):
+    gen_params(inpath=inpath, seq=seq, seq_file=seqf, name=name)
 
     force_field = vermouth.forcefield.ForceField(name='test_ff')
 
-    for path_name in [outpath, ref_file]:
+    for path_name in [Path("polymer.itp"), ref_file]:
         with open(path_name, 'r') as _file:
             lines = _file.readlines()
         vermouth.gmx.itp_read.read_itp(lines, force_field)
