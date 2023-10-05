@@ -94,26 +94,26 @@ class TestPolyply:
     @staticmethod
     @pytest.mark.parametrize('file_name, edges, nodes, attrs', (
         # multiple blocks from single monomer
-          (TEST_DATA + "/json/linear.json",
+          (TEST_DATA / "json/linear.json",
            [(0,1), (1,2)],
            [0,1,2],
            {0: 'PEO', 1: 'PEO', 2: 'PEO'}
           ),
        # two blocks from two monomers
-         (TEST_DATA + "/json/single_branch.json",
+         (TEST_DATA / "json/single_branch.json",
           [(1,2),(2,3),(3,4),(2,5)],
           [1,2,3,4,5],
           {1: 'PEO', 2: 'PEO', 3: 'PS', 4: 'PS', 5:'PEO'}
           ),
        # two blocks from two monomers
-         (TEST_DATA + "/json/double_branch.json",
+         (TEST_DATA / "json/double_branch.json",
           [(1,2),(2,3),(2,4),(4,5),(5,6),(5,8),(6,7)],
           [1,2,3,4,5,6,7,8],
           {1: 'PEO', 2: 'PEO', 3: 'PS', 4: 'PEO', 5:'PEO', 6: 'PS',
            7: 'PS', 8: 'PEO'}
           ),
        # Hyperbranched
-         (TEST_DATA + "/json/hyperbranched.json",
+         (TEST_DATA / "json/hyperbranched.json",
           [(0, 1), (0, 2), (0, 3), (1, 4), (1, 5), (2, 6), (2, 7), (3, 8), (3, 9),
            (4, 10), (4, 11), (5, 12), (5, 13)],
           [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
@@ -121,7 +121,7 @@ class TestPolyply:
            7: 'N1', 8: 'N2', 9: 'N3', 10: 'N3', 11: 'N2', 12: 'N3', 13: 'N3'}
           ),
         # check that ordering is restored
-          (TEST_DATA + "/json/linear_rev.json",
+          (TEST_DATA / "json/linear_rev.json",
            [(0, 1), (1, 2)],
            [0, 1, 2],
            {0: 'PEO', 1: 'PEO', 2: 'PEO'}
@@ -130,7 +130,7 @@ class TestPolyply:
     def test_from_seq_file(file_name, edges, nodes, attrs):
         ff = vermouth.forcefield.ForceField(name='test_ff')
         name = "test"
-        meta_mol = MetaMolecule.from_sequence_file(ff, Path(file_name), name)
+        meta_mol = MetaMolecule.from_sequence_file(ff, file_name, name)
 
         assert len(nx.get_node_attributes(meta_mol, "resid")) == len(nodes)
         assert set(meta_mol.nodes) == set(nodes)
@@ -146,7 +146,7 @@ class TestPolyply:
 
     @staticmethod
     def test_from_itp():
-       file_name = TEST_DATA + "/itp/PEO.itp"
+       file_name = TEST_DATA / "itp/PEO.itp"
        edges = [(0,1), (1,2)]
        nodes = [0, 1, 2]
        attrs = {0: 'PEO', 1: 'PEO', 2: 'PEO'}
@@ -160,7 +160,7 @@ class TestPolyply:
 
     @staticmethod
     def test_from_block():
-       file_name = TEST_DATA + "/itp/PEO.itp"
+       file_name = TEST_DATA / "itp/PEO.itp"
        edges = [(0,1), (1,2)]
        nodes = [0, 1, 2]
        attrs = {0: 'PEO', 1: 'PEO', 2: 'PEO'}
