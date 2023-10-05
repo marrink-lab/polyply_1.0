@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 import json
 from pathlib import Path
 import networkx as nx
@@ -168,36 +169,52 @@ def test_tag_nodes(tags, expected, seed):
     _tag_nodes(graph, tags, seed)
     assert nx.get_node_attributes(graph, "chiral") == expected
 
-@pytest.mark.parametrize('args, ref_file', (
-    (dict(outpath=TEST_DATA + "/gen_seq/output/PPI.json",
-          macro_strings=["A:3:2:N1-1.0"],
-          seq=["A", "A"],
-          name="test",
-          connects=["0:1:0-0"]),
-     TEST_DATA + "/gen_seq/ref/PPI_ref.json"),
-    (dict(outpath=TEST_DATA + "/gen_seq/output/PEO_PS.json",
-          macro_strings=["A:11:1:PEO-1", "B:11:1:PS-1"],
-          connects=["0:1:10-0"],
-          name="test",
-          seq=["A", "B"]),
-     TEST_DATA + "/gen_seq/ref/PEO_PS_ref.json"),
-    (dict(outpath=TEST_DATA + "/gen_seq/output/lysoPEG.json",
-          inpath=[Path(TEST_DATA + "/gen_seq/input/molecule_0.itp")],
-          macro_strings=["A:5:1:PEG-1.0"],
-          from_file=["PROT:molecule_0"],
-          name="test",
-          seq=["PROT", "A"],
-          connects=["0:1:0-0"]),
-     TEST_DATA + "/gen_seq/ref/lyso_PEG.json")
+@pytest.mark.parametrize('inpath, macro_strings, seq, name, from_file, connects, ref_file', (
+    ([],
+     ["A:3:2:N1-1.0"],
+     ["A", "A"],
+     "test",
+     None,
+     ["0:1:0-0"],
+     TEST_DATA / "gen_seq/ref/PPI_ref.json"),
+    ([],
+     ["A:11:1:PEO-1", "B:11:1:PS-1"],
+     ["A", "B"],
+     "test",
+     None,
+     ["0:1:10-0"],
+     TEST_DATA / "gen_seq/ref/PEO_PS_ref.json"),
+    ([Path(TEST_DATA / "gen_seq/input/molecule_0.itp")],
+     ["A:5:1:PEG-1.0"],
+     ["PROT", "A"],
+     "test",
+     ["PROT:molecule_0"],
+     ["0:1:0-0"],
+     TEST_DATA / "gen_seq/ref/lyso_PEG.json")
 ))
-def test_gen_seq(args, ref_file):
-    gen_seq(**args)
+def test_gen_seq(tmp_path, 
+                 inpath, 
+                 macro_strings, 
+                 seq, name, 
+                 from_file, 
+                 connects, 
+                 ref_file):
+
+    os.chdir(tmp_path)
+    outpath = Path("new_seq.json")
+    gen_seq(inpath=inpath,
+            outpath=outpath,
+            macro_strings=macro_strings,
+            seq=seq,
+            name=name,
+            from_file=from_file,
+            connects=connects)
 
     with open(ref_file) as _file:
         js_graph = json.load(_file)
         ref_graph = json_graph.node_link_graph(js_graph)
 
-    with open(args["outpath"]) as _file:
+    with open(outpath) as _file:
         js_graph = json.load(_file)
         out_graph = json_graph.node_link_graph(js_graph)
 
