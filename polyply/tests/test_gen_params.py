@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import os
 from pathlib import Path
 import textwrap
 import argparse
@@ -64,12 +64,13 @@ from polyply.src.logging import LOGGER
      "test",
      TEST_DATA / "gen_params/ref/removal.itp")
     ))
-def test_gen_params(inpath, seq, seqf, name, ref_file):
+def test_gen_params(tmp_path, inpath, seq, seqf, name, ref_file):
+    os.chdir(tmp_path)
     gen_params(inpath=inpath, seq=seq, seq_file=seqf, name=name)
 
     force_field = vermouth.forcefield.ForceField(name='test_ff')
 
-    for path_name in [Path("polymer.itp"), ref_file]:
+    for path_name in [tmp_path / "polymer.itp", ref_file]:
         with open(path_name, 'r') as _file:
             lines = _file.readlines()
         vermouth.gmx.itp_read.read_itp(lines, force_field)
