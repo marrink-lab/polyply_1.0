@@ -96,14 +96,14 @@ def test_monomers_to_linear_nx_graph(example_meta_molecule):
       "fasta"
      ))
 def test_sequence_parses(extension):
-    filepath = Path(TEST_DATA + "/simple_seq_files/test."+ extension)
+    filepath = Path(TEST_DATA / "simple_seq_files/test."+ extension)
     seq_graph = MetaMolecule.parsers[extension](filepath)
     monomers = ["DA5", "DT", "DC", "DG", "DT", "DA", "DC", "DA", "DT3"]
     ref_graph = _monomers_to_linear_nx_graph(monomers)
     assert nx.is_isomorphic(seq_graph, ref_graph, node_match=_node_match)
 
 def test_ig_cirle():
-    filepath = Path(TEST_DATA + "/simple_seq_files/test_circle.ig")
+    filepath = Path(TEST_DATA / "simple_seq_files/test_circle.ig")
     seq_graph = MetaMolecule.parsers["ig"](filepath)
     monomers = ["DA", "DT", "DC", "DG", "DT", "DA", "DC", "DA", "DT"]
     ref_graph = _monomers_to_linear_nx_graph(monomers)
@@ -114,7 +114,7 @@ def test_ig_cirle():
                             node_match=_node_match)
 
 def test_ig_termination_fail():
-    filepath = Path(TEST_DATA + "/simple_seq_files/test_fail.ig")
+    filepath = Path(TEST_DATA / "simple_seq_files/test_fail.ig")
     with pytest.raises(FileFormatError):
         seq_graph = MetaMolecule.parsers["ig"](filepath)
 
@@ -123,14 +123,14 @@ def test_ig_termination_fail():
       "fasta"
      ))
 def test_sequence_parses_RNA(extension):
-    filepath = Path(TEST_DATA + "/simple_seq_files/test_RNA."+ extension)
+    filepath = Path(TEST_DATA / "simple_seq_files/test_RNA."+ extension)
     seq_graph = MetaMolecule.parsers[extension](filepath)
     monomers = ["A5", "U", "C", "G", "U", "A", "C", "A", "U3"]
     ref_graph = _monomers_to_linear_nx_graph(monomers)
     assert nx.is_isomorphic(seq_graph, ref_graph, node_match=_node_match)
 
 def test_sequence_parses_PROTEIN():
-    filepath = Path(TEST_DATA + "/simple_seq_files/test_protein.fasta")
+    filepath = Path(TEST_DATA / "simple_seq_files/test_protein.fasta")
     seq_graph = MetaMolecule.parsers["fasta"](filepath)
     monomers = ["GLY", "ALA", "LYS", "TRP", "ASN", "VAL", "PHE", "PRO", "SER"]
     ref_graph = _monomers_to_linear_nx_graph(monomers)
@@ -144,7 +144,7 @@ def test_unkown_nucleotype_error():
 def test_ig_warning(caplog):
     ref_msg = ("Found only the letters A, C, G, T on first line."
                " Are you missing the title line in your .ig file?")
-    filepath = Path(TEST_DATA + "/simple_seq_files/test_ig_warning.ig")
+    filepath = Path(TEST_DATA / "simple_seq_files/test_ig_warning.ig")
     with caplog.at_level(logging.WARNING):
         seq_graph = MetaMolecule.parsers["ig"](filepath)
         for record in caplog.records:
