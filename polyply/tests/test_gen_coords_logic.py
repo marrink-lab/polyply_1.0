@@ -32,8 +32,8 @@ def test_no_positions_generated(tmp_path, monkeypatch):
     errors and preserve all positions given in the input to rounding accuracy.
     """
     monkeypatch.chdir(tmp_path)
-    top_file = TEST_DATA + "/topology_test/system.top"
-    pos_file = TEST_DATA + "/topology_test/complete.gro"
+    top_file = TEST_DATA / "topology_test/system.top"
+    pos_file = TEST_DATA / "topology_test/complete.gro"
     out_file = tmp_path / "out.gro"
     gen_coords(toppath=top_file,
                coordpath=pos_file,
@@ -68,8 +68,8 @@ def test_box_input(tmp_path, caplog, box_input, box_ref, density, warning):
                           "Will try to pack all molecules in the box "
                           "provided with starting coordinates."),}
 
-    top_file = TEST_DATA + "/topology_test/system.top"
-    pos_file = TEST_DATA + "/topology_test/complete.gro"
+    top_file = TEST_DATA / "topology_test/system.top"
+    pos_file = TEST_DATA / "topology_test/complete.gro"
     out_file = tmp_path / "out.gro"
 
     with caplog.at_level(logging.WARNING):
@@ -101,8 +101,8 @@ def test_backmap_only(tmp_path, monkeypatch):
     same as they have been put in.
     """
     monkeypatch.chdir(tmp_path)
-    top_file = TEST_DATA + "/topology_test/system.top"
-    pos_file = TEST_DATA + "/topology_test/cog.gro"
+    top_file = TEST_DATA / "topology_test/system.top"
+    pos_file = TEST_DATA / "topology_test/cog.gro"
     out_file = tmp_path / "out.gro"
     gen_coords(toppath=top_file,
                coordpath_meta=pos_file,
@@ -126,8 +126,8 @@ def test_backmap_only(tmp_path, monkeypatch):
 
 def test_warning_partial_metamol_coords(tmp_path, monkeypatch, caplog):
     caplog.set_level(logging.WARNING)
-    top_file = TEST_DATA + "/topology_test/system.top"
-    pos_file = TEST_DATA + "/topology_test/cog_missing.gro"
+    top_file = TEST_DATA / "topology_test/system.top"
+    pos_file = TEST_DATA / "topology_test/cog_missing.gro"
     out_file = tmp_path / "out.gro"
 
     with caplog.at_level(logging.WARNING):
