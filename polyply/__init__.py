@@ -25,7 +25,7 @@ try:
 except ImportError:
     from pathlib import Path
     DATA_PATH = Path(__file__).parent / 'data'
-    TEST_DATA = Path(__file__).parent / 'tests/test_data')
+    TEST_DATA = Path(__file__).parent / 'tests/test_data'
     del Path
 else:
     ref_data = files('polyply') / 'data'
