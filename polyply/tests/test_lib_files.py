@@ -30,7 +30,7 @@ from vermouth.forcefield import ForceField
 from polyply import TEST_DATA
 from vermouth.tests.helper_functions import find_in_path
 
-INTEGRATION_DATA = Path(TEST_DATA + '/library_tests')
+INTEGRATION_DATA = TEST_DATA / 'library_tests'
 
 PATTERN = '{path}/{library}/{polymer}/polyply'
 
