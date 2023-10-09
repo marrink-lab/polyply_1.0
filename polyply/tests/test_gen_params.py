@@ -26,43 +26,43 @@ from polyply.src.graph_utils import find_missing_edges
 from polyply.src.logging import LOGGER
 
 @pytest.mark.parametrize('inpath, seq, seqf, name, ref_file', (
-    ([TEST_DATA / "gen_params/input/PEO.martini.3.itp"],
+    ([TEST_DATA / "gen_params" / "input" / "PEO.martini.3.itp"],
      ["PEO:10"],
      None,
      "PEO",
-     TEST_DATA / "gen_params/ref/PEO_10.itp"),
-    ([TEST_DATA / "gen_params/input/PS.martini.2.itp"],
+     TEST_DATA / "gen_params" / "ref" / "PEO_10.itp"),
+    ([TEST_DATA / "gen_params"/ "input"/"PS.martini.2.itp"],
      None,
-     TEST_DATA / "gen_params/input/PS.json",
+     TEST_DATA / "gen_params" / "input" / "PS.json",
      "PS",
-     TEST_DATA / "gen_params/ref/PS_10.itp"),
-    ([TEST_DATA / "gen_params/input/P3HT.martini.2.itp"],
+     TEST_DATA / "gen_params" / "ref" / "PS_10.itp"),
+    ([TEST_DATA / "gen_params" / "input" / "P3HT.martini.2.itp"],
      ["P3HT:10"],
      None,
      "P3HT",
-     TEST_DATA / "gen_params/ref/P3HT_10.itp"),
-    ([TEST_DATA / "gen_params/input/PPI.ff"],
+     TEST_DATA / "gen_params" / "ref" / "P3HT_10.itp"),
+    ([TEST_DATA / "gen_params" / "input" / "PPI.ff"],
      None,
-     TEST_DATA / "gen_params/input/PPI.json",
+     TEST_DATA / "gen_params" / "input" / "PPI.json",
      "PPI",
-     TEST_DATA / "gen_params/ref/G3.itp"),
-    ([TEST_DATA / "gen_params/input/test.ff"],
+     TEST_DATA / "gen_params" / "ref" / "G3.itp"),
+    ([TEST_DATA / "gen_params" / "input" / "test.ff"],
      ["N1:1", "N2:1", "N1:1", "N2:1", "N3:1"],
      None,
      "test",
-     TEST_DATA / "gen_params/ref/test_rev.itp"),
+     TEST_DATA / "gen_params" / "ref" / "test_rev.itp"),
     # check if edge attributes are parsed and properly applied
-    ([TEST_DATA / "gen_params/input/test_edge_attr.ff"],
+    ([TEST_DATA / "gen_params" / "input" / "test_edge_attr.ff"],
      None,
-     TEST_DATA / "gen_params/input/test_edge_attr.json",
+     TEST_DATA / "gen_params" / "input" / "test_edge_attr.json",
      "test",
-     TEST_DATA / "gen_params/ref/test_edge_attr_ref.itp"),
+     TEST_DATA / "gen_params" / "ref" / "test_edge_attr_ref.itp"),
     # check if nodes can be removed
-    ([TEST_DATA / "gen_params/input/removal.ff"],
+    ([TEST_DATA / "gen_params" / "input" / "removal.ff"],
      ["PEO:3"],
      None,
      "test",
-     TEST_DATA / "gen_params/ref/removal.itp")
+     TEST_DATA / "gen_params" / "ref" / "removal.itp")
     ))
 def test_gen_params(tmp_path, inpath, seq, seqf, name, ref_file):
     os.chdir(tmp_path)
@@ -94,7 +94,7 @@ def test_gen_params(tmp_path, inpath, seq, seqf, name, ref_file):
             assert term in force_field.blocks[name].interactions[key]
 
 def test_find_missing_links():
-    fname = TEST_DATA / "gen_params/ref/P3HT_10.itp"
+    fname = TEST_DATA / "gen_params" / "ref" / "P3HT_10.itp"
     ff = vermouth.forcefield.ForceField("test")
     meta_mol = MetaMolecule.from_itp(ff, fname, "P3HTref")
     meta_mol.molecule.remove_edge(39, 45) # resid 7,8

@@ -101,8 +101,8 @@ def test_backmap_only(tmp_path, monkeypatch):
     same as they have been put in.
     """
     monkeypatch.chdir(tmp_path)
-    top_file = TEST_DATA / "topology_test/system.top"
-    pos_file = TEST_DATA / "topology_test/cog.gro"
+    top_file = TEST_DATA / "topology_test" / "system.top"
+    pos_file = TEST_DATA / "topology_test" / "cog.gro"
     out_file = tmp_path / "out.gro"
     gen_coords(toppath=top_file,
                coordpath_meta=pos_file,
@@ -125,9 +125,9 @@ def test_backmap_only(tmp_path, monkeypatch):
         assert np.allclose(res_pos, ref_pos, atol=0.0009)
 
 def test_warning_partial_metamol_coords(tmp_path, monkeypatch, caplog):
-    caplog.set_level(logging.WARNING)
-    top_file = TEST_DATA / "topology_test/system.top"
-    pos_file = TEST_DATA / "topology_test/cog_missing.gro"
+    caplog.set_level(logging.WARNING) 
+    top_file = TEST_DATA / "topology_test" / "system.top"
+    pos_file = TEST_DATA / "topology_test" / "cog_missing.gro"
     out_file = tmp_path / "out.gro"
 
     with caplog.at_level(logging.WARNING):

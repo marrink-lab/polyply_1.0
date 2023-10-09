@@ -178,7 +178,7 @@ class TestGenTemps:
 
       @staticmethod
       def test_run_molecule():
-          top = polyply.src.topology.Topology.from_gmx_topfile(TEST_DATA / "topology_test/system.top", "test")
+          top = polyply.src.topology.Topology.from_gmx_topfile(TEST_DATA / "topology_test" / "system.top", "test")
           top.gen_pairs()
           top.convert_nonbond_to_sig_eps()
           GenerateTemplates(topology=top, max_opt=10).run_molecule(top.molecules[0])

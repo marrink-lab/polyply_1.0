@@ -96,7 +96,7 @@ def test_monomers_to_linear_nx_graph(example_meta_molecule):
       "fasta"
      ))
 def test_sequence_parses(extension):
-    part_path =  "simple_seq_files/test." + extension
+    part_path =  Path("simple_seq_files") / ("test." + extension)
     filepath = TEST_DATA / part_path
     seq_graph = MetaMolecule.parsers[extension](filepath)
     monomers = ["DA5", "DT", "DC", "DG", "DT", "DA", "DC", "DA", "DT3"]
@@ -104,7 +104,7 @@ def test_sequence_parses(extension):
     assert nx.is_isomorphic(seq_graph, ref_graph, node_match=_node_match)
 
 def test_ig_cirle():
-    filepath = Path(TEST_DATA / "simple_seq_files/test_circle.ig")
+    filepath = TEST_DATA / "simple_seq_files" / "test_circle.ig"
     seq_graph = MetaMolecule.parsers["ig"](filepath)
     monomers = ["DA", "DT", "DC", "DG", "DT", "DA", "DC", "DA", "DT"]
     ref_graph = _monomers_to_linear_nx_graph(monomers)
@@ -115,7 +115,7 @@ def test_ig_cirle():
                             node_match=_node_match)
 
 def test_ig_termination_fail():
-    filepath = Path(TEST_DATA / "simple_seq_files/test_fail.ig")
+    filepath = Path(TEST_DATA / "simple_seq_files" / "test_fail.ig")
     with pytest.raises(FileFormatError):
         seq_graph = MetaMolecule.parsers["ig"](filepath)
 
@@ -124,7 +124,7 @@ def test_ig_termination_fail():
       "fasta"
      ))
 def test_sequence_parses_RNA(extension):
-    part_path = "simple_seq_files/test_RNA." + extension
+    part_path = Path("simple_seq_files") / ("test_RNA." + extension)
     filepath = TEST_DATA / part_path
     seq_graph = MetaMolecule.parsers[extension](filepath)
     monomers = ["A5", "U", "C", "G", "U", "A", "C", "A", "U3"]
@@ -132,7 +132,7 @@ def test_sequence_parses_RNA(extension):
     assert nx.is_isomorphic(seq_graph, ref_graph, node_match=_node_match)
 
 def test_sequence_parses_PROTEIN():
-    filepath = Path(TEST_DATA / "simple_seq_files/test_protein.fasta")
+    filepath = Path(TEST_DATA / "simple_seq_files" / "test_protein.fasta")
     seq_graph = MetaMolecule.parsers["fasta"](filepath)
     monomers = ["GLY", "ALA", "LYS", "TRP", "ASN", "VAL", "PHE", "PRO", "SER"]
     ref_graph = _monomers_to_linear_nx_graph(monomers)
