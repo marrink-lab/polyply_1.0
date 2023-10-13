@@ -1,0 +1,180 @@
+;-------------------------------------
+;        PTMA-PTMA connection
+;-------------------------------------
+[link]
+resname "PTMA"
+[ bonds ]
+  C17  +C01     1      0.1529 224262.400 {"group": "connection"} 
+[ angles ]
+  C01   C17  +C01     1    112.700    488.273  {"group": "connection"} 
+  C17  +C01  +C02     1    112.700    488.273  {"group": "connection"} 
+  C17  +C01  +C03     1    111.100    527.184  {"group": "connection"} 
+  C17  +C01  +C17     1    112.700    488.273  {"group": "connection"} 
+  H38   C17  +C01     1    110.700    313.800  {"group": "connection"} 
+  H39   C17  +C01     1    110.700    313.800  {"group": "connection"}  
+[ dihedrals ]
+ +C03 +C01  C17  C01        3      -4.960   6.286   1.310  -2.636  -0.000   0.000  {"group": "connection"} 
+ +C01  C17  C01  C03        3      -4.960   6.286   1.310  -2.636  -0.000   0.000  {"group": "connection"} 
+ +C17 +C01  C17  C01        3       2.301  -1.464   0.837  -1.674  -0.000   0.000  {"group": "connection"} 
+ +C01  C17  C01  C02        3       2.301  -1.464   0.837  -1.674  -0.000   0.000  {"group": "connection"} 
+ +C02 +C01  C17  C01        3       2.301  -1.464   0.837  -1.674  -0.000   0.000  {"group": "connection"} 
+  H38  C17 +C01 +C03        3      -0.209  -0.628   0.000   0.837  -0.000   0.000  {"group": "connection"} 
+  H39  C17 +C01 +C03        3      -0.209  -0.628   0.000   0.837  -0.000   0.000  {"group": "connection"} 
+ +H38 +C17 +C01  C17        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"group": "connection"} 
+  H38  C17 +C01 +C17        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"group": "connection"} 
+  H39  C17 +C01 +C02        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"group": "connection"} 
+  H39  C17 +C01 +C17        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"group": "connection"} 
+ +H39 +C17 +C01  C17        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"group": "connection"} 
+  H38  C17 +C01 +C02        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"group": "connection"} 
+ +H18 +C02 +C01  C17        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"group": "connection"} 
+ +H19 +C02 +C01  C17        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"group": "connection"} 
+ +H20 +C02 +C01  C17        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"group": "connection"} 
+ +O04 +C03 +C01  C17        3       0.000   0.000   0.000  -0.000  -0.000   0.000  {"group": "connection"} 
+ +O05 +C03 +C01  C17        3      -1.157  -3.471   0.000   4.628  -0.000   0.000  {"group": "connection"} 
+[ pairs ]
+   C02  +C01    1  {"group": "connection"} 
+   C03  +C01    1  {"group": "connection"} 
+   C01  +C02    1  {"group": "connection"} 
+   C01  +C03    1  {"group": "connection"} 
+   C01  +C17    1  {"group": "connection"} 
+   C17  +O04    1  {"group": "connection"} 
+   C17  +O05    1  {"group": "connection"} 
+  +C02   H38    1  {"group": "connection"} 
+  +C03   H38    1  {"group": "connection"} 
+  +C02   H39    1  {"group": "connection"} 
+  +C03   H39    1  {"group": "connection"} 
+  +C17   H38    1  {"group": "connection"} 
+  +C17   H39    1  {"group": "connection"} 
+   C17  +H18    1  {"group": "connection"} 
+   C17  +H19    1  {"group": "connection"} 
+   C17  +H20    1  {"group": "connection"} 
+   C17  +H38    1  {"group": "connection"} 
+   C17  +H39    1  {"group": "connection"} 
+[link]
+; for bonded potentials spanning three residues
+resname "PTMA"
+[ dihedrals ]
+  C17 +C01 +C17 ++C01       3       2.301  -1.464   0.837  -1.674  -0.000   0.000  {"comment":"i-j-k", "group":"connection"} ; across three residues
+[ pairs ]
+   C17 ++C01    1  {"comment":"i-j-k", "group":"connection"} ; across three residues
+
+
+
+;--------------------------------------------------------------------------
+; Termination of PTMA polymer with a CH3 group on the "alpha" carbon
+;--------------------------------------------------------------------------
+[link]
+resname "CH3a|PTMA"
+[ atoms ]
+  C01  {"replace": {"charge": 0.2237}} 
+[ bonds ]
+  -C1   C01     1      0.1529 224262.400  {"comment":"alpha-C-link", "group":"termini"} 
+[ angles ]
+  -C1   C01   C02     1    112.700    488.273  {"comment":"alpha-C-link", "group":"termini"} 
+  -C1   C01   C03     1    111.100    527.184  {"comment":"alpha-C-link", "group":"termini"} 
+  -C1   C01   C07     1    112.700    488.273  {"comment":"alpha-C-link", "group":"termini"} 
+  C01   -C1   -H2     1    110.700    313.800  {"comment":"alpha-C-link", "group":"termini"} 
+  C01   -C1   -H3     1    110.700    313.800  {"comment":"alpha-C-link", "group":"termini"} 
+  C01   -C1   -H4     1    110.700    313.800  {"comment":"alpha-C-link", "group":"termini"} 
+[ dihedrals ]
+ +C01  C07  C01  -C1        3       2.301  -1.464   0.837  -1.674  -0.000   0.000  {"comment":"alpha-C-link", "group":"termini"} 
+  -H2  -C1  C01  C03        3      -0.209  -0.628   0.000   0.837  -0.000   0.000  {"comment":"alpha-C-link", "group":"termini"} 
+  -H3  -C1  C01  C03        3      -0.209  -0.628   0.000   0.837  -0.000   0.000  {"comment":"alpha-C-link", "group":"termini"} 
+  -H4  -C1  C01  C03        3      -0.209  -0.628   0.000   0.837  -0.000   0.000  {"comment":"alpha-C-link", "group":"termini"} 
+  -H4  -C1  C01  C07        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"alpha-C-link", "group":"termini"} 
+  -H4  -C1  C01  C02        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"alpha-C-link", "group":"termini"} 
+  -H2  -C1  C01  C07        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"alpha-C-link", "group":"termini"} 
+  -H3  -C1  C01  C02        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"alpha-C-link", "group":"termini"} 
+  H20  C02  C01  -C1        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"alpha-C-link", "group":"termini"} 
+  -H2  -C1  C01  C02        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"alpha-C-link", "group":"termini"} 
+  H18  C02  C01  -C1        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"alpha-C-link", "group":"termini"} 
+  H39  C07  C01  -C1        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"alpha-C-link", "group":"termini"} 
+  H38  C07  C01  -C1        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"alpha-C-link", "group":"termini"} 
+  -H3  -C1  C01  C07        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"alpha-C-link", "group":"termini"} 
+  H19  C02  C01  -C1        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"alpha-C-link", "group":"termini"} 
+  O04  C03  C01  -C1        3       0.000   0.000   0.000  -0.000  -0.000   0.000  {"comment":"alpha-C-link", "group":"termini"} 
+  O05  C03  C01  -C1        3      -1.157  -3.471   0.000   4.628  -0.000   0.000  {"comment":"alpha-C-link", "group":"termini"} 
+[ pairs ]
+   -C1   O04    1  {"comment":"alpha-C-link", "group":"termini"} 
+   -C1   O05    1  {"comment":"alpha-C-link", "group":"termini"} 
+   -C1  +C01    1  {"comment":"alpha-C-link", "group":"termini"} 
+   -C1   H18    1  {"comment":"alpha-C-link", "group":"termini"} 
+   -C1   H19    1  {"comment":"alpha-C-link", "group":"termini"} 
+   -C1   H20    1  {"comment":"alpha-C-link", "group":"termini"} 
+   -C1   H38    1  {"comment":"alpha-C-link", "group":"termini"} 
+   -C1   H39    1  {"comment":"alpha-C-link", "group":"termini"} 
+   C02   -H2    1  {"comment":"alpha-C-link", "group":"termini"} 
+   C03   -H2    1  {"comment":"alpha-C-link", "group":"termini"} 
+   C07   -H2    1  {"comment":"alpha-C-link", "group":"termini"} 
+   C02   -H3    1  {"comment":"alpha-C-link", "group":"termini"} 
+   C03   -H3    1  {"comment":"alpha-C-link", "group":"termini"} 
+   C07   -H3    1  {"comment":"alpha-C-link", "group":"termini"} 
+   C02   -H4    1  {"comment":"alpha-C-link", "group":"termini"} 
+   C03   -H4    1  {"comment":"alpha-C-link", "group":"termini"} 
+   C07   -H4    1  {"comment":"alpha-C-link", "group":"termini"} 
+
+
+
+;--------------------------------------------------------------------------
+; Termination of PTMA polymer with a CH3 group on the "beta" carbon
+;--------------------------------------------------------------------------
+[link]
+resname "PTMA|CH3b"
+[ atoms ]
+  C17  {"replace": {"charge": 0.1111}} 
+[ bonds ]
+  +C1   C17     1      0.1529 224262.400  {"comment":"beta-C-link", "group": "termini"}
+[ angles ]
+  C01   C17   +C1     1    112.700    488.273  {"comment":"beta-C-link", "group": "termini"}  
+  C17   +C1   +H2     1    110.700    313.800  {"comment":"beta-C-link", "group": "termini"}
+  C17   +C1   +H3     1    110.700    313.800  {"comment":"beta-C-link", "group": "termini"}
+  C17   +C1   +H4     1    110.700    313.800  {"comment":"beta-C-link", "group": "termini"}
+  +H2   +C1   +H3     1    107.800    276.144  {"comment":"beta-C-link", "group": "termini"}
+  +C1   C17   H39     1    110.700    313.800  {"comment":"beta-C-link", "group": "termini"}
+  +H2   +C1   +H4     1    107.800    276.144  {"comment":"beta-C-link", "group": "termini"}
+  +C1   C17   H38     1    110.700    313.800  {"comment":"beta-C-link", "group": "termini"}
+  +H3   +C1   +H4     1    107.800    276.144  {"comment":"beta-C-link", "group": "termini"}
+[ dihedrals ]
+  +C1   C17   C01   C03        3      -4.960   6.286   1.310  -2.636  -0.000   0.000  {"comment":"beta-C-link", "group": "termini"}  
+  +C1   C17   C01   C02        3       2.301  -1.464   0.837  -1.674  -0.000   0.000  {"comment":"beta-C-link", "group": "termini"}
+  +C1   C17   C01  -C17        3       2.301  -1.464   0.837  -1.674  -0.000   0.000  {"comment":"beta-C-link", "group": "termini"}
+  +H4   +C1   C17   C01        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"beta-C-link", "group": "termini"}
+  +H3   +C1   C17   C01        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"beta-C-link", "group": "termini"}
+  +H2   +C1   C17   C01        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"beta-C-link", "group": "termini"}
+  +H2   +C1   C17   H39        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"beta-C-link", "group": "termini"}
+  +H4   +C1   C17   H38        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"beta-C-link", "group": "termini"}
+  +H2   +C1   C17   H38        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"beta-C-link", "group": "termini"}
+  +H4   +C1   C17   H39        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"beta-C-link", "group": "termini"}
+  +H3   +C1   C17   H39        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"beta-C-link", "group": "termini"}
+  +H3   +C1   C17   H38        3       0.628   1.883   0.000  -2.510  -0.000   0.000  {"comment":"beta-C-link", "group": "termini"}
+[ pairs ]
+  -C17   +C1    1  {"comment":"beta-C-link", "group": "termini"}  
+   C02   +C1    1  {"comment":"beta-C-link", "group": "termini"}
+   C03   +C1    1  {"comment":"beta-C-link", "group": "termini"}
+   C01   +H2    1  {"comment":"beta-C-link", "group": "termini"}
+   H38   +H2    1  {"comment":"beta-C-link", "group": "termini"}
+   H39   +H2    1  {"comment":"beta-C-link", "group": "termini"}
+   C01   +H3    1  {"comment":"beta-C-link", "group": "termini"}
+   H38   +H3    1  {"comment":"beta-C-link", "group": "termini"}
+   H39   +H3    1  {"comment":"beta-C-link", "group": "termini"}
+   C01   +H4    1  {"comment":"beta-C-link", "group": "termini"}
+   H38   +H4    1  {"comment":"beta-C-link", "group": "termini"}
+   H39   +H4    1  {"comment":"beta-C-link", "group": "termini"}
+
+[ link ]
+[ atoms ]
+C01 {"resname": "PTMA"}
+[ warning ]
+You should patch PTMA with a CH3a-terminal residue. Use -seq CH3a:1 PTMA:4 CH3b:1
+[ non-edges ]
+C01 -C1
+C01 -C17
+
+[ link ]
+[ atoms ]
+C17 {"resname": "PTMA"}
+[ warning ]
+You should patch PTMA with a CH3b-terminal residue. Use -seq CH3a:1 PTMA:4 CH3b:1
+[ non-edges ]
+C17 +C1
+C17 +C01

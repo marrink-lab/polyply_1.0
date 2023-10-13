@@ -46,8 +46,10 @@ def _coord_parser(path, extension):
             molecule.merge_molecule(new_mol)
     else:
         molecule = molecules
+
+    box = molecule.box
     positions = np.array(list(nx.get_node_attributes(molecule, "position").values()))
-    return positions
+    return positions, box
 
 
 def replace_defined_interaction(interaction, defines):
@@ -213,6 +215,8 @@ class Topology(System):
         A dictionary of all typed parameter
     defines: list
         A list of everything that is defined
+    box: np.array(3,1)
+        Box vectors as a, b, c in nanometers
     """
 
     def __init__(self, force_field, name=None):
@@ -228,6 +232,7 @@ class Topology(System):
         self.persistences = []
         self.distance_restraints = defaultdict(dict)
         self.volumes = {}
+        self.box = None
 
     def preprocess(self):
         """
@@ -425,7 +430,7 @@ class Topology(System):
         """
         path = Path(path)
         extension = path.suffix.casefold()[1:]
-        positions = _coord_parser(path, extension)
+        positions, self.box = _coord_parser(path, extension)
         max_coords = len(positions)
         total = 0
         for meta_mol in self.molecules:
