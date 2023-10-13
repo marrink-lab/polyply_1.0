@@ -1,13 +1,12 @@
 import itertools
 import logging  # implement logging parts here
-
 from typing import Any, Dict, List, Literal
+
 import networkx as nx
 import numpy as np
 import vermouth
 import vermouth.forcefield
 import vermouth.molecule
-
 from polyply.src.generate_templates import (
     _expand_inital_coords,
     _relabel_interaction_atoms,
@@ -15,7 +14,6 @@ from polyply.src.generate_templates import (
     find_atoms,
     replace_defined_interaction,
 )
-
 from polyply.src.linalg_functions import center_of_geometry
 
 # import polyply.src.meta_molecule
@@ -23,21 +21,39 @@ from polyply.src.linalg_functions import center_of_geometry
 from polyply.src.meta_molecule import MetaMolecule
 from polyply.src.processor import Processor
 from polyply.src.topology import Topology
-
-from scipy.spatial import distance, ConvexHull
-
+from scipy.spatial import ConvexHull, distance
 from vermouth.gmx import gro  # gro library to output the file as a gro file
 from vermouth.gmx.itp import write_molecule_itp
 
 # Nanoparticle types
 from amber_nps import return_amber_nps_type  # this will be changed
 from cg_nps import return_cg_nps_type  # this needs to be changed as well
+from nanoparticle_generic import CentralCoreGenerator
 
 # logging configuration
 logging.basicConfig(level=logging.INFO)
 
 
-def rotation_matrix_from_vectors(vec1: np.ndarray, vec2: np.ndarray) -> np.ndarray:
+def generate_artificial_core(
+    number_of_atoms: int,
+    radius: float,
+    ff: vermouth.forcefield.ForceField,
+    constitute: str,
+) -> Tuple[str, str]:
+    """
+    use the imported class to generate a core of R size
+    and write it to the main vermouth object that has been called
+    """
+    nanoparticle_core_object = CentralCoreGenerator(
+        "output.pdb", number_of_atoms, radius, 0.0, ff, constitute
+    )
+    nanoparticle_core_object._nanoparticle_base_fibonacci_sphere()
+    logging.info("Writing the itp for the artificial core")
+    itp_output = nanoparticle_core_object._generate_itp_string()
+    logging.info("Writing the gro file for the artificial core")
+
+
+def rotation_matrix_from_vectors(vec_a: np.ndarray, vec_b: np.ndarray) -> np.ndarray:
     """
     Find the rotation matrix that aligns vec1 to vec2
     Args:
@@ -50,8 +66,8 @@ def rotation_matrix_from_vectors(vec1: np.ndarray, vec2: np.ndarray) -> np.ndarr
         A transform matrix (3x3) which when applied to vec1, aligns it with vec2.
     Raises:
     """
-    a, b = (vec1 / np.linalg.norm(vec1)).reshape(3), (
-        vec2 / np.linalg.norm(vec2)
+    a, b = (vec_a / np.linalg.norm(vec_a)).reshape(3), (
+        vec_b / np.linalg.norm(vec_b)
     ).reshape(3)
     v = np.cross(a, b)
     c = np.dot(a, b)
@@ -59,35 +75,6 @@ def rotation_matrix_from_vectors(vec1: np.ndarray, vec2: np.ndarray) -> np.ndarr
     kmat = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
     rotation_matrix = np.eye(3) + kmat + kmat.dot(kmat) * ((1 - c) / (s**2))
     return rotation_matrix
-
-
-def process_atoms(P5AtomsPositionArray, P5ID):
-    DuplicateArray = []
-
-    def print_constraint(index, index2):
-        print(P5ID[index], P5ID[index2], 1, distarray[0][index2] / 10, 5000)
-
-    def check_and_add(sortedInput):
-        if sortedInput not in DuplicateArray:
-            DuplicateArray.append(sortedInput)
-            print_constraint(index, index2)
-
-    for index, atom in enumerate(P5AtomsPositionArray):
-        distarray = distance_array(atom, P5AtomsPositionArray)
-        for index2, entry in enumerate(distarray[0]):
-            if index == index2:
-                continue  # Skip if looking at the same index
-            if distarray[0][index2] / 10 >= 0.7:
-                continue  # Skip if bond length is more than 0.7
-            if index == 1:
-                print_constraint(index, index2)
-                sortedInput = sorted([P5ID[index], P5ID[index2]])
-                DuplicateArray.append(sortedInput)
-            elif index > 1:
-                sortedInput = sorted([P5ID[index], P5ID[index2]])
-                check_and_add(sortedInput)
-
-    return DuplicateArray
 
 
 def create_np_pattern(
@@ -664,11 +651,6 @@ class NanoparticleModels(Processor):
                     if x in list(self.core_indices[core_index])
                 }
 
-        # self.core_indices = [
-        #    dict(list(self.core_indices[0].items())[10:13]),
-        #    dict(list(self.core_indices[1].items())[10:13]),
-        # ]
-
     def _identify_attachment_index(self, ligand_block, anchor_atom: str) -> int:
         """
         Find index of atoms that corresponds to the atom on the ligand
@@ -1017,7 +999,6 @@ if __name__ == "__main__":
     PCBM_model.create_gro("PCBM.gro")
     PCBM_model.write_itp("PCBM.itp")
 
-    # unfinished part of the code..
     # sampleNPCore = GoldNanoparticleSingle()
     # sampleNPCore._generate_positions()
     # sampleNPCore.create_gro(
