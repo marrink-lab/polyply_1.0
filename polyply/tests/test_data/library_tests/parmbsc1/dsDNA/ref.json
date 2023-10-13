@@ -1,0 +1,86 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "resname": "DA5",
+      "resid": 1,
+      "id": 0
+    },
+    {
+      "resname": "DA",
+      "resid": 2,
+      "id": 1
+    },
+    {
+      "resname": "DA",
+      "resid": 3,
+      "id": 2
+    },
+    {
+      "resname": "DG",
+      "resid": 4,
+      "id": 3
+    },
+    {
+      "resname": "DG",
+      "resid": 5,
+      "id": 4
+    },
+    {
+      "resname": "DC",
+      "resid": 6,
+      "id": 5
+    },
+    {
+      "resname": "DC",
+      "resid": 7,
+      "id": 6
+    },
+    {
+      "resname": "DT",
+      "resid": 8,
+      "id": 7
+    },
+    {
+      "resname": "DT3",
+      "resid": 9,
+      "id": 8
+    }
+  ],
+  "links": [
+    {
+      "source": 0,
+      "target": 1
+    },
+    {
+      "source": 1,
+      "target": 2
+    },
+    {
+      "source": 2,
+      "target": 3
+    },
+    {
+      "source": 3,
+      "target": 4
+    },
+    {
+      "source": 4,
+      "target": 5
+    },
+    {
+      "source": 5,
+      "target": 6
+    },
+    {
+      "source": 6,
+      "target": 7
+    },
+    {
+      "source": 7,
+      "target": 8
+    }
+  ]
+}

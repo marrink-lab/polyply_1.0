@@ -21,9 +21,9 @@
 |Polystyrene sulfonate          |PSS                      |                                                                       |[martini2](polyply/data/martini2/PSS.martini.2.itp)   |
 |                               |                         |                                                                       |[martini3](polyply/data/martini3/PSS.martini3.ff)     |
 |Poly(para-phenylene ethynylene)|PPE                      |                                                                       |[martini3](polyply/data/martini3/PPE.martini3.ff)     |
-|Poly(TEMPO methacrylate)       |PTMA                     |                                                                       |[martini3](polyply/data/martini3/PTMA.martini3.ff)    |
-|                               |                         |                                                                       |[ibi_gbcg](polyply/data/ibi_gbcg/PTMA.gbno2.ibi.ff) |
+|Poly(TEMPO methacrylate)       |PTMA                     |[oplsaaLigParGen](polyply/data/oplsaaLigParGen/PTMA.oplsaa.LigParGen.ff)]|[martini3](polyply/data/martini3/PTMA.martini3.ff)  |
+|                               |                         |                                                                       |[ibi_gbcg](polyply/data/ibi_gbcg/PTMA.gbno2.ibi.ff)   |
 |Dextran                        |DEX                      |                                                                       |[martini3](polyply/data/martini3/dextran.martini3.ff) |
 |DNA nucleobases                |Dx, Tx5, Dx3 w/ x=T,G,A,C|[parmbsc1](polyply/data/parmbsc1/dna_final.ff)                         |[martini2](polyply/data/martini2/DNA_M2.ff)           |
 |Aminoacids                     |3 letter code            |                                                                       |[martini3](polyply/data/martini3/aminoacids.ff)       |
-|Polydimethylsiloxane  |PDMS                   |                                                                       |[martini3](polyply/data/martini3/PDMS.martini3.ff)
+|Polydimethylsiloxane           |PDMS                     |                                                                       |[martini3](polyply/data/martini3/PDMS.martini3.ff)    |

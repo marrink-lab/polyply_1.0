@@ -31,7 +31,7 @@ class TestTopology:
 
     @staticmethod
     def test_from_gmx_topfile():
-        top = Topology.from_gmx_topfile(TEST_DATA+"/topology_test/system.top", "test")
+        top = Topology.from_gmx_topfile(TEST_DATA / "topology_test" / "system.top", "test")
         assert len(top.molecules) == 1
 
     @staticmethod
@@ -44,8 +44,12 @@ class TestTopology:
         no coordinates defined and require the build and backmap attribute to be True.
         In all other cases they need to be False.
         """
-        top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/system.top", "test")
-        top.add_positions_from_file(TEST_DATA + "/topology_test/test.gro")
+        top = Topology.from_gmx_topfile(TEST_DATA / "topology_test" / "system.top", "test")
+        top.add_positions_from_file(TEST_DATA / "topology_test" / "test.gro")
+
+        # check that the box is correctly read
+        assert np.allclose(top.box, np.array([10.0, 11.0, 12.0]))
+
         for node in top.molecules[0].molecule.nodes:
             if node < 14:
                 assert "position" in top.molecules[0].molecule.nodes[node].keys()
@@ -68,8 +72,12 @@ class TestTopology:
         have no coordinates defined at either level and require the build and backmap attribute
         to be True. In all other cases the build attribute is False and backmap is True.
         """
-        top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/system.top", "test")
-        top.add_positions_from_file(TEST_DATA + "/topology_test/meta.gro", resolution="meta_mol")
+        top = Topology.from_gmx_topfile(TEST_DATA / "topology_test" / "system.top", "test")
+        top.add_positions_from_file(TEST_DATA / "topology_test" / "meta.gro", resolution="meta_mol")
+
+        # check that the box is correctly read
+        assert np.allclose(top.box, np.array([10.0, 11.0, 12.0]))
+
         for node in top.molecules[0].nodes:
             if node != 2:
                 assert "position" in top.molecules[0].nodes[node].keys()
@@ -87,10 +95,13 @@ class TestTopology:
         the meta_molecule positions are defined as well. In addition all build and backmap
         attributes have to be False.
         """
-        top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/pdb.top", "test")
-        top.add_positions_from_file(TEST_DATA + "/topology_test/test.pdb")
+        top = Topology.from_gmx_topfile(TEST_DATA / "topology_test" / "pdb.top", "test")
+        top.add_positions_from_file(TEST_DATA / "topology_test" / "test.pdb")
 
-        pdb_mols = read_pdb(TEST_DATA + "/topology_test/test.pdb")
+        # check that the box is correctly read
+        assert np.allclose(top.box, np.array([11.8249, 12.0688, 11.0944]))
+
+        pdb_mols = read_pdb(TEST_DATA / "topology_test" / "test.pdb")
         for idx, meta_mol in enumerate(top.molecules):
             for node in meta_mol.molecule.nodes:
                 ref_pos = pdb_mols[idx].nodes[node]['position']
@@ -108,13 +119,13 @@ class TestTopology:
         This test checks if coordinates for a residue at the molecule level
         are incomplete the appropiate error is raised.
         """
-        top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/system.top", "test")
+        top = Topology.from_gmx_topfile(TEST_DATA / "topology_test" / "system.top", "test")
         with pytest.raises(IOError):
-            top.add_positions_from_file(TEST_DATA + "/topology_test/fail.gro")
+            top.add_positions_from_file(TEST_DATA / "topology_test" / "fail.gro")
 
     @staticmethod
     def test_convert_to_vermouth_system():
-        top = Topology.from_gmx_topfile(TEST_DATA + "/topology_test/system.top", "test")
+        top = Topology.from_gmx_topfile(TEST_DATA / "topology_test" / "system.top", "test")
         system = top.convert_to_vermouth_system()
         assert isinstance(system, vermouth.system.System)
         assert len(system.molecules) == 1
