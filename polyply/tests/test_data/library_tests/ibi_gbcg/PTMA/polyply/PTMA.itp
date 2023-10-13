@@ -1,4 +1,4 @@
-; /Users/alessandri/miniconda3/envs/polyplyRA/bin/polyply gen_params -lib ibi_GBNO2 -seq PTMA:10 -o PTMA.itp -name PTMA
+; /Users/alessandri/miniconda3/envs/polyplyRA/bin/polyply gen_params -lib ibi_gbcg -seq PTMA:10 -o PTMA.itp -name PTMA
 
 ; Please cite the following papers:
 ; Grunewald, F; Alessandri, R; Kroon, P C; Monticelli, L; Souza, P C; Marrink, S J;  Nature Communications 2022; 10.1038/s41467-021-27627-4
