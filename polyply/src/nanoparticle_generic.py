@@ -1,6 +1,8 @@
 import itertools
-import logging  # implement logging parts here
-from typing import Any, Dict, List, Literal
+import logging
+import math
+import io
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union, IO
 
 import networkx as nx
 import numpy as np
@@ -38,35 +40,215 @@ class CentralCoreGenerator:
     """
     Generation of the structure of the center core of the NP.
     Initially, we will be using the f
+
+    Parameters
+    ----------
+
+
+    Returns
+    -------
+
+
     """
 
-    def __init__(self, filename, points, R, outputPDB, center):
-        self.points = points
+    def __init__(
+        self,
+        filename: str,
+        points: int,
+        R: int,
+        center: int,
+        ff: str,
+        np_component: str,
+    ):
+        self.ff = ff
         self.R = R
-        self.outputPDB = outputPDB
         self.center = center
         self.output = open(filename + ".itp", "w")
+        self.np_component = np_component
 
-    def Nanoparticle_Base_Fibonacci_Sphere(self, samples: int = 1) -> np.ndarray:
+    def _nanoparticle_base_fibonacci_sphere(self, num_points: int = 100) -> None:
         """
-        Function to create even points on a sphere for the base of a Nanoparticle.
+        Generate evenly distributed points on a sphere using the Fibonacci lattice algorithm.
+
+        Args:
+        radius (float): The radius of the sphere.
+        num_points (int): The number of points to generate.
+
+        Returns:
+        np.ndarray: An array of shape (num_points, 3) containing (x, y, z) coordinates.
         """
+        radius = self.R
         points = []
         phi = math.pi * (3.0 - math.sqrt(5.0))  # golden angle in radians
-        for i in range(samples):
-            y = (
-                1 - (i / float(samples - 1)) * 2
-            )  # y goes from 1 to -1 radius = math.sqrt(1 - y * y) # radius at y
-            theta = phi * i  # golden angle increment
-            x = math.cos(theta) * radius
-            z = math.sin(theta) * radius
-            points.append((x, y, z))
-        # Return the surface points on the sphere
-        self.points = points
 
-    def _create_polyply_object(self) -> Any:
-        """ """
-        pass
+        for i in range(num_points):
+            y = 1 - (i / float(num_points - 1)) * 2  # y goes from 1 to -1
+            radius_at_y = math.sqrt(1 - y * y)
+            theta = phi * i  # golden angle increment
+            x = math.cos(theta) * radius_at_y
+            z = math.sin(theta) * radius_at_y
+            points.append((x, y, z))
+
+        self.points = np.array(points)
+
+    def _create_np_atom_type_dict(self, mass: float = 1.0, charge: float = 0.0) -> None:
+        """
+        Store atom information to use with NP core creation
+        """
+        self._nanoparticle_base_fibonacci_sphere()
+        mass = 1.0
+        atom_type = self.np_component
+        charge = 1.0
+        self.atoms = {}
+        for index, coordinate in enumerate(self.points):
+            self.atoms[index] = (coordinate, mass, atom_type, charge)
+
+    def _distance_array(
+        self, specific_point: np.ndarray, points: np.ndarray
+    ) -> list[float]:
+        """
+        compute distance between single point on the NP core with others
+        on the NP core
+        """
+        output = []
+        for point in points:
+            dist = math.dist(specific_point, point)
+            output.append(dist)
+        return output
+
+    def _process_atoms(self, default_dist=0.7) -> None:
+        """
+        Generate bonded distance within the network of contraints to be created for the
+        core that is allowed.
+        """
+        self.np_array = []
+
+        def assign_constraint(
+            restraint_unique_list: list[Tuple[list[float], float]],
+            restraint_val: float = 5000.0,
+        ) -> List[Tuple[int, int, int, float]]:
+            """
+            generate line for constraint
+            """
+            output_restraints = []
+            for restraints in restraint_unique_list:
+                constraint = (
+                    restraints[0],
+                    restraints[1],
+                    1,
+                    restraint_val,
+                )
+                output_restraints.append(constraint)
+            return output_restraints
+
+        def check_and_add(sorted_input, bond_distance, np_array):
+            """
+            record the sorted inputs as tuples and append unique restraint
+            entries that we would like to use
+            """
+            index_distance_input = tuple(sorted_input)
+            if index_distance_input not in np_array:
+                np_array.append(index_distance_input)
+
+        for np_index, atom in enumerate(self.points):
+            # compute the distance between the atom and the rest of the atoms within the core
+            dist_array = self._distance_array(atom, self.points)
+            for np_index_2, entry in enumerate(dist_array):
+                if np_index == np_index_2:
+                    continue  # skip if looking at the same index
+                if (
+                    entry / 10 >= default_dist
+                ):  # for martini bonds, we cannot have bonds longer than 0.7 nm
+                    continue  # skip if bond length is more than 0.7
+                if np_index >= 1:
+                    sorted_input = sorted([np_index, np_index_2])
+                    # check that we don't have repeated entries for restraints
+                    # and once check has passed,
+                    check_and_add(sorted_input, entry / 10, self.np_array)
+
+        self.output_constraint = assign_constraint(self.np_array)
+
+    def _write_gro_file(
+        self,
+        output_filename: str = "output.gro",
+        atom_names: str = None,
+    ) -> IO:
+        """
+        generate gro file as the reference input for polyply
+        """
+        num_atoms = len(self.points)
+        header = "Generated by Python\n{:5d}\n".format(num_atoms)
+
+        with open(output_filename, "w") as gro_file:
+            gro_file.write(header)
+            for i in range(num_atoms):
+                atom_name = atom_names[i] if atom_names else f"A{i+1}"
+                x, y, z = self.points[i]
+                gro_file.write(
+                    "{:5d}{:<5s}{:>5s}{:5d}{:8.3f}{:8.3f}{:8.3f}\n".format(
+                        1, "MOL", atom_name, i + 1, x, y, z
+                    )
+                )
+            gro_file.write("   0.00000   0.00000   0.00000\n")
+
+    def _write_itp_file(self) -> IO:
+        """
+        generate itp file for polyply to read and modify later
+        """
+        # Write the ITP file
+        moleculename = "TEST"
+        atom_name = "CA"
+        self._create_np_atom_type_dict()
+        self._process_atoms()
+
+        with open("output.itp", "w") as itp_file:
+            itp_file.write("[ moleculetype ]\n")
+            itp_file.write("; Name            nrexcl\n")
+            itp_file.write(f"{moleculename}   3\n\n")
+            itp_file.write("[ atoms ]\n")
+            itp_file.write(
+                ";   nr       type  resnr residue  atom   cgnr     charge       mass  typeB    chargeB      massB\n"
+            )
+
+            for atom in self.atoms.keys():
+                itp_file.write(
+                    f"   {atom+1}    {atom_name}    1     {moleculename}    {atom_name}   1    {self.atoms[atom][3]:.6f}    {12.0:.6f}\n"
+                )
+            itp_file.write("\n")
+            # have to write the restraints here
+            itp_file.write("[ constraints ]\n")
+            for entry in self.output_constraint:
+                itp_file.write(f"{entry[0]+1} {entry[1]+1} {entry[2]} {entry[3]}\n")
+            itp_file.write("\n")
+
+    def _generate_itp_string(self) -> str:
+        """
+        Generate an ITP string for polyply to use and modify later.
+        """
+        # Initialize an empty string to store the ITP content
+        itp_content = ""
+
+        # Define the parameters
+        moleculename = "TEST"
+        atom_name = "CA"
+        self._create_np_atom_type_dict()
+        self._process_atoms()
+
+        # Append the content to the itp_content string
+        itp_content += "[ moleculetype ]\n"
+        itp_content += "; Name            nrexcl\n"
+        itp_content += f"{moleculename}   3\n\n"
+        itp_content += "[ atoms ]\n"
+        itp_content += ";   nr       type  resnr residue  atom   cgnr     charge       mass  typeB    chargeB      massB\n"
+
+        for atom in self.atoms.keys():
+            itp_content += f"   {atom+1}    {atom_name}    1     {moleculename}    {atom_name}   1    {self.atoms[atom][3]:.6f}    {12.0:.6f}\n"
+            itp_content += "\n[ constraints ]\n"
+        for entry in self.output_constraint:
+            itp_content += f"{entry[0]+1} {entry[1]+1} {entry[2]} {entry[3]}\n"
+
+    itp_content += "\n"
+    return itp_content
 
 
 class GoldNanoparticleSingle:
@@ -114,7 +296,7 @@ class GoldNanoparticleSingle:
 
     def _set_ff(self) -> None:
         """ """
-        logging.info("defining the nanoparticle and ligand block")
+        # logging.info("defining the nanoparticle and ligand block")
         self.NP_block = self.force_field[self.np_name]
         self.ligand_block = self.force_field.blocks[self.ligand_name]
 
@@ -122,7 +304,7 @@ class GoldNanoparticleSingle:
         """
         iniiate np array values
         """
-        logging.info("defining V E and F")
+        # logging.info("defining V E and F")
         self.V = np.zeros((12, 3))
         self.E = np.zeros((2, 3, 30))
         self.F = np.zeros((3, 3, 20))
@@ -317,11 +499,7 @@ class GoldNanoparticleSingle:
         self, outfile: str, velocities: bool = False, box: str = "5.0, 5.0, 5.0"
     ) -> None:
         """
-        Plot out the lattice in a 3D structure - generating the coordinates part
-        is easy. Now
-        the hard part is generating the gro file
-        this is somewhat working ... nowhere near what I want - need to review
-        the core generation code I made above
+        Generate the gro structure for the artificial NP.
 
         Parameters
         ----------
@@ -337,7 +515,7 @@ class GoldNanoparticleSingle:
         logging.info("Creating the main gromacs file")
         velocity_fmt = ""
         self._generate_positions()  # generate positions for the gold lattice core
-        # logging.info("put log here")
+        # #logging.info("put log here")
         core_numpy_coords = self.pos_gold
         coords = [[j for j in i] for i in core_numpy_coords]
         gold_str = [f"1AU  AU  {i + 1}" for i in range(0, len(coords))]
@@ -355,3 +533,10 @@ class GoldNanoparticleSingle:
 
             output.write(box)
             output.write("\n")
+
+
+if __name__ == "__main__":
+    nanoparticle_sample = CentralCoreGenerator("output.pdb", 100, 3.0, 0.0, "ff", "P5")
+    nanoparticle_sample._nanoparticle_base_fibonacci_sphere()
+    nanoparticle_sample._write_gro_file()
+    nanoparticle_sample._write_itp_file()
