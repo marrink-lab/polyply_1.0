@@ -1,4 +1,4 @@
-; /Users/alessandri/miniconda3/envs/polyplyRA/bin/polyply gen_params -lib ibi_CGM3 -seq PTMA:10 -o PTMA.itp -name PTMA
+; /Users/alessandri/miniconda3/envs/polyplyRA/bin/polyply gen_params -lib ibi_cgm3 -seq PTMA:10 -o PTMA.itp -name PTMA
 
 ; Please cite the following papers:
 ; Alessandri, R; de Pablo, J J;  Macromolecules 2023; 10.1021/acs.macromol.3c00141
