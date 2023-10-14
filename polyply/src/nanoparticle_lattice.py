@@ -1,6 +1,6 @@
 import itertools
 import logging  # implement logging parts here
-from typing import Any, Dict, List, Literal
+from typing import Any, Dict, List, Literal, Tuple
 
 import networkx as nx
 import numpy as np
@@ -51,6 +51,8 @@ def generate_artificial_core(
     logging.info("Writing the itp for the artificial core")
     itp_output = nanoparticle_core_object._generate_itp_string()
     logging.info("Writing the gro file for the artificial core")
+    gro_output = nanoparticle_core_object._generate_itp_string()
+    return (gro_output, itp_output)
 
 
 def rotation_matrix_from_vectors(vec_a: np.ndarray, vec_b: np.ndarray) -> np.ndarray:
@@ -849,9 +851,6 @@ class NanoparticleModels(Processor):
 
     def _initiate_nanoparticle_coordinates(self) -> None:
         """ """
-        # for node in self.np_molecule_new.nodes:
-        #    # change resname to moltype
-        #    self.np_molecule_new.nodes[node]["resname"] = "TEST"
 
         self.graph = MetaMolecule._block_graph_to_res_graph(
             self.np_molecule_new
@@ -863,16 +862,9 @@ class NanoparticleModels(Processor):
         )
         self.np_molecule_new.meta["moltype"] = "TEST"
         # reassign the molecule with the np_molecule we have defined new interactions with
-
         NanoparticleCoordinates().run_molecule(self.np_molecule_new)
+
         # shift the positions of the ligands so that they are initiated on the surface of the NP
-
-        # PositionChangeCore(
-        #    "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/au144_pet60.gro",
-        #    "CLU",
-        #    "AU",
-        # ).run_molecule(self.np_molecule_new)
-
         for resname in self.ligand_block_specs.keys():
             PositionChangeLigand(
                 ligand_block_specs=self.ligand_block_specs,
@@ -881,7 +873,6 @@ class NanoparticleModels(Processor):
                 original_coordinates=self.original_coordinates,
                 length=self.length,
             ).run_molecule(self.np_molecule_new)
-
         # prepare meta molecule
         self.meta_mol.molecule = self.np_molecule_new
 
@@ -998,12 +989,3 @@ if __name__ == "__main__":
     # Generating output files
     PCBM_model.create_gro("PCBM.gro")
     PCBM_model.write_itp("PCBM.itp")
-
-    # sampleNPCore = GoldNanoparticleSingle()
-    # sampleNPCore._generate_positions()
-    # sampleNPCore.create_gro(
-    #    "/home/sang/Desktop/example_gold.gro"
-    # )  # this works but not fully
-
-    # generate the PCBM nanoparticle in martini
-    # -------------------------------------
