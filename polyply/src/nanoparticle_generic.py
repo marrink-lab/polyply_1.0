@@ -245,7 +245,8 @@ class CentralCoreGenerator:
 
         for atom in self.atoms.keys():
             itp_content += f"   {atom+1}    {atom_name}    1     {moleculename}    {atom_name}   1    {self.atoms[atom][3]:.6f}    {12.0:.6f}\n"
-            itp_content += "\n[ constraints ]\n"
+
+        itp_content += "\n[ constraints ]\n"
         for entry in self.output_constraint:
             itp_content += f"{entry[0]+1} {entry[1]+1} {entry[2]} {entry[3]}\n"
 

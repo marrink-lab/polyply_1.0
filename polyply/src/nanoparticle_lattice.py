@@ -1,3 +1,4 @@
+import io
 import itertools
 import logging  # implement logging parts here
 from typing import Any, Dict, List, Literal, Tuple
@@ -35,24 +36,33 @@ logging.basicConfig(level=logging.INFO)
 
 
 def generate_artificial_core(
+    output: str,
     number_of_atoms: int,
     radius: float,
     ff: vermouth.forcefield.ForceField,
     constitute: str,
-) -> Tuple[str, str]:
+    nanoparticle_name: str = "test",
+) -> None:  # Tuple[str, str]:
     """
     use the imported class to generate a core of R size
-    and write it to the main vermouth object that has been called
+    and write it to the main vermouth object that has been called.
+
+    At the moment, the generation of gromacs file will need to be separately implemented by reading in the
+    gromacs file that is generated from the nanoparticle_lattice.
     """
     nanoparticle_core_object = CentralCoreGenerator(
-        "output.pdb", number_of_atoms, radius, 0.0, ff, constitute
+        output, number_of_atoms, radius, 0.0, ff, constitute
     )
     nanoparticle_core_object._nanoparticle_base_fibonacci_sphere()
     logging.info("Writing the itp for the artificial core")
-    itp_output = nanoparticle_core_object._generate_itp_string()
-    logging.info("Writing the gro file for the artificial core")
-    gro_output = nanoparticle_core_object._generate_itp_string()
-    return (gro_output, itp_output)
+    itp_output = nanoparticle_core_object._generate_itp_string().split("\n")
+    # register the itp file
+    vermouth.gmx.itp_read.read_itp(itp_output, ff)
+    # generate the gromacs file for the nanoparticle
+    logging.info(
+        f"Writing the gro file for the artificial core - generating {nanoparticle_name}.gro"
+    )
+    nanoparticle_core_object._write_gro_file(output_filename=f"{nanoparticle_name}.gro")
 
 
 def rotation_matrix_from_vectors(vec_a: np.ndarray, vec_b: np.ndarray) -> np.ndarray:
@@ -153,6 +163,7 @@ class NanoparticleCoordinates(Processor):
 class PositionChangeCore(Processor):
     """
     Reestablishing the core positions from the
+    gro file
     """
 
     def __init__(self, gro_path: str, atom: str, atom_2: str):
@@ -165,6 +176,7 @@ class PositionChangeCore(Processor):
         Adjust the core components as necessary
         """
         gro_loaded = gro.read_gro(self.gro_path)
+
         core_incremental_positions = [
             gro_loaded.nodes[node] for node in list(gro_loaded.nodes)
         ]
@@ -244,6 +256,7 @@ class PositionChangeLigand(Processor):
             ]
         ]
         print("core_ligand", core_ligand)
+
         # assert len(core_ligand) == len(
         #    self.ligand_block_specs[self.resname]["resids"]
         # ), "The number of residues identified does not match the core zone we want to attach to!"
@@ -304,8 +317,8 @@ class PositionChangeLigand(Processor):
             # rot_mat = rotation_matrix_from_vectors(
             #    ligand_directional_vector, core_ligand[resid_index]
             # )
-            rot_mat = rotation_matrix_from_vectors(ligand_directional_vector, vec2)
 
+            rot_mat = rotation_matrix_from_vectors(ligand_directional_vector, vec2)
             logging.info(
                 f"The rotation matrix we have for residue {resid} is {rot_mat}"
             )
@@ -488,6 +501,14 @@ class NanoparticleModels(Processor):
 
         return block
 
+    def core_generate_aritifical_coordinates(self) -> None:
+        """ """
+        gro, itp = generate_artificial_core("output.gro", 100, 3.0, self.ff, "P5")
+        self.NP_block = self.ff.blocks[self.np_component]
+        core_molecule = self.ff.blocks[self.np_component].to_molecule()
+        NanoparticleCoordinates().run_molecule(self.np_molecule_new)
+        PositionChangeCore("output.gro").run_molecule(self.np_molecule_new)
+
     def core_generate_coordinates(self) -> None:
         """
         Now I need to ensure that this function is
@@ -510,15 +531,15 @@ class NanoparticleModels(Processor):
         """
         vermouth.gmx.itp_read.read_itp(
             self.sample, self.ff
-        )  # read the original itp file for the core
+        )  # Read the original itp file for the core
         self.NP_block = self.ff.blocks[self.np_component]
         core_molecule = self.ff.blocks[
             self.np_component
-        ].to_molecule()  # make metamolcule object from the core block
+        ].to_molecule()  # Make metamolcule object from the core block
 
         core_block = self._extract_block_atom(
             core_molecule, self.np_atype, {}
-        )  # get only the gold atoms from the itp
+        )  # Get only the gold atoms from the itp
 
         self.core_block = core_block
         self.core_len, self.core = len(core_block), len(core_block)
@@ -697,8 +718,7 @@ class NanoparticleModels(Processor):
                 # assert len(self.ff.blocks.keys()) == len(self.ligand_N)
 
         for index, block_name in enumerate(self.ff.blocks.keys()):
-
-            print(index, block_name)
+            logging.info(f"{index}, {block_name}")
             if block_name != self.np_component:  # If the block is not that of the core
 
                 # reset the resid
@@ -812,11 +832,13 @@ class NanoparticleModels(Processor):
         core_size = self.core
         # get random N elements from the list
         for key in self.ligand_block_specs.keys():
+
             logging.info(f"bonds for {key}")
             adjusted_N_indices = list(self.ligand_block_specs[key]["indices"].keys())[
                 : self.ligand_block_specs[key]["N"]
             ]
-            print("adjusted", adjusted_N_indices)
+
+            logging.info(f"adjusted {adjusted_N_indices}")
             for index, entry in enumerate(adjusted_N_indices):
                 base_anchor = (
                     core_size
@@ -836,7 +858,6 @@ class NanoparticleModels(Processor):
                     ],
                     meta={},
                 )
-
                 logging.info(f"generating bonds between {entry} and {base_anchor}")
 
                 self.np_molecule_new.interactions["bonds"].append(interaction)
@@ -876,19 +897,6 @@ class NanoparticleModels(Processor):
         # prepare meta molecule
         self.meta_mol.molecule = self.np_molecule_new
 
-    def generate_dicts(self) -> None:
-        """
-        Run the gamut of reading the core itp/gro files,
-        reading the ligand files, and then generating
-        the final itp/gro files.
-        """
-        self._identify_indices_for_core_attachment()
-        self._ligand_generate_coordinates()
-        self._add_block_indices()
-        self._generate_ligand_np_interactions()
-        self._generate_bonds()
-        self._initiate_nanoparticle_coordinates()
-
     def create_gro(self, write_path: str) -> None:
         """
         Generate the gro file from the nanoparticle we have created.
@@ -899,7 +907,6 @@ class NanoparticleModels(Processor):
         self.np_top = Topology(name="nanoparticle", force_field=self.ff)
         self.np_top.molecules = [self.meta_mol]
         self.np_top.box = np.array([10.0, 10.0, 10.0])
-
         system = self.np_top.convert_to_vermouth_system()
         gro.write_gro(
             system,
@@ -989,3 +996,7 @@ if __name__ == "__main__":
     # Generating output files
     PCBM_model.create_gro("PCBM.gro")
     PCBM_model.write_itp("PCBM.itp")
+
+    # Artificial core
+    ff = vermouth.forcefield.ForceField(name="test")
+    gro, itp = generate_artificial_core(100, 3.0, ff, "P5")
