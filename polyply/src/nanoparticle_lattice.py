@@ -166,10 +166,10 @@ class PositionChangeCore(Processor):
     gro file
     """
 
-    def __init__(self, gro_path: str, atom: str, atom_2: str):
+    def __init__(self, gro_path: str, atom: str, atom_type: str):
         self.gro_path = gro_path
-        self.atom = atom
-        self.atom_2 = atom_2
+        self.np_core_atom = atom
+        self.np_core_atom_type = atom_type
 
     def run_molecule(self, meta_molecule) -> None:
         """
@@ -183,10 +183,16 @@ class PositionChangeCore(Processor):
         original_atomic_coordinates = [
             atom[1]["position"]
             for atom in gro_loaded.atoms
-            if atom[1]["resname"] == self.atom
+            if atom[1]["resname"] == self.np_core_atom
         ]
-        for index, node in enumerate(list(meta_molecule.nodes)):
-            if meta_molecule.nodes[index + 1]["atype"] == self.atom_2:
+        # print(original_atomic_coordinates)
+        for index, node in enumerate(
+            list(meta_molecule.nodes)[: len(original_atomic_coordinates)]
+        ):
+            # print(
+            #    meta_molecule.nodes[index + 1]["atype"], "sdf", self.np_core_atom_type
+            # )
+            if meta_molecule.nodes[index + 1]["atype"] == self.np_core_atom_type:
                 meta_molecule.nodes[index + 1][
                     "position"
                 ] = original_atomic_coordinates[index]
@@ -398,6 +404,7 @@ class NanoparticleModels(Processor):
 
     def __init__(
         self,
+        gro_file,
         sample,
         np_component,
         np_atype,
@@ -425,6 +432,7 @@ class NanoparticleModels(Processor):
         ligand_anchor_atoms:
 
         """
+        self.gro_file = gro_file
         self.sample = sample
         self.np_component = np_component
         self.np_atype = np_atype
@@ -507,7 +515,7 @@ class NanoparticleModels(Processor):
         self.NP_block = self.ff.blocks[self.np_component]
         core_molecule = self.ff.blocks[self.np_component].to_molecule()
         NanoparticleCoordinates().run_molecule(self.np_molecule_new)
-        PositionChangeCore("output.gro").run_molecule(self.np_molecule_new)
+        # PositionChangeCore().run_molecule(self.np_molecule_new)
 
     def core_generate_coordinates(self) -> None:
         """
@@ -884,6 +892,9 @@ class NanoparticleModels(Processor):
         self.np_molecule_new.meta["moltype"] = "TEST"
         # reassign the molecule with the np_molecule we have defined new interactions with
         NanoparticleCoordinates().run_molecule(self.np_molecule_new)
+        PositionChangeCore(self.gro_file, self.sample, self.np_atype).run_molecule(
+            self.np_molecule_new
+        )
 
         # shift the positions of the ligands so that they are initiated on the surface of the NP
         for resname in self.ligand_block_specs.keys():
@@ -930,6 +941,7 @@ class NanoparticleModels(Processor):
 if __name__ == "__main__":
     # The gold nanoparticle - generate the core of the opls force field work
     AUNP_model = NanoparticleModels(
+        "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/au144.gro",
         return_amber_nps_type("au144_OPLS_bonded"),
         "NP2",
         "AU",
@@ -952,21 +964,22 @@ if __name__ == "__main__":
         },
         identify_surface=False,
     )
-    # AUNP_model.core_generate_coordinates()
-    # AUNP_model._identify_indices_for_core_attachment()
-    # AUNP_model._ligand_generate_coordinates()
-    # AUNP_model._add_block_indices()  # Not sure whether we need this now ...
-    # AUNP_model._generate_ligand_np_interactions()
-    # AUNP_model._generate_bonds()
-    # AUNP_model._initiate_nanoparticle_coordinates()  # doesn't quite work yet.
-    ## Generating output files
-    # AUNP_model.create_gro("gold.gro")
+    AUNP_model.core_generate_coordinates()
+    AUNP_model._identify_indices_for_core_attachment()
+    AUNP_model._ligand_generate_coordinates()
+    AUNP_model._add_block_indices()  # Not sure whether we need this now ...
+    AUNP_model._generate_ligand_np_interactions()
+    AUNP_model._generate_bonds()
+    AUNP_model._initiate_nanoparticle_coordinates()  # doesn't quite work yet.
+    # Generating output files
+    AUNP_model.create_gro("gold.gro")
     # AUNP_model.write_itp("gold.itp")
 
     # PCBM nanoparticle (Coarse-grained) - constructing the PCBM
     PCBM_ligand_gro = "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/PCBM_CG/PCBM_ligand.gro"
     ## Creating the PCBM model
     PCBM_model = NanoparticleModels(
+        "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/PCBM_CG/F16.gro",
         return_cg_nps_type("F16"),
         "F16",
         "CNP",
@@ -995,8 +1008,8 @@ if __name__ == "__main__":
 
     # Generating output files
     PCBM_model.create_gro("PCBM.gro")
-    PCBM_model.write_itp("PCBM.itp")
+    # PCBM_model.write_itp("PCBM.itp")
 
     # Artificial core
-    ff = vermouth.forcefield.ForceField(name="test")
-    gro, itp = generate_artificial_core(100, 3.0, ff, "P5")
+    # ff = vermouth.forcefield.ForceField(name="test")
+    # gro, itp = generate_artificial_core("output", 100, 3.0, ff, "P5")
