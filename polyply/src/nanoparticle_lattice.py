@@ -176,22 +176,19 @@ class PositionChangeCore(Processor):
         Adjust the core components as necessary
         """
         gro_loaded = gro.read_gro(self.gro_path)
-
         core_incremental_positions = [
             gro_loaded.nodes[node] for node in list(gro_loaded.nodes)
         ]
+
         original_atomic_coordinates = [
             atom[1]["position"]
             for atom in gro_loaded.atoms
             if atom[1]["resname"] == self.np_core_atom
         ]
-        # print(original_atomic_coordinates)
+
         for index, node in enumerate(
             list(meta_molecule.nodes)[: len(original_atomic_coordinates)]
         ):
-            # print(
-            #    meta_molecule.nodes[index + 1]["atype"], "sdf", self.np_core_atom_type
-            # )
             if meta_molecule.nodes[index + 1]["atype"] == self.np_core_atom_type:
                 meta_molecule.nodes[index + 1][
                     "position"
@@ -799,13 +796,18 @@ class NanoparticleModels(Processor):
         when first building the class.
         """
         core_size = self.core  # get the core size
-        resid_index = 2  # 3 for PCBM for some reason..
+        resid_index = 2
+
         for key in self.ligand_block_specs.keys():
+
             attachment_list = {}
+
             resids = []
+
             adjusted_N_indices = list(self.ligand_block_specs[key]["indices"].keys())[
                 : self.ligand_block_specs[key]["N"]
             ]
+
             for index, core_atom in enumerate(adjusted_N_indices, 1):
                 # loop over the number of ligands we want to create
                 # Get the core size and the final index of the ligand + core size
@@ -842,11 +844,13 @@ class NanoparticleModels(Processor):
         for key in self.ligand_block_specs.keys():
 
             logging.info(f"bonds for {key}")
+
             adjusted_N_indices = list(self.ligand_block_specs[key]["indices"].keys())[
                 : self.ligand_block_specs[key]["N"]
             ]
 
             logging.info(f"adjusted {adjusted_N_indices}")
+
             for index, entry in enumerate(adjusted_N_indices):
                 base_anchor = (
                     core_size
@@ -873,8 +877,9 @@ class NanoparticleModels(Processor):
             logging.info(
                 f"core length is {self.core_len}, number of atoms with ligands added is {self.ligand_block_specs[key]['length'] * self.ligand_block_specs[key]['N']} "
             )
-            core_size += self.ligand_block_specs[key]["length"] * len(
-                list(self.ligand_block_specs[key]["indices"])
+            core_size += (
+                self.ligand_block_specs[key]["length"]
+                * self.ligand_block_specs[key]["N"]
             )
             logging.info(f"core length is now {self.core_len}")
 
@@ -973,7 +978,7 @@ if __name__ == "__main__":
     AUNP_model._initiate_nanoparticle_coordinates()  # doesn't quite work yet.
     # Generating output files
     AUNP_model.create_gro("gold.gro")
-    # AUNP_model.write_itp("gold.itp")
+    AUNP_model.write_itp("gold.itp")
 
     # PCBM nanoparticle (Coarse-grained) - constructing the PCBM
     PCBM_ligand_gro = "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/PCBM_CG/PCBM_ligand.gro"
@@ -1008,7 +1013,7 @@ if __name__ == "__main__":
 
     # Generating output files
     PCBM_model.create_gro("PCBM.gro")
-    # PCBM_model.write_itp("PCBM.itp")
+    PCBM_model.write_itp("PCBM.itp")
 
     # Artificial core
     # ff = vermouth.forcefield.ForceField(name="test")
