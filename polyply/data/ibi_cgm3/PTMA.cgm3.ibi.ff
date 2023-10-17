@@ -1,0 +1,68 @@
+[ moleculetype ]
+; name nexcl.
+PTMA     2
+
+[ info ] 
+Nonbonded interaction potentials (and example run) can be found at: https://doi.org/10.5281/zenodo.8287521
+ 
+[ atoms ]
+; id  type  resnr  residu atom  cgnr  charge  mass
+   1   VNL    1    PTMA   VNL    1     0.0     54
+   2   EST    1    PTMA   EST    2     0.0     54
+   3    C1    1    PTMA    C1    3     0.0     54
+   4    C2    1    PTMA    C2    4     0.0     54
+   5    C2    1    PTMA    C3    5     0.0     54
+   6    N4    1    PTMA    N4    6     0.0     36
+ 
+[ bonds ]
+; i  j   funct   length
+  1  2      1     0.262   15000 { "comment": "M3 PMMA model [10.1038/s41467-021-27627-4] shortened"}
+  2  3      1     0.253   15000 { "comment": "PMMA-TEMPO connection"} 
+  3  4      1     0.326   25000 { "comment": "cog (TEMPO)"}
+  3  5      1     0.326   25000 { "comment": "cog (TEMPO)"}
+  3  6      1     0.310  100000 {"ifdef": "FLEXIBLE", "comment": "cog (TEMPO)"} 
+  4  6      1     0.238  100000 {"ifdef": "FLEXIBLE", "comment": "cog (TEMPO)"}
+  5  6      1     0.238  100000 {"ifdef": "FLEXIBLE", "comment": "cog (TEMPO)"}
+ 
+[constraints]
+; i  j   funct   length
+  3  6      1     0.310  {"ifndef": "FLEXIBLE", "comment": "cog (TEMPO)"} 
+  4  6      1     0.238  {"ifndef": "FLEXIBLE", "comment": "cog (TEMPO)"}
+  5  6      1     0.238  {"ifndef": "FLEXIBLE", "comment": "cog (TEMPO)"}
+ 
+[ angles ]
+; i  j  k  funct   length  force k
+  1  2  3    2      132.9    70 { "comment": "PMMA-TEMPO connection"} 
+  2  3  4    2      129.0    60 { "comment": "PMMA-TEMPO connection"} 
+  2  3  5    2      121.9    95 { "comment": "PMMA-TEMPO connection"} 
+
+[dihedrals]
+; i j k l  funct  ref.angle   force_k
+  3 4 5 6    2      140.00      20 { "comment": "cog (TEMPO)"}
+  2 4 5 6    2      150.00      80 { "comment": "PMMA-TEMPO connection"}
+
+[exclusions]
+  1 2 3 4 5 6
+  2 3 4 5 6 
+  3 4 5 6  
+  4 5 6  
+  5 6
+
+[ link ]
+resname "PTMA"
+[ bonds ]
+VNL     +VNL    1     0.315 4000  {"group": "vinyl backbone"}
+
+[ link ]
+resname "PTMA"
+[ angles ]
+VNL  +VNL  ++VNL   2  115  35  {"group": "vinyl backbone"}
+
+[ link ]
+resname "PTMA"
+[ angles ]
+EST  VNL  +VNL  2  70  20
+
+[ citation ]
+2023RAlessandri-Macromolecules
+polyply
