@@ -189,6 +189,7 @@ def _interaction_equal(interaction1, interaction2, inter_type):
      ['martini3', 'P3HT'],
      ['martini3', 'PPE'],
      ['martini3', 'PTMA'],
+     ['ibi_cgm3', 'PTMA'],
      ['martini2', 'PEO'],
      ['martini2', 'PS'],
      ['martini2', 'PEL'],
