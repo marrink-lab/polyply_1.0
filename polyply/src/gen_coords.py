@@ -191,7 +191,7 @@ def gen_coords(toppath,
         during the backmapping step. 1 will result in to-scale coordinates
         but will likely generate overlaps.
     max_bend: float
-        persistence legnth determine max bending
+        persistence length determine max bending
     """
 
     # Read in the topology
