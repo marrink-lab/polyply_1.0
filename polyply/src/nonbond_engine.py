@@ -328,7 +328,7 @@ class NonBondEngine():
         float
             the probability
         """
-        # get the missing postions
+        # get the missing positions
         B_pos = self.get_point(mol_idx, node_b)
         C_pos = self.get_point(mol_idx, node_c)
         # compute angle
