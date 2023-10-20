@@ -12,12 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from collections import defaultdict, namedtuple
+from pathlib import Path
 import numpy as np
 import networkx as nx
 import vermouth
 from vermouth.parser_utils import SectionLineParser
 from vermouth.log_helpers import StyleAdapter, get_logger
 from .generate_templates import map_from_CoG, compute_volume
+from .topology import _coord_parser
+from .linalg_functions import center_of_geometry
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
@@ -41,6 +44,16 @@ class BuildDirector(SectionLineParser):
         self.persistence_length = {}
         self.templates = {}
         self.current_template = None
+        self.rigid_fragments = {}
+        self.rigid_options = {}
+
+    @SectionLineParser.section_parser('rigid_fragments')
+    def _define_ridig_fragments(self, line, lineno=0):
+        tag, filename = line.split()
+        path = Path(filename)
+        extension = path.suffix.casefold()[1:]
+        positions, box = _coord_parser(path, extension)
+        self.rigid_fragments[tag] = positions
 
     @SectionLineParser.section_parser('molecule')
     def _molecule(self, line, lineno=0):
@@ -93,6 +106,19 @@ class BuildDirector(SectionLineParser):
 
         for idx in self.current_molidxs:
             self.rw_options[(self.current_molname, idx)] = geometry_def
+
+    @SectionLineParser.section_parser('molecule', 'rigid')
+    def _rigid_options(self, line, lineno=0):
+        """
+        Restrict random walk in specific direction.
+        """
+        tokens = line.split()
+        rigid_def = {"start": int(tokens[0]),
+                     "stop":  int(tokens[1]),
+                     "parameters": tuple(map(bool, tokens[2:5]))}
+        print(tuple(map(bool, tokens[2:5])))
+        for idx in self.current_molidxs:
+            self.rigid_options[(self.current_molname, idx)] = rigid_def
 
     @SectionLineParser.section_parser('molecule', 'distance_restraints')
     def _distance_restraints(self, line, lineno=0):
@@ -207,6 +233,21 @@ class BuildDirector(SectionLineParser):
         if that molecule is mentioned in the build file by name.
         """
         for mol_idx, molecule in enumerate(self.molecules):
+
+            if (molecule.mol_name, mol_idx) in self.rigid_options:
+                builder_opt = self.rigid_options[(molecule.mol_name, mol_idx)]
+                resids = np.arange(builder_opt['start'], builder_opt['stop'], 1.)
+                count = 0
+                positions = self.rigid_fragments[molecule.mol_name]
+                for idx, node in enumerate(molecule.nodes):
+                    if molecule.nodes[node]["resid"] in resids:
+                        molecule.nodes[node]['builder'] = 'rigid'
+                        molecule.nodes[node]['rotate'] = builder_opt['parameters']
+                        res_start = count
+                        for mol_node in molecule.nodes[node]['graph']:
+                            molecule.molecule.nodes[mol_node]['position'] = positions[count]
+                            count += 1
+                        molecule.nodes[node]['position'] = center_of_geometry(positions[res_start:count])
 
             if (molecule.mol_name, mol_idx) in self.build_options:
                 for option in self.build_options[(molecule.mol_name, mol_idx)]:

@@ -19,8 +19,10 @@ Processor for building systems with more than one molecule
 """
 import inspect
 import numpy as np
+import networkx as nx
 from tqdm import tqdm
 from .random_walk import RandomWalk
+from .fragment_placer import RigidFragmentPlacer
 from .linalg_functions import norm_sphere
 from .nonbond_engine import NonBondEngine
 from .persistence import sample_end_to_end_distances
@@ -210,15 +212,29 @@ class BuildSystem():
         while mol_idx < mol_tot:
 
             molecule = molecules[mol_idx]
-
-            if all(["position" in molecule.nodes[node] for node in molecule.nodes]):
-                mol_idx += 1
-                pbar.update(1)
-                continue
-
-            success, new_nonbond_matrix = self._handle_random_walk(molecule,
-                                                                   mol_idx,
-                                                                   vector_sphere)
+            build_attrs = nx.get_node_attributes(molecule, "builder")
+            if "rigid" in build_attrs.values():
+                # place rigid fragments before checking if random-walk is needed
+                placer = RigidFragmentPlacer(mol_idx,
+                                             self.nonbond_matrix,
+                                             self.box_grid,
+                                             maxiter=self.maxiter,
+                                             maxrot=100,
+                                             maxdim=self.box,
+                                             max_force=self.rwargs['max_force'],
+                                             vector_sphere=vector_sphere)
+                placer.run_molecule(molecule)
+                success = placer.success
+                new_nonbond_matrix = placer.nonbond_matrix
+            else:
+                if all("position" in molecule.nodes[node] for node in molecule.nodes):
+                    mol_idx += 1
+                    pbar.update(1)
+                    success = True
+                else:
+                    success, new_nonbond_matrix = self._handle_random_walk(molecule,
+                                                                           mol_idx,
+                                                                           vector_sphere)
             if success:
                 self.nonbond_matrix = new_nonbond_matrix
                 self.nonbond_matrix.concatenate_trees()
