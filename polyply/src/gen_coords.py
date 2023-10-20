@@ -237,7 +237,8 @@ def gen_coords(toppath,
         grid = np.loadtxt(grid)
 
     # where to get the box size from
-    if box is not None and topology.box and not np.array_equal(topology.box, box):
+    if box is not None and topology.box is not None\
+        and not np.array_equal(topology.box, box):
         msg = ("A box is provided via the -box command line "
                "and the starting coordinates. We consider the "
                "the box of starting coordinates as correct. ")
