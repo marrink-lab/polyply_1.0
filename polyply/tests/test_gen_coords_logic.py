@@ -47,15 +47,24 @@ def test_no_positions_generated(tmp_path, monkeypatch):
         assert np.all(molecule_out.nodes[node]['position'] ==
                       molecule_in.nodes[node]['position'])
 
-@pytest.mark.parametrize('box_input, box_ref, density, warning', [
+@pytest.mark.parametrize('box_input, box_ref, density, warning, incoords', [
                         # box from input coordinates
-                        (None, np.array([11.0, 11.0, 11.0]), None, None),
+                        (None, np.array([11.0, 11.0, 11.0]),
+                         None, None, True),
                         # box from input coordinates overwrites
-                        (np.array([5.0, 5.0, 5.0]), np.array([11.0, 11.0, 11.0]), None, "warn1"),
+                        (np.array([5.0, 5.0, 5.0]), np.array([11.0, 11.0, 11.0]),
+                         None, "warn1",  True),
                         # box from input coordinates and density from CLI
-                        (None, np.array([11.0, 11.0, 11.0]), 1000, "warn2"),
+                        (None, np.array([11.0, 11.0, 11.0]),
+                         1000, "warn2", True),
+                        # box only from CLI
+                        (np.array([8.0, 11.0, 11.0]), np.array([8.0, 11.0, 11.0]),
+                         None, None, False),
+                        # only density
+                        (None, np.array([0.79273, 0.79273, 0.79273]),
+                         1000, None, False),
                         ])
-def test_box_input(tmp_path, caplog, box_input, box_ref, density, warning):
+def test_box_input(tmp_path, caplog, box_input, box_ref, density, warning, incoords):
     """
     Here we test that the correct box is chosen, in case there
     are conflicting inputs.
@@ -69,7 +78,12 @@ def test_box_input(tmp_path, caplog, box_input, box_ref, density, warning):
                           "provided with starting coordinates."),}
 
     top_file = TEST_DATA / "topology_test/system.top"
-    pos_file = TEST_DATA / "topology_test/complete.gro"
+    if incoords:
+        pos_file = TEST_DATA / "topology_test/complete.gro"
+    else:
+        # no input coordiante provided
+        pos_file = None
+
     out_file = tmp_path / "out.gro"
 
     with caplog.at_level(logging.WARNING):
