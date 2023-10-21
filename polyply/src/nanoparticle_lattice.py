@@ -53,12 +53,11 @@ def generate_artificial_core(
     nanoparticle_core_object = CentralCoreGenerator(
         output, number_of_atoms, radius, 0.0, ff, constitute
     )
+
     nanoparticle_core_object._nanoparticle_base_fibonacci_sphere()
     logging.info("Writing the itp for the artificial core")
     itp_output = nanoparticle_core_object._generate_itp_string().split("\n")
-    # register the itp file
     vermouth.gmx.itp_read.read_itp(itp_output, ff)
-    # generate the gromacs file for the nanoparticle
     logging.info(
         f"Writing the gro file for the artificial core - generating {nanoparticle_name}.gro"
     )
@@ -199,7 +198,7 @@ class PositionChangeLigand(Processor):
     """
     Looks through the meta molecule assigned, and finds the core
     atom to which the ligand is attached. One this has been established,
-    the
+    we modify the coordinates of the ligands to ensure that
 
     Parameters
     ----------
@@ -228,7 +227,6 @@ class PositionChangeLigand(Processor):
         super().__init__(*args, **kwargs)
 
     def run_molecule(self, meta_molecule) -> None:
-        """ """
         # first we find a starting node by looping over the molecule nodes
         # finding any one with a degree that is larger than 1
         # shift coordinates - not sure how to fully do this as we have a generator
@@ -506,15 +504,27 @@ class NanoparticleModels(Processor):
 
         return block
 
-    def core_generate_aritifical_coordinates(self) -> None:
-        """ """
-        gro, itp = generate_artificial_core("output.gro", 100, 3.0, self.ff, "P5")
+    def core_generate_artificial_coordinates(self) -> None:
+        """
+        internal method for generating the artificial core and registering the
+        itp with in the force field
+        """
+        generate_artificial_core("output.gro", 100, 3.0, self.ff, "P5")
         self.NP_block = self.ff.blocks[self.np_component]
-        core_molecule = self.ff.blocks[self.np_component].to_molecule()
+        self.np_molecule_new = self.ff.blocks[self.np_component].to_molecule()
         NanoparticleCoordinates().run_molecule(self.np_molecule_new)
-        # PositionChangeCore().run_molecule(self.np_molecule_new)
+        self.core_len, self.core = len(self.np_molecule_new), len(self.np_molecule_new)
+        # Generate the positions for the core and assign as position elements
+        NanoparticleCoordinates().run_molecule(self.np_molecule_new)
+        self.core_center = center_of_geometry(
+            np.asarray(
+                list(
+                    (nx.get_node_attributes(self.np_molecule_new, "position").values())
+                )
+            )
+        )
 
-    def core_generate_coordinates(self) -> None:
+    def core_generate_coordinates(self, option=Literal[None, "Artificial"]) -> None:
         """
         Now I need to ensure that this function is
         using vermouth to strip the original amber nanoparticle itps
@@ -534,31 +544,40 @@ class NanoparticleModels(Processor):
         -------
         :None
         """
-        vermouth.gmx.itp_read.read_itp(
-            self.sample, self.ff
-        )  # Read the original itp file for the core
-        self.NP_block = self.ff.blocks[self.np_component]
-        core_molecule = self.ff.blocks[
-            self.np_component
-        ].to_molecule()  # Make metamolcule object from the core block
 
-        core_block = self._extract_block_atom(
-            core_molecule, self.np_atype, {}
-        )  # Get only the gold atoms from the itp
+        if option == "Artificial":
+            # generate the fibanocci core - reading in the itp and writing the output.gro to be used later
+            self.core_generate_artificial_coordinates()
+        else:  # otherwise, we are reading in an exsiti gncore and strippign it
+            vermouth.gmx.itp_read.read_itp(
+                self.sample, self.ff
+            )  # Read the original itp file for the core
+            self.NP_block = self.ff.blocks[self.np_component]
+            core_molecule = self.ff.blocks[
+                self.np_component
+            ].to_molecule()  # Make metamolcule object from the core block
 
-        self.core_block = core_block
-        self.core_len, self.core = len(core_block), len(core_block)
-        core_block.nrexcl = self.nrexcl
-        self.np_molecule_new = core_block.to_molecule()
-        # Generate the positions for the core and assign as position elements
-        NanoparticleCoordinates().run_molecule(self.np_molecule_new)
-        self.core_center = center_of_geometry(
-            np.asarray(
-                list(
-                    (nx.get_node_attributes(self.np_molecule_new, "position").values())
+            core_block = self._extract_block_atom(
+                core_molecule, self.np_atype, {}
+            )  # Get only the gold atoms from the itp
+
+            self.core_block = core_block
+            self.core_len, self.core = len(core_block), len(core_block)
+            core_block.nrexcl = self.nrexcl
+            self.np_molecule_new = core_block.to_molecule()
+            # Generate the positions for the core and assign as position elements
+            NanoparticleCoordinates().run_molecule(self.np_molecule_new)
+            self.core_center = center_of_geometry(
+                np.asarray(
+                    list(
+                        (
+                            nx.get_node_attributes(
+                                self.np_molecule_new, "position"
+                            ).values()
+                        )
+                    )
                 )
             )
-        )
 
     def _identify_lattice_surface(self) -> None:
         """
@@ -651,10 +670,6 @@ class NanoparticleModels(Processor):
         minimum_threshold, maximum_threshold = min(core_numpy_coords[:, 2]), max(
             core_numpy_coords[:, 2]
         )
-        # core_numpy_coords = np.array(core_numpy_coords)
-        # hull = ConvexHull(core_numpy_coords)
-        # core_numpy_coords = core_numpy_coords[hull.vertices]
-
         # the logic of this part takes from the original NPMDPackage code
         self.core_indices = create_np_pattern(
             self.pattern,
@@ -1015,6 +1030,7 @@ if __name__ == "__main__":
     PCBM_model.create_gro("PCBM.gro")
     PCBM_model.write_itp("PCBM.itp")
 
-    # Artificial core
-    # ff = vermouth.forcefield.ForceField(name="test")
-    # gro, itp = generate_artificial_core("output", 100, 3.0, ff, "P5")
+    # Artificial core part - we need a code example building a martini 3 based
+    # nanoparticle based on the small molecules repository
+    ff = vermouth.forcefield.ForceField(name="test")
+    generate_artificial_core("output", 100, 3.0, ff, "P5")
