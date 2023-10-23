@@ -23,6 +23,10 @@ from .linalg_functions import pbc_complete, norm_sphere, center_of_geometry, rot
 from .graph_utils import neighborhood
 from .random_walk import fulfill_geometrical_constraints
 
+def matrix_transpose_copy(array):
+    transpose = array.T
+    return transpose.copy()
+
 class RigidFragmentPlacer(Processor):
     """
     Places fragments as rigid units.
@@ -74,8 +78,16 @@ class RigidFragmentPlacer(Processor):
         """
         Generate a new orientation for positions.
         """
+        cog = center_of_geometry(coords)
+        temp = coords - cog
+        p_to_cg = matrix_transpose_copy(temp)
         angles = np.random.uniform(low=0, high=2*np.pi, size=(3))
-        rotated = rotate_xyz(coords, angles[0], angles[1], angles[2])
+        angles[~rotate] = 0
+        pcg_rotated = rotate_xyz(p_to_cg,
+                                 angles[0],
+                                 angles[1],
+                                 angles[0])
+        rotated = pcg_rotated.T + cog
         rotated = pbc_complete(rotated, self.maxdim)
         return rotated
 
@@ -84,9 +96,9 @@ class RigidFragmentPlacer(Processor):
         Pick a new locatoin for the rigid fragment.
         """
         start_idx = np.random.randint(len(self.box_grid))
-        new_coords = coords #a+ (self.box_grid[start_idx] -
-                             #  coords[0])
-        #new_coords = pbc_complete(new_coords, self.maxdim)
+        new_coords = coords + (self.box_grid[start_idx] -
+                               coords[0])
+        new_coords = pbc_complete(new_coords, self.maxdim)
         return new_coords
 
     def update_coordiantes(self, coords, nodes):
@@ -100,7 +112,7 @@ class RigidFragmentPlacer(Processor):
             return True
         return False
 
-    def place_fragment(self, fragment_graph, coords, rotate=(True, True, True)):
+    def place_fragment(self, fragment_graph, coords, rotate=np.array([True, True, True])):
         """
         Attempt to place a rigid fragment.
         """
@@ -109,15 +121,18 @@ class RigidFragmentPlacer(Processor):
             # pick a location
             loc_coords = self.generate_new_location(coords)
             # for a given location try several orientations
-           # if any(rotate):
-           #     for _ in np.arange(0, self.maxrot, 1):
-           #         rot_coords = self.generate_new_orientation(loc_coords, rotate)
-           #         status = self.update_coordiantes(rot_coords, fragment_graph.nodes)
-           ##         if status:
-            #            return True
-            #else:
-            status = self.update_coordiantes(loc_coords, fragment_graph.nodes)
+            if any(rotate):
+                for _ in np.arange(0, self.maxrot, 1):
+                    rot_coords = self.generate_new_orientation(loc_coords, rotate)
+                    status = self.update_coordiantes(rot_coords, fragment_graph.nodes)
+                    if status:
+                        return True
+            else:
+                status = self.update_coordiantes(loc_coords, fragment_graph.nodes)
+
             if status:
+                for ref, node in zip(loc_coords, fragment_graph.nodes):
+                    print(ref, self.nonbond_matrix.get_point(self.mol_idx, node))
                 return True
 
             if step_count == self.maxiter:
@@ -137,13 +152,6 @@ class RigidFragmentPlacer(Processor):
         # build sub-graph of rigid fragment
         rigid_nodes = [node for node, val in build_attrs.items() if val == "rigid"]
         frag_graph = meta_molecule.subgraph(rigid_nodes)
-        rotate = list(set(meta_molecule.nodes[node]['rotate'] for node in frag_graph.nodes))
-
-        # check which rotations are allowd; this error shouldn't be raised
-        # when calling from CLI or via build file as defaults are properly
-        # set
-        if len(rotate) > 1:
-            raise IOError("Rotations must be the same for all nodes in the fragment")
 
         # check that there is only one connected component
         if not nx.is_connected(frag_graph):
@@ -154,7 +162,8 @@ class RigidFragmentPlacer(Processor):
             raise IOError("At the moment auto generation of rigid fragments is not supported.")
 
         coords = np.asarray([meta_molecule.nodes[node]["position"] for node in frag_graph.nodes])
-        print(rotate[0])
+        node = list(frag_graph.nodes)[0]
+        rotate = meta_molecule.nodes[node]['rotate']
         self.success = self.place_fragment(frag_graph, coords, rotate=rotate)
         return meta_molecule
 
