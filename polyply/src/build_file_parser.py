@@ -113,10 +113,14 @@ class BuildDirector(SectionLineParser):
         Restrict random walk in specific direction.
         """
         tokens = line.split()
+        rotation = np.full(3, fill_value=False)
+        axes = {'x': 0, 'y': 1, 'z': 2}
+        for axis in tokens[2:]:
+            rotation[axes[axis]] = True
+
         rigid_def = {"start": int(tokens[0]),
                      "stop":  int(tokens[1]),
-                     "parameters": tuple(map(bool, tokens[2:5]))}
-        print(tuple(map(bool, tokens[2:5])))
+                     "parameters": rotation}
         for idx in self.current_molidxs:
             self.rigid_options[(self.current_molname, idx)] = rigid_def
 
