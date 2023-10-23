@@ -269,4 +269,8 @@ def pbc_complete(point, maxdim):
     --------
     np.ndarray
     """
-    return point % maxdim
+    # we need to take special care to make this work
+    # with negative values and stay within [0, maxdim)
+    # which are the limits for the cKDTree of scipy
+    point[np.isclose(point, 0)] = 0.0
+    return np.mod(point, maxdim)
