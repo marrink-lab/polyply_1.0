@@ -115,7 +115,7 @@ def gen_coords(toppath,
                step_fudge=1.0,
                max_force=5*10**4.0,
                nrewind=5,
-               lib=None,
+               lib=[],
                bfudge=0.4):
     """
     Subprogram for coordinate generation which implements the default
@@ -237,7 +237,7 @@ def gen_coords(toppath,
         grid = np.loadtxt(grid)
 
     # where to get the box size from
-    if box is not None and topology.box and not np.array_equal(topology.box, box):
+    if box is not None and topology.box is not None and not np.array_equal(topology.box, box):
         print("box", topology.box)
         msg = ("A box is provided via the -box command line "
                "and the starting coordinates. We consider the "

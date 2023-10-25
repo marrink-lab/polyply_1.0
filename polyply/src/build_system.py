@@ -235,8 +235,9 @@ class BuildSystem():
                     success, new_nonbond_matrix = self._handle_random_walk(molecule,
                                                                            mol_idx,
                                                                            vector_sphere)
+                    self.nonbond_matrix = new_nonbond_matrix
+
             if success:
-                self.nonbond_matrix = new_nonbond_matrix
                 self.nonbond_matrix.concatenate_trees()
                 mol_idx += 1
                 pbar.update(1)
