@@ -64,18 +64,21 @@ def generate_artificial_core(
     nanoparticle_core_object._write_gro_file(output_filename=f"{nanoparticle_name}.gro")
 
 
-def rotation_matrix_from_vectors(vec_a: np.ndarray, vec_b: np.ndarray) -> np.ndarray:
+def rotation_matrix_from_vectors(
+    vec_a: np.ndarray, vec_b: np.ndarray, direction: str = "ccw"
+) -> np.ndarray:
     """
-    Find the rotation matrix that aligns vec1 to vec2
+    Find the rotation matrix that aligns vec_a to vec_b
     Args:
-    vec1:
-        A 3d "source" vector
-    vec2:
-        A 3d "destination" vector
+    vec_a:
+        A 3D "source" vector
+    vec_b:
+        A 3D "destination" vector
+    direction:
+        'cw' (clockwise) or 'ccw' (counterclockwise) to specify the rotation direction
     Returns:
     rotation_matrix:
-        A transform matrix (3x3) which when applied to vec1, aligns it with vec2.
-    Raises:
+        A transformation matrix (3x3) which when applied to vec_a, aligns it with vec_b.
     """
     a, b = (vec_a / np.linalg.norm(vec_a)).reshape(3), (
         vec_b / np.linalg.norm(vec_b)
@@ -84,8 +87,74 @@ def rotation_matrix_from_vectors(vec_a: np.ndarray, vec_b: np.ndarray) -> np.nda
     c = np.dot(a, b)
     s = np.linalg.norm(v)
     kmat = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
-    rotation_matrix = np.eye(3) + kmat + kmat.dot(kmat) * ((1 - c) / (s**2))
+
+    if direction == "cw":
+        rotation_matrix = np.eye(3) - kmat + kmat.dot(kmat) * ((1 - c) / (s**2))
+    elif direction == "ccw":
+        rotation_matrix = np.eye(3) + kmat + kmat.dot(kmat) * ((1 - c) / (s**2))
+    else:
+        raise ValueError("Invalid rotation direction. Use 'cw' or 'ccw'.")
+
     return rotation_matrix
+
+
+def rotation_matrix_outward_from_sphere_center(
+    vec_a: np.ndarray, sphere_center: np.ndarray
+) -> np.ndarray:
+    """
+    Find the rotation matrix that aligns vec_a to point outward from a sphere's center.
+    Args:
+    vec_a:
+        A 3D vector to be rotated.
+    sphere_center:
+        A 3D vector representing the center of the sphere.
+    Returns:
+    rotation_matrix:
+        A transformation matrix (3x3) that rotates vec_a to point outward from the sphere's center.
+    """
+    # Calculate the vector from the sphere's center to vec_a
+    v = vec_a - sphere_center
+
+    # Ensure vec_a is not already pointing outward (check for opposite direction)
+    if np.dot(v, vec_a) < 0:
+        vec_a *= -1  # Reverse the direction of vec_a
+
+    # Normalize the vectors
+    v /= np.linalg.norm(v)
+    a = (vec_a / np.linalg.norm(vec_a)).reshape(3)
+
+    # Calculate the rotation matrix
+    c = np.dot(a, v)
+    s = np.linalg.norm(np.cross(a, v))
+    kmat = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
+
+    rotation_matrix = np.eye(3) + kmat + kmat.dot(kmat) * ((1 - c) / (s**2))
+
+    return rotation_matrix
+
+
+###def rotation_matrix_from_vectors(vec_a: np.ndarray, vec_b: np.ndarray) -> np.ndarray:
+###    """
+###    Find the rotation matrix that aligns vec1 to vec2
+###    Args:
+###    vec1:
+###        A 3d "source" vector
+###    vec2:
+###        A 3d "destination" vector
+###    Returns:
+###    rotation_matrix:
+###        A transform matrix (3x3) which when applied to vec1, aligns it with vec2.
+###    Raises:
+###    """
+###    a, b = (vec_a / np.linalg.norm(vec_a)).reshape(3), (
+###        vec_b / np.linalg.norm(vec_b)
+###    ).reshape(3)
+###    v = np.cross(a, b)
+###    c = np.dot(a, b)
+###    s = np.linalg.norm(v)
+###    kmat = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
+###    rotation_matrix = np.eye(3) + kmat + kmat.dot(kmat) * ((1 - c) / (s**2))
+###    return rotation_matrix
 
 
 def create_np_pattern(
@@ -214,6 +283,7 @@ class PositionChangeLigand(Processor):
         resname: str,
         original_coordinates: Dict[str, str],
         length: float,
+        core_center: np.ndarray,
         option: str = "ligand",
         *args,
         **kwargs,
@@ -224,6 +294,7 @@ class PositionChangeLigand(Processor):
         self.original_coordinates = original_coordinates
         self.length = length
         self.option = option
+        self.core_center = core_center
         super().__init__(*args, **kwargs)
 
     def run_molecule(self, meta_molecule) -> None:
@@ -250,13 +321,11 @@ class PositionChangeLigand(Processor):
         # ligand is attached.
 
         core_ligand = [
-            # self.ligand_block_specs[self.resname]["core"]
             self.ligand_block_specs[self.resname]["indices"][key]
             for key in list(self.ligand_block_specs[self.resname]["indices"].keys())[
                 : self.ligand_block_specs[self.resname]["N"]
             ]
         ]
-        print("core_ligand", core_ligand)
 
         # assert len(core_ligand) == len(
         #    self.ligand_block_specs[self.resname]["resids"]
@@ -285,7 +354,6 @@ class PositionChangeLigand(Processor):
                     resid_index
                 ]
             ]
-
             # Assign ligand_head tail positional list to store the new position of
             # ligand that has its coordinates changed as with above
             ligand_head_tail_pos[resid] = []
@@ -319,12 +387,15 @@ class PositionChangeLigand(Processor):
             #    ligand_directional_vector, core_ligand[resid_index]
             # )
 
-            rot_mat = rotation_matrix_from_vectors(ligand_directional_vector, vec2)
+            rot_mat = rotation_matrix_from_vectors(
+                ligand_directional_vector, self.core_center - vec2
+            )
             logging.info(
                 f"The rotation matrix we have for residue {resid} is {rot_mat}"
             )
             # store the transformational matrix for that particular ligand
             rotation_matrix_dictionary[resid] = rot_mat
+
             absolute_vectors[resid] = [
                 np.linalg.norm(ligand_directional_vector),
                 np.linalg.norm(core_ligand[resid_index]),
@@ -411,7 +482,7 @@ class NanoparticleModels(Processor):
         ligand_tail_atoms,
         nrexcl,
         ff_name="test",
-        length=3.5,
+        length=5.5,
         original_coordinates=None,
         identify_surface=False,
     ):
@@ -617,7 +688,6 @@ class NanoparticleModels(Processor):
 
         # get only the unique atoms
         self.surface_atoms = list(set(self.surface_atoms))
-        print("ssdf ", self.surface_atoms)
 
     def _identify_indices_for_core_attachment(self) -> None:
         """
@@ -776,7 +846,6 @@ class NanoparticleModels(Processor):
 
     def _add_block_indices(self) -> None:
         """
-
         Scale the indexes so that when we create the ligand functionalized NP,
         the ligand component to it is built with the right indices. This requires scaling
         the index with the other ligand components and/or the core component
@@ -814,15 +883,11 @@ class NanoparticleModels(Processor):
         resid_index = 2
 
         for key in self.ligand_block_specs.keys():
-
             attachment_list = {}
-
             resids = []
-
             adjusted_N_indices = list(self.ligand_block_specs[key]["indices"].keys())[
                 : self.ligand_block_specs[key]["N"]
             ]
-
             for index, core_atom in enumerate(adjusted_N_indices, 1):
                 # loop over the number of ligands we want to create
                 # Get the core size and the final index of the ligand + core size
@@ -924,6 +989,7 @@ class NanoparticleModels(Processor):
                 resname=resname,
                 original_coordinates=self.original_coordinates,
                 length=self.length,
+                core_center=self.core_center,
             ).run_molecule(self.np_molecule_new)
         # prepare meta molecule
         self.meta_mol.molecule = self.np_molecule_new
@@ -966,20 +1032,20 @@ if __name__ == "__main__":
         "NP2",
         "AU",
         "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand",
-        ["UNK_12B037/UNK_12B037.itp", "UNK_DA2640/UNK_DA2640.itp"],
+        ["UNK_DA2640/UNK_DA2640.itp", "UNK_12B037/UNK_12B037.itp"],
         # ["UNK_DA2640/UNK_DA2640.itp"],
         [40, 40],
         "Janus",
-        ["S00", "S07"],
-        ["C05", "C02"],
+        ["S07", "S00"],
+        ["C08", "C05"],
         3,
         "test",
         original_coordinates={
-            "12B": gro.read_gro(
-                "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand/UNK_12B037/UNK_12B037.gro"
-            ),
             "DA": gro.read_gro(
                 "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand/UNK_DA2640/UNK_DA2640.gro"
+            ),
+            "12B": gro.read_gro(
+                "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand/UNK_12B037/UNK_12B037.gro"
             ),
         },
         identify_surface=False,
