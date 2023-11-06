@@ -57,12 +57,14 @@ class CentralCoreGenerator:
         center: int,
         ff: str,
         np_component: str,
+        moleculename: str,
     ):
         self.ff = ff
         self.R = R
         self.center = center
         self.output = open(filename + ".itp", "w")
         self.np_component = np_component
+        self.moleculename = moleculename
 
     def _nanoparticle_base_fibonacci_sphere(self, num_points: int = 100) -> None:
         """
@@ -231,7 +233,7 @@ class CentralCoreGenerator:
         itp_content = ""
 
         # Define the parameters
-        moleculename = "TEST"
+        moleculename = self.moleculename
         atom_name = "CA"
         self._create_np_atom_type_dict()
         self._process_atoms()
@@ -568,7 +570,9 @@ class GoldNanoparticleSingle:
 
 
 if __name__ == "__main__":
-    nanoparticle_sample = CentralCoreGenerator("output.pdb", 100, 3.0, 0.0, "ff", "P5")
+    nanoparticle_sample = CentralCoreGenerator(
+        "output.pdb", 100, 3.0, 0.0, "ff", "P5", "TEST"
+    )
     nanoparticle_sample._nanoparticle_base_fibonacci_sphere()
     nanoparticle_sample._write_gro_file()
     nanoparticle_sample._write_itp_file()
