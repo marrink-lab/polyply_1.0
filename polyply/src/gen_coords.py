@@ -239,6 +239,23 @@ def gen_coords(toppath,
         LOGGER.info("loading grid",  type="step")
         grid = np.loadtxt(grid)
 
+    # where to get the box size from
+    if box is not None and topology.box is not None\
+        and not np.array_equal(topology.box, box):
+        msg = ("A box is provided via the -box command line "
+               "and the starting coordinates. We consider the "
+               "the box of starting coordinates as correct. ")
+        LOGGER.warning(msg,  type="warning")
+        box = topology.box
+    elif topology.box is not None:
+        box = topology.box
+        if density is not None:
+            msg = ("A density is provided via the command line, "
+                   "but the starting coordinates define a box."
+                   "Will try to pack all molecules in the box "
+                   "provided with starting coordinates.")
+            LOGGER.warning(msg,  type="warning")
+
     # do a sanity check
     LOGGER.info("checking residue integrity",  type="step")
     check_residue_equivalence(topology)

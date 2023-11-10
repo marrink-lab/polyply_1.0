@@ -30,7 +30,7 @@ from vermouth.forcefield import ForceField
 from polyply import TEST_DATA
 from vermouth.tests.helper_functions import find_in_path
 
-INTEGRATION_DATA = Path(TEST_DATA + '/library_tests')
+INTEGRATION_DATA = TEST_DATA / 'library_tests'
 
 PATTERN = '{path}/{library}/{polymer}/polyply'
 
@@ -189,12 +189,15 @@ def _interaction_equal(interaction1, interaction2, inter_type):
      ['martini3', 'P3HT'],
      ['martini3', 'PPE'],
      ['martini3', 'PTMA'],
+     ['ibi_cgm3', 'PTMA'],
+     ['ibi_gbcg', 'PTMA'],
      ['martini2', 'PEO'],
      ['martini2', 'PS'],
      ['martini2', 'PEL'],
      ['martini2', 'PEO_PE'],
      ['martini2', 'ssDNA'],
      ['parmbsc1', 'DNA'],
+     ['parmbsc1', 'dsDNA'],
   # -> proteins?
 ])
 def test_integration_protein(tmp_path, monkeypatch, library, polymer):

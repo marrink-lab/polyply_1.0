@@ -132,7 +132,7 @@ def test__take_step():
 
 @pytest.fixture
 def nonbond_matrix():
-    toppath = TEST_DATA + "/struc_build/system.top"
+    toppath = TEST_DATA / "struc_build" / "system.top"
     topology = Topology.from_gmx_topfile(name="test", path=toppath)
     topology.preprocess()
     topology.volumes = {"PEO":0.43}
@@ -141,7 +141,7 @@ def nonbond_matrix():
                                        box=np.array([10., 10., 10.]))
 @pytest.fixture
 def molecule():
-    toppath = TEST_DATA + "/struc_build/system.top"
+    toppath = TEST_DATA / "struc_build" / "system.top"
     topology = Topology.from_gmx_topfile(name="test", path=toppath)
     return topology.molecules[0]
 
