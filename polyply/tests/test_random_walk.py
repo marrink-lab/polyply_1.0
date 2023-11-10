@@ -191,47 +191,17 @@ def test_is_overlap(nonbond_matrix, molecule, new_point, result):
 
 @pytest.mark.parametrize('n_coords, new_point, prev_prob, lp, result', (
     # only 1 previous node -> always True
-    (1,
-     None,
-     1,
-     10,
-     True,
-     ),
+    (1, None, 1, 10, True,),
     # no lp is given -> always True
-    (1,
-     None,
-     1,
-     None,
-     True,
-     ),
+    (1, None, 1, None, True,),
     # 180 degrees should be fine even with high prev prob
-    (2,
-     np.array([1., 1., 1.11]),
-     1,
-     10,
-     True
-     ),
+    (2, np.array([1., 1., 1.11]), 1, 10, True),
     # small angle and prev prob high
-    (2,
-     np.array([1., 1.47, 0.1]),
-     1.,
-     10,
-     False
-     ),
+    (2, np.array([1., 1.47, 0.1]), 1., 10, False),
     # small angle and prev prob low
-    (2,
-     np.array([1., 1.47, 0.1]),
-     0.,
-     10,
-     True
-     ),
+    (2, np.array([1., 1.47, 0.1]), 0., 10, True),
     # medium angle, prev prob high, unifrom prob low
-    (2,
-     np.array([1., 1.57, 1.74]),
-     1.,
-     10,
-     True
-     ),
+    (2, np.array([1., 1.57, 1.74]), 1., 10, True),
 ))
 def test_bendiness(nonbond_matrix, molecule, n_coords, new_point, prev_prob, lp, result):
     # set random seed for reproducability
