@@ -1,0 +1,75 @@
+[ moleculetype ]
+; name nexcl.
+PTMA     2
+
+[ info ] 
+Nonbonded interaction potentials (and example run) can be found at: https://doi.org/10.5281/zenodo.8287521
+ 
+[ atoms ]
+; id  type  resnr  residu atom  cgnr  charge  mass
+   1   VNL    1     PTMA  VNL    1     0     71.099
+   2   EST    1     PTMA  EST    2     0     29.018
+   3    C1    1     PTMA   C1    3     0     56.108
+   4     U    1     PTMA   NN    4     0      0.000
+   5     U    1     PTMA   OO    5     0      0.000
+   6    C1    1     PTMA   C2    6     0     56.108 
+   7    NO    1     PTMA   NO    7     0     30.006
+ 
+[ bonds ]
+; i  j   funct   length
+  1  2      1     0.35337   12500 
+  2  3      1     0.32325   32000
+  2  6      1     0.32369   32000
+  3  6      1     0.38838   32000
+  3  7      1     0.23794 1000000 {"ifdef": "FLEXIBLE"}
+  6  7      1     0.23793 1000000 {"ifdef": "FLEXIBLE"}
+ 
+[constraints]
+; i  j   funct   length
+  3  7      1     0.23794  {"ifndef": "FLEXIBLE"}
+  6  7      1     0.23793  {"ifndef": "FLEXIBLE"}
+ 
+[ angles ]
+; i  j  k  funct   length  force k
+  1  2  3    2      130.000  90 
+  1  2  6    2      130.000  75 
+
+[dihedrals]
+; i j k l  funct  ref.angle   force_k
+  1 3 6 7    2      165.98      50
+  2 3 6 7    2      179.20      80
+  3 7 5 6    2      170.723     50 
+
+[virtual_sites3]
+; 3fd sites
+; site positioned as a linear combination of 3 atoms; the site is in the same plane
+; site  from      funct    a      b
+   4    3  2  7     2    0.834  0.210
+   5    3  2  7     2    1.180  0.276
+
+[exclusions]
+  1  2  3  4  5  6  7
+  2  3  4  5  6  7
+  3  4  5  6  7
+  4  5  6  7
+  5  6  7
+  6  7
+
+[ link ]
+resname "PTMA"
+[ bonds ]
+VNL     +VNL    1     0.305 12000  {"group": "vinyl backbone"}
+
+[ link ]
+resname "PTMA"
+[ angles ]
+VNL  +VNL  ++VNL   2  126  40  {"group": "vinyl backbone"}
+
+[ link ]
+resname "PTMA"
+[ angles ]
+EST  VNL  +VNL  2  90  20
+
+[ citation ]
+2023RAlessandri-Macromolecules
+polyply

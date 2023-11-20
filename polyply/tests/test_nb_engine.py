@@ -195,7 +195,7 @@ def test_compute_bending_probability(topology, lp, point, ref_prob):
                                              topology,
                                              box=np.array([10., 10., 10.]))
     prob = nb_engine.compute_bending_probability(lp, point, 0, 1, 0)
-    assert np.isclose(prob, ref_prob, atol=10**-5)
+    assert prob == pytest.approx(ref_prob, abs=10**-5)
 
 @pytest.mark.parametrize('mol_idx_a, mol_idx_b, node_a, node_b, expected',
                         ((0, 0, 0, 1, (0.53+0.67)/2.0),

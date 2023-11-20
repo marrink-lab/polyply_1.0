@@ -1,15 +1,18 @@
 [ moleculetype ]
 ; name nexcl.
-PTMA     1
+PTMA     2
+
+[ info ] 
+Nonbonded interaction potentials (and example run) can be found at: https://doi.org/10.5281/zenodo.8287521
  
 [ atoms ]
 ; id  type  resnr  residu atom  cgnr  charge  mass
-   1   SC3    1    PTMA   VNL    1     0.0     54
-   2   SN4a   1    PTMA   EST    2     0.0     54
-   3   SC3    1    PTMA    C1    3     0.0     54
-   4   SC3    1    PTMA    C2    4     0.0     54
-   5   SC3    1    PTMA    C3    5     0.0     54
-   6   TP5    1    PTMA    N4    6     0.0     36
+   1   VNL    1    PTMA   VNL    1     0.0     54
+   2   EST    1    PTMA   EST    2     0.0     54
+   3    C1    1    PTMA    C1    3     0.0     54
+   4    C2    1    PTMA    C2    4     0.0     54
+   5    C2    1    PTMA    C3    5     0.0     54
+   6    N4    1    PTMA    N4    6     0.0     36
  
 [ bonds ]
 ; i  j   funct   length
@@ -38,6 +41,12 @@ PTMA     1
   3 4 5 6    2      140.00      20 { "comment": "cog (TEMPO)"}
   2 4 5 6    2      150.00      80 { "comment": "PMMA-TEMPO connection"}
 
+[exclusions]
+  1 2 3 4 5 6
+  2 3 4 5 6 
+  3 4 5 6  
+  4 5 6  
+  5 6
 
 [ link ]
 resname "PTMA"
@@ -56,5 +65,4 @@ EST  VNL  +VNL  2  70  20
 
 [ citation ]
 2023RAlessandri-Macromolecules
-Martini3
 polyply
