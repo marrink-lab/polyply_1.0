@@ -160,9 +160,6 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
     random_walk_group.add_argument('-nr', dest='nrewind', type=int, default=5,
                                    help=('number of residues to trace back '
                                          ' when RW fails in first attempt'))
-    random_walk_group.add_argument('-mb', dest='max_bend', type=float, default=0,
-                                   help=('persistence length determining max bending '
-                                         'the higher the more straight the chain.'))
 
     backmap_group = parser_gen_coords.add_argument_group('Options for backmapping')
     backmap_group.add_argument('-back_fudge', dest='bfudge', type=float, default=0.4,
