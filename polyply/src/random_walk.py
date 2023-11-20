@@ -232,8 +232,7 @@ class RandomWalk(Processor):
                  max_force=1e3,
                  vector_sphere=norm_sphere(5000),
                  start_node=None,
-                 nrewind=5,
-                 max_bend=0):
+                 nrewind=5):
 
         self.mol_idx = mol_idx
         self.nonbond_matrix = nonbond_matrix
@@ -247,7 +246,6 @@ class RandomWalk(Processor):
         self.start_node = start_node
         self.nrewind = nrewind
         self.placed_nodes = []
-        self.max_bend = max_bend
         self.prev_prob = 1
 
     def _rewind(self, current_step):
