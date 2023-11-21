@@ -215,6 +215,10 @@ class Topology(System):
         A dictionary of all typed parameter
     defines: list
         A list of everything that is defined
+    volumes: dict
+        Volume constants for meta-models
+    bending: dict
+        Sequence dependent bending constants for meta-model
     box: np.array(3,1)
         Box vectors as a, b, c in nanometers
     """
@@ -232,6 +236,7 @@ class Topology(System):
         self.persistences = []
         self.distance_restraints = defaultdict(dict)
         self.volumes = {}
+        self.bending = {}
         self.box = None
 
     def preprocess(self):

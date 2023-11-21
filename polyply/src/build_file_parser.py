@@ -175,6 +175,15 @@ class BuildDirector(SectionLineParser):
         resname, volume = line.split()
         self.topology.volumes[resname] = float(volume)
 
+    @SectionLineParser.section_parser('bending')
+    def _bending(self, line, lineno=0):
+        """
+        Parses the lines in the '[bending]'
+        directive and stores it.
+        """
+        resA, resB, resC, bending_const = line.split()
+        self.topology.bending[(resA, resB, resC)] = float(bending_const)
+
     def finalize_section(self, previous_section, ended_section):
         """
         Called once a section has finished. Here we perform all
