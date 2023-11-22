@@ -254,8 +254,9 @@ def gen_coords(toppath,
             LOGGER.warning(msg,  type="warning")
 
     # do a sanity check
-    LOGGER.info("checking residue integrity",  type="step")
-    check_residue_equivalence(topology)
+#    LOGGER.info("checking residue integrity",  type="step")
+#    check_residue_equivalence(topology)
+
     # Build polymer structure
     LOGGER.info("generating templates",  type="step")
     GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
