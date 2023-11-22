@@ -342,4 +342,4 @@ class FragmentFinder():
 
         # remake the residue graph since some resnames have changed
         self.make_res_graph()
-        return unique_fragments
+        return unique_fragments, self.res_graph
