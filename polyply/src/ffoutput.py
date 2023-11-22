@@ -57,6 +57,7 @@ class ForceFieldDirectiveWriter():
         for name, block in self.forcefield.blocks.items():
             self.stream.write("[ moleculetype ]\n")
             excl = str(block.nrexcl)
+            self.max_idx = max(len(node) for node in block.nodes)
             self.stream.write(f"{name} {excl}\n")
             self.write_atoms_block(block.nodes(data=True))
             self.write_interaction_dict(block.interactions)
@@ -68,6 +69,7 @@ class ForceFieldDirectiveWriter():
                 nometa = True
             else:
                 nometa = False
+            self.max_idx = max(len(node) for node in link.nodes)
             self.write_link_header()
             self.write_atoms_link(link.nodes(data=True), nometa)
             self.write_interaction_dict(link.interactions)
@@ -91,11 +93,13 @@ class ForceFieldDirectiveWriter():
         for inter_type in inter_dict:
             self.stream.write(f"[ {inter_type} ]\n")
             for interaction in inter_dict[inter_type]:
+                atoms = ['{atom:>{imax}}'.format(atom=atom,
+                                                 imax=self.max_idx) for atom in interaction.atoms]
                 if inter_type not in ["virtual_sitesn", "virtual_sites1", "virtual_sites2", "virtual_sites3"]:
-                    atom_string = " ".join(interaction.atoms)
+                    atom_string = " ".join(atoms)
                     param_string = " ".join(interaction.parameters)
                 else:
-                    atom_string = " ".join(interaction.atoms) + " -- "
+                    atom_string = " ".join(atoms) + " -- "
                     param_string = " ".join(interaction.parameters)
 
                 meta_string = json.dumps(interaction.meta)
@@ -113,7 +117,10 @@ class ForceFieldDirectiveWriter():
         """
         self.stream.write("[ edges ]\n")
         for idx, jdx in edges:
-            self.stream.write(f"{idx} {jdx}\n")
+            line = "{idx:>{imax}} {jdx:>{imax}}\n".format(idx=idx,
+                                                          jdx=jdx,
+                                                          imax=self.max_idx)
+            self.stream.write(line)
 
     def write_nonedges(self, edges):
         """
@@ -145,12 +152,23 @@ class ForceFieldDirectiveWriter():
             pair-wise iteratable edge list
         """
         self.stream.write("[ atoms ]\n")
+        max_length = {'idx': len(str(len(nodes)))}
+        for attribute in self.normal_order_block_atoms:
+            max_length[attribute] = max(len(str(atom.get(attribute, '')))
+                                        for _, atom in nodes)
+
         for idx, (node, attrs) in enumerate(nodes, start=1):
-            write_attrs = {attr: attrs[attr] for attr in self.normal_order_block_atoms if attr in attrs}
-            write_attrs = _choice_to_str(write_attrs)
-            attr_line = " ".join([str(value) for value in write_attrs.values()])
-            line = f"{idx} " + attr_line + "\n"
-            self.stream.write(line)
+            write_attrs = {attr: str(attrs[attr]) for attr in self.normal_order_block_atoms if attr in attrs}
+            self.stream.write('{idx:>{max_length[idx]}} '
+                              '{atype:<{max_length[atype]}} '
+                              '{resid:>{max_length[resid]}} '
+                              '{resname:<{max_length[resname]}} '
+                              '{atomname:<{max_length[atomname]}} '
+                              '{charge_group:>{max_length[charge_group]}} '
+                              '{charge:>{max_length[charge]}} '
+                              '{mass:>{max_length[mass]}}\n'.format(idx=idx,
+                                                                    max_length=max_length,
+                                                                    **write_attrs))
 
     def write_atoms_link(self, nodes, nometa=False):
         """
