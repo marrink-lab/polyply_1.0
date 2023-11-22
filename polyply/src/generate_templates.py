@@ -19,8 +19,8 @@ from .minimizer import optimize_geometry
 from .processor import Processor
 from .linalg_functions import (u_vect, center_of_geometry,
                                radius_of_gyration)
-from .topology import replace_defined_interaction
 from .linalg_functions import dih
+from .molecule_utils import extract_block
 """
 Processor generating coordinates for all residues of a meta_molecule
 matching those in the meta_molecule.molecule attribute.
@@ -215,80 +215,6 @@ def map_from_CoG(coords):
         out_vectors[key] = diff
 
     return out_vectors
-
-def _relabel_interaction_atoms(interaction, mapping):
-    """
-    Relables the atoms in interaction according to the
-    rules defined in mapping.
-
-    Parameters
-    ----------
-    interaction: `vermouth.molecule.Interaction`
-    mapping: `:class:dict`
-
-    Returns
-    -------
-    interaction: `vermouth.molecule.Interaction`
-        the new interaction with updated atoms
-    """
-    new_atoms = [mapping[atom] for atom in interaction.atoms]
-    new_interaction = interaction._replace(atoms=new_atoms)
-    return new_interaction
-
-def extract_block(molecule, nodes, defines={}):
-    """
-    Given a `vermouth.molecule` and a `resname`
-    extract the information of a block from the
-    molecule definition and replace all defines
-    if any are found.
-
-    Parameters
-    ----------
-    molecule:  :class:vermouth.molecule.Molecule
-    nodes: abc.hashable
-        the nodes corresponding to the block to
-        extract
-    defines:   dict
-      dict of type define: value
-
-    Returns
-    -------
-    :class:vermouth.molecule.Block
-    """
-    resid = molecule.nodes[nodes[0]]["resid"]
-    resname = molecule.nodes[nodes[0]]["resname"]
-    block = vermouth.molecule.Block()
-
-    # select all nodes with the same first resid and
-    # make sure the block node labels are atomnames
-    # also build a correspondance dict between node
-    # label in the molecule and in the block for
-    # relabeling the interactions
-    mapping = {}
-    for node in nodes:
-        attr_dict = molecule.nodes[node]
-        if attr_dict["resid"] == resid:
-            block.add_node(attr_dict["atomname"], **attr_dict)
-            mapping[node] = attr_dict["atomname"]
-
-    for inter_type in molecule.interactions:
-        for interaction in molecule.interactions[inter_type]:
-            if all(atom in mapping for atom in interaction.atoms):
-                interaction = replace_defined_interaction(interaction, defines)
-                interaction = _relabel_interaction_atoms(interaction, mapping)
-                block.interactions[inter_type].append(interaction)
-
-    for inter_type in ["bonds", "constraints", "virtual_sitesn",
-                       "virtual_sites2", "virtual_sites3", "virtual_sites4"]:
-        block.make_edges_from_interaction_type(inter_type)
-
-    if not nx.is_connected(block):
-        msg = ('\n Residue {} with id {} consistes of two disconnected parts. '
-               'Make sure all atoms/particles in a residue are connected by bonds,'
-               ' constraints or virual-sites.')
-        raise IOError(msg.format(resname, resid))
-
-    return block
 
 class GenerateTemplates(Processor):
     """
