@@ -21,7 +21,7 @@ from polyply.src.topology import Topology
 from polyply.src.molecule_utils import extract_block, extract_links
 from polyply.src.fragment_finder import FragmentFinder
 from polyply.src.ffoutput import ForceFieldDirectiveWriter
-from polyply.src.charges import equalize_charges
+from polyply.src.charges import equalize_charges, set_charges
 
 def itp_to_ff(itppath, fragment_smiles, resnames, term_prefix, outpath, charge=0):
     """
