@@ -25,6 +25,7 @@ from polyply.src.topology import Topology
 from polyply.src.generate_templates import extract_block
 from polyply.src.fragment_finder import FragmentFinder
 from polyply.src.ffoutput import ForceFieldDirectiveWriter
+from polyply.src.charges import equalize_charges
 from polyply.tests.test_lib_files import _interaction_equal 
 
 def diffs_to_prefix(atoms, resid_diffs):
@@ -200,34 +201,8 @@ def extract_links(molecule):
                 link.interactions[inter_type].append(interaction)
 
         links.append(link)
-    print("--test--")
-    print(links)
+    #print(links)
     return links
-
-def equalize_charges(molecule, target_charge=0):
-    """
-    Make sure that the total charge of molecule is equal to
-    the target charge by substracting the differences split
-    over all atoms.
-
-    Parameters
-    ----------
-    molecule: :class:`vermouth.molecule.Molecule`
-    target_charge: float
-        the charge of the molecule
-
-    Returns
-    -------
-    molecule
-        the molecule with updated charge attribute
-    """
-    total = nx.get_node_attributes(molecule, "charge")
-    diff = (sum(list(total.values())) - target_charge)/len(molecule.nodes)
-    for node in molecule.nodes:
-        charge = float(molecule.nodes[node]['charge']) - diff
-        molecule.nodes[node]['charge'] = charge
-    total = nx.get_node_attributes(molecule, "charge")
-    return molecule
 
 def handle_chirality(molecule, chiral_centers):
     pass
@@ -239,6 +214,22 @@ def hcount(molecule, node):
             hcounter+= 1
     return hcounter
 
+def set_charges(block, res_graph, name):
+    resnames = nx.get_node_attributes(res_graph, 'resname')
+    centrality = nx.betweenness_centrality(res_graph)
+    score = -1
+    most_central_node = None
+    for node, resname in resnames.items():
+        if resname == name and centrality[node] > score:
+            score = centrality[node]
+            most_central_node = node
+    charges_tmp = nx.get_node_attributes(res_graph.nodes[most_central_node]['graph'], 'charge')
+    atomnames = nx.get_node_attributes(res_graph.nodes[most_central_node]['graph'], 'atomname')
+    charges = {atomname: charges_tmp[node] for node, atomname in atomnames.items()}
+    for node in block.nodes:
+        block.nodes[node]['charge'] = charges[block.nodes[node]['atomname']]
+    return block
+
 def itp_to_ff(itppath, fragment_smiles, resnames, term_prefix, outpath, charge=0):
     """
     Main executable for itp to ff tool.
@@ -247,7 +238,6 @@ def itp_to_ff(itppath, fragment_smiles, resnames, term_prefix, outpath, charge=0
         # read the topology file
         top = Topology.from_gmx_topfile(itppath, name="test")
         mol = top.molecules[0].molecule
-        mol = equalize_charges(mol, target_charge=charge)
 
     if itppath.suffix == ".itp":
         with open(itppath, "r") as _file:
@@ -266,18 +256,23 @@ def itp_to_ff(itppath, fragment_smiles, resnames, term_prefix, outpath, charge=0
         fragment_graphs.append(fragment_graph)
 
     # identify and extract all unique fragments
-    unique_fragments = FragmentFinder(mol, prefix=term_prefix).extract_unique_fragments(fragment_graphs)
+    unique_fragments, res_graph = FragmentFinder(mol, prefix=term_prefix).extract_unique_fragments(fragment_graphs)
     force_field = ForceField("new")
     for name, fragment in unique_fragments.items():
         new_block = extract_block(mol, list(fragment.nodes), defines={})
         nx.set_node_attributes(new_block, 1, "resid")
         new_block.nrexcl = mol.nrexcl
         force_field.blocks[name] = new_block
+        set_charges(new_block, res_graph, name)
+        #print("here")
+        if itppath.suffix == ".top":
+            equalize_charges(new_block, top)
 
 #    for node in mol.nodes:
 #        print(mol.nodes[node])
 
     force_field.links = extract_links(mol)
 
+    print("-----")
     with open(outpath, "w") as filehandle:
         ForceFieldDirectiveWriter(forcefield=force_field, stream=filehandle).write()
