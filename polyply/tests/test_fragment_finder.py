@@ -252,7 +252,7 @@ def test_extract_fragments(smiles, resnames, remove, uni_frags):
             match_mols.append(frag)
 
     frag_finder = polyply.src.fragment_finder.FragmentFinder(molecule, "ter")
-    fragments = frag_finder.extract_unique_fragments(match_mols)
+    fragments, _ = frag_finder.extract_unique_fragments(match_mols)
     assert len(fragments) == len(uni_frags)
     for resname, graph in fragments.items():
         frag_finder.match_keys = ['element', 'mass', 'resname']
