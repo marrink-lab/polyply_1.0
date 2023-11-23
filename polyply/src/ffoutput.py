@@ -159,16 +159,19 @@ class ForceFieldDirectiveWriter():
 
         for idx, (node, attrs) in enumerate(nodes, start=1):
             write_attrs = {attr: str(attrs[attr]) for attr in self.normal_order_block_atoms if attr in attrs}
-            self.stream.write('{idx:>{max_length[idx]}} '
-                              '{atype:<{max_length[atype]}} '
-                              '{resid:>{max_length[resid]}} '
-                              '{resname:<{max_length[resname]}} '
-                              '{atomname:<{max_length[atomname]}} '
-                              '{charge_group:>{max_length[charge_group]}} '
-                              '{charge:>{max_length[charge]}} '
-                              '{mass:>{max_length[mass]}}\n'.format(idx=idx,
-                                                                    max_length=max_length,
-                                                                    **write_attrs))
+            template = ('{idx:>{max_length[idx]}} '
+                        '{atype:<{max_length[atype]}} '
+                        '{resid:>{max_length[resid]}} '
+                        '{resname:<{max_length[resname]}} '
+                        '{atomname:<{max_length[atomname]}} '
+                        '{charge_group:>{max_length[charge_group]}} '
+                        '{charge:>{max_length[charge]}} ')
+            if 'mass' in write_attrs:
+                template += '{mass:>{max_length[mass]}}\n'
+            else:
+                template += '\n'
+
+            self.stream.write(template.format(idx=idx, max_length=max_length, **write_attrs))
 
     def write_atoms_link(self, nodes, nometa=False):
         """
