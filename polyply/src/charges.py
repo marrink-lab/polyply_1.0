@@ -46,7 +46,7 @@ def _get_bonds(block, topology=None):
                         bonds[(nodes_to_count[idx], nodes_to_count[jdx])] = float(params)
     return bonds
 
-def equalize_charges(block, topology=None):
+def equalize_charges(block, topology=None, charge=0):
     block.make_edges_from_interaction_type('bonds')
     keys = nx.get_node_attributes(block, 'charge').keys()
     charges = np.array(list(nx.get_node_attributes(block, 'charge').values()))
@@ -63,7 +63,8 @@ def equalize_charges(block, topology=None):
     def loss(arr):
         arr.reshape(-1)
         curr_dipoles = bond_dipoles(bonds, arr)
-        loss = np.abs(arr.sum()) + np.sum(np.square(ref_dipoles -  curr_dipoles))
+        crg_dev = np.abs(charge - arr.sum())
+        loss = crg_dev + np.sum(np.square(ref_dipoles -  curr_dipoles))
         return loss
 
     opt_results = scipy.optimize.minimize(loss, charges, method='L-BFGS-B',
