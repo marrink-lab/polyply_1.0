@@ -24,7 +24,7 @@ from polyply.src.topology import Topology
 from polyply.src.molecule_utils import extract_block, extract_links
 from polyply.src.fragment_finder import FragmentFinder
 from polyply.src.ffoutput import ForceFieldDirectiveWriter
-from polyply.src.charges import equalize_charges, set_charges
+from polyply.src.charges import balance_charges, set_charges
 
 def itp_to_ff(itppath, fragment_smiles, resnames, term_prefix, outpath, charges=None):
     """
@@ -66,7 +66,7 @@ def itp_to_ff(itppath, fragment_smiles, resnames, term_prefix, outpath, charges=
         if itppath.suffix == ".top":
             base_resname = name.split(term_prefix)[0].split('_')[0]
             print(base_resname)
-            equalize_charges(new_block, top, crg_dict[base_resname])
+            balance_charges(new_block, top, crg_dict[base_resname])
 
     force_field.links = extract_links(mol)
 

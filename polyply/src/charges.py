@@ -3,6 +3,25 @@ import networkx as nx
 import scipy.optimize
 
 def set_charges(block, res_graph, name):
+    """
+    Set the charges of `block` by finding the most central
+    residue in res_graph that matches the residue `name` of
+    block.
+
+    Parameters
+    ----------
+    block: :class:`vermouth.molecule.Block`
+        block describing single residue
+    res_graph: nx.Graph
+        residue graph
+    name: str
+        residue name
+
+    Returns
+    -------
+    :class:`vermouth.molecule.Block`
+        the block with updated charges
+    """
     resnames = nx.get_node_attributes(res_graph, 'resname')
     centrality = nx.betweenness_centrality(res_graph)
     score = -1
@@ -19,6 +38,23 @@ def set_charges(block, res_graph, name):
     return block
 
 def bond_dipoles(bonds, charges):
+    """
+    Compute bond dipole moments from charges
+    and bondlengths. The charges array must
+    match the numeric bond dict keys.
+
+    Parameters
+    ----------
+    bonds: dict[tuple(int, int)][float]
+        the bond length indexed by atom indices
+    charges: np.array
+        array of charges
+
+    Returns
+    -------
+    np.array
+        the bond dipoles
+    """
     bond_dipo = np.zeros((len(bonds)))
     for kdx, (idx, jdx) in enumerate(bonds.keys()):
         lb = bonds[(idx, jdx)]
@@ -26,6 +62,20 @@ def bond_dipoles(bonds, charges):
     return bond_dipo
 
 def _get_bonds(block, topology=None):
+    """
+    Extract a bond length dict from block. If topology
+    is given bond lengths may be looked up by type.
+
+    Parameters
+    ----------
+    block: :class:`vermouth.molecule.Block`
+    topology: :class:`polyply.src.topology.Topology`
+
+    Returns
+    -------
+    dict
+        a dict of edges and their bond length
+    """
     bonds = {}
     atoms = block.nodes
     nodes_to_count = {node: count for count, node in enumerate(block.nodes)}
@@ -42,11 +92,32 @@ def _get_bonds(block, topology=None):
                             params = topology.types['bonds'][batoms][0][0][1]
                         elif batoms[::-1] in topology.types['bonds']:
                             params = topology.types['bonds'][batoms[::-1]][0][0][1]
-                        print(params)
                         bonds[(nodes_to_count[idx], nodes_to_count[jdx])] = float(params)
     return bonds
 
-def equalize_charges(block, topology=None, charge=0):
+def balance_charges(block, topology=None, charge=0):
+    """
+    Given a block and a total charge for that block
+    balance the charge until the total charge of the
+    block is exactly the same as set. The balancing
+    takes also into account to retain the bond dipole
+    moments as closely as possible such that ideally
+    the electrostatics are as little influenced as
+    possible due to rescaling. A topology is only
+    needed if the force field uses bondtypes.
+
+    Parameters
+    ----------
+    block: :class:`vermouth.molecule.Block`
+    topology: :class:`polyply.src.topology.Topology`
+    charge: float
+        total charge of the residue
+
+    Returns
+    -------
+    :class:`vermouth.molecule.Block`
+        block with updated charges
+    """
     block.make_edges_from_interaction_type('bonds')
     keys = nx.get_node_attributes(block, 'charge').keys()
     charges = np.array(list(nx.get_node_attributes(block, 'charge').values()))
@@ -72,31 +143,3 @@ def equalize_charges(block, topology=None, charge=0):
     balanced_charges = opt_results['x']
     nx.set_node_attributes(block, dict(zip(keys, balanced_charges)), 'charge')
     return block
-
-
-#def equalize_charges(molecule, target_charge=0):
-#    """
-#    Make sure that the total charge of molecule is equal to
-#    the target charge by substracting the differences split
-#    over all atoms.
-#
-#    Parameters
-#    ----------
-#    molecule: :class:`vermouth.molecule.Molecule`
-#    target_charge: float
-#        the charge of the molecule
-#
-#    Returns
-#    -------
-#    molecule
-#        the molecule with updated charge attribute
-#    """
-#    total = nx.get_node_attributes(molecule, "charge")
-#    diff = (sum(list(total.values())) - target_charge)/len(molecule.nodes)
-#    if np.isclose(diff, 0, atol=0.0001):
-#        return molecule
-#    for node in molecule.nodes:
-#        charge = float(molecule.nodes[node]['charge']) - diff
-#        molecule.nodes[node]['charge'] = charge
-#    total = nx.get_node_attributes(molecule, "charge")
-#    return molecule
