@@ -13,7 +13,10 @@
 # limitations under the License.
 import numpy as np
 import networkx as nx
-import pysmiles
+try:
+    import pysmiles
+except ImportError:
+    raise ImportError("To use polyply itp_to_ff you need to install pysmiles.")
 import vermouth
 from vermouth.forcefield import ForceField
 from vermouth.gmx.itp_read import read_itp
@@ -23,10 +26,13 @@ from polyply.src.fragment_finder import FragmentFinder
 from polyply.src.ffoutput import ForceFieldDirectiveWriter
 from polyply.src.charges import equalize_charges, set_charges
 
-def itp_to_ff(itppath, fragment_smiles, resnames, term_prefix, outpath, charge=0):
+def itp_to_ff(itppath, fragment_smiles, resnames, term_prefix, outpath, charges=None):
     """
     Main executable for itp to ff tool.
     """
+    # what charges belong to which resname
+    if charges:
+        crg_dict = dict(zip(resnames, charges))
     # read the topology file
     if itppath.suffix == ".top":
         top = Topology.from_gmx_topfile(itppath, name="test")
@@ -58,7 +64,9 @@ def itp_to_ff(itppath, fragment_smiles, resnames, term_prefix, outpath, charge=0
         force_field.blocks[name] = new_block
         set_charges(new_block, res_graph, name)
         if itppath.suffix == ".top":
-            equalize_charges(new_block, top)
+            base_resname = name.split(term_prefix)[0].split('_')[0]
+            print(base_resname)
+            equalize_charges(new_block, top, crg_dict[base_resname])
 
     force_field.links = extract_links(mol)
 
