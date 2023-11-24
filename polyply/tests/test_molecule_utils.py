@@ -59,6 +59,18 @@ from .test_apply_links import example_meta_molecule
                            parameters=[1],
                            meta={'version': 0, 'comment': 'link'})]
     }),
+    # redundant pair
+    ({'pairs': [Interaction(atoms=(1, 5),
+                            parameters=[1],
+                            meta={}),
+                Interaction(atoms=(5, 9),
+                            parameters=[1],
+                            meta={}),
+               ],},
+    {'pairs': [Interaction(atoms=['BB1', '+BB1'],
+                           parameters=[1],
+                           meta={'version': 0, 'comment': 'link'})]
+    }),
 ))
 def test_extract_links(example_meta_molecule, inters, expected):
     mol = example_meta_molecule.molecule
