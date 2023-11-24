@@ -70,6 +70,11 @@ def itp_equal(ref_mol, new_mol):
 @pytest.mark.parametrize("case, smiles, resnames, charges", [
     ("PEO_OHter", ["[OH][CH2]", "[CH2]O[CH2]", "[CH2][OH]"], ["OH", "PEO", "OH"], [0, 0, 0]),
     ("PEG_PBE", ["[CH3]", "[CH2][CH][CH][CH2]", "[CH2]O[CH2]"], ["CH3", "PBE", "PEO"], [0, 0, 0]),
+    ("ACOL", ["[CH2][CH]C(=O)[O][CH3]","[CH2][CH]C(=O)[O][CH3]",
+              "[CH2][CH]C(=O)[O][CH2][CH2][N]([CH3])([CH3])([CH3])",
+              "[CH2][CH]C(=O)[O][CH3]", "[CH2][CH]C(=O)[O][CH3]"],
+             ["M", "M", "AOL", "M", "M"],
+             [0, 0, 1, 0, 0]),
 ])
 def test_itp_to_ff(tmp_path, case, smiles, resnames, charges):
     """

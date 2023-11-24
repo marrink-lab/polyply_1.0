@@ -66,7 +66,9 @@ def itp_to_ff(itppath, fragment_smiles, resnames, term_prefix, outpath, charges=
         if itppath.suffix == ".top":
             base_resname = name.split(term_prefix)[0].split('_')[0]
             print(base_resname)
-            balance_charges(new_block, top, crg_dict[base_resname])
+            balance_charges(new_block,
+                            topology=top,
+                            charge=crg_dict[base_resname])
 
     force_field.links = extract_links(mol)
 
