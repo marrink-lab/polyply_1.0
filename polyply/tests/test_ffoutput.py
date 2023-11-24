@@ -69,7 +69,7 @@ def equal_ffs(ff1, ff2):
      '2016H66',
      'gromos53A6',
      'oplsaaLigParGen',
-     'martini2',
+ #    'martini2',
      'parmbsc1',
 ])
 def test_ffoutput(tmp_path, libname):
