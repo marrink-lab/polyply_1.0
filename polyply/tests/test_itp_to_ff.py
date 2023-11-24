@@ -76,7 +76,6 @@ def test_itp_to_ff(tmp_path, case, smiles, resnames, charges):
     Call itp-to-ff and check if it generates the same force-field
     as in the ref.ff file.
     """
-    tmp_path = Path("/Users/fabian/ProgramDev/polyply_1.0/polyply/tests/test_data/itp_to_ff/PEG_PBE/tmp")
     tmp_file = Path(tmp_path) / "test.ff"
     inpath = Path(polyply.TEST_DATA) / "itp_to_ff" / case
     itp_to_ff(itppath=inpath/"in_itp.itp",
