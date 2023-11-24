@@ -67,23 +67,25 @@ def itp_equal(ref_mol, new_mol):
                 assert False
     return True
 
-@pytest.mark.parametrize("case, smiles, resnames, charges", [
-    ("PEO_OHter", ["[OH][CH2]", "[CH2]O[CH2]", "[CH2][OH]"], ["OH", "PEO", "OH"], [0, 0, 0]),
-    ("PEG_PBE", ["[CH3]", "[CH2][CH][CH][CH2]", "[CH2]O[CH2]"], ["CH3", "PBE", "PEO"], [0, 0, 0]),
-    ("ACOL", ["[CH2][CH]C(=O)[O][CH3]","[CH2][CH]C(=O)[O][CH3]",
+@pytest.mark.parametrize("case, fname, smiles, resnames, charges", [
+    ("PEO_OHter", "in_itp.itp", ["[OH][CH2]", "[CH2]O[CH2]", "[CH2][OH]"],
+    ["OH", "PEO", "OH"], [0, 0, 0]),
+    ("PEG_PBE", "in_itp.itp", ["[CH3]", "[CH2][CH][CH][CH2]", "[CH2]O[CH2]"],
+    ["CH3", "PBE", "PEO"], [0, 0, 0]),
+    ("ACOL","ref.top", ["[CH2][CH]C(=O)[O][CH3]","[CH2][CH]C(=O)[O][CH3]",
               "[CH2][CH]C(=O)[O][CH2][CH2][N]([CH3])([CH3])([CH3])",
               "[CH2][CH]C(=O)[O][CH3]", "[CH2][CH]C(=O)[O][CH3]"],
              ["M", "M", "AOL", "M", "M"],
              [0, 0, 1, 0, 0]),
 ])
-def test_itp_to_ff(tmp_path, case, smiles, resnames, charges):
+def test_itp_to_ff(tmp_path, case, fname, smiles, resnames, charges):
     """
     Call itp-to-ff and check if it generates the same force-field
     as in the ref.ff file.
     """
     tmp_file = Path(tmp_path) / "test.ff"
     inpath = Path(polyply.TEST_DATA) / "itp_to_ff" / case
-    itp_to_ff(itppath=inpath/"in_itp.itp",
+    itp_to_ff(itppath=inpath/fname,
               fragment_smiles=smiles,
               resnames=resnames,
               charges=charges,
