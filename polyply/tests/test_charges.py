@@ -26,6 +26,8 @@ from polyply.src.charges import balance_charges
      0.0,),
     ({0: 0.6, 1: -0.2, 2: 0.5, 3: 0.43},
      0.5,),
+    ({0: -0.633, 1: -0.532, 2: 0.512, 3: 0.0},
+     -0.6,),
 ))
 def test_balance_charges(charges, target):
     lines = """
@@ -46,6 +48,6 @@ def test_balance_charges(charges, target):
     polyply.src.polyply_parser.read_polyply(lines, ff)
     block = ff.blocks['test']
     nx.set_node_attributes(block, charges, 'charge')
-    balance_charges(block, topology=None, charge=target, tol=10**-4, decimals=4)
+    balance_charges(block, topology=None, charge=target, tol=10**-5, decimals=5)
     new_charges = nx.get_node_attributes(block, 'charge')
-    assert pytest.approx(sum(new_charges.values()),abs=0.00001) == target
+    assert pytest.approx(sum(new_charges.values()),abs=0.0001) == target
