@@ -95,7 +95,7 @@ def _get_bonds(block, topology=None):
                         bonds[(nodes_to_count[idx], nodes_to_count[jdx])] = float(params)
     return bonds
 
-def balance_charges(block, topology=None, charge=0):
+def balance_charges(block, charge=0, tol=10**-5, decimals=5, topology=None):
     """
     Given a block and a total charge for that block
     balance the charge until the total charge of the
@@ -121,7 +121,7 @@ def balance_charges(block, topology=None, charge=0):
     block.make_edges_from_interaction_type('bonds')
     keys = nx.get_node_attributes(block, 'charge').keys()
     charges = np.array(list(nx.get_node_attributes(block, 'charge').values()))
-    if np.isclose(charges.sum(), 0, atol=1*10**-6):
+    if np.isclose(charges.sum(), 0, atol=tol):
         return block
 
     # we need to equalize the charge
@@ -139,7 +139,7 @@ def balance_charges(block, topology=None, charge=0):
         return loss
 
     opt_results = scipy.optimize.minimize(loss, charges, method='L-BFGS-B',
-                                          options={'ftol': 0.001, 'maxiter': 100})
-    balanced_charges = opt_results['x']
+                                          options={'ftol': tol, 'maxiter': 100})
+    balanced_charges = np.around(opt_results['x'], decimals)
     nx.set_node_attributes(block, dict(zip(keys, balanced_charges)), 'charge')
     return block
