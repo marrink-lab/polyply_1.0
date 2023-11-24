@@ -67,22 +67,22 @@ def itp_equal(ref_mol, new_mol):
                 assert False
     return True
 
-@pytest.mark.parametrize("case, smiles, resnames, charge", [
-    ("PEO_OHter", ["[OH][CH2]", "[CH2]O[CH2]", "[CH2][OH]"], ["OH", "PEO", "OH"], 0),
-    ("PEG_PBE", ["[CH3]", "[CH2][CH][CH][CH2]", "[CH2]O[CH2]"], ["CH3", "PBE", "PEO"], 0),
+@pytest.mark.parametrize("case, smiles, resnames, charges", [
+    ("PEO_OHter", ["[OH][CH2]", "[CH2]O[CH2]", "[CH2][OH]"], ["OH", "PEO", "OH"], [0, 0, 0]),
+    ("PEG_PBE", ["[CH3]", "[CH2][CH][CH][CH2]", "[CH2]O[CH2]"], ["CH3", "PBE", "PEO"], [0, 0, 0]),
 ])
-def _test_ffoutput(tmp_path, case, smiles, resnames, charge):
+def test_itp_to_ff(tmp_path, case, smiles, resnames, charges):
     """
     Call itp-to-ff and check if it generates the same force-field
     as in the ref.ff file.
     """
-    tmp_path = Path("/coarse/fabian/current-projects/polymer_itp_builder/polyply_2.0/polyply/tests/test_data/tmp")
+    tmp_path = Path("/Users/fabian/ProgramDev/polyply_1.0/polyply/tests/test_data/itp_to_ff/PEG_PBE/tmp")
     tmp_file = Path(tmp_path) / "test.ff"
     inpath = Path(polyply.TEST_DATA) / "itp_to_ff" / case
     itp_to_ff(itppath=inpath/"in_itp.itp",
               fragment_smiles=smiles,
               resnames=resnames,
-              charge=charge,
+              charges=charges,
               term_prefix='ter',
               outpath=tmp_file,)
     # now generate an itp file with this ff-file
@@ -92,6 +92,6 @@ def _test_ffoutput(tmp_path, case, smiles, resnames, charge):
                outpath=tmp_itp, name="new")
     # read the itp-file and return a molecule
     new_mol = _read_itp(tmp_itp)
-    ref_mol = _read_itp(inpath/"in_itp.itp")
+    ref_mol = _read_itp(inpath/"ref.itp")
     # check if itps are the same
     assert itp_equal(ref_mol, new_mol)
