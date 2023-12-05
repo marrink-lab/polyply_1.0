@@ -205,7 +205,7 @@ class CentralCoreGenerator:
         self._create_np_atom_type_dict()
         self._process_atoms()
 
-        with open("output.itp", "w") as itp_file:
+        with open("TEST.itp", "w") as itp_file:
             itp_file.write("[ moleculetype ]\n")
             itp_file.write("; Name            nrexcl\n")
             itp_file.write(f"{moleculename}   3\n\n")

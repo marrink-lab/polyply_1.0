@@ -22,6 +22,7 @@ from polyply.src.linalg_functions import center_of_geometry
 from polyply.src.meta_molecule import MetaMolecule
 from polyply.src.processor import Processor
 from polyply.src.topology import Topology
+
 from scipy.spatial import ConvexHull, distance
 from vermouth.gmx import gro  # gro library to output the file as a gro file
 from vermouth.gmx.itp import write_molecule_itp
@@ -41,7 +42,7 @@ def generate_artificial_core(
     radius: float,
     ff: vermouth.forcefield.ForceField,
     constitute: str,
-    nanoparticle_name: str = "test",
+    nanoparticle_name: str = "TEST",
 ) -> None:  # Tuple[str, str]:
     """
     use the imported class to generate a core of R size
@@ -62,6 +63,7 @@ def generate_artificial_core(
         f"Writing the gro file for the artificial core - generating {nanoparticle_name}.gro"
     )
     nanoparticle_core_object._write_gro_file(output_filename=f"{nanoparticle_name}.gro")
+    nanoparticle_core_object._write_itp_file()
 
 
 def rotation_matrix_from_vectors(
@@ -662,7 +664,9 @@ class NanoparticleModels(Processor):
                     if x in list(self.core_indices[core_index])
                 }
 
-    def _identify_attachment_index(self, ligand_block, anchor_atom: str) -> int:
+    def _identify_attachment_index(
+        self, ligand_block, anchor_atom: str, type_ff: str = "MARTINI"
+    ) -> int:
         """
         Find index of atoms that corresponds to the atom on the ligand
         which you wish to bond with the ligand on the nanoparticle core
@@ -677,8 +681,12 @@ class NanoparticleModels(Processor):
         """
         attachment_index = None
         for index, entry in enumerate(ligand_block.atoms):
-            if entry["atomname"] == anchor_atom:
-                attachment_index = index
+            if type_ff == "MARTINI":
+                if entry["atype"] == anchor_atom:
+                    attachment_index = index
+            else:
+                if entry["atomname"] == anchor_atom:
+                    attachment_index = index
         return attachment_index
 
     def _ligand_generate_coordinates(self) -> None:
@@ -874,12 +882,13 @@ class NanoparticleModels(Processor):
         )
         self.np_molecule_new.meta["moltype"] = "TEST"
         # reassign the molecule with the np_molecule we have defined new interactions with
-        NanoparticleCoordinates().run_molecule(self.np_molecule_new)
+        # NanoparticleCoordinates().run_molecule(self.np_molecule_new)
         PositionChangeCore(self.gro_file, self.sample, self.np_atype).run_molecule(
             self.np_molecule_new
         )
 
-        # shift the positions of the ligands so that they are initiated on the surface of the NP
+        # shift the positions of the ligands so that they are initiated on the surface of the NP        self.np_component = np_component
+
         for resname in self.ligand_block_specs.keys():
             PositionChangeLigand(
                 ligand_block_specs=self.ligand_block_specs,
@@ -928,6 +937,8 @@ class ArtificialNanoparticleModels(NanoparticleModels):
 
     def __init__(
         self,
+        gro_file,
+        sample,
         np_component,
         np_atype,
         ligand_path,
@@ -943,6 +954,8 @@ class ArtificialNanoparticleModels(NanoparticleModels):
         identify_surface=False,
         core_option=None,
     ):
+        self.gro_file = gro_file
+        self.sample = sample
         self.np_component = np_component
         self.np_atype = np_atype
         self.ligand_path = ligand_path
@@ -958,7 +971,7 @@ class ArtificialNanoparticleModels(NanoparticleModels):
         self.original_coordinates = original_coordinates
         self.core_option = core_option
 
-    def core_generate_artificial_coordinates(self) -> None:
+    def _core_generate_artificial_coordinates(self) -> None:
         """
         internal method for generating the artificial core and registering the
         itp with in the force field
@@ -982,89 +995,111 @@ class ArtificialNanoparticleModels(NanoparticleModels):
 # main code executable
 if __name__ == "__main__":
     # The gold nanoparticle - generate the core of the opls force field work
-    AUNP_model = NanoparticleModels(
-        "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/au144.gro",
-        return_amber_nps_type("au144_OPLS_bonded"),
-        "NP2",
-        "AU",
-        "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand",
-        ["UNK_DA2640/UNK_DA2640.itp", "UNK_12B037/UNK_12B037.itp"],
-        # ["UNK_DA2640/UNK_DA2640.itp"],
-        [20, 20],
-        "Janus",
-        ["S07", "S00"],
-        ["C08", "C07"],
-        3,
-        "test",
-        original_coordinates={
-            "DA": gro.read_gro(
-                "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand/UNK_DA2640/UNK_DA2640.gro"
-            ),
-            "12B": gro.read_gro(
-                "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand/UNK_12B037/UNK_12B037.gro"
-            ),
-        },
-        identify_surface=False,
-    )
-    AUNP_model.core_generate_coordinates()
-    AUNP_model._identify_indices_for_core_attachment()
-    AUNP_model._ligand_generate_coordinates()
-    AUNP_model._add_block_indices()  # Not sure whether we need this now ...
-    AUNP_model._generate_ligand_np_interactions()
-    AUNP_model._generate_bonds()
-    AUNP_model._initiate_nanoparticle_coordinates()  # doesn't quite work yet.
-    # Generating output files
-    AUNP_model.create_gro("gold.gro")
-    AUNP_model.write_itp("gold.itp")
-
-    # PCBM nanoparticle (Coarse-grained) - constructing the PCBM
-    PCBM_ligand_gro = "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/PCBM_CG/PCBM_ligand.gro"
-    ## Creating the PCBM model
-    PCBM_model = NanoparticleModels(
-        "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/PCBM_CG/F16.gro",
-        return_cg_nps_type("F16"),
-        "F16",
-        "CNP",
-        "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/PCBM_CG/",
-        ["PCBM_ligand.itp"],
-        [1],
-        "Striped",
-        ["C4"],
-        ["N1"],
-        1,
-        ff_name="test",
-        original_coordinates={
-            "PCBM": gro.read_gro(PCBM_ligand_gro),
-        },
-        identify_surface=False,
-    )
-
-    # Generate PCBM
-    PCBM_model.core_generate_coordinates()
-    PCBM_model._identify_indices_for_core_attachment()
-    PCBM_model._ligand_generate_coordinates()
-    PCBM_model._add_block_indices()  # Not sure whether we need this now ...
-    PCBM_model._generate_ligand_np_interactions()
-    PCBM_model._generate_bonds()
-    PCBM_model._initiate_nanoparticle_coordinates()  # doesn't quite work yet.
-
-    # Generating output files
-    PCBM_model.create_gro("PCBM.gro")
-    PCBM_model.write_itp("PCBM.itp")
+    ##AUNP_model = NanoparticleModels(
+    ##    "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/au144.gro",
+    ##    return_amber_nps_type("au144_OPLS_bonded"),
+    ##    "NP2",
+    ##    "AU",
+    ##    "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand",
+    ##    ["UNK_DA2640/UNK_DA2640.itp", "UNK_12B037/UNK_12B037.itp"],
+    ##    # ["UNK_DA2640/UNK_DA2640.itp"],
+    ##    [20, 20],
+    ##    "Janus",
+    ##    ["S07", "S00"],
+    ##    ["C08", "C07"],
+    ##    3,
+    ##    "test",
+    ##    original_coordinates={
+    ##        "DA": gro.read_gro(
+    ##            "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand/UNK_DA2640/UNK_DA2640.gro"
+    ##        ),
+    ##        "12B": gro.read_gro(
+    ##            "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand/UNK_12B037/UNK_12B037.gro"
+    ##        ),
+    ##    },
+    ##    identify_surface=False,
+    ##)
+    ##AUNP_model.core_generate_coordinates()
+    ##AUNP_model._identify_indices_for_core_attachment()
+    ##AUNP_model._ligand_generate_coordinates()
+    ##AUNP_model._add_block_indices()  # Not sure whether we need this now ...
+    ##AUNP_model._generate_ligand_np_interactions()
+    ##AUNP_model._generate_bonds()
+    ##AUNP_model._initiate_nanoparticle_coordinates()  # doesn't quite work yet.
+    ### Generating output files
+    ##AUNP_model.create_gro("gold.gro")
+    ##AUNP_model.write_itp("gold.itp")
+    ##
+    ### PCBM nanoparticle (Coarse-grained) - constructing the PCBM
+    ##PCBM_ligand_gro = "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/PCBM_CG/PCBM_ligand.gro"
+    #### Creating the PCBM model
+    ##PCBM_model = NanoparticleModels(
+    ##    "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/PCBM_CG/F16.gro",
+    ##    return_cg_nps_type("F16"),
+    ##    "F16",
+    ##    "CNP",
+    ##    "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/PCBM_CG/",
+    ##    ["PCBM_ligand.itp"],
+    ##    [1],
+    ##    "Striped",
+    ##    ["C4"],
+    ##    ["N1"],
+    ##    1,
+    ##    ff_name="test",
+    ##    original_coordinates={
+    ##        "PCBM": gro.read_gro(PCBM_ligand_gro),
+    ##    },
+    ##    identify_surface=False,
+    ##)
+    ##
+    ### Generate PCBM
+    ##PCBM_model.core_generate_coordinates()
+    ##PCBM_model._identify_indices_for_core_attachment()
+    ##PCBM_model._ligand_generate_coordinates()
+    ##PCBM_model._add_block_indices()  # Not sure whether we need this now ...
+    ##PCBM_model._generate_ligand_np_interactions()
+    ##PCBM_model._generate_bonds()
+    ##PCBM_model._initiate_nanoparticle_coordinates()  # doesn't quite work yet.
+    ##
+    ### Generating output files
+    ##PCBM_model.create_gro("PCBM.gro")
+    ##PCBM_model.write_itp("PCBM.itp")
 
     # Artificial core part - we need a code example building a martini 3 based
     # nanoparticle based on the small molecules repository
-    Aritifical_martini_model = ArtificialNanoparticleModels(
-        "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand",
-        ["1MIMI_cog.itp", "PHEN_cog.itp"],
-        [20, 20],
-        "Janus",
-        ["TN1", "SN6"],
-        ["TC5", "TC5"],
-    )
 
-    Aritifical_martini_model.create_gro()
-    Aritifical_martini_model.write_itp()
+    Artificial_martini_model = ArtificialNanoparticleModels(
+        "TEST.gro",
+        return_amber_nps_type("artificial"),
+        "TEST",  # np_component
+        "P5",  # np_atype
+        ligand_path="/home/sang/Desktop/Papers_NP/Personal_papers/polyply_paper/Martini3-small-molecules/models/itps/cog-mono",  # ligand_path
+        ligands=["PHEN_cog.itp", "PHEN_cog.itp"],  # ligands
+        ligand_N=[20, 20],  # ligands_N
+        pattern="Striped",  # Pattern
+        ligand_anchor_atoms=["SN6", "SN6"],  # anchor_atoms
+        ligand_tail_atoms=["TC5", "TC5"],  # tail_atoms
+        nrexcl=3,  # nrexcl
+        ff_name="test",  # ff_test
+        original_coordinates={
+            "PHEN": gro.read_gro(
+                "/home/sang/Desktop/Papers_NP/Personal_papers/polyply_paper/Martini3-small-molecules/models/gros/PHEN.gro"
+            ),
+            # "1MIMI_cog": "/home/sang/Desktop/Papers_NP/Personal_papers/polyply_paper/Martini3-small-molecules/models/gros/1MIMI.gro",
+            "PHEN": gro.read_gro(
+                "/home/sang/Desktop/Papers_NP/Personal_papers/polyply_paper/Martini3-small-molecules/models/gros/PHEN.gro"
+            ),
+        },  # original_coordinates
+    )
+    Artificial_martini_model._core_generate_artificial_coordinates()
+    Artificial_martini_model._identify_indices_for_core_attachment()
+    Artificial_martini_model._ligand_generate_coordinates()
+    Artificial_martini_model._add_block_indices()
+    Artificial_martini_model._generate_ligand_np_interactions()
+    Artificial_martini_model._generate_bonds()
+    Artificial_martini_model._initiate_nanoparticle_coordinates()
+    Artificial_martini_model.create_gro("ART.GRO")
+    Artificial_martini_model.write_itp("ART.ITP")
 
     # ff = vermouth.forcefield.ForceField(name="test")
     # generate_artificial_core("output", 100, 3.0, ff, "P5")
