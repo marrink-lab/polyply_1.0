@@ -674,13 +674,11 @@ class NanoparticleModels(Processor):
 
         """
         attachment_index = None
-        for index, entry in enumerate(ligand_block.atoms):
-            if type_ff == "MARTINI":
-                if entry["atype"] == anchor_atom:
-                    attachment_index = index
-            else:
-                if entry["atomname"] == anchor_atom:
-                    attachment_index = index
+        for index, entry in enumerate(list(ligand_block.atoms)):
+            if entry["atype"] == anchor_atom:
+                attachment_index = index
+            if entry["atomname"] == anchor_atom:
+                attachment_index = index
         return attachment_index
 
     def _ligand_generate_coordinates(self) -> None:
@@ -717,9 +715,9 @@ class NanoparticleModels(Processor):
                 )  # As the first index represents the core, the starting index will always be
                 # 1, hence we need to subtract to ensure that the indexing is correct
 
-                # NanoparticleCoordinates().run_molecule(
-                #    self.ff.blocks[block_name]
-                # )  # generate the position of the atoms for the ligands
+                NanoparticleCoordinates().run_molecule(
+                    self.ff.blocks[block_name]
+                )  # generate the position of the atoms for the ligands
                 self.ligand_block_specs[block_name] = {
                     "name": block_name,  # store the ligand block name
                     "length": len(
@@ -1033,7 +1031,7 @@ if __name__ == "__main__":
         "CNP",
         "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/PCBM_CG/",
         ["PCBM_ligand.itp"],
-        [1],
+        [10],
         "Striped",
         ["C4"],
         ["N1"],
