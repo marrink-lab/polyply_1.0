@@ -201,7 +201,7 @@ class CentralCoreGenerator:
         """
         # Write the ITP file
         moleculename = "TEST"
-        atom_name = "CA"
+        atom_name = "MOL"
         self._create_np_atom_type_dict()
         self._process_atoms()
 
