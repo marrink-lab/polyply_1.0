@@ -101,11 +101,9 @@ class ArtificialNanoparticleModels(NanoparticleModels):
         itp with in the force field
         """
         generate_artificial_core("output.gro", 100, 3.0, self.ff, self.np_atype)
-        self.NP_block = self.ff.blocks[self.np_component]
+        self.np_block = self.ff.blocks[self.np_component]
         self.np_molecule_new = self.ff.blocks[self.np_component].to_molecule()
-        # NanoparticleCoordinates().run_molecule(self.np_molecule_new)
         self.core_len, self.core = len(self.np_molecule_new), len(self.np_molecule_new)
-        # Generate the positions for the core and assign as position elements
         NanoparticleCoordinates().run_molecule(self.np_molecule_new)
         self.core_center = center_of_geometry(
             np.asarray(
@@ -154,13 +152,16 @@ if __name__ == "__main__":
         "CA",  # np_atype
         ligand_path="/home/sang/Desktop/Papers_NP/Personal_papers/polyply_paper/Martini3-small-molecules/models/itps/cog-mono",  # ligand_path
         ligands=["PHEN_cog.itp", "PHEN_cog.itp"],  # ligands
-        ligand_N=[20, 3],  # ligands_N
-        pattern="Striped",  # Pattern
+        ligand_N=[20, 20],  # ligands_N
+        pattern="Janus",  # Pattern
         ligand_anchor_atoms=["SN6", "SN6"],  # anchor_atoms
         ligand_tail_atoms=["TC5", "TC5"],  # tail_atoms
         nrexcl=3,  # nrexcl
         ff_name="test",  # ff_test
         original_coordinates={
+            "PHEN": gro.read_gro(
+                "/home/sang/Desktop/Papers_NP/Personal_papers/polyply_paper/Martini3-small-molecules/models/gros/PHEN.gro"
+            ),
             "PHEN": gro.read_gro(
                 "/home/sang/Desktop/Papers_NP/Personal_papers/polyply_paper/Martini3-small-molecules/models/gros/PHEN.gro"
             ),
