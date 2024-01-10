@@ -17,8 +17,6 @@ from polyply.src.generate_templates import (
 )
 from polyply.src.linalg_functions import center_of_geometry
 
-# import polyply.src.meta_molecule
-# from polyply.src.load_library import load_library
 from polyply.src.meta_molecule import MetaMolecule
 from polyply.src.processor import Processor
 from polyply.src.topology import Topology
@@ -52,7 +50,6 @@ def generate_artificial_core(
     nanoparticle_core_object = CentralCoreGenerator(
         output, number_of_atoms, radius, 0.0, ff, constitute, nanoparticle_name
     )
-
     nanoparticle_core_object._nanoparticle_base_fibonacci_sphere()
     logging.info("Writing the itp for the artificial core")
     itp_output = nanoparticle_core_object._generate_itp_string().split("\n")
@@ -282,7 +279,7 @@ class PositionChangeLigand(Processor):
         for resid_index, resid in enumerate(
             self.ligand_block_specs[self.resname]["resids"]
         ):
-            vec2 = self.ligand_block_specs[self.resname]["indices"][
+            lig_vec = self.ligand_block_specs[self.resname]["indices"][
                 list(self.ligand_block_specs[self.resname]["indices"].keys())[
                     resid_index
                 ]
@@ -306,7 +303,7 @@ class PositionChangeLigand(Processor):
             )
 
             rot_mat = rotation_matrix_from_vectors(
-                ligand_directional_vector, self.core_center - vec2
+                ligand_directional_vector, self.core_center - lig_vec
             )
             logging.info(
                 f"The rotation matrix we have for residue {resid} is {rot_mat}"
@@ -324,7 +321,7 @@ class PositionChangeLigand(Processor):
         for resid_index, resid in enumerate(
             self.ligand_block_specs[self.resname]["resids"]
         ):
-            vec2 = self.ligand_block_specs[self.resname]["indices"][
+            lig_vec = self.ligand_block_specs[self.resname]["indices"][
                 list(self.ligand_block_specs[self.resname]["indices"].keys())[
                     resid_index
                 ]
@@ -343,7 +340,7 @@ class PositionChangeLigand(Processor):
                     modifier = (
                         rotated_value
                         / absolute_vectors[resid][0]
-                        * np.linalg.norm(vec2)
+                        * np.linalg.norm(lig_vec)
                         + rotation_matrix_dictionary[resid].dot(
                             ligand_directional_vector
                         )
@@ -517,7 +514,7 @@ class NanoparticleModels(Processor):
             vermouth.gmx.itp_read.read_itp(
                 self.sample, self.ff
             )  # Read the original itp file for the core
-            self.NP_block = self.ff.blocks[self.np_component]
+            self.np_block = self.ff.blocks[self.np_component]
             core_molecule = self.ff.blocks[
                 self.np_component
             ].to_molecule()  # Make metamolcule object from the core block
@@ -607,7 +604,7 @@ class NanoparticleModels(Processor):
 
         """
         # assign molecule object
-        # init_coords = expand_initial_coords(self.NP_block)
+        # init_coords = expand_initial_coords(self.np_block)
         NanoparticleCoordinates().run_molecule(
             self.np_molecule_new
         )  # this is repetitive so we don't need this
@@ -755,7 +752,7 @@ class NanoparticleModels(Processor):
         -------
         """
         core_size = len(
-            list(self.NP_block)
+            list(self.np_block)
         )  # get the length of the core of the nanoparticle we are trying to build
         scaling_factor = 0
 
@@ -800,7 +797,6 @@ class NanoparticleModels(Processor):
                 self.np_molecule_new.merge_molecule(
                     self.ff.blocks[key]
                 )  # append to block
-
                 resids.append(resid_index)  # why is this 2?
                 resid_index += 1
 
@@ -819,15 +815,11 @@ class NanoparticleModels(Processor):
         core_size = self.core
         # get random N elements from the list
         for key in self.ligand_block_specs.keys():
-
             logging.info(f"bonds for {key}")
-
             adjusted_N_indices = list(self.ligand_block_specs[key]["indices"].keys())[
                 : self.ligand_block_specs[key]["N"]
             ]
-
             logging.info(f"adjusted {adjusted_N_indices}")
-
             for index, entry in enumerate(adjusted_N_indices):
                 base_anchor = (
                     core_size
@@ -968,7 +960,7 @@ class ArtificialNanoparticleModels(NanoparticleModels):
         itp with in the force field
         """
         generate_artificial_core("output.gro", 100, 3.0, self.ff, self.np_atype)
-        self.NP_block = self.ff.blocks[self.np_component]
+        self.np_block = self.ff.blocks[self.np_component]
         self.np_molecule_new = self.ff.blocks[self.np_component].to_molecule()
         NanoparticleCoordinates().run_molecule(self.np_molecule_new)
         self.core_len, self.core = len(self.np_molecule_new), len(self.np_molecule_new)
@@ -1010,6 +1002,7 @@ if __name__ == "__main__":
         },
         identify_surface=False,
     )
+
     AUNP_model.core_generate_coordinates()
     AUNP_model._identify_indices_for_core_attachment()
     AUNP_model._ligand_generate_coordinates()
@@ -1042,7 +1035,6 @@ if __name__ == "__main__":
         },
         identify_surface=False,
     )
-
     # Generate PCBM
     PCBM_model.core_generate_coordinates()
     PCBM_model._identify_indices_for_core_attachment()
@@ -1051,16 +1043,6 @@ if __name__ == "__main__":
     PCBM_model._generate_ligand_np_interactions()
     PCBM_model._generate_bonds()
     PCBM_model._initiate_nanoparticle_coordinates()  # doesn't quite work yet.
-
     # Generating output files
     PCBM_model.create_gro("PCBM.gro")
     PCBM_model.write_itp("PCBM.itp")
-
-    # Artificial core part - we need a code example building a martini 3 based
-    # nanoparticle based on the small molecules repository
-
-    # ff = vermouth.forcefield.ForceField(name="test")
-    # generate_artificial_core("output", 100, 3.0, ff, "P5")
-    # core_numpy_coords = np.asarray(
-    #    list((nx.get_node_attributes(self.np_molecule_new, "position").values()))
-    # )  # get the cartesian positions of the main core
