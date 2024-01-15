@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import numpy as np
 import networkx as nx
 from vermouth.graph_utils import make_residue_graph
 from polyply.src.graph_utils import find_one_ismags_match
@@ -122,6 +122,33 @@ class FragmentFinder():
                 mass = round(self.molecule.nodes[node]["mass"])
                 self.molecule.nodes[node]["element"] = self.masses_to_element[mass]
                 self.molecule.nodes[node]["degree"] = self.molecule.degree(node)
+
+    def linearize_resids(self, unique_fragments):
+        resids = np.arange(0, len(self.res_graph))
+        old_resids = {}
+        # find the first terminal
+        ter = self.ter_prefix
+        ter_nodes = [ node[0] for node in self.res_graph.nodes(data=True) if ter in node[1]['resname'] ]
+        print(ter_nodes[0])
+        #assert 0 > len(ter_nodes) < 3
+        path = nx.dfs_edges(self.res_graph, source=ter_nodes[0])
+        old_resids = {self.res_graph.nodes[ter_nodes[0]]['resid']: resids[0]}
+        self.res_graph.nodes[ter_nodes[0]]['resid'] = resids[0]
+        for mol_node in self.res_graph.nodes[ter_nodes[0]]['graph'].nodes:
+            self.res_graph.nodes[ter_nodes[0]]['graph'].nodes[mol_node]['resid'] = resids[0]
+            self.molecule.nodes[mol_node]['resid'] = resids[0]
+
+        for new_resid, (_, node) in zip(resids[1:], path):
+            print('node', node)
+            old_resids[self.res_graph.nodes[node]['resid']] = new_resid
+            self.res_graph.nodes[node]['resid'] = new_resid
+            for mol_node in self.res_graph.nodes[node]['graph'].nodes:
+                self.res_graph.nodes[node]['graph'].nodes[mol_node]['resid'] = new_resid
+                self.molecule.nodes[mol_node]['resid'] = new_resid
+        print(old_resids)
+        for fragment in unique_fragments.values():
+            for node in fragment.nodes:
+                fragment.nodes[node]['resid'] = old_resids[fragment.nodes[node]['resid']]
 
     def _node_match(self, node1, node2):
         """
@@ -342,4 +369,5 @@ class FragmentFinder():
 
         # remake the residue graph since some resnames have changed
         self.make_res_graph()
+        self.linearize_resids(unique_fragments)
         return unique_fragments, self.res_graph
