@@ -1,5 +1,10 @@
 import re
-import pysmiles
+try:
+    import pysmiles
+except ImportError:
+    msg = ("You are using a functionality that requires "
+           "the pysmiles package. Use pip install pysmiles ")
+    raise ImportError(msg)
 import networkx as nx
 from vermouth.forcefield import ForceField
 from vermouth.molecule import Block
