@@ -1,4 +1,5 @@
 import re
+import numpy as np
 try:
     import pysmiles
 except ImportError:
@@ -15,6 +16,12 @@ PATTERNS = {"bond_anchor": "\[\$.*?\]",
             "annotation": "\|.*?\|",
             "fragment": r'#(\w+)=((?:\[.*?\]|[^,\[\]]+)*)',
             "seq_pattern": r'\{([^}]*)\}(?:\.\{([^}]*)\})?'}
+
+def _find_next_character(string, chars, start):
+    for idx, token in enumerate(string[start:]):
+        if token in chars:
+            return idx+start
+    return np.inf
 
 def res_pattern_to_meta_mol(pattern):
     """
@@ -67,13 +74,15 @@ def res_pattern_to_meta_mol(pattern):
     branching = False
     for match in re.finditer(PATTERNS['place_holder'], pattern):
         start, stop = match.span()
+        print(pattern[start:stop])
         # new branch here
         if pattern[start-1] == '(':
             branching = True
             branch_anchor = prev_node
             recipie = [(meta_mol.nodes[prev_node]['resname'], 1)]
         if stop < len(pattern) and pattern[stop] == '|':
-            n_mon = int(pattern[stop+1:pattern.find('[', stop)])
+            eon = _find_next_character(pattern, ['[', ')', '(', '}'], stop)
+            n_mon = int(pattern[stop+1:eon])
         else:
             n_mon = 1
 
@@ -94,12 +103,17 @@ def res_pattern_to_meta_mol(pattern):
             current += 1
 
         # terminate branch and jump back to anchor
-        if stop < len(pattern) and pattern[stop] == ')' and branching:
+        branch_stop = _find_next_character(pattern, ['['], stop) >\
+                      _find_next_character(pattern, [')'], stop)
+        if stop <= len(pattern) and branch_stop and branching:
             branching = False
             prev_node = branch_anchor
             # we have to multiply the branch n-times
-            if stop+1 < len(pattern) and pattern[stop+1] == "|":
-                for _ in range(0,int(pattern[stop+2:pattern.find('[', stop)])):
+            eon_a = _find_next_character(pattern, [')'], stop)
+            if stop+1 < len(pattern) and pattern[eon_a+1] == "|":
+                eon_b = _find_next_character(pattern, ['[', ')', '(', '}'], eon_a+1)
+                # -1 because one branch has already been added at this point
+                for _ in range(0,int(pattern[eon_a+2:eon_b])-1):
                     for bdx, (resname, n_mon) in enumerate(recipie):
                         if bdx == 0:
                             anchor = current
@@ -166,11 +180,35 @@ def tokenize_big_smile(big_smile):
             prev_node = anchor
             smile += token
         else:
-            if token not in '@ . - = # $ : / \\ + - %':
+            if token not in '@ . - = # $ : / \\ + - %'\
+                and not token.isdigit():
                 prev_node = node_count
                 node_count += 1
             smile += token
     return smile, bonding_descrpt
+
+def _rebuild_h_atoms(mol_graph):
+    # special hack around to fix
+    # pysmiles bug for a single
+    # atom molecule; we assume that the
+    # hcount is just wrong and set it to
+    # the valance number minus bonds minus
+    # bonding connectors
+    if len(mol_graph.nodes) == 1:
+        ele = mol_graph.nodes[0]['element']
+        # for N and P we assume the regular valency
+        hcount = pysmiles.smiles_helper.VALENCES[ele][0]
+        if mol_graph.nodes[0].get('bonding', False):
+            hcount -= 1
+        mol_graph.nodes[0]['hcount'] = hcount
+    else:
+        for node in mol_graph.nodes:
+            if mol_graph.nodes[node].get('bonding', False):
+                hcount = mol_graph.nodes[node]['hcount']
+                mol_graph.nodes[node]['hcount'] = hcount - 1
+
+    pysmiles.smiles_helper.add_explicit_hydrogens(mol_graph)
+    return mol_graph
 
 def fragment_iter(fragment_str):
     """
@@ -197,8 +235,10 @@ def fragment_iter(fragment_str):
         big_smile = fragment[delim+1:]
         smile, bonding_descrpt = tokenize_big_smile(big_smile)
         mol_graph = pysmiles.read_smiles(smile)
-        atomnames = [str(node[0])+node[1]['element'] for node in mol_graph.nodes(data=True) ]
         nx.set_node_attributes(mol_graph, bonding_descrpt, 'bonding')
+        # we need to rebuild hydrogen atoms now
+        _rebuild_h_atoms(mol_graph)
+        atomnames = {node[0]: node[1]['element']+str(node[0]) for node in mol_graph.nodes(data=True)}
         nx.set_node_attributes(mol_graph, atomnames, 'atomname')
         nx.set_node_attributes(mol_graph, resname, 'resname')
         yield resname, mol_graph
@@ -224,4 +264,4 @@ def force_field_from_fragments(fragment_str):
     for resname, mol_graph in frag_iter:
         mol_block = Block(mol_graph)
         force_field.blocks[resname] = mol_block
-    return forxe_field
+    return force_field
