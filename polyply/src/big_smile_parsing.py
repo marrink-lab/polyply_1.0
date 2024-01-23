@@ -1,3 +1,4 @@
+from collections import defaultdict
 import re
 import numpy as np
 try:
@@ -154,7 +155,7 @@ def tokenize_big_smile(big_smile):
         to the nodes within the smile
     """
     smile_iter = _big_smile_iter(big_smile)
-    bonding_descrpt = {}
+    bonding_descrpt = defaultdict(list)
     smile = ""
     node_count = 0
     prev_node = 0
@@ -167,7 +168,7 @@ def tokenize_big_smile(big_smile):
                 while peek != ']':
                     bond_descrp += peek
                     peek = next(smile_iter)
-                bonding_descrpt[prev_node] = bond_descrp
+                bonding_descrpt[prev_node].append(bond_descrp)
             else:
                 smile = smile + token + peek
                 prev_node = node_count
@@ -205,7 +206,7 @@ def _rebuild_h_atoms(mol_graph):
         for node in mol_graph.nodes:
             if mol_graph.nodes[node].get('bonding', False):
                 hcount = mol_graph.nodes[node]['hcount']
-                mol_graph.nodes[node]['hcount'] = hcount - 1
+                mol_graph.nodes[node]['hcount'] = hcount - len(mol_graph.nodes[node]['bonding'])
 
     pysmiles.smiles_helper.add_explicit_hydrogens(mol_graph)
     return mol_graph
@@ -234,10 +235,17 @@ def fragment_iter(fragment_str):
         resname = fragment[1:delim]
         big_smile = fragment[delim+1:]
         smile, bonding_descrpt = tokenize_big_smile(big_smile)
-        mol_graph = pysmiles.read_smiles(smile)
-        nx.set_node_attributes(mol_graph, bonding_descrpt, 'bonding')
-        # we need to rebuild hydrogen atoms now
-        _rebuild_h_atoms(mol_graph)
+
+        if smile == "H":
+            mol_graph = nx.Graph()
+            mol_graph.add_node(0, element="H", bonding=bonding_descrpt[0])
+            nx.set_node_attributes(mol_graph, bonding_descrpt, 'bonding')
+        else:
+            mol_graph = pysmiles.read_smiles(smile)
+            nx.set_node_attributes(mol_graph, bonding_descrpt, 'bonding')
+            # we need to rebuild hydrogen atoms now
+            _rebuild_h_atoms(mol_graph)
+
         atomnames = {node[0]: node[1]['element']+str(node[0]) for node in mol_graph.nodes(data=True)}
         nx.set_node_attributes(mol_graph, atomnames, 'atomname')
         nx.set_node_attributes(mol_graph, resname, 'resname')
