@@ -2,7 +2,7 @@ import pytest
 import networkx as nx
 from polyply.src.big_smile_mol_processor import (DefBigSmileParser,
                                                  generate_edge)
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 @pytest.mark.parametrize('bonds_source, bonds_target, edge, btypes',(
                         # single bond source each
                         ({0: ["$"]},
