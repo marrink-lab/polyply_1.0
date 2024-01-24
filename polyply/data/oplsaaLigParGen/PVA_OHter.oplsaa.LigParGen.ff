@@ -1,0 +1,174 @@
+[ moleculetype ]
+PVA                   3
+[ atoms ]
+    1 opls_135     1      PVA     C01     1   -0.2493   12.0110
+    2 opls_135     1      PVA     C02     2    0.0740   12.0110
+    3 opls_154     1      PVA     O03     3   -0.5918   15.9990
+    4 opls_140     1      PVA     H04     4    0.1120    1.0080
+    5 opls_140     1      PVA     H05     5    0.1120    1.0080
+    6 opls_140     1      PVA     H06     6    0.1345    1.0080
+    7 opls_004     1      PVA     H07     7    0.4086    1.0080
+[ bonds ]
+    2     1     1    0.1529    224262.400
+    3     2     1    0.1410    267776.000
+    4     1     1    0.1090    284512.000
+    5     1     1    0.1090    284512.000
+    6     2     1    0.1090    284512.000
+    7     3     1    0.0945    462750.400
+[ angles ]
+    1     2     3     1    109.500   418.400
+    1     2     6     1    110.700   313.800
+    2     3     7     1    108.500   460.240
+    3     2     6     1    109.500   292.880
+    2     1     4     1    110.700   313.800
+    2     1     5     1    110.700   313.800
+    4     1     5     1    107.800   276.144
+[ dihedrals ]
+[ dihedrals ]
+    6     2     1     5     3      0.628      1.883      0.000     -2.510     -0.000      0.000
+    6     2     1     4     3      0.628      1.883      0.000     -2.510     -0.000      0.000
+    5     1     2     3     3      0.979      2.937      0.000     -3.916     -0.000      0.000
+    4     1     2     3     3      0.979      2.937      0.000     -3.916     -0.000      0.000
+    7     3     2     1     3     -0.444      3.833      0.728     -4.117     -0.000      0.000
+    7     3     2     6     3      0.736      2.209      0.000     -2.946     -0.000      0.000
+[ pairs ]
+    3      4       1
+    3      5       1
+    1      7       1
+    4      6       1
+    5      6       1
+    6      7       1
+[ moleculetype ]
+OHa                   3
+[ atoms ]
+    1 opls_154     1      OHa      O1     1   -0.5120   15.9990
+    2 opls_004     1      OHa      H1     2    0.5120    1.0080
+[ bonds ]
+    2     1     1    0.0945    462750.400
+[ angles ]
+[ dihedrals ]
+[ dihedrals ]
+[ pairs ]
+[ moleculetype ]
+OHb                   3
+[ atoms ]
+    1 opls_154     1      OHb      O1     1   -0.4982   15.9990
+    2 opls_004     1      OHb      H1     2    0.4982    1.0080
+[ bonds ]
+    2     1     1    0.0945    462750.400
+[ angles ]
+[ dihedrals ]
+[ dihedrals ]
+[ pairs ]
+[link]
+resname "PVA"
+[ atoms ]
+[ bonds ]
+ +C01   C02     1    0.1529    224262.400   {"comment":"intermonomer"}
+[ angles ]
+  C01   C02  +C01     1    112.700   488.273   {"comment":"intermonomer"}
+  C02  +C01  +C02     1    112.700   488.273   {"comment":"intermonomer"}
+  C02  +C01  +H04     1    110.700   313.800   {"comment":"intermonomer"}
+  C02  +C01  +H05     1    110.700   313.800   {"comment":"intermonomer"}
+  O03   C02  +C01     1    109.500   418.400   {"comment":"intermonomer"}
+ +C01   C02   H06     1    110.700   313.800   {"comment":"intermonomer"}
+[ dihedrals ]
+[ dihedrals ]
+ +C02  +C01   C02   C01     3      2.301     -1.464      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+ +C02  +C01   C02   O03     3     -3.247      3.247      0.000     -0.000     -0.000      0.000   {"comment":"intermonomer"}
+  H05   C01   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H04  +C01   C02   C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H05  +C01   C02   C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H06   C02  +C01  +C02     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H06  +C02  +C01   C02     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H04   C01   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H04  +C01   C02   H06     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H05  +C01   C02   H06     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H04  +C01   C02   O03     3      0.979      2.937      0.000     -3.916     -0.000      0.000   {"comment":"intermonomer"}
+ +H05  +C01   C02   O03     3      0.979      2.937      0.000     -3.916     -0.000      0.000   {"comment":"intermonomer"}
+  H07   O03   C02  +C01     3     -0.444      3.833      0.728     -4.117     -0.000      0.000   {"comment":"intermonomer"}
+ +O03  +C02  +C01   C02     3     -3.247      3.247      0.000     -0.000     -0.000      0.000   {"comment":"intermonomer"}
+[ pairs ]
+  C01   +C02       1   {"comment":"intermonomer"}
+  O03   +C02       1   {"comment":"intermonomer"}
+  C02   +O03       1   {"comment":"intermonomer"}
+ +C01    H04       1   {"comment":"intermonomer"}
+ +C01    H05       1   {"comment":"intermonomer"}
+  C01   +H04       1   {"comment":"intermonomer"}
+  C01   +H05       1   {"comment":"intermonomer"}
+ +C02    H06       1   {"comment":"intermonomer"}
+ +C01    H07       1   {"comment":"intermonomer"}
+  O03   +H04       1   {"comment":"intermonomer"}
+  O03   +H05       1   {"comment":"intermonomer"}
+  C02   +H06       1   {"comment":"intermonomer"}
+  H06   +H04       1   {"comment":"intermonomer"}
+  H06   +H05       1   {"comment":"intermonomer"}
+[link]
+; for bonded terms spanning three residues
+resname "PVA"
+[dihedrals]
+++C01  +C02  +C01   C02     3      2.301     -1.464      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+[pairs]
+  C02  ++C01       1   {"comment":"intermonomer"}
+[link]
+resname "OHa|PVA"
+[ atoms ]
+[ bonds ]
+ +C01    O1     1    0.1410    267776.000   {"comment":"alpha-O-link"}
+[ angles ]
+   O1  +C01  +C02     1    109.500   418.400   {"comment":"alpha-O-link"}
+ +C01    O1    H1     1    108.500   460.240   {"comment":"alpha-O-link"}
+   O1  +C01  +H04     1    109.500   292.880   {"comment":"alpha-O-link"}
+   O1  +C01  +H05     1    109.500   292.880   {"comment":"alpha-O-link"}
+[ dihedrals ]
+[ dihedrals ]
+ +H06  +C02  +C01    O1     3      0.979      2.937      0.000     -3.916     -0.000      0.000   {"comment":"alpha-O-link"}
+ +H04  +C01    O1    H1     3      0.736      2.209      0.000     -2.946     -0.000      0.000   {"comment":"alpha-O-link"}
+ +H05  +C01    O1    H1     3      0.736      2.209      0.000     -2.946     -0.000      0.000   {"comment":"alpha-O-link"}
+   H1    O1  +C01  +C02     3     -0.444      3.833      0.728     -4.117     -0.000      0.000   {"comment":"alpha-O-link"}
+ +O03  +C02  +C01    O1     3     19.891    -19.891      0.000     -0.000     -0.000      0.000   {"comment":"alpha-O-link"}
+[ pairs ]
+   O1   +O03       1   {"comment":"alpha-O-link"}
+ +C02     H1       1   {"comment":"alpha-O-link"}
+   O1   +H06       1   {"comment":"alpha-O-link"}
+   H1   +H04       1   {"comment":"alpha-O-link"}
+   H1   +H05       1   {"comment":"alpha-O-link"}
+[link]
+; for bonded terms spanning three residues
+resname "OHa|PVA"
+[dihedrals]
+++C01  +C02  +C01    O1     3     -3.247      3.247      0.000     -0.000     -0.000      0.000   {"comment":"alpha-O-link"}
+[pairs]
+   O1  ++C01       1   {"comment":"alpha-O-link"}
+[link]
+resname "PVA|OHb"
+[ atoms ]
+[ bonds ]
+   O1  -C02     1    0.1380    267776.000   {"comment":"beta-O-link"}
+[ angles ]
+ -C01  -C02    O1     1    109.500   418.400   {"comment":"beta-O-link"}
+ -C02    O1    H1     1    108.500   460.240   {"comment":"beta-O-link"}
+ -O03  -C02    O1     1    109.880   454.717   {"comment":"beta-O-link"}
+   O1  -C02  -H06     1    109.500   292.880   {"comment":"beta-O-link"}
+[ dihedrals ]
+[ dihedrals ]
+ -H04  -C01  -C02    O1     3      0.979      2.937      0.000     -3.916     -0.000      0.000   {"comment":"beta-O-link"}
+ -H05  -C01  -C02    O1     3      0.979      2.937      0.000     -3.916     -0.000      0.000   {"comment":"beta-O-link"}
+   H1    O1  -C02  -C01     3     -0.444      3.833      0.728     -4.117     -0.000      0.000   {"comment":"beta-O-link"}
+   H1    O1  -C02  -H06     3      0.736      2.209      0.000     -2.946     -0.000      0.000   {"comment":"beta-O-link"}
+   H1    O1  -C02  -O03     3    -10.180      2.648      7.556     -0.025     -0.000      0.000   {"comment":"beta-O-link"}
+ -H07  -O03  -C02    O1     3    -10.180      2.648      7.556     -0.025     -0.000      0.000   {"comment":"beta-O-link"}
+[ pairs ]
+   O1   -H04       1   {"comment":"beta-O-link"}
+   O1   -H05       1   {"comment":"beta-O-link"}
+ -C01     H1       1   {"comment":"beta-O-link"}
+   O1   -H07       1   {"comment":"beta-O-link"}
+ -O03     H1       1   {"comment":"beta-O-link"}
+ -H06     H1       1   {"comment":"beta-O-link"}
+[link]
+; for bonded terms spanning three residues
+resname "PVA|OHb"
+[dihedrals]
+   O1  -C02  -C01 --C02     3      2.874      0.582      2.092     -5.548     -0.000      0.000   {"comment":"beta-O-link"}
+[pairs]
+--C02     O1       1   {"comment":"beta-O-link"}
