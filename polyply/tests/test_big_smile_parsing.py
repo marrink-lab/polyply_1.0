@@ -52,23 +52,27 @@ def test_res_pattern_to_meta_mol(smile, nodes, edges):
                         # smiple symmetric bonding
                         ("[$]COC[$]",
                          "COC",
-                        {0: '$', 2: '$'}),
+                        {0: ["$"], 2: ["$"]}),
+                        # smiple symmetric bonding; multiple descript
+                        ("[$]COC[$][$1]",
+                         "COC",
+                        {0: ["$"], 2: ["$", "$1"]}),
                         # named different bonding descriptors
                         ("[$1]CCCC[$2]",
                          "CCCC",
-                        {0: "$1", 3: "$2"}),
+                        {0: ["$1"], 3: ["$2"]}),
                         # ring and bonding descriptors
                         ("[$1]CC[$2]C1CCCCC1",
                          "CCC1CCCCC1",
-                        {0: "$1", 1: "$2"}),
+                        {0: ["$1"], 1: ["$2"]}),
                         # bonding descript. after branch
                         ("C(COC[$1])[$2]CCC[$3]",
                          "C(COC)CCC",
-                        {0: '$2', 3: '$1', 6: '$3'}),
+                        {0: ["$2"], 3: ["$1"], 6: ["$3"]}),
                         # left rigth bonding desciptors
                         ("[>]COC[<]",
                         "COC",
-                        {0: '>', 2: '<'})
+                        {0: [">"], 2: ["<"]})
 ))
 def test_tokenize_big_smile(big_smile, smile, bonding):
     new_smile, new_bonding = tokenize_big_smile(big_smile)
@@ -78,9 +82,9 @@ def test_tokenize_big_smile(big_smile, smile, bonding):
 @pytest.mark.parametrize('fragment_str, nodes, edges',(
                         # single fragment
                         ("{#PEO=[$]COC[$]}",
-                        {"PEO": ((0, {"atomname": "C0", "resname": "PEO", "bonding": "$", "element": "C"}),
+                        {"PEO": ((0, {"atomname": "C0", "resname": "PEO", "bonding": ["$"], "element": "C"}),
                                  (1, {"atomname": "O1", "resname": "PEO", "element": "O"}),
-                                 (2, {"atomname": "C2", "resname": "PEO", "bonding": "$", "element": "C"}),
+                                 (2, {"atomname": "C2", "resname": "PEO", "bonding": ["$"], "element": "C"}),
                                  (3, {"atomname": "H3", "resname": "PEO", "element": "H"}),
                                  (4, {"atomname": "H4", "resname": "PEO", "element": "H"}),
                                  (5, {"atomname": "H5", "resname": "PEO", "element": "H"}),
@@ -89,24 +93,38 @@ def test_tokenize_big_smile(big_smile, smile, bonding):
                         {"PEO": [(0, 1), (1, 2), (0, 3), (0, 4), (2, 5), (2, 6)]}),
                         # test NH3 terminal
                         ("{#AMM=N[$]}",
-                        {"AMM": ((0, {"atomname": "N0", "resname": "AMM", "bonding": "$", "element": "N"}),
+                        {"AMM": ((0, {"atomname": "N0", "resname": "AMM", "bonding": ["$"], "element": "N"}),
                                  (1, {"atomname": "H1", "resname": "AMM", "element": "H"}),
                                  (2, {"atomname": "H2", "resname": "AMM", "element": "H"}),
                                 )},
                         {"AMM": [(0, 1), (0, 2)]}),
                         # single fragment + 1 terminal (i.e. only 1 bonding descrpt
                         ("{#PEO=[$]COC[$],#OHter=[$][OH]}",
-                        {"PEO": ((0, {"atomname": "C0", "resname": "PEO", "bonding": "$", "element": "C"}),
+                        {"PEO": ((0, {"atomname": "C0", "resname": "PEO", "bonding": ["$"], "element": "C"}),
                                  (1, {"atomname": "O1", "resname": "PEO", "element": "O"}),
-                                 (2, {"atomname": "C2", "resname": "PEO", "bonding": "$", "element": "C"}),
+                                 (2, {"atomname": "C2", "resname": "PEO", "bonding": ["$"], "element": "C"}),
                                  (3, {"atomname": "H3", "resname": "PEO", "element": "H"}),
                                  (4, {"atomname": "H4", "resname": "PEO", "element": "H"}),
                                  (5, {"atomname": "H5", "resname": "PEO", "element": "H"}),
                                  (6, {"atomname": "H6", "resname": "PEO", "element": "H"}),
                                  ),
-                         "OHter": ((0, {"atomname": "O0", "resname": "OHter", "bonding": "$", "element": "O"}),
+                         "OHter": ((0, {"atomname": "O0", "resname": "OHter", "bonding": ["$"], "element": "O"}),
                                    (1, {"atomname": "H1", "resname": "OHter", "element": "H"}))},
                         {"PEO": [(0, 1), (1, 2), (0, 3), (0, 4), (2, 5), (2, 6)],
+                         "OHter": [(0, 1)]}),
+                        # single fragment + 1 terminal but multiple bond descritp.
+                        # this adjust the hydrogen count
+                        ("{#PEO=[$]COC[$][$1],#OHter=[$][OH]}",
+                        {"PEO": ((0, {"atomname": "C0", "resname": "PEO", "bonding": ["$"], "element": "C"}),
+                                 (1, {"atomname": "O1", "resname": "PEO", "element": "O"}),
+                                 (2, {"atomname": "C2", "resname": "PEO", "bonding": ["$", "$1"], "element": "C"}),
+                                 (3, {"atomname": "H3", "resname": "PEO", "element": "H"}),
+                                 (4, {"atomname": "H4", "resname": "PEO", "element": "H"}),
+                                 (5, {"atomname": "H5", "resname": "PEO", "element": "H"}),
+                                 ),
+                         "OHter": ((0, {"atomname": "O0", "resname": "OHter", "bonding": ["$"], "element": "O"}),
+                                   (1, {"atomname": "H1", "resname": "OHter", "element": "H"}))},
+                        {"PEO": [(0, 1), (1, 2), (0, 3), (0, 4), (2, 5)],
                          "OHter": [(0, 1)]}),
 ))
 def test_fragment_iter(fragment_str, nodes, edges):
