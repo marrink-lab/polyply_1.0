@@ -93,6 +93,10 @@ def _get_bonds(block, topology=None):
                         elif batoms[::-1] in topology.types['bonds']:
                             params = topology.types['bonds'][batoms[::-1]][0][0][1]
                         bonds[(nodes_to_count[idx], nodes_to_count[jdx])] = float(params)
+                    else:
+                        msg = ("Cannot find bond lengths. If your force field uses bondtypes lile"
+                               "Charmm you need to provide a topology file.")
+                        raise ValueError(msg)
     return bonds
 
 def balance_charges(block, charge=0, tol=10**-5, decimals=5, topology=None):
