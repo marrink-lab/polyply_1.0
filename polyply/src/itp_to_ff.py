@@ -39,6 +39,7 @@ def itp_to_ff(itppath, fragment_smiles, resnames, term_prefix, outpath, charges=
         mol = top.molecules[0].molecule
     # read itp file
     if itppath.suffix == ".itp":
+        top = None
         with open(itppath, "r") as _file:
             lines = _file.readlines()
         force_field = ForceField("tmp")
@@ -63,12 +64,10 @@ def itp_to_ff(itppath, fragment_smiles, resnames, term_prefix, outpath, charges=
         new_block.nrexcl = mol.nrexcl
         force_field.blocks[name] = new_block
         set_charges(new_block, res_graph, name)
-        if itppath.suffix == ".top":
-            base_resname = name.split(term_prefix)[0].split('_')[0]
-            print(base_resname)
-            balance_charges(new_block,
-                            topology=top,
-                            charge=crg_dict[base_resname])
+        base_resname = name.split(term_prefix)[0].split('_')[0]
+        balance_charges(new_block,
+                        topology=top,
+                        charge=crg_dict[base_resname])
 
     force_field.links = extract_links(mol)
 
