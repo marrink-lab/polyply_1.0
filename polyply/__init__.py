@@ -19,16 +19,23 @@ __version__ = pbr.version.VersionInfo('polyply').release_string()
 
 # Find the data directory once.
 try:
-    import pkg_resources
+    from importlib.resources import files, as_file
+    import atexit
+    from contextlib import ExitStack
 except ImportError:
-    import os
-    DATA_PATH = os.path.join(os.path.dirname(__file__), 'data')
-    TEST_DATA = os.path.join(os.path.dirname(__file__), 'tests/test_data')
-    del os
+    from pathlib import Path
+    DATA_PATH = Path(__file__).parent / 'data'
+    TEST_DATA = Path(__file__).parent / 'tests/test_data'
+    del Path
 else:
-    DATA_PATH = pkg_resources.resource_filename('polyply', 'data')
-    TEST_DATA = pkg_resources.resource_filename('polyply', 'tests/test_data')
-    del pkg_resources
+    ref_data = files('polyply') / 'data'
+    ref_test = files('polyply') / 'tests'/ 'test_data'
+    file_manager = ExitStack()
+    atexit.register(file_manager.close)
+    DATA_PATH = file_manager.enter_context(as_file(ref_data))
+    TEST_DATA = file_manager.enter_context(as_file(ref_test))
+
+    del files, as_file, atexit, ExitStack
 
 del pbr
 

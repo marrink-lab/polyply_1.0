@@ -75,6 +75,9 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
                            help='A linear sequence of residue names.')
     seq_group.add_argument('-seqf', dest='seq_file', type=Path,
                            help='A graph input file (JSON|TXT|FASTA|IG)')
+    dna_group = parser_gen_itp.add_argument_group('DNA specifc options')
+    dna_group.add_argument('-dsdna', dest='dsdna', action='store_true',
+                           help='complement single sequence to dsDNA sequence')
 
     parser_gen_itp.set_defaults(func=gen_itp)
 

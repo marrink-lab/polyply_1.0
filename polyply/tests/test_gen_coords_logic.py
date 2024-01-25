@@ -32,8 +32,8 @@ def test_no_positions_generated(tmp_path, monkeypatch):
     errors and preserve all positions given in the input to rounding accuracy.
     """
     monkeypatch.chdir(tmp_path)
-    top_file = TEST_DATA + "/topology_test/system.top"
-    pos_file = TEST_DATA + "/topology_test/complete.gro"
+    top_file = TEST_DATA / "topology_test/system.top"
+    pos_file = TEST_DATA / "topology_test/complete.gro"
     out_file = tmp_path / "out.gro"
     gen_coords(toppath=top_file,
                coordpath=pos_file,
@@ -47,6 +47,67 @@ def test_no_positions_generated(tmp_path, monkeypatch):
         assert np.all(molecule_out.nodes[node]['position'] ==
                       molecule_in.nodes[node]['position'])
 
+@pytest.mark.parametrize('box_input, box_ref, density, warning, incoords', [
+                        # box from input coordinates
+                        (None, np.array([11.0, 11.0, 11.0]),
+                         None, None, True),
+                        # box from input coordinates overwrites
+                        (np.array([5.0, 5.0, 5.0]), np.array([11.0, 11.0, 11.0]),
+                         None, "warn1",  True),
+                        # box from input coordinates and density from CLI
+                        (None, np.array([11.0, 11.0, 11.0]),
+                         1000, "warn2", True),
+                        # box only from CLI
+                        (np.array([8.0, 11.0, 11.0]), np.array([8.0, 11.0, 11.0]),
+                         None, None, False),
+                        # only density
+                        (None, np.array([0.79273, 0.79273, 0.79273]),
+                         1000, None, False),
+                        ])
+def test_box_input(tmp_path, caplog, box_input, box_ref, density, warning, incoords):
+    """
+    Here we test that the correct box is chosen, in case there
+    are conflicting inputs.
+    """
+    warnings = {"warn1": ("A box is provided via the -box command line "
+                          "and the starting coordinates. We consider the "
+                          "the box of starting coordinates as correct. "),
+                "warn2": ("A density is provided via the command line, "
+                          "but the starting coordinates define a box."
+                          "Will try to pack all molecules in the box "
+                          "provided with starting coordinates."),}
+
+    top_file = TEST_DATA / "topology_test/system.top"
+    if incoords:
+        pos_file = TEST_DATA / "topology_test/complete.gro"
+    else:
+        # no input coordiante provided
+        pos_file = None
+
+    out_file = tmp_path / "out.gro"
+
+    with caplog.at_level(logging.WARNING):
+        gen_coords(toppath=top_file,
+                   coordpath=pos_file,
+                   outpath=out_file,
+                   name="test",
+                   box=box_input,
+                   density=density,)
+
+        molecule_out = read_gro(out_file, exclude=())
+        assert np.array_equal(molecule_out.box, box_ref)
+        if warning:
+            for record in caplog.records:
+                if record.levelname == "WARNING":
+                    assert str(record.msg) == warnings[warning]
+                    break
+            else:
+                assert False
+        else:
+            for record in caplog.records:
+                if record.levelname == "WARNING":
+                    assert False
+
 def test_backmap_only(tmp_path, monkeypatch):
     """
     Only meta_mol positions are defined so others have to be backmapped.
@@ -54,8 +115,8 @@ def test_backmap_only(tmp_path, monkeypatch):
     same as they have been put in.
     """
     monkeypatch.chdir(tmp_path)
-    top_file = TEST_DATA + "/topology_test/system.top"
-    pos_file = TEST_DATA + "/topology_test/cog.gro"
+    top_file = TEST_DATA / "topology_test" / "system.top"
+    pos_file = TEST_DATA / "topology_test" / "cog.gro"
     out_file = tmp_path / "out.gro"
     gen_coords(toppath=top_file,
                coordpath_meta=pos_file,
@@ -78,9 +139,9 @@ def test_backmap_only(tmp_path, monkeypatch):
         assert np.allclose(res_pos, ref_pos, atol=0.0009)
 
 def test_warning_partial_metamol_coords(tmp_path, monkeypatch, caplog):
-    caplog.set_level(logging.WARNING)
-    top_file = TEST_DATA + "/topology_test/system.top"
-    pos_file = TEST_DATA + "/topology_test/cog_missing.gro"
+    caplog.set_level(logging.WARNING) 
+    top_file = TEST_DATA / "topology_test" / "system.top"
+    pos_file = TEST_DATA / "topology_test" / "cog_missing.gro"
     out_file = tmp_path / "out.gro"
 
     with caplog.at_level(logging.WARNING):
