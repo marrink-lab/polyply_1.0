@@ -57,8 +57,10 @@ def generate_artificial_core(
     logging.info(
         f"Writing the gro file for the artificial core - generating {nanoparticle_name}.gro"
     )
-    nanoparticle_core_object._write_gro_file(output_filename=f"{nanoparticle_name}.gro")
-    nanoparticle_core_object._write_itp_file()
+    # nanoparticle_core_object._process_atoms()
+    # nanoparticle_core_object._write_gro_file(output_filename=f"{nanoparticle_name}.gro")
+    # print("calling itp maker")
+    # nanoparticle_core_object._write_itp_file()
 
 
 def rotation_matrix_from_vectors(
@@ -986,7 +988,7 @@ if __name__ == "__main__":
         "/home/sang/Desktop/git/polyply_1.0/polyply/tests/test_data/np_test_files/AMBER_AU/ligand",
         ["UNK_DA2640/UNK_DA2640.itp", "UNK_12B037/UNK_12B037.itp"],
         # ["UNK_DA2640/UNK_DA2640.itp"],
-        [20, 20],
+        [5, 5],
         "Janus",
         ["S07", "S00"],
         ["C08", "C07"],

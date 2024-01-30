@@ -1,0 +1,6 @@
+#include "gold.itp"
+
+[ system ]
+TEST
+[ molecules ]
+TEST   1

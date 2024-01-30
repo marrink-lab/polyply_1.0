@@ -125,27 +125,8 @@ class CentralCoreGenerator:
         Generate bonded distance within the network of contraints to be created for the
         core that is allowed.
         """
-        self.np_array = []
 
-        def assign_constraint(
-            restraint_unique_list: list[Tuple[list[float], float]],
-            restraint_val: float = 5000.0,
-        ) -> List[Tuple[int, int, int, float]]:
-            """
-            generate line for constraint
-            """
-            output_restraints = []
-            for restraints in restraint_unique_list:
-                constraint = (
-                    restraints[0],
-                    restraints[1],
-                    1,
-                    restraint_val,
-                )
-                output_restraints.append(constraint)
-            return output_restraints
-
-        def check_and_add(sorted_input, bond_distance, np_array):
+        def check_and_add(sorted_input, bond_distance, np_array, dist_np_array):
             """
             record the sorted inputs as tuples and append unique restraint
             entries that we would like to use
@@ -153,24 +134,57 @@ class CentralCoreGenerator:
             index_distance_input = tuple(sorted_input)
             if index_distance_input not in np_array:
                 np_array.append(index_distance_input)
+                dist_np_array.append(bond_distance)
 
+        def assign_constraint(
+            restraint_unique_list: list[Tuple[list[float], float]],
+            dist_list: list[float],
+            restraint_val: float = 5000000.0,
+        ) -> List[Tuple[int, int, int, float]]:
+
+            """
+            generate line for constraint
+            """
+            print("assigning constraint")
+            output_restraints = []
+            for index, restraints in enumerate(restraint_unique_list):
+                constraint = (
+                    restraints[0],
+                    restraints[1],
+                    1,
+                    round(dist_list[index], 2),
+                    restraint_val,
+                )
+                output_restraints.append(constraint)
+            return output_restraints
+
+        self.np_array = []
+        self.dist_list = []
         for np_index, atom in enumerate(self.points):
             # compute the distance between the atom and the rest of the atoms within the core
             dist_array = self._distance_array(atom, self.points)
+            print(dist_array)
             for np_index_2, entry in enumerate(dist_array):
                 if np_index == np_index_2:
                     continue  # skip if looking at the same index
-                if (
+                elif (
                     entry / 10 >= default_dist
                 ):  # for martini bonds, we cannot have bonds longer than 0.7 nm
                     continue  # skip if bond length is more than 0.7
-                if np_index >= 1:
+                elif np_index >= 1 and entry < default_dist:
                     sorted_input = sorted([np_index, np_index_2])
                     # check that we don't have repeated entries for restraints
                     # and once check has passed,
-                    check_and_add(sorted_input, entry / 10, self.np_array)
+                    # print("entry is", entry / 10, "default dist is ", default_dist)
+                    check_and_add(sorted_input, entry, self.np_array, self.dist_list)
 
-        self.output_constraint = assign_constraint(self.np_array)
+        self.output_constraint = assign_constraint(self.np_array, self.dist_list)
+        print(
+            "the output constraint is ",
+            self.output_constraint,
+            "len is",
+            len(self.output_constraint),
+        )
 
     def _write_gro_file(
         self,
@@ -220,9 +234,11 @@ class CentralCoreGenerator:
                 )
             itp_file.write("\n")
             # have to write the restraints here
-            itp_file.write("[ constraints ]\n")
+            itp_file.write("[ bonds ]\n")
             for entry in self.output_constraint:
-                itp_file.write(f"{entry[0]+1} {entry[1]+1} {entry[2]} {entry[3]}\n")
+                itp_file.write(
+                    f"{entry[0]+1} {entry[1]+1} {entry[2]} {entry[3]} {entry[4]}\n"
+                )
             itp_file.write("\n")
 
     def _generate_itp_string(self) -> str:
@@ -231,10 +247,9 @@ class CentralCoreGenerator:
         """
         # Initialize an empty string to store the ITP content
         itp_content = ""
-
         # Define the parameters
         moleculename = self.moleculename
-        atom_name = "CA"
+        atom_name = "P5"
         self._create_np_atom_type_dict()
         self._process_atoms()
 
@@ -248,9 +263,11 @@ class CentralCoreGenerator:
         for atom in self.atoms.keys():
             itp_content += f"   {atom+1}    {atom_name}    1     {moleculename}    {atom_name}   1    {self.atoms[atom][3]:.6f}    {12.0:.6f}\n"
 
-        itp_content += "\n[ constraints ]\n"
+        itp_content += "\n[ bonds ]\n"
         for entry in self.output_constraint:
-            itp_content += f"{entry[0]+1} {entry[1]+1} {entry[2]} {entry[3]}\n"
+            itp_content += (
+                f"{entry[0]+1} {entry[1]+1} {entry[2]} {entry[3]} {entry[4]}\n"
+            )
 
         itp_content += "\n"
         return itp_content

@@ -1,0 +1,51 @@
+title                    = Martini
+
+integrator               = md
+dt                       = 0.02  
+nsteps                   = 1500000
+nstcomm                  = 100
+comm-grps		 = 
+
+nstxout                  = 0
+nstvout                  = 0
+nstfout                  = 0
+nstlog                   = 10000 ; Output frequency for energies to log file 
+nstenergy                = 100   ; Output frequency for energies to energy file
+nstxtcout                = 1000  ; Output frequency for .xtc file
+xtc_precision            = 100
+xtc-grps                 = 
+energygrps               = DOPC W
+
+cutoff-scheme            = Verlet
+nstlist                  = 20
+ns_type                  = grid
+pbc                      = xyz
+verlet-buffer-tolerance  = 0.005
+
+coulombtype              = reaction-field
+rcoulomb                 = 1.1
+epsilon_r                = 15	; 2.5 (with polarizable water)
+epsilon_rf               = 0 
+vdw_type                 = cutoff ;(for use with Verlet-pairlist)   
+vdw-modifier             = Potential-shift-verlet
+rvdw                     = 1.1 ;(for use with Verlet-pairlist)
+
+tcoupl                   = v-rescale 
+tc-grps                  = DOPC W
+tau_t                    = 1.0  1.0 
+ref_t                    = 323 323 
+Pcoupl                   = parrinello-rahman
+Pcoupltype               = semiisotropic
+tau_p                    = 12.0    ;parrinello-rahman is more stable with larger tau-p, DdJ, 20130422
+compressibility          = 3e-4   3e-4
+ref_p                    = 1.0    1.0 
+
+gen_vel                  = yes
+gen_temp                 = 320
+gen_seed                 = 473529
+
+constraints              = none 
+constraint_algorithm     = Lincs
+continuation             = no
+lincs_order              = 4
+lincs_warnangle          = 30

@@ -84,7 +84,8 @@ SQda 72.0 0.000 A 0.0 0.0
 SQd 72.0 0.000 A 0.0 0.0
 SQa 72.0 0.000 A 0.0 0.0
 SQ0 72.0 0.000 A 0.0 0.0
-
+; CARBON NANOPARTICLES
+CNP	45.0 	0.000	A	0.0	0.0
 ; BIG particle type (to prevent freezing of water)
 BP4 72.0 0.000 A 0.0 0.0
 

@@ -48,6 +48,7 @@ from nanoparticle_lattice import (
     PositionChangeCore,
     PositionChangeLigand,
 )
+from nanoparticle_generic import CentralCoreGenerator
 from amber_nps import return_amber_nps_type  # this will be changed
 
 
@@ -73,7 +74,7 @@ class ArtificialNanoparticleModels(NanoparticleModels):
         ligand_tail_atoms,
         nrexcl,
         ff_name="test",
-        length=1.5,
+        length=3.5,
         original_coordinates=None,
         identify_surface=False,
         core_option=None,
@@ -100,7 +101,7 @@ class ArtificialNanoparticleModels(NanoparticleModels):
         internal method for generating the artificial core and registering the
         itp with in the force field
         """
-        generate_artificial_core("output.gro", 100, 3.0, self.ff, self.np_atype)
+        generate_artificial_core("output.gro", 50, 1.0, self.ff, self.np_atype)
         self.np_block = self.ff.blocks[self.np_component]
         self.np_molecule_new = self.ff.blocks[self.np_component].to_molecule()
         self.core_len, self.core = len(self.np_molecule_new), len(self.np_molecule_new)
@@ -143,16 +144,24 @@ class ArtificialNanoparticleModels(NanoparticleModels):
         # prepare meta molecule
         self.meta_mol.molecule = self.np_molecule_new
 
+    # def write_itp(self, file_name: str) -> None:
+    #    """
+    #    Generate the itp file for the nanoparticle
+    #    """
+    #    # self.np_top = Topology(name="nanoparticle", force_field=self.ff)
+    #    with open(f"{file_name}", "w") as outfile:
+    #        write_molecule_itp(self.np_top.molecules[0].molecule, outfile)
+
 
 if __name__ == "__main__":
     artificial_martini_model = ArtificialNanoparticleModels(
         "TEST.gro",
         return_amber_nps_type("artificial"),
         "TEST",  # np_component
-        "CA",  # np_atype
+        "P5",  # np_atype
         ligand_path="/home/sang/Desktop/Papers_NP/Personal_papers/polyply_paper/Martini3-small-molecules/models/itps/cog-mono",  # ligand_path
         ligands=["PHEN_cog.itp", "PHEN_cog.itp"],  # ligands
-        ligand_N=[20, 20],  # ligands_N
+        ligand_N=[3, 3],  # ligands_N
         pattern="Janus",  # Pattern
         ligand_anchor_atoms=["SN6", "SN6"],  # anchor_atoms
         ligand_tail_atoms=["TC5", "TC5"],  # tail_atoms
