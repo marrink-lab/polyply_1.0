@@ -11,13 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import numpy as np
 import networkx as nx
-try:
-    import pysmiles
-except ImportError:
-    raise ImportError("To use polyply itp_to_ff you need to install pysmiles.")
-import vermouth
 from vermouth.forcefield import ForceField
 from vermouth.gmx.itp_read import read_itp
 from polyply.src.topology import Topology
@@ -25,51 +19,57 @@ from polyply.src.molecule_utils import extract_block, extract_links
 from polyply.src.fragment_finder import FragmentFinder
 from polyply.src.ffoutput import ForceFieldDirectiveWriter
 from polyply.src.charges import balance_charges, set_charges
+from polyply.src.big_smile_mol_processor import DefBigSmileParser
 
-def itp_to_ff(itppath, fragment_smiles, resnames, term_prefix, outpath, charges=None):
+def _read_itp_file(itppath):
+    """
+    small wrapper for reading itps
+    """
+    with open(itppath, "r") as _file:
+        lines = _file.readlines()
+    force_field = ForceField("tmp")
+    read_itp(lines, force_field)
+    block = next(iter(force_field.blocks.values()))
+    mol = block.to_molecule()
+    mol.make_edges_from_interaction_type(type_="bonds")
+    return mol
+
+def itp_to_ff(itppath, smile_str, outpath, res_charges=None):
     """
     Main executable for itp to ff tool.
     """
     # what charges belong to which resname
-    if charges:
-        crg_dict = dict(zip(resnames, charges))
+    if res_charges:
+        crg_dict = dict(res_charges)
+
     # read the topology file
     if itppath.suffix == ".top":
         top = Topology.from_gmx_topfile(itppath, name="test")
-        mol = top.molecules[0].molecule
+        target_mol = top.molecules[0].molecule
     # read itp file
-    if itppath.suffix == ".itp":
+    elif itppath.suffix == ".itp":
         top = None
-        with open(itppath, "r") as _file:
-            lines = _file.readlines()
-        force_field = ForceField("tmp")
-        read_itp(lines, force_field)
-        block = next(iter(force_field.blocks.values()))
-        mol = block.to_molecule()
-        mol.make_edges_from_interaction_type(type_="bonds")
+        target_mol = _read_itp_file(itppath)
 
-    # read the target fragments and convert to graph
-    fragment_graphs = []
-    for resname, smile in zip(resnames, fragment_smiles):
-        fragment_graph = pysmiles.read_smiles(smile, explicit_hydrogen=True)
-        nx.set_node_attributes(fragment_graph, resname, "resname")
-        fragment_graphs.append(fragment_graph)
+    # read the big-smile representation
+    meta_mol = DefBigSmileParser().parse(smile_str)
 
     # identify and extract all unique fragments
-    unique_fragments, res_graph = FragmentFinder(mol, prefix=term_prefix).extract_unique_fragments(fragment_graphs)
+    unique_fragments, res_graph = FragmentFinder(target_mol).extract_unique_fragments(meta_mol.molecule)
+
+    # extract the blocks with parameters
     force_field = ForceField("new")
     for name, fragment in unique_fragments.items():
-        new_block = extract_block(mol, list(fragment.nodes), defines={})
+        new_block = extract_block(target_mol, list(fragment.nodes), defines={})
         nx.set_node_attributes(new_block, 1, "resid")
-        new_block.nrexcl = mol.nrexcl
+        new_block.nrexcl = target_mol.nrexcl
         force_field.blocks[name] = new_block
         set_charges(new_block, res_graph, name)
-        base_resname = name.split(term_prefix)[0].split('_')[0]
         balance_charges(new_block,
                         topology=top,
-                        charge=crg_dict[base_resname])
+                        charge=crg_dict[name])
 
-    force_field.links = extract_links(mol)
+    force_field.links = extract_links(target_mol)
 
     with open(outpath, "w") as filehandle:
         ForceFieldDirectiveWriter(forcefield=force_field, stream=filehandle).write()
