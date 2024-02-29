@@ -75,7 +75,6 @@ def res_pattern_to_meta_mol(pattern):
     branching = False
     for match in re.finditer(PATTERNS['place_holder'], pattern):
         start, stop = match.span()
-        print(pattern[start:stop])
         # new branch here
         if pattern[start-1] == '(':
             branching = True
@@ -181,7 +180,7 @@ def tokenize_big_smile(big_smile):
             prev_node = anchor
             smile += token
         else:
-            if token not in '@ . - = # $ : / \\ + - %'\
+            if token not in '] H @ . - = # $ : / \\ + - %'\
                 and not token.isdigit():
                 prev_node = node_count
                 node_count += 1
