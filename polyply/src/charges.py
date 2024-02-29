@@ -122,6 +122,9 @@ def balance_charges(block, charge=0, tol=10**-5, decimals=5, topology=None):
     :class:`vermouth.molecule.Block`
         block with updated charges
     """
+    if len(block.nodes) < 2:
+        return block
+
     block.make_edges_from_interaction_type('bonds')
     keys = nx.get_node_attributes(block, 'charge').keys()
     charges = np.array(list(nx.get_node_attributes(block, 'charge').values()))
