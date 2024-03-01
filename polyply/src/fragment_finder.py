@@ -149,9 +149,13 @@ class FragmentFinder():
         self.make_res_graph()
 
         # finally we simply collect one graph per restype
+        # which are the most centrail (i.e. avoid ends)
         unique_fragments = {}
+        frag_centrality = {}
+        centrality = nx.betweenness_centrality(self.res_graph)
         for res in self.res_graph:
             resname = self.res_graph.nodes[res]['resname']
-            if resname not in unique_fragments:
+            if resname not in unique_fragments or frag_centrality[resname] < centrality[res]:
                 unique_fragments[resname] = self.res_graph.nodes[res]['graph']
+                frag_centrality[resname] = centrality[res]
         return unique_fragments, self.res_graph
