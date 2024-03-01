@@ -15,7 +15,7 @@ import networkx as nx
 from vermouth.forcefield import ForceField
 from vermouth.gmx.itp_read import read_itp
 from polyply.src.topology import Topology
-from polyply.src.molecule_utils import extract_block, extract_links
+from polyply.src.molecule_utils import extract_block, extract_links, find_termini_mods
 from polyply.src.fragment_finder import FragmentFinder
 from polyply.src.ffoutput import ForceFieldDirectiveWriter
 from polyply.src.charges import balance_charges, set_charges
@@ -69,7 +69,10 @@ def itp_to_ff(itppath, smile_str, outpath, res_charges=None):
                         topology=top,
                         charge=crg_dict[name])
 
+    # extract the regular links
     force_field.links = extract_links(target_mol)
+    # extract links that span the terminii
+    find_termini_mods(res_graph, target_mol, force_field)
 
     with open(outpath, "w") as filehandle:
         ForceFieldDirectiveWriter(forcefield=force_field, stream=filehandle).write()

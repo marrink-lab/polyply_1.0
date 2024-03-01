@@ -19,6 +19,7 @@ import vermouth
 from vermouth.molecule import Interaction
 from polyply.tests.test_lib_files import _interaction_equal
 from .topology import replace_defined_interaction
+from .graph_utils import find_connecting_edges
 
 def diffs_to_prefix(atoms, resid_diffs):
     """
@@ -140,7 +141,7 @@ def extract_links(molecule):
             # we collect the edges corresponding to the simple paths between pairs of atoms
             # in the interaction
             mol_atoms_to_link_atoms, edges, resnames = _extract_edges_from_shortest_path(interaction.atoms, molecule, min_resid)
-            link_to_mol_atoms = {value:key for key, value in mol_atoms_to_link_atoms.items()}
+            #link_to_mol_atoms = {value:key for key, value in mol_atoms_to_link_atoms.items()}
             link_atoms =  [mol_atoms_to_link_atoms[atom] for atom in interaction.atoms]
             link_inter = Interaction(atoms=link_atoms,
                                      parameters=interaction.parameters,
@@ -248,3 +249,71 @@ def extract_block(molecule, template_graph, defines):
         block.make_edges_from_interaction_type(inter_type)
 
     return block
+
+def find_termini_mods(meta_molecule, molecule, force_field):
+    """
+    Terminii are a bit special in the sense that they are often
+    different from a repeat unit of the polymer in the polymer.
+    """
+    terminal_nodes = [ node for node in meta_molecule.nodes if meta_molecule.degree(node) == 1 ]
+    for meta_node in terminal_nodes:
+        # get the node that is next to the terminal; by definition
+        # it can only be one neighbor
+        neigh_node = next(nx.neighbors(meta_molecule, meta_node))
+
+        # some useful info
+        neigh_resname = meta_molecule.nodes[neigh_node]['resname']
+        resids = [meta_molecule.nodes[neigh_node]['resid'],
+                  meta_molecule.nodes[meta_node]['resid']]
+        ref_block = force_field.blocks[neigh_resname]
+        target_block = meta_molecule.nodes[neigh_node]['graph']
+
+        # find different properties
+        replace_dict = defaultdict(dict)
+        for node in target_block.nodes:
+            target_attrs = target_block.nodes[node]
+            ref_attrs = ref_block.nodes[target_attrs['atomname']]
+            for attr in ['atype', 'mass']:
+                if target_attrs[attr] != ref_attrs[attr]:
+                    replace_dict[node][attr] = target_attrs[attr]
+
+        # bonded interactions could be different too so we need to check them
+        overwrite_inters = defaultdict(list)
+        for inter_type in ref_block.interactions:
+            for ref_inter in ref_block.interactions[inter_type]:
+                for target_inter in target_block.interactions[inter_type]:
+                    target_atoms = [target_block.nodes[atom]['atomname'] for atom in target_inter.atoms]
+                    if target_atoms == ref_inter.atoms and\
+                    target_inter.parameters != ref_inter.parameters:
+                         mol_atoms_to_link_atoms, edges, resnames = _extract_edges_from_shortest_path(target_inter.atoms,
+                                                                                                      molecule,
+                                                                                                      min(resids))
+                         #link_to_mol_atoms = {value:key for key, value in mol_atoms_to_link_atoms.items()}
+                         link_atoms =  [mol_atoms_to_link_atoms[atom] for atom in target_inter.atoms]
+                         link_inter = Interaction(atoms=link_atoms,
+                                                  parameters=target_inter.parameters,
+                                                   meta={})
+                         overwrite_inters[inter_type].append(link_inter)
+
+        # we make a link
+        mol_atoms = list(replace_dict.keys()) + list(meta_molecule.nodes[meta_node]['graph'].nodes)
+        link = vermouth.molecule.Link()
+        mol_to_link, edges, resnames = _extract_edges_from_shortest_path(mol_atoms,
+                                                                         molecule,
+                                                                         min(resids))
+        link_atoms = mol_to_link.values()
+        link = vermouth.molecule.Link()
+        link.add_nodes_from(link_atoms)
+        for node in mol_atoms:
+            link.nodes[mol_to_link[node]]['resname'] = molecule.nodes[node]['resname']
+            link.nodes[mol_to_link[node]]['replace'] = replace_dict[node]
+
+        force_field.links.append(link)
+        for inter_type in overwrite_inters:
+            link.interactions[inter_type].append(overwrite_inters)
+
+        edges = find_connecting_edges(meta_molecule, molecule, [meta_node, neigh_node])
+        for ndx, jdx in edges:
+            link.add_edge(mol_to_link[ndx], mol_to_link[jdx])
+
+    return force_field
