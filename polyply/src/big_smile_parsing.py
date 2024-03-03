@@ -204,8 +204,15 @@ def _rebuild_h_atoms(mol_graph):
     else:
         for node in mol_graph.nodes:
             if mol_graph.nodes[node].get('bonding', False):
-                hcount = mol_graph.nodes[node]['hcount']
-                mol_graph.nodes[node]['hcount'] = hcount - len(mol_graph.nodes[node]['bonding'])
+                # get the degree
+                ele = mol_graph.nodes[0]['element']
+                # hcoung is the valance minus the degree minus
+                # the number of bonding descriptors
+                hcount = pysmiles.smiles_helper.VALENCES[ele][0] -\
+                         mol_graph.degree(node) -\
+                         len(mol_graph.nodes[node]['bonding'])
+
+                mol_graph.nodes[node]['hcount'] = hcount
 
     pysmiles.smiles_helper.add_explicit_hydrogens(mol_graph)
     return mol_graph
