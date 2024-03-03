@@ -104,14 +104,31 @@ class DefBigSmileParser:
             node_graph.nodes[edge[1]]['bonding'] = node_bond_list
             self.meta_molecule.molecule.add_edge(edge[0], edge[1], bonding=bonding)
 
+    def replace_unconsumed_bonding_descrpt(self):
+        """
+        We allow multiple bonding descriptors per atom, which
+        however, are not always consumed. In this case the left
+        over bonding descriptors are replaced by hydrogen atoms.
+        """
+        for node in self.meta_molecule.nodes:
+            graph = self.meta_molecule.nodes[node]['graph']
+            bonding = nx.get_node_attributes(graph, "bonding")
+            for node, bondings in bonding.items():
+                attrs = {attr: graph.nodes[node][attr] for attr in ['resname', 'resid']}
+                attrs['element'] = 'H'
+                for new_id in range(1, len(bondings)+1):
+                    new_node = len(self.meta_molecule.molecule.nodes) + 1
+                    graph.add_edge(node, new_node)
+                    attrs['atomname'] = "H" + str(new_id + len(graph.nodes))
+                    graph.nodes[new_node].update(attrs)
+                    self.meta_molecule.molecule.add_edge(node, new_node)
+                    self.meta_molecule.molecule.nodes[new_node].update(attrs)
+
     def parse(self, big_smile_str):
         res_pattern, residues = big_smile_str.split('.')
         self.meta_molecule = res_pattern_to_meta_mol(res_pattern)
         self.force_field = force_field_from_fragments(residues)
         MapToMolecule(self.force_field).run_molecule(self.meta_molecule)
         self.edges_from_bonding_descrpt()
+        self.replace_unconsumed_bonding_descrpt()
         return self.meta_molecule
-
-# ToDo
-# - replace non consumed bonding descrpt by hydrogen
-# - 
