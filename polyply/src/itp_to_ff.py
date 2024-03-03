@@ -67,7 +67,7 @@ def itp_to_ff(itppath, smile_str, outpath, res_charges=None):
         set_charges(new_block, res_graph, name)
         balance_charges(new_block,
                         topology=top,
-                        charge=crg_dict[name])
+                        charge=float(crg_dict[name]))
 
     # extract the regular links
     force_field.links = extract_links(target_mol)
