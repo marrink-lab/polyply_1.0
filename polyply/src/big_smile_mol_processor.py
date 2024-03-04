@@ -74,8 +74,8 @@ class DefBigSmileParser:
     which describes a polymer molecule.
     """
 
-    def __init__(self):
-        self.force_field = None
+    def __init__(self, force_field):
+        self.force_field = force_field
         self.meta_molecule = None
         self.molecule = None
 

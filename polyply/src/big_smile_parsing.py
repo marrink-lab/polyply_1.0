@@ -250,7 +250,7 @@ def fragment_iter(fragment_str):
         nx.set_node_attributes(mol_graph, resname, 'resname')
         yield resname, mol_graph
 
-def force_field_from_fragments(fragment_str):
+def force_field_from_fragments(fragment_str, force_field=None):
     """
     Collects the fragments defined in a BigSmile string
     as :class:`vermouth.molecule.Blocks` in a force-field
@@ -266,9 +266,11 @@ def force_field_from_fragments(fragment_str):
     -------
     :class:`vermouth.forcefield.ForceField`
     """
-    force_field = ForceField("big_smile_ff")
+    if force_field is None:
+        force_field = ForceField("big_smile_ff")
     frag_iter = fragment_iter(fragment_str)
     for resname, mol_graph in frag_iter:
-        mol_block = Block(mol_graph)
-        force_field.blocks[resname] = mol_block
+        if resname not in force_field.blocks:
+            mol_block = Block(mol_graph)
+            force_field.blocks[resname] = mol_block
     return force_field

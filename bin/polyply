@@ -241,6 +241,8 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
     parser_itp_ff.add_argument('-s', dest="smile_str", required=True)
     parser_itp_ff.add_argument('-o', dest="outpath", type=Path)
     parser_itp_ff.add_argument('-c', dest="res_charges",  nargs='+', type=lambda s: s.split(':'),)
+    parser_itp_ff.add_argument('-f', dest='inpath', type=Path, required=False, default=[],
+                                     help='Input file (ITP|FF)', nargs='*')
 
     parser_itp_ff.set_defaults(func=itp_to_ff)
 
