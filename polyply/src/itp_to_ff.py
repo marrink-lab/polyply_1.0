@@ -20,6 +20,7 @@ from polyply.src.fragment_finder import FragmentFinder
 from polyply.src.ffoutput import ForceFieldDirectiveWriter
 from polyply.src.charges import balance_charges, set_charges
 from polyply.src.big_smile_mol_processor import DefBigSmileParser
+from .load_library import load_ff_library
 
 def _read_itp_file(itppath):
     """
@@ -34,10 +35,17 @@ def _read_itp_file(itppath):
     mol.make_edges_from_interaction_type(type_="bonds")
     return mol
 
-def itp_to_ff(itppath, smile_str, outpath, res_charges=None):
+def itp_to_ff(itppath, smile_str, outpath, inpath=[], res_charges=None):
     """
     Main executable for itp to ff tool.
     """
+    # load FF files if given
+    if inpath:
+        force_field = load_ff_library("new", None, inpath)
+    # if none are given we create an empty ff
+    else:
+        force_field = ForceField("new")
+
     # what charges belong to which resname
     if res_charges:
         crg_dict = dict(res_charges)
@@ -52,14 +60,16 @@ def itp_to_ff(itppath, smile_str, outpath, res_charges=None):
         target_mol = _read_itp_file(itppath)
 
     # read the big-smile representation
-    meta_mol = DefBigSmileParser().parse(smile_str)
+    meta_mol = DefBigSmileParser(force_field).parse(smile_str)
 
     # identify and extract all unique fragments
     unique_fragments, res_graph = FragmentFinder(target_mol).extract_unique_fragments(meta_mol.molecule)
 
     # extract the blocks with parameters
-    force_field = ForceField("new")
     for name, fragment in unique_fragments.items():
+        # don't overwrite existing blocks
+        if name in force_field.blocks:
+            continue
         new_block = extract_block(target_mol, list(fragment.nodes), defines={})
         nx.set_node_attributes(new_block, 1, "resid")
         new_block.nrexcl = target_mol.nrexcl
@@ -70,7 +80,7 @@ def itp_to_ff(itppath, smile_str, outpath, res_charges=None):
                         charge=float(crg_dict[name]))
 
     # extract the regular links
-    force_field.links = extract_links(target_mol)
+    force_field.links.append(extract_links(target_mol))
     # extract links that span the terminii
     find_termini_mods(res_graph, target_mol, force_field)
 
