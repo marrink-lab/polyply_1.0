@@ -83,9 +83,10 @@ class DefBigSmileParser:
         """
         Make edges according to the bonding descriptors stored
         in the node attributes of meta_molecule residue graph.
-        If a bonding descriptor is consumed it is set to None,
+        If a bonding descriptor is consumed it is removed from the list,
         however, the meta_molecule edge gets an attribute with the
-        bonding descriptors that formed the edge.
+        bonding descriptors that formed the edge. Later uncomsumed
+        bonding descriptors are replaced by hydrogen atoms.
         """
         for prev_node, node in nx.dfs_edges(self.meta_molecule):
             prev_graph = self.meta_molecule.nodes[prev_node]['graph']
