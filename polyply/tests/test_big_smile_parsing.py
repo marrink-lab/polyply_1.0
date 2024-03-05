@@ -53,6 +53,10 @@ def test_res_pattern_to_meta_mol(smile, nodes, edges):
                         ("[$]COC[$]",
                          "COC",
                         {0: ["$"], 2: ["$"]}),
+                        # simple symmetric but with explicit hydrogen
+                        ("[$][CH2]O[CH2][$]",
+                         "[CH2]O[CH2]",
+                        {0: ["$"], 2: ["$"]}),
                         # smiple symmetric bonding; multiple descript
                         ("[$]COC[$][$1]",
                          "COC",
@@ -82,6 +86,17 @@ def test_tokenize_big_smile(big_smile, smile, bonding):
 @pytest.mark.parametrize('fragment_str, nodes, edges',(
                         # single fragment
                         ("{#PEO=[$]COC[$]}",
+                        {"PEO": ((0, {"atomname": "C0", "resname": "PEO", "bonding": ["$"], "element": "C"}),
+                                 (1, {"atomname": "O1", "resname": "PEO", "element": "O"}),
+                                 (2, {"atomname": "C2", "resname": "PEO", "bonding": ["$"], "element": "C"}),
+                                 (3, {"atomname": "H3", "resname": "PEO", "element": "H"}),
+                                 (4, {"atomname": "H4", "resname": "PEO", "element": "H"}),
+                                 (5, {"atomname": "H5", "resname": "PEO", "element": "H"}),
+                                 (6, {"atomname": "H6", "resname": "PEO", "element": "H"}),
+                                )},
+                        {"PEO": [(0, 1), (1, 2), (0, 3), (0, 4), (2, 5), (2, 6)]}),
+                        # single fragment but with explicit hydrogen in smiles
+                        ("{#PEO=[$][CH2]O[CH2][$]}",
                         {"PEO": ((0, {"atomname": "C0", "resname": "PEO", "bonding": ["$"], "element": "C"}),
                                  (1, {"atomname": "O1", "resname": "PEO", "element": "O"}),
                                  (2, {"atomname": "C2", "resname": "PEO", "bonding": ["$"], "element": "C"}),
@@ -126,6 +141,21 @@ def test_tokenize_big_smile(big_smile, smile, bonding):
                                    (1, {"atomname": "H1", "resname": "OHter", "element": "H"}))},
                         {"PEO": [(0, 1), (1, 2), (0, 3), (0, 4), (2, 5)],
                          "OHter": [(0, 1)]}),
+                        # single fragment + 1 terminal but multiple bond descritp.
+                        # but explicit hydrogen in the smiles string
+                        ("{#PEO=[$][CH2]O[CH2][$][$1],#OHter=[$][OH]}",
+                        {"PEO": ((0, {"atomname": "C0", "resname": "PEO", "bonding": ["$"], "element": "C"}),
+                                 (1, {"atomname": "O1", "resname": "PEO", "element": "O"}),
+                                 (2, {"atomname": "C2", "resname": "PEO", "bonding": ["$", "$1"], "element": "C"}),
+                                 (3, {"atomname": "H3", "resname": "PEO", "element": "H"}),
+                                 (4, {"atomname": "H4", "resname": "PEO", "element": "H"}),
+                                 (5, {"atomname": "H5", "resname": "PEO", "element": "H"}),
+                                 ),
+                         "OHter": ((0, {"atomname": "O0", "resname": "OHter", "bonding": ["$"], "element": "O"}),
+                                   (1, {"atomname": "H1", "resname": "OHter", "element": "H"}))},
+                        {"PEO": [(0, 1), (1, 2), (0, 3), (0, 4), (2, 5)],
+                         "OHter": [(0, 1)]}),
+
 ))
 def test_fragment_iter(fragment_str, nodes, edges):
     for resname, mol_graph in fragment_iter(fragment_str):

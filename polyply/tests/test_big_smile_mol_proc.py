@@ -52,6 +52,15 @@ def test_generate_edge(bonds_source, bonds_target, edge, btypes):
                         [(0, 1), (0, 2), (2, 3), (3, 4), (2, 5), (2, 6), (4, 7),
                          (4, 8), (4, 9), (9, 10), (10, 11), (9, 12), (9, 13),
                          (11, 14), (11, 15), (11, 16), (16, 17)]),
+                        # uncomsumed bonding IDs; note that this is not the same
+                        # molecule as previous test case. Here one of the OH branches
+                        # and replaces an CH2 group with CH-OH
+                        ("{[#OHter][#PEO]|2[#OHter]}.{#PEO=[>][$1]COC[<],#OHter=[$1][O]}",
+                        [('OHter', 'O H'), ('PEO', 'C O C H H H H'),
+                         ('PEO', 'C O C H H H H'), ('OHter', 'O H')],
+                        [(0, 1), (0, 2), (2, 3), (2, 5), (2, 10), (3, 4),
+                         (4, 6), (4, 7), (4, 17), (8, 9), (8, 11), (8, 14),
+                         (8, 18), (9, 10), (10, 12), (10, 13), (14, 15)]),
                         # simple branched sequence
                         ("{[#Hter][#PE]([#PEO][#Hter])[#PE]([#PEO][#Hter])[#Hter]}.{#Hter=[$]H,#PE=[$]CC[$][$],#PEO=[$]COC[$]}",
                         [('Hter', 'H'), ('PE', 'C C H H H'), ('PEO', 'C O C H H H H'), ('Hter', 'H'),
@@ -75,11 +84,11 @@ def test_generate_edge(bonds_source, bonds_target, edge, btypes):
 ))
 def test_def_big_smile_parser(smile, ref_nodes, ref_edges):
     meta_mol = DefBigSmileParser().parse(smile)
+#    nx.draw_networkx(meta_mol.molecule, with_labels=True, labels=nx.get_node_attributes(meta_mol.molecule, 'element'))
+#    plt.show()
     for node, ref in zip(meta_mol.nodes, ref_nodes):
         assert meta_mol.nodes[node]['resname'] ==  ref[0]
         block_graph = meta_mol.nodes[node]['graph']
         elements = list(nx.get_node_attributes(block_graph, 'element').values())
         assert elements == ref[1].split()
-    #nx.draw_networkx(meta_mol.molecule, with_labels=True, labels=nx.get_node_attributes(meta_mol.molecule, 'element'))
-    #plt.show()
     assert sorted(meta_mol.molecule.edges) == sorted(ref_edges)
