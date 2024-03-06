@@ -3,10 +3,10 @@ import re
 import numpy as np
 try:
     import pysmiles
-except ImportError:
+except ImportError as error:
     msg = ("You are using a functionality that requires "
            "the pysmiles package. Use pip install pysmiles ")
-    raise ImportError(msg)
+    raise ImportError(msg) from error
 import networkx as nx
 from vermouth.forcefield import ForceField
 from vermouth.molecule import Block
@@ -41,7 +41,7 @@ def res_pattern_to_meta_mol(pattern):
     '{' + [#resname_1][#resname_2]... + '}'
 
     In addition to plain enumeration any residue may be
-    followed by a '|' and an integern number that
+    followed by a '|' and an integer number that
     specifies how many times the given residue should
     be added within a sequence. For example, a pentamer
     of PEO can be written as:
@@ -52,10 +52,10 @@ def res_pattern_to_meta_mol(pattern):
 
     {[#PEO]|5}
 
-    The block syntax also applies to branches. Here the convetion
+    The block syntax also applies to branches. Here the convention
     is that the complete branch including it's first anchoring
     residue is repeated. For example, to generate a PMA-g-PEG
-    polymer the following syntax is permitted:
+    polymer containing 15 residues the following syntax is permitted:
 
     {[#PMA]([#PEO][#PEO])|5}
 
@@ -79,7 +79,7 @@ def res_pattern_to_meta_mol(pattern):
         if pattern[start-1] == '(':
             branching = True
             branch_anchor = prev_node
-            recipie = [(meta_mol.nodes[prev_node]['resname'], 1)]
+            recipe = [(meta_mol.nodes[prev_node]['resname'], 1)]
         if stop < len(pattern) and pattern[stop] == '|':
             eon = _find_next_character(pattern, ['[', ')', '(', '}'], stop)
             n_mon = int(pattern[stop+1:eon])
@@ -89,7 +89,7 @@ def res_pattern_to_meta_mol(pattern):
         resname = match.group(0)[2:-1]
         # collect all residues in branch
         if branching:
-            recipie.append((resname, n_mon))
+            recipe.append((resname, n_mon))
 
         # add the new residue
         connection = []
@@ -135,7 +135,7 @@ def tokenize_big_smile(big_smile):
     """
     Processes a BigSmile string by storing the
     the BigSmile specific bonding descriptors
-    in a dict with refernce to the atom they
+    in a dict with reference to the atom they
     refer to. Furthermore, a cleaned smile
     string is generated with the BigSmile
     specific syntax removed.
