@@ -1,7 +1,11 @@
 import networkx as nx
+import pysmiles
 from polyply.src.big_smile_parsing import (res_pattern_to_meta_mol,
                                            force_field_from_fragments)
 from polyply.src.map_to_molecule import MapToMolecule
+
+VALENCES = pysmiles.smiles_helper.VALENCES
+VALENCES.update({"H":(1,)})
 
 def compatible(left, right):
     """
@@ -74,8 +78,8 @@ class DefBigSmileParser:
     which describes a polymer molecule.
     """
 
-    def __init__(self):
-        self.force_field = None
+    def __init__(self, force_field):
+        self.force_field = force_field
         self.meta_molecule = None
         self.molecule = None
 
@@ -115,9 +119,12 @@ class DefBigSmileParser:
             graph = self.meta_molecule.nodes[node]['graph']
             bonding = nx.get_node_attributes(graph, "bonding")
             for node, bondings in bonding.items():
+                element = graph.nodes[node]['element']
+                hcount = VALENCES[element][0] -\
+                         self.meta_molecule.molecule.degree(node) + 1
                 attrs = {attr: graph.nodes[node][attr] for attr in ['resname', 'resid']}
                 attrs['element'] = 'H'
-                for new_id in range(1, len(bondings)+1):
+                for new_id in range(1, hcount):
                     new_node = len(self.meta_molecule.molecule.nodes) + 1
                     graph.add_edge(node, new_node)
                     attrs['atomname'] = "H" + str(new_id + len(graph.nodes))
