@@ -23,12 +23,9 @@ def compatible(left, right):
     """
     if left == right and left not in '> <':
         return True
-    if left[0] == "<" and right[0] == ">":
-        if left[1:] == right[1:]:
-            return True
-    if left[0] == ">" and right[0] == "<":
-        if left[1:] == right[1:]:
-            return True
+    l, r = left[0], right[0]
+    if (l, r) == ('<', '>') or (l, r) == ('>', '<'):
+        return left[1:] == right[1:]
     return False
 
 def generate_edge(source, target, bond_type="bonding"):
