@@ -1,5 +1,6 @@
 import pytest
 import networkx as nx
+from vermouth.forcefield import ForceField
 from polyply.src.big_smile_mol_processor import (DefBigSmileParser,
                                                  generate_edge)
 #import matplotlib.pyplot as plt
@@ -83,7 +84,8 @@ def test_generate_edge(bonds_source, bonds_target, edge, btypes):
 
 ))
 def test_def_big_smile_parser(smile, ref_nodes, ref_edges):
-    meta_mol = DefBigSmileParser().parse(smile)
+    ff = ForceField("new")
+    meta_mol = DefBigSmileParser(ff).parse(smile)
 #    nx.draw_networkx(meta_mol.molecule, with_labels=True, labels=nx.get_node_attributes(meta_mol.molecule, 'element'))
 #    plt.show()
     for node, ref in zip(meta_mol.nodes, ref_nodes):
