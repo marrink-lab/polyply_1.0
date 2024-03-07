@@ -28,7 +28,7 @@ def compatible(left, right):
         return left[1:] == right[1:]
     return False
 
-def generate_edge(source, target, bond_type="bonding"):
+def generate_edge(source, target, bond_attribute="bonding"):
     """
     Given a source and a target graph, which have bonding
     descriptors stored as node attributes, find a pair of
@@ -41,7 +41,7 @@ def generate_edge(source, target, bond_type="bonding"):
     ----------
     source: :class:`nx.Graph`
     target: :class:`nx.Graph`
-    bond_type: `abc.hashable`
+    bond_attribute: `abc.hashable`
         under which attribute are the bonding descriptors
         stored.
 
@@ -55,8 +55,8 @@ def generate_edge(source, target, bond_type="bonding"):
     LookupError
         if no match is found
     """
-    source_nodes = nx.get_node_attributes(source, bond_type)
-    target_nodes = nx.get_node_attributes(target, bond_type)
+    source_nodes = nx.get_node_attributes(source, bond_attribute)
+    target_nodes = nx.get_node_attributes(target, bond_attribute)
     for source_node in source_nodes:
         for target_node in target_nodes:
             #print(source_node, target_node)

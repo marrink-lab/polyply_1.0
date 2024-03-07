@@ -38,7 +38,7 @@ def test_generate_edge(bonds_source, bonds_target, edge, btypes):
     target = nx.path_graph(4)
     nx.set_node_attributes(source, bonds_source, "bonding")
     nx.set_node_attributes(target, bonds_target, "bonding")
-    new_edge, new_btypes = generate_edge(source, target, bond_type="bonding")
+    new_edge, new_btypes = generate_edge(source, target, bond_attribute="bonding")
     assert new_edge == edge
     assert new_btypes == btypes
 

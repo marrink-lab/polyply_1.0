@@ -213,10 +213,6 @@ def res_pattern_to_meta_mol(pattern):
                 recipes = defaultdict(list)
     return meta_mol
 
-def _big_smile_iter(smile):
-    for token in smile:
-        yield token
-
 def tokenize_big_smile(big_smile):
     """
     Processes a BigSmile string by storing the
@@ -229,17 +225,17 @@ def tokenize_big_smile(big_smile):
     Parameters
     ----------
     smile: str
-        a BigSmile smile string
+        a BigSmile smiles string
 
     Returns
     -------
     str
-        a canonical smile string
+        a canonical smiles string
     dict
         a dict mapping bonding descriptors
-        to the nodes within the smile
+        to the nodes within the smiles string
     """
-    smile_iter = _big_smile_iter(big_smile)
+    smile_iter = iter(big_smile)
     bonding_descrpt = defaultdict(list)
     smile = ""
     node_count = 0
