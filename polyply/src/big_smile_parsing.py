@@ -361,3 +361,7 @@ def force_field_from_fragments(fragment_str):
         mol_block = Block(mol_graph)
         force_field.blocks[resname] = mol_block
     return force_field
+
+# ToDos
+# - remove special case hydrogen line 327ff
+# - check rebuild_h and clean up

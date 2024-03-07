@@ -53,6 +53,16 @@ def test_generate_edge(bonds_source, bonds_target, edge, btypes):
                         [(0, 1), (0, 2), (2, 3), (3, 4), (2, 5), (2, 6), (4, 7),
                          (4, 8), (4, 9), (9, 10), (10, 11), (9, 12), (9, 13),
                          (11, 14), (11, 15), (11, 16), (16, 17)]),
+                        # smiple linear seqeunce with ionic bond
+                        ("{[#OHter][#PEO]|2[#OHter]}.{#PEO=[$]COC[$],#OHter=[$][O].[Na+]}",
+                        #           0 1             2 3 4 5 6 7 8
+                        [('OHter', 'O Na'), ('PEO', 'C O C H H H H'),
+                        #        9 10 11 12 13 14 15         16 17
+                         ('PEO', 'C O C H H H H'), ('OHter', 'O Na')],
+                        [(0, 1), (0, 2), (2, 3), (3, 4), (2, 5), (2, 6), (4, 7),
+                         (4, 8), (4, 9), (9, 10), (10, 11), (9, 12), (9, 13),
+                         (11, 14), (11, 15), (11, 16), (16, 17)]),
+
                         # uncomsumed bonding IDs; note that this is not the same
                         # molecule as previous test case. Here one of the OH branches
                         # and replaces an CH2 group with CH-OH
