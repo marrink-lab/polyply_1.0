@@ -24,6 +24,22 @@ def _find_next_character(string, chars, start):
             return idx+start
     return np.inf
 
+def _expand_branch(meta_mol, current, anchor, recipe):
+    prev_node = anchor
+    for bdx, (resname, n_mon) in enumerate(recipe):
+        if bdx == 0:
+            anchor = current
+        for _ in range(0, n_mon):
+            connection = [(prev_node, current)]
+            print(connection)
+            meta_mol.add_monomer(current,
+                                 resname,
+                                 connection)
+            prev_node = current
+            current += 1
+    prev_node = anchor
+    return meta_mol, current, prev_node
+
 def res_pattern_to_meta_mol(pattern):
     """
     Generate a :class:`polyply.MetaMolecule` from a
@@ -70,17 +86,30 @@ def res_pattern_to_meta_mol(pattern):
     """
     meta_mol = MetaMolecule()
     current = 0
-    branch_anchor = 0
+    # stores one or more branch anchors; each next
+    # anchor belongs to a nested branch
+    branch_anchor = []
+    # used for storing composition protocol for
+    # for branches; each entry is a list of
+    # branches from extending from the anchor
+    # point
+    recipes = defaultdict(list)
+    # the previous node
     prev_node = None
+    # do we have an open branch
     branching = False
     for match in re.finditer(PATTERNS['place_holder'], pattern):
         start, stop = match.span()
         # new branch here
         if pattern[start-1] == '(':
             branching = True
-            branch_anchor = prev_node
-            recipe = [(meta_mol.nodes[prev_node]['resname'], 1)]
+            branch_anchor.append(prev_node)
+            # the recipe for making the branch includes the anchor; which
+            # is hence the first atom in the list
+            if len(branch_anchor) == 1:
+                recipes[branch_anchor[-1]] = [(meta_mol.nodes[prev_node]['resname'], 1)]
         if stop < len(pattern) and pattern[stop] == '|':
+            # eon => end of next
             eon = _find_next_character(pattern, ['[', ')', '(', '}'], stop)
             n_mon = int(pattern[stop+1:eon])
         else:
@@ -89,7 +118,7 @@ def res_pattern_to_meta_mol(pattern):
         resname = match.group(0)[2:-1]
         # collect all residues in branch
         if branching:
-            recipe.append((resname, n_mon))
+            recipes[branch_anchor[-1]].append((resname, n_mon))
 
         # add the new residue
         connection = []
@@ -105,26 +134,40 @@ def res_pattern_to_meta_mol(pattern):
         # terminate branch and jump back to anchor
         branch_stop = _find_next_character(pattern, ['['], stop) >\
                       _find_next_character(pattern, [')'], stop)
-        if stop <= len(pattern) and branch_stop and branching:
+
+        if stop <= len(pattern) and branch_stop: # and branching:
             branching = False
-            prev_node = branch_anchor
+            prev_node = branch_anchor.pop()
+            if branch_anchor:
+                branching = True
             # we have to multiply the branch n-times
             eon_a = _find_next_character(pattern, [')'], stop)
             if stop+1 < len(pattern) and pattern[eon_a+1] == "|":
                 eon_b = _find_next_character(pattern, ['[', ')', '(', '}'], eon_a+1)
-                # -1 because one branch has already been added at this point
-                for _ in range(0,int(pattern[eon_a+2:eon_b])-1):
-                    for bdx, (resname, n_mon) in enumerate(recipie):
-                        if bdx == 0:
-                            anchor = current
-                        for _ in range(0, n_mon):
-                            connection = [(prev_node, current)]
-                            meta_mol.add_monomer(current,
-                                                 resname,
-                                                 connection)
-                            prev_node = current
-                            current += 1
-                    prev_node = anchor
+                # the outermost loop goes over how often a the branch has to be
+                # added to the existing sequence
+                for idx in range(0,int(pattern[eon_a+2:eon_b])-1):
+                    prev_anchor = None
+                    skip = 0
+                    for ref_anchor, recipe in list(recipes.items())[len(branch_anchor):]:
+                        print("-->", recipe)
+                        if prev_anchor:
+                            offset = ref_anchor - prev_anchor
+                            prev_node = prev_node + offset
+                            #skip = 1
+                        print(prev_node)
+                        meta_mol, current, prev_node = _expand_branch(meta_mol,
+                                                                      current=current,
+                                                                      anchor=prev_node,
+                                                                      recipe=recipe) #[skip:])
+                        if prev_anchor is None:
+                            base_anchor = prev_node
+                        prev_anchor = ref_anchor
+                print(base_anchor)
+                prev_node = base_anchor
+            # if all branches are done we need to reset the lists
+         #   branch_anchor = []
+         #   recipes = defaultdict(list)
     return meta_mol
 
 def _big_smile_iter(smile):
