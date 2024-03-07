@@ -54,31 +54,44 @@ def itp_equal(ref_mol, new_mol):
                           atol=0.1)
 
     for inter_type in new_mol.interactions:
+        print(inter_type)
+        print(len(new_mol.interactions[inter_type]), len(ref_mol.interactions[inter_type]))
         assert len(new_mol.interactions[inter_type]) == len(ref_mol.interactions[inter_type])
         for inter in new_mol.interactions[inter_type]:
-            new_atoms = [match[atom] for atom in inter.atoms]
+            new_atoms = tuple([match[atom] for atom in inter.atoms])
             new_inter = Interaction(atoms=new_atoms,
                                     parameters=inter.parameters,
                                     meta=inter.meta)
+            print(new_inter)
             for other_inter in ref_mol.interactions[inter_type]:
-                if _interaction_equal(inter, other_inter, inter_type):
+                if _interaction_equal(new_inter, other_inter, inter_type):
                     break
             else:
+                print("--")
                 assert False
     return True
 
-@pytest.mark.parametrize("case, fname, smiles, resnames, charges", [
-    ("PEO_OHter", "in_itp.itp", ["[OH][CH2]", "[CH2]O[CH2]", "[CH2][OH]"],
-    ["OH", "PEO", "OH"], [0, 0, 0]),
-    ("PEG_PBE", "in_itp.itp", ["[CH3]", "[CH2][CH][CH][CH2]", "[CH2]O[CH2]"],
-    ["CH3", "PBE", "PEO"], [0, 0, 0]),
-    ("ACOL","ref.top", ["[CH2][CH]C(=O)[O][CH3]","[CH2][CH]C(=O)[O][CH3]",
-              "[CH2][CH]C(=O)[O][CH2][CH2][N]([CH3])([CH3])([CH3])",
-              "[CH2][CH]C(=O)[O][CH3]", "[CH2][CH]C(=O)[O][CH3]"],
-             ["M", "M", "AOL", "M", "M"],
-             [0, 0, 1, 0, 0]),
+@pytest.mark.parametrize("case, fname, bigsmile, charges", [
+    # test case 1 PEO with OHtermini
+    ("PEO_OHter",
+     "in_itp.itp",
+     "{[#OHter][#PEO]|4[#OHter]}.{#PEO=[$]COC[$],#OHter=[$]CO}",
+     [("OHter", 0), ("PEO", 0)],
+    ),
+    # test case 2 PEO-PBE block cooplymer with two termini
+    ("PEG_PBE",
+     "in_itp.itp",
+     "{[#CH3ter][#PBE]|4[#PEO]|2[#OHter]}.{#PEO=[>]COC[<],#OHter=[<]CO,#CH3ter=[>][CH3],#PBE=[>]CC[<]C=C}",
+    [("CH3ter", 0), ("PBE", 0), ("PEO", 0), ("OHter", 0)],
+    ),
+    # test case 3 complex sequence with charged ion in the center
+   ("ACOL",
+    "ref.top",
+    "{[#ter1][#PMA][#AOL][#PMA][#ter2]}.{#Hter=[>][<]H,#ter1=CC[<]C(=O)OC,#ter2=[>]CCC(=O)OC,#PMA=[>]CC[<]C(=O)OC,#AOL=[>]CC[<]C(=O)OCC[N+](C)(C)(C)}",
+     [("ter1", 0), ("PMA", 0), ("AOL", 1), ("ter2", 0)],
+    )
 ])
-def test_itp_to_ff(tmp_path, case, fname, smiles, resnames, charges):
+def test_itp_to_ff(tmp_path, case, fname, bigsmile, charges):
     """
     Call itp-to-ff and check if it generates the same force-field
     as in the ref.ff file.
@@ -86,10 +99,8 @@ def test_itp_to_ff(tmp_path, case, fname, smiles, resnames, charges):
     tmp_file = Path(tmp_path) / "test.ff"
     inpath = Path(polyply.TEST_DATA) / "itp_to_ff" / case
     itp_to_ff(itppath=inpath/fname,
-              fragment_smiles=smiles,
-              resnames=resnames,
-              charges=charges,
-              term_prefix='ter',
+              smile_str=bigsmile,
+              res_charges=charges,
               outpath=tmp_file,)
     # now generate an itp file with this ff-file
     tmp_itp = tmp_path / "new.itp"
