@@ -80,7 +80,7 @@ def itp_to_ff(itppath, smile_str, outpath, inpath=[], res_charges=None):
                         charge=float(crg_dict[name]))
 
     # extract the regular links
-    force_field.links.append(extract_links(target_mol))
+    force_field.links += extract_links(target_mol)
     # extract links that span the terminii
     find_termini_mods(res_graph, target_mol, force_field)
 
