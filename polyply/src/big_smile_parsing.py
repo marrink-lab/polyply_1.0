@@ -31,7 +31,6 @@ def _expand_branch(meta_mol, current, anchor, recipe):
             anchor = current
         for _ in range(0, n_mon):
             connection = [(prev_node, current)]
-            print(connection)
             meta_mol.add_monomer(current,
                                  resname,
                                  connection)
@@ -106,8 +105,8 @@ def res_pattern_to_meta_mol(pattern):
             branch_anchor.append(prev_node)
             # the recipe for making the branch includes the anchor; which
             # is hence the first atom in the list
-            if len(branch_anchor) == 1:
-                recipes[branch_anchor[-1]] = [(meta_mol.nodes[prev_node]['resname'], 1)]
+            #if len(branch_anchor) == 1:
+            recipes[branch_anchor[-1]] = [(meta_mol.nodes[prev_node]['resname'], 1)]
         if stop < len(pattern) and pattern[stop] == '|':
             # eon => end of next
             eon = _find_next_character(pattern, ['[', ')', '(', '}'], stop)
@@ -150,24 +149,22 @@ def res_pattern_to_meta_mol(pattern):
                     prev_anchor = None
                     skip = 0
                     for ref_anchor, recipe in list(recipes.items())[len(branch_anchor):]:
-                        print("-->", recipe)
                         if prev_anchor:
                             offset = ref_anchor - prev_anchor
                             prev_node = prev_node + offset
-                            #skip = 1
-                        print(prev_node)
+                            skip = 1
                         meta_mol, current, prev_node = _expand_branch(meta_mol,
                                                                       current=current,
                                                                       anchor=prev_node,
-                                                                      recipe=recipe) #[skip:])
+                                                                      recipe=recipe[skip:])
                         if prev_anchor is None:
                             base_anchor = prev_node
                         prev_anchor = ref_anchor
-                print(base_anchor)
                 prev_node = base_anchor
             # if all branches are done we need to reset the lists
-         #   branch_anchor = []
-         #   recipes = defaultdict(list)
+            # when all nested branches are completed
+            if len(branch_anchor) == 0:
+                recipes = defaultdict(list)
     return meta_mol
 
 def _big_smile_iter(smile):
