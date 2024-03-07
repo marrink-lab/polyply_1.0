@@ -22,11 +22,13 @@ from polyply.src.big_smile_parsing import (res_pattern_to_meta_mol,
                         ["PMA", "PMA", "PMA"],
                         [(0, 1), (1, 2)]),
                         # simple branch expension
-                        ("{[#PMA]([#PEO][#PEO][#OHter])|2}",
+                        ("{[#PMA]([#PEO][#PEO][#OHter])|3}",
                         ["PMA", "PEO", "PEO", "OHter",
+                         "PMA", "PEO", "PEO", "OHter",
                          "PMA", "PEO", "PEO", "OHter"],
                         [(0, 1), (1, 2), (2, 3),
-                         (0, 4), (4, 5), (5, 6), (6, 7)]
+                         (0, 4), (4, 5), (5, 6), (6, 7),
+                         (4, 8), (8, 9), (9, 10), (10, 11)]
                          ),
                         # nested branched with expansion
                         ("{[#PMA]([#PEO]|3)|2}",
@@ -34,7 +36,68 @@ from polyply.src.big_smile_parsing import (res_pattern_to_meta_mol,
                          "PMA", "PEO", "PEO", "PEO"],
                         [(0, 1), (1, 2), (2, 3),
                          (0, 4), (4, 5), (5, 6), (6, 7)]
-                         )
+                         ),
+                        # nested braching
+                        #     0     1      2    3      4      5    6
+                        ("{[#PMA][#PMA]([#PEO][#PEO]([#OH])[#PEO])[#PMA]}",
+                        ["PMA", "PMA", "PEO", "PEO", "OH",
+                         "PEO", "PMA"],
+                        [(0, 1), (1, 2), (2, 3),
+                         (3, 4), (3, 5), (1, 6)]
+                         ),
+                        # nested braching plus expansion
+                        #     0     1      2    3      4/5      6     7
+                        ("{[#PMA][#PMA]([#PEO][#PEO]([#OH]|2)[#PEO])[#PMA]}",
+                        ["PMA", "PMA", "PEO", "PEO", "OH", "OH",
+                         "PEO", "PMA"],
+                        [(0, 1), (1, 2), (2, 3),
+                         (3, 4), (4, 5), (3, 6), (1, 7)]
+                         ),
+                        # nested braching plus expansion incl. branch
+                        #     0     1      2    3      4      5
+                        #           6      7    8      9      10      11
+                        ("{[#PMA][#PMA]([#PEO][#PEO]([#OH])[#PEO])|2[#PMA]}",
+                        ["PMA", "PMA", "PEO", "PEO", "OH", "PEO",
+                         "PMA", "PEO", "PEO", "PEO", "OH", "PMA"],
+                        [(0, 1), (1, 2), (2, 3),
+                         (3, 4), (3, 5), (1, 6), (6, 7), (7, 8),
+                         (8, 9), (8, 10), (6, 11)]
+                         ),
+                        # nested braching plus expansion of nested branch
+                        # here the nested branch is expended
+                        #  0 - 1 - 10
+                        #      |
+                        #      2
+                        #      |
+                        #      3 {- 5 - 7 } - 9 -> the expanded fragment
+                        #      |    |   |
+                        #      4    6   8
+                        ("{[#PMA][#PMA]([#PEO][#PQ]([#OH])|3[#PEO])[#PMA]}",
+                        ["PMA", "PMA", "PEO", "PQ", "OH",
+                         "PQ", "OH", "PQ", "OH", "PEO", "PMA"],
+                        [(0, 1), (1, 2), (1, 10),
+                         (2, 3), (3, 4), (3, 5), (5, 6),
+                         (5, 7), (7, 8), (7, 9)]
+                         ),
+                        # nested braching plus expansion of nested branch
+                        # here the nested branch is expended and a complete
+                        # new branch is added
+                        #          11   13
+                        #           |    |
+                        #  0 - 1 - 10 - 12
+                        #      |
+                        #      2
+                        #      |
+                        #      3 {- 5 - 7 } - 9 -> the expanded fragment
+                        #      |    |   |
+                        #      4    6   8
+                        ("{[#PMA][#PMA]([#PEO][#PQ]([#OH])|3[#PEO])[#PMA]([#CH3])|2}",
+                        ["PMA", "PMA", "PEO", "PQ", "OH",
+                         "PQ", "OH", "PQ", "OH", "PEO", "PMA", "CH3", "PMA", "CH3"],
+                        [(0, 1), (1, 2), (1, 10),
+                         (2, 3), (3, 4), (3, 5), (5, 6),
+                         (5, 7), (7, 8), (7, 9), (10, 11), (10, 12), (12, 13)]
+                         ),
 ))
 def test_res_pattern_to_meta_mol(smile, nodes, edges):
     """

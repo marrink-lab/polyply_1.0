@@ -3,10 +3,10 @@ import re
 import numpy as np
 try:
     import pysmiles
-except ImportError:
+except ImportError as error:
     msg = ("You are using a functionality that requires "
            "the pysmiles package. Use pip install pysmiles ")
-    raise ImportError(msg)
+    raise ImportError(msg) from error
 import networkx as nx
 from vermouth.forcefield import ForceField
 from vermouth.molecule import Block
@@ -23,6 +23,21 @@ def _find_next_character(string, chars, start):
         if token in chars:
             return idx+start
     return np.inf
+
+def _expand_branch(meta_mol, current, anchor, recipe):
+    prev_node = anchor
+    for bdx, (resname, n_mon) in enumerate(recipe):
+        if bdx == 0:
+            anchor = current
+        for _ in range(0, n_mon):
+            connection = [(prev_node, current)]
+            meta_mol.add_monomer(current,
+                                 resname,
+                                 connection)
+            prev_node = current
+            current += 1
+    prev_node = anchor
+    return meta_mol, current, prev_node
 
 def res_pattern_to_meta_mol(pattern):
     """
@@ -41,7 +56,7 @@ def res_pattern_to_meta_mol(pattern):
     '{' + [#resname_1][#resname_2]... + '}'
 
     In addition to plain enumeration any residue may be
-    followed by a '|' and an integern number that
+    followed by a '|' and an integer number that
     specifies how many times the given residue should
     be added within a sequence. For example, a pentamer
     of PEO can be written as:
@@ -52,10 +67,10 @@ def res_pattern_to_meta_mol(pattern):
 
     {[#PEO]|5}
 
-    The block syntax also applies to branches. Here the convetion
+    The block syntax also applies to branches. Here the convention
     is that the complete branch including it's first anchoring
     residue is repeated. For example, to generate a PMA-g-PEG
-    polymer the following syntax is permitted:
+    polymer containing 15 residues the following syntax is permitted:
 
     {[#PMA]([#PEO][#PEO])|5}
 
@@ -70,28 +85,54 @@ def res_pattern_to_meta_mol(pattern):
     """
     meta_mol = MetaMolecule()
     current = 0
-    branch_anchor = 0
+    # stores one or more branch anchors; each next
+    # anchor belongs to a nested branch
+    branch_anchor = []
+    # used for storing composition protocol for
+    # for branches; each entry is a list of
+    # branches from extending from the anchor
+    # point
+    recipes = defaultdict(list)
+    # the previous node
     prev_node = None
+    # do we have an open branch
     branching = False
+    # each element in the for loop matches a pattern
+    # '[' + '#' + some alphanumeric name + ']'
     for match in re.finditer(PATTERNS['place_holder'], pattern):
         start, stop = match.span()
-        # new branch here
+        # we start a new branch when the residue is preceded by '('
+        # as in ... ([#PEO] ...
         if pattern[start-1] == '(':
             branching = True
-            branch_anchor = prev_node
-            recipie = [(meta_mol.nodes[prev_node]['resname'], 1)]
+            branch_anchor.append(prev_node)
+            # the recipe for making the branch includes the anchor; which
+            # is hence the first residue in the list
+            recipes[branch_anchor[-1]] = [(meta_mol.nodes[prev_node]['resname'], 1)]
+        # here we check if the atom is followed by a expansion character '|'
+        # as in ... [#PEO]|
         if stop < len(pattern) and pattern[stop] == '|':
+            # eon => end of next
+            # we find the next character that starts a new residue, ends a branch or
+            # ends the complete pattern
             eon = _find_next_character(pattern, ['[', ')', '(', '}'], stop)
+            # between the expansion character and the eon character
+            # is any number that correspnds to the number of times (i.e. monomers)
+            # that this atom should be added
             n_mon = int(pattern[stop+1:eon])
         else:
             n_mon = 1
 
+        # the resname starts at the second character and ends
+        # one before the last according to the above pattern
         resname = match.group(0)[2:-1]
-        # collect all residues in branch
+        # if this residue is part of a branch we store it in
+        # the recipe dict together with the anchor residue
+        # and expansion number
         if branching:
-            recipie.append((resname, n_mon))
+            recipes[branch_anchor[-1]].append((resname, n_mon))
 
-        # add the new residue
+        # new we add new residue as often as required
         connection = []
         for _ in range(0, n_mon):
             if prev_node is not None:
@@ -102,40 +143,81 @@ def res_pattern_to_meta_mol(pattern):
             prev_node = current
             current += 1
 
-        # terminate branch and jump back to anchor
+        # here we check if the residue considered before is the
+        # last residue of a branch (i.e. '...[#residue])'
+        # that is the case if the branch closure comes before
+        # any new atom begins
         branch_stop = _find_next_character(pattern, ['['], stop) >\
                       _find_next_character(pattern, [')'], stop)
-        if stop <= len(pattern) and branch_stop and branching:
-            branching = False
-            prev_node = branch_anchor
-            # we have to multiply the branch n-times
-            eon_a = _find_next_character(pattern, [')'], stop)
-            if stop+1 < len(pattern) and pattern[eon_a+1] == "|":
-                eon_b = _find_next_character(pattern, ['[', ')', '(', '}'], eon_a+1)
-                # -1 because one branch has already been added at this point
-                for _ in range(0,int(pattern[eon_a+2:eon_b])-1):
-                    for bdx, (resname, n_mon) in enumerate(recipie):
-                        if bdx == 0:
-                            anchor = current
-                        for _ in range(0, n_mon):
-                            connection = [(prev_node, current)]
-                            meta_mol.add_monomer(current,
-                                                 resname,
-                                                 connection)
-                            prev_node = current
-                            current += 1
-                    prev_node = anchor
-    return meta_mol
 
-def _big_smile_iter(smile):
-    for token in smile:
-        yield token
+        # if the branch ends we reset the anchor
+        # and set branching False unless we are in
+        # a nested branch
+        if stop <= len(pattern) and branch_stop:
+            branching = False
+            prev_node = branch_anchor.pop()
+            if branch_anchor:
+                branching = True
+            #========================================
+            #       expansion for branches
+            #========================================
+            # We need to know how often the branch has
+            # to be added so we first identify the branch
+            # terminal character ')' called eon_a.
+            eon_a = _find_next_character(pattern, [')'], stop)
+            # Then we check if the expansion character
+            # is next.
+            if stop+1 < len(pattern) and pattern[eon_a+1] == "|":
+                # If there is one we find the beginning
+                # of the next branch, residue or end of the string
+                # As before all characters inbetween are a number that
+                # is how often the branch is expanded.
+                eon_b = _find_next_character(pattern, ['[', ')', '(', '}'], eon_a+1)
+                # the outermost loop goes over how often a the branch has to be
+                # added to the existing sequence
+                for idx in range(0,int(pattern[eon_a+2:eon_b])-1):
+                    prev_anchor = None
+                    skip = 0
+                    # in principle each branch can contain any number of nested branches
+                    # each branch is itself a recipe that has an anchor atom
+                    for ref_anchor, recipe in list(recipes.items())[len(branch_anchor):]:
+                        # starting from the first nested branch we have to do some
+                        # math to find the anchor atom relative to the first branch
+                        # we also skip the first residue in recipe, which is the
+                        # anchor residue. Only the outermost branch in an expansion
+                        # is expanded including the anchor. This allows easy description
+                        # of graft polymers.
+                        if prev_anchor:
+                            offset = ref_anchor - prev_anchor
+                            prev_node = prev_node + offset
+                            skip = 1
+                        # this function simply adds the residues of the paticular
+                        # branch
+                        meta_mol, current, prev_node = _expand_branch(meta_mol,
+                                                                      current=current,
+                                                                      anchor=prev_node,
+                                                                      recipe=recipe[skip:])
+                        # if this is the first branch we want to set the anchor
+                        # as the base anchor to which we jump back after all nested
+                        # branches have been added
+                        if prev_anchor is None:
+                            base_anchor = prev_node
+                        # store the previous anchor so we can do the math for nested
+                        # branches
+                        prev_anchor = ref_anchor
+                # all branches added; then go back to the base anchor
+                prev_node = base_anchor
+            # if all branches are done we need to reset the lists
+            # when all nested branches are completed
+            if len(branch_anchor) == 0:
+                recipes = defaultdict(list)
+    return meta_mol
 
 def tokenize_big_smile(big_smile):
     """
     Processes a BigSmile string by storing the
     the BigSmile specific bonding descriptors
-    in a dict with refernce to the atom they
+    in a dict with reference to the atom they
     refer to. Furthermore, a cleaned smile
     string is generated with the BigSmile
     specific syntax removed.
@@ -143,17 +225,17 @@ def tokenize_big_smile(big_smile):
     Parameters
     ----------
     smile: str
-        a BigSmile smile string
+        a BigSmile smiles string
 
     Returns
     -------
     str
-        a canonical smile string
+        a canonical smiles string
     dict
         a dict mapping bonding descriptors
-        to the nodes within the smile
+        to the nodes within the smiles string
     """
-    smile_iter = _big_smile_iter(big_smile)
+    smile_iter = iter(big_smile)
     bonding_descrpt = defaultdict(list)
     smile = ""
     node_count = 0
@@ -281,3 +363,7 @@ def force_field_from_fragments(fragment_str, force_field=None):
             mol_block = Block(mol_graph)
             force_field.blocks[resname] = mol_block
     return force_field
+
+# ToDos
+# - remove special case hydrogen line 327ff
+# - check rebuild_h and clean up

@@ -1,3 +1,4 @@
+import re
 import networkx as nx
 import pysmiles
 from polyply.src.big_smile_parsing import (res_pattern_to_meta_mol,
@@ -23,15 +24,12 @@ def compatible(left, right):
     """
     if left == right and left not in '> <':
         return True
-    if left[0] == "<" and right[0] == ">":
-        if left[1:] == right[1:]:
-            return True
-    if left[0] == ">" and right[0] == "<":
-        if left[1:] == right[1:]:
-            return True
+    l, r = left[0], right[0]
+    if (l, r) == ('<', '>') or (l, r) == ('>', '<'):
+        return left[1:] == right[1:]
     return False
 
-def generate_edge(source, target, bond_type="bonding"):
+def generate_edge(source, target, bond_attribute="bonding"):
     """
     Given a source and a target graph, which have bonding
     descriptors stored as node attributes, find a pair of
@@ -44,7 +42,7 @@ def generate_edge(source, target, bond_type="bonding"):
     ----------
     source: :class:`nx.Graph`
     target: :class:`nx.Graph`
-    bond_type: `abc.hashable`
+    bond_attribute: `abc.hashable`
         under which attribute are the bonding descriptors
         stored.
 
@@ -58,8 +56,8 @@ def generate_edge(source, target, bond_type="bonding"):
     LookupError
         if no match is found
     """
-    source_nodes = nx.get_node_attributes(source, bond_type)
-    target_nodes = nx.get_node_attributes(target, bond_type)
+    source_nodes = nx.get_node_attributes(source, bond_attribute)
+    target_nodes = nx.get_node_attributes(target, bond_attribute)
     for source_node in source_nodes:
         for target_node in target_nodes:
             #print(source_node, target_node)
@@ -133,10 +131,13 @@ class DefBigSmileParser:
                     self.meta_molecule.molecule.nodes[new_node].update(attrs)
 
     def parse(self, big_smile_str):
-        res_pattern, residues = big_smile_str.split('.')
+        res_pattern, residues = re.findall(r"\{[^\}]+\}", big_smile_str)
         self.meta_molecule = res_pattern_to_meta_mol(res_pattern)
         self.force_field = force_field_from_fragments(residues)
         MapToMolecule(self.force_field).run_molecule(self.meta_molecule)
         self.edges_from_bonding_descrpt()
         self.replace_unconsumed_bonding_descrpt()
         return self.meta_molecule
+
+# ToDo
+# - clean copying of bond-list attributes L100
