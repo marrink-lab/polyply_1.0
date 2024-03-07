@@ -97,29 +97,42 @@ def res_pattern_to_meta_mol(pattern):
     prev_node = None
     # do we have an open branch
     branching = False
+    # each element in the for loop matches a pattern
+    # '[' + '#' + some alphanumeric name + ']'
     for match in re.finditer(PATTERNS['place_holder'], pattern):
         start, stop = match.span()
-        # new branch here
+        # we start a new branch when the residue is preceded by '('
+        # as in ... ([#PEO] ...
         if pattern[start-1] == '(':
             branching = True
             branch_anchor.append(prev_node)
             # the recipe for making the branch includes the anchor; which
-            # is hence the first atom in the list
-            #if len(branch_anchor) == 1:
+            # is hence the first residue in the list
             recipes[branch_anchor[-1]] = [(meta_mol.nodes[prev_node]['resname'], 1)]
+        # here we check if the atom is followed by a expansion character '|'
+        # as in ... [#PEO]|
         if stop < len(pattern) and pattern[stop] == '|':
             # eon => end of next
+            # we find the next character that starts a new residue, ends a branch or
+            # ends the complete pattern
             eon = _find_next_character(pattern, ['[', ')', '(', '}'], stop)
+            # between the expansion character and the eon character
+            # is any number that correspnds to the number of times (i.e. monomers)
+            # that this atom should be added
             n_mon = int(pattern[stop+1:eon])
         else:
             n_mon = 1
 
+        # the resname starts at the second character and ends
+        # one before the last according to the above pattern
         resname = match.group(0)[2:-1]
-        # collect all residues in branch
+        # if this residue is part of a branch we store it in
+        # the recipe dict together with the anchor residue
+        # and expansion number
         if branching:
             recipes[branch_anchor[-1]].append((resname, n_mon))
 
-        # add the new residue
+        # new we add new residue as often as required
         connection = []
         for _ in range(0, n_mon):
             if prev_node is not None:
@@ -130,36 +143,69 @@ def res_pattern_to_meta_mol(pattern):
             prev_node = current
             current += 1
 
-        # terminate branch and jump back to anchor
+        # here we check if the residue considered before is the
+        # last residue of a branch (i.e. '...[#residue])'
+        # that is the case if the branch closure comes before
+        # any new atom begins
         branch_stop = _find_next_character(pattern, ['['], stop) >\
                       _find_next_character(pattern, [')'], stop)
 
-        if stop <= len(pattern) and branch_stop: # and branching:
+        # if the branch ends we reset the anchor
+        # and set branching False unless we are in
+        # a nested branch
+        if stop <= len(pattern) and branch_stop:
             branching = False
             prev_node = branch_anchor.pop()
             if branch_anchor:
                 branching = True
-            # we have to multiply the branch n-times
+            #========================================
+            #       expansion for branches
+            #========================================
+            # We need to know how often the branch has
+            # to be added so we first identify the branch
+            # terminal character ')' called eon_a.
             eon_a = _find_next_character(pattern, [')'], stop)
+            # Then we check if the expansion character
+            # is next.
             if stop+1 < len(pattern) and pattern[eon_a+1] == "|":
+                # If there is one we find the beginning
+                # of the next branch, residue or end of the string
+                # As before all characters inbetween are a number that
+                # is how often the branch is expanded.
                 eon_b = _find_next_character(pattern, ['[', ')', '(', '}'], eon_a+1)
                 # the outermost loop goes over how often a the branch has to be
                 # added to the existing sequence
                 for idx in range(0,int(pattern[eon_a+2:eon_b])-1):
                     prev_anchor = None
                     skip = 0
+                    # in principle each branch can contain any number of nested branches
+                    # each branch is itself a recipe that has an anchor atom
                     for ref_anchor, recipe in list(recipes.items())[len(branch_anchor):]:
+                        # starting from the first nested branch we have to do some
+                        # math to find the anchor atom relative to the first branch
+                        # we also skip the first residue in recipe, which is the
+                        # anchor residue. Only the outermost branch in an expansion
+                        # is expanded including the anchor. This allows easy description
+                        # of graft polymers.
                         if prev_anchor:
                             offset = ref_anchor - prev_anchor
                             prev_node = prev_node + offset
                             skip = 1
+                        # this function simply adds the residues of the paticular
+                        # branch
                         meta_mol, current, prev_node = _expand_branch(meta_mol,
                                                                       current=current,
                                                                       anchor=prev_node,
                                                                       recipe=recipe[skip:])
+                        # if this is the first branch we want to set the anchor
+                        # as the base anchor to which we jump back after all nested
+                        # branches have been added
                         if prev_anchor is None:
                             base_anchor = prev_node
+                        # store the previous anchor so we can do the math for nested
+                        # branches
                         prev_anchor = ref_anchor
+                # all branches added; then go back to the base anchor
                 prev_node = base_anchor
             # if all branches are done we need to reset the lists
             # when all nested branches are completed
