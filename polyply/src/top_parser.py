@@ -324,6 +324,10 @@ class TOPDirector(SectionLineParser):
                                            "charge", "mass",
                                            "atom_num", "bond_type"], tokens, fillvalue=None))
         floats = ["nb1", "nb2", "charge", "mass", "atom_num"]
+        if not atom_type_line['atom_num'].isdigit():
+            atom_type_line['bond_type'] = atom_type_line['atom_num']
+            del atom_type_line['atom_num']
+
         for term, value in atom_type_line.items():
              if term in floats and value:
                  atom_type_line[term] = float(value)
