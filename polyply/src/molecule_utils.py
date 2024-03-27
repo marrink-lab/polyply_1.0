@@ -291,21 +291,24 @@ def find_termini_mods(meta_molecule, molecule, force_field):
 
         # bonded interactions could be different too so we need to check them
         overwrite_inters = defaultdict(list)
-        for inter_type in ref_block.interactions:
-            for ref_inter in ref_block.interactions[inter_type]:
-                for target_inter in target_block.interactions[inter_type]:
-                    target_atoms = [target_block.nodes[atom]['atomname'] for atom in target_inter.atoms]
-                    if target_atoms == ref_inter.atoms and\
-                    target_inter.parameters != ref_inter.parameters:
-                         mol_atoms_to_link_atoms, edges, resnames = _extract_edges_from_shortest_path(target_inter.atoms,
-                                                                                                      molecule,
-                                                                                                      min(resids))
-                         #link_to_mol_atoms = {value:key for key, value in mol_atoms_to_link_atoms.items()}
-                         link_atoms =  [mol_atoms_to_link_atoms[atom] for atom in target_inter.atoms]
-                         link_inter = Interaction(atoms=link_atoms,
-                                                  parameters=target_inter.parameters,
-                                                   meta={})
-                         overwrite_inters[inter_type].append(link_inter)
+        for inter_type, inters in target_block.interactions.items():
+            versions = {}
+            for target_inter in inters:
+                mol_atoms_to_link_atoms, edges, resnames = _extract_edges_from_shortest_path(target_inter.atoms,
+                                                                                             molecule,
+                                                                                             min(resids))
+                link_atoms =  [mol_atoms_to_link_atoms[atom] for atom in target_inter.atoms]
+                if tuple(link_atoms) in versions:
+                    n = versions[tuple(link_atoms)] + 1
+                    meta = {"version": n}
+                    versions[tuple(link_atoms)] = n
+                else:
+                    versions[tuple(link_atoms)] = 1
+                    meta = {}
+                link_inter = Interaction(atoms=link_atoms,
+                                         parameters=target_inter.parameters,
+                                         meta=meta)
+                overwrite_inters[inter_type].append(link_inter)
 
         # we make a link
         mol_atoms = list(replace_dict.keys()) + list(meta_molecule.nodes[meta_node]['graph'].nodes)
@@ -321,8 +324,8 @@ def find_termini_mods(meta_molecule, molecule, force_field):
             link.nodes[mol_to_link[node]]['replace'] = replace_dict[node]
 
         force_field.links.append(link)
-        for inter_type in overwrite_inters:
-            link.interactions[inter_type].append(overwrite_inters)
+        for inter_type, inters in overwrite_inters.items():
+            link.interactions[inter_type] += inters
 
         edges = find_connecting_edges(meta_molecule, molecule, [meta_node, neigh_node])
         for ndx, jdx in edges:
