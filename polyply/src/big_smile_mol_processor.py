@@ -105,7 +105,12 @@ class DefBigSmileParser:
             node_bond_list = node_graph.nodes[edge[1]]['bonding'].copy()
             node_bond_list.remove(bonding[1])
             node_graph.nodes[edge[1]]['bonding'] = node_bond_list
-            self.meta_molecule.molecule.add_edge(edge[0], edge[1], bonding=bonding)
+            order = re.findall("\d+\.\d+", bonding[0])
+            # bonding descriptors are assumed to have bonding order 1
+            # unless they are specifically annotated
+            if not order:
+                order = 1
+            self.meta_molecule.molecule.add_edge(edge[0], edge[1], bonding=bonding, order=order)
 
     def replace_unconsumed_bonding_descrpt(self):
         """
