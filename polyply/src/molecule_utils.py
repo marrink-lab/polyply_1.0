@@ -238,11 +238,19 @@ def extract_block(molecule, template_graph, defines):
         mapping[node] = attr_dict["atomname"]
 
     for inter_type in molecule.interactions:
+        had_interactions = []
+        versions = {}
         for interaction in molecule.interactions[inter_type]:
             if all(atom in mapping for atom in interaction.atoms):
                 interaction = replace_defined_interaction(interaction, defines)
                 interaction = _relabel_interaction_atoms(interaction, mapping)
+                if tuple(interaction.atoms) in had_interactions:
+                    n = versions.get(tuple(interaction.atoms), 1) + 1
+                    meta = {"version": n}
+                    versions[tuple(interaction.atoms)] = n
+                    interaction.meta.update(meta)
                 block.interactions[inter_type].append(interaction)
+                had_interactions.append(tuple(interaction.atoms))
 
     for inter_type in ["bonds", "constraints", "virtual_sitesn",
                        "virtual_sites2", "virtual_sites3", "virtual_sites4"]:
