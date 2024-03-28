@@ -118,21 +118,22 @@ class DefBigSmileParser:
         however, are not always consumed. In this case the left
         over bonding descriptors are replaced by hydrogen atoms.
         """
-        for node in self.meta_molecule.nodes:
-            graph = self.meta_molecule.nodes[node]['graph']
+        for meta_node in self.meta_molecule.nodes:
+            graph = self.meta_molecule.nodes[meta_node]['graph']
             bonding = nx.get_node_attributes(graph, "bonding")
             for node, bondings in bonding.items():
                 element = graph.nodes[node]['element']
-                hcount = VALENCES[element][0] -\
-                         self.meta_molecule.molecule.degree(node) + 1
-                attrs = {attr: graph.nodes[node][attr] for attr in ['resname', 'resid']}
+                bonds = round(sum([self.meta_molecule.molecule.edges[(node, neigh)]['order'] for neigh in\
+                                   self.meta_molecule.molecule.neighbors(node)]))
+                hcount = VALENCES[element][0] - bonds + 1
+                attrs = {attr: graph.nodes[node][attr] for attr in ['resname', 'resid', 'charge_group']}
                 attrs['element'] = 'H'
                 for new_id in range(1, hcount):
                     new_node = len(self.meta_molecule.molecule.nodes) + 1
                     graph.add_edge(node, new_node)
                     attrs['atomname'] = "H" + str(new_id + len(graph.nodes))
                     graph.nodes[new_node].update(attrs)
-                    self.meta_molecule.molecule.add_edge(node, new_node)
+                    self.meta_molecule.molecule.add_edge(node, new_node, order=1)
                     self.meta_molecule.molecule.nodes[new_node].update(attrs)
 
     def parse(self, big_smile_str):

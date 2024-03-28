@@ -290,8 +290,10 @@ def _rebuild_h_atoms(mol_graph):
                 ele = mol_graph.nodes[node]['element']
                 # hcoung is the valance minus the degree minus
                 # the number of bonding descriptors
+                bonds = round(sum([mol_graph.edges[(node, neigh)]['order'] for neigh in\
+                                   mol_graph.neighbors(node)]))
                 hcount = pysmiles.smiles_helper.VALENCES[ele][0] -\
-                         mol_graph.degree(node) -\
+                         bonds -\
                          len(mol_graph.nodes[node]['bonding'])
 
                 mol_graph.nodes[node]['hcount'] = hcount
