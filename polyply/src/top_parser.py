@@ -324,7 +324,8 @@ class TOPDirector(SectionLineParser):
                                            "charge", "mass",
                                            "atom_num", "bond_type"], tokens, fillvalue=None))
         floats = ["nb1", "nb2", "charge", "mass", "atom_num"]
-        if not atom_type_line['atom_num'].isdigit():
+
+        if atom_type_line['atom_num'] and not atom_type_line['atom_num'].isdigit():
             atom_type_line['bond_type'] = atom_type_line['atom_num']
             del atom_type_line['atom_num']
 
