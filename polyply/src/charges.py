@@ -99,7 +99,7 @@ def _get_bonds(block, topology=None):
                         raise ValueError(msg)
     return bonds
 
-def balance_charges(block, charge=0, tol=10**-5, decimals=5, topology=None):
+def balance_charges(block, charge=0, tol=10**-8, decimals=8, topology=None):
     """
     Given a block and a total charge for that block
     balance the charge until the total charge of the

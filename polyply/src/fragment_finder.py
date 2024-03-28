@@ -90,6 +90,8 @@ class FragmentFinder():
         self.masses_to_element = {16: "O",
                                   14: "N",
                                   12: "C",
+                                  19: "F",
+                                  35: "Cl",
                                   32: "S",
                                    1: "H"}
         self.res_graph = None
