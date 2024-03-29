@@ -132,7 +132,7 @@ class DefBigSmileParser:
                 for new_id in range(1, hcount):
                     new_node = len(self.meta_molecule.molecule.nodes) + 1
                     graph.add_edge(node, new_node)
-                    attrs['atomname'] = "H" + str(new_id + len(graph.nodes))
+                    attrs['atomname'] = "H" + str(len(graph.nodes)-1)
                     graph.nodes[new_node].update(attrs)
                     self.meta_molecule.molecule.add_edge(node, new_node, order=1)
                     self.meta_molecule.molecule.nodes[new_node].update(attrs)
