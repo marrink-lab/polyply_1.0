@@ -1,6 +1,7 @@
 import re
 import networkx as nx
 import pysmiles
+import vermouth
 from polyply.src.big_smile_parsing import (res_pattern_to_meta_mol,
                                            force_field_from_fragments)
 from polyply.src.map_to_molecule import MapToMolecule
@@ -135,6 +136,10 @@ class DefBigSmileParser:
                     graph.nodes[new_node].update(attrs)
                     self.meta_molecule.molecule.add_edge(node, new_node, order=1)
                     self.meta_molecule.molecule.nodes[new_node].update(attrs)
+        # now we want to sort the atoms
+        vermouth.SortMoleculeAtoms().run_molecule(self.meta_molecule.molecule)
+        # and redo the meta molecule
+        self.meta_molecule.relabel_and_redo_res_graph(mapping={})
 
     def parse(self, big_smile_str):
         res_pattern, residues = re.findall(r"\{[^\}]+\}", big_smile_str)
