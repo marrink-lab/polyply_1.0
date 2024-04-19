@@ -757,24 +757,24 @@ resname $protein_resnames
 [ link ]
 resname $protein_resnames
 [ angles ]
-BB +BB +SC1 10 85 10 {"group": "idp-fix-chris"}
+BB +BB +SC1 10 85 10 {"group": "idp-fix"}
 
 [ link ]
 resname $protein_resnames
 [ angles ]
--SC1 -BB BB 10 85 10 {"group": "idp-fix-chris"}
+-SC1 -BB BB 10 85 10 {"group": "idp-fix"}
 
 [ link ]
 resname $protein_resnames
 [ dihedrals ]
-BB +BB ++BB +++BB 9 -120 -1 1 {"group": "idp-fix-chris", "comment": "BB-BB-BB-BB-v1", "version":1}
-BB +BB ++BB +++BB 9 -120 -1 2 {"group": "idp-fix-chris", "comment": "BB-BB-BB-BB-v2", "version":2}
+BB +BB ++BB +++BB 9 -120 -1 1 {"group": "idp-fix", "comment": "BB-BB-BB-BB-v1", "version":1}
+BB +BB ++BB +++BB 9 -120 -1 2 {"group": "idp-fix", "comment": "BB-BB-BB-BB-v2", "version":2}
 
 [ link ]
 resname $protein_resnames
 [ dihedrals ]
-SC1 BB +BB +SC1 9 -130 -1.5 1 {"group": "idp-fix-chris", "version": 1, "comment": "SC1-BB-BB-SC1-v1"}
-SC1 BB +BB +SC1 9  100 -1.5 2 {"group": "idp-fix-chris", "version": 2, "comment": "SC1-BB-BB-SC1-v2"}
+SC1 BB +BB +SC1 9 -130 -1.5 1 {"group": "idp-fix", "version": 1, "comment": "SC1-BB-BB-SC1-v1"}
+SC1 BB +BB +SC1 9  100 -1.5 2 {"group": "idp-fix", "version": 2, "comment": "SC1-BB-BB-SC1-v2"}
 
 [ link ]
 [ atoms ]
@@ -783,7 +783,7 @@ SC1 BB +BB +SC1 9  100 -1.5 2 {"group": "idp-fix-chris", "version": 2, "comment"
  BB  {"resname": "GLY"}
 +BB  {"resname": $protein_resnames}
 [ dihedrals ]
--SC1 -BB BB +BB 1 115 -4.5 1 {"group": "idp-fix-chris", "comment": "SC1-BB-BB(GLY)-BB"}
+-SC1 -BB BB +BB 1 115 -4.5 1 {"group": "idp-fix", "comment": "SC1-BB-BB(GLY)-BB"}
 
 [ link ]
 [ atoms ]
@@ -792,7 +792,7 @@ SC1 BB +BB +SC1 9  100 -1.5 2 {"group": "idp-fix-chris", "version": 2, "comment"
 +BB {"resname": $protein_resnames}
 +SC1 {"resname": $protein_resnames}
 [ dihedrals ]
--BB BB +BB +SC1 1 0 -2.0 1 {"group": "idp-fix-chris", "comment": "BB-BB(GLY)-BB-SC1"}
+-BB BB +BB +SC1 1 0 -2.0 1 {"group": "idp-fix", "comment": "BB-BB(GLY)-BB-SC1"}
 
 [ link ]
 resname $protein_resnames
