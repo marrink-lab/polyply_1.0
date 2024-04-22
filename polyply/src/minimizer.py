@@ -166,7 +166,7 @@ def optimize_geometry(block, coords, inter_types=[], tolerance={"angles": 5,
     """
     n_atoms = len(coords)
     atom_to_idx = OrderedDict(zip(list(coords.keys()), range(0, n_atoms)))
-    positions = np.array(list(coords.values()))
+    positions = np.ravel(np.array(list(coords.values())))
 
     def target_function(positions):
         energy = 0
@@ -183,7 +183,7 @@ def optimize_geometry(block, coords, inter_types=[], tolerance={"angles": 5,
                 energy += new
         return energy
 
-    opt_results = scipy.optimize.minimize(target_function, np.ravel(positions),
+    opt_results = scipy.optimize.minimize(target_function,
                                           method='L-BFGS-B',
                                           options={'ftol': 0.001, 'maxiter': 100})
 
