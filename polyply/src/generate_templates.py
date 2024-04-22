@@ -174,7 +174,7 @@ def compute_volume(block, coords, nonbond_params, treshold=1e-18):
     res_center_of_geometry = center_of_geometry(points)
     geom_vects = np.zeros((n_atoms, 3))
     idx = 0
-
+    radii = []
     for node, coord in coords.items():
         atom_key = block.nodes[node]["atype"]
         rad = float(nonbond_params[frozenset([atom_key, atom_key])]["nb1"])
@@ -182,11 +182,15 @@ def compute_volume(block, coords, nonbond_params, treshold=1e-18):
         if np.linalg.norm(diff) > treshold:
             geom_vects[idx, :] = diff + u_vect(diff) * rad
             idx += 1
-
-    if geom_vects.shape[0] > 1:
+        else:
+            radii.append(rad)
+    # make sure geom_vects is not just an array of zeros
+    # this can happen when multiple beads are stacked for
+    # example
+    if np.any(geom_vects):
         radgyr = radius_of_gyration(geom_vects)
     else:
-        radgyr = rad
+        radgyr = max(radii)
 
     return radgyr
 
