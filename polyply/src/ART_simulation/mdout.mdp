@@ -2,7 +2,7 @@
 ;	File 'mdout.mdp' was generated
 ;	By user: sang (1000)
 ;	On host: sang-Lenovo-IdeaPad-S540-15IML
-;	At date: Tue Jan 30 18:57:26 2024
+;	At date: Sun Apr  7 15:33:21 2024
 ;
 ;	Created by:
 ;	                     :-) GROMACS - gmx grompp, 2022.5 (-:
@@ -169,7 +169,7 @@ annealing-temp           =
 ; GENERATE VELOCITIES FOR STARTUP RUN
 gen-vel                  = no
 gen-temp                 = 300
-gen-seed                 = -889635421
+gen-seed                 = -1081355
 
 ; OPTIONS FOR BONDS    
 constraints              = none

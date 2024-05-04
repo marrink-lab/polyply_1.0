@@ -38,7 +38,7 @@ GROMACS:      gmx mdrun, version 2022.5
 Executable:   /home/sang/Desktop/gromacs-2022.5/build/bin/gmx
 Data prefix:  /home/sang/Desktop/gromacs-2022.5 (source tree)
 Working dir:  /home/sang/Desktop/git/polyply_1.0/polyply/src/ART_simulation
-Process ID:   277956
+Process ID:   9409
 Command line:
   gmx mdrun -deffnm minim -v -c minimized.gro
 
@@ -146,7 +146,7 @@ Input Parameters:
    comm-mode                      = Linear
    nstcomm                        = 100
    bd-fric                        = 0
-   ld-seed                        = -389414929
+   ld-seed                        = -41943171
    emtol                          = 10
    emstep                         = 0.01
    niter                          = 20
@@ -347,7 +347,7 @@ between constraints inside triangles
 
 Note that activating steepest-descent energy minimization via the integrator .mdp option and the command gmx mdrun may be available in a different form in a future version of GROMACS, e.g. gmx minimize and an .mdp option.
 Initiating Steepest Descents
-Started Steepest Descents on rank 0 Tue Jan 30 18:57:26 2024
+Started Steepest Descents on rank 0 Sun Apr  7 15:33:22 2024
 
 
 Steepest Descents:
@@ -8110,5 +8110,5 @@ Steepest Descents did not converge to Fmax < 10 in 1001 steps.
 Potential Energy  =  5.9150500e+04
 Maximum force     =  3.2002328e+04 on atom 102
 Norm of force     =  7.0422539e+03
-Finished mdrun on rank 0 Tue Jan 30 18:57:27 2024
+Finished mdrun on rank 0 Sun Apr  7 15:33:22 2024
 

@@ -36,6 +36,19 @@ from cg_nps import return_cg_nps_type  # this needs to be changed as well
 # logging.basicConfig(level=#logging.INFO)
 
 
+def cylinder_rep(vector: np.ndarray, array: np.ndarray, radi: float = 2.0) -> bool:
+    """
+    filter the vector represenation of the ligand placements so that
+    we filter out the atoms where there is too much overlap between
+    potential ligand placme
+    """
+    distance = np.linalg.norm(vector, array)
+    if distance < 2 * radius:
+        return True
+    else:
+        return False
+
+
 class CentralCoreGenerator:
     """
     Generation of the structure of the center core of the NP.
@@ -145,7 +158,7 @@ class CentralCoreGenerator:
             """
             generate line for constraint
             """
-            print("assigning constraint")
+            logging.info("assigning constraint")
             output_restraints = []
             for index, restraints in enumerate(restraint_unique_list):
                 constraint = (
@@ -163,7 +176,7 @@ class CentralCoreGenerator:
         for np_index, atom in enumerate(self.points):
             # compute the distance between the atom and the rest of the atoms within the core
             dist_array = self._distance_array(atom, self.points)
-            print(dist_array)
+            logging.info(f"The distance array is {dist_array}")
             for np_index_2, entry in enumerate(dist_array):
                 if np_index == np_index_2:
                     continue  # skip if looking at the same index
@@ -175,15 +188,11 @@ class CentralCoreGenerator:
                     sorted_input = sorted([np_index, np_index_2])
                     # check that we don't have repeated entries for restraints
                     # and once check has passed,
-                    # print("entry is", entry / 10, "default dist is ", default_dist)
                     check_and_add(sorted_input, entry, self.np_array, self.dist_list)
 
         self.output_constraint = assign_constraint(self.np_array, self.dist_list)
-        print(
-            "the output constraint is ",
-            self.output_constraint,
-            "len is",
-            len(self.output_constraint),
+        logging.log(
+            f"the output constraint is {self.output_constraint}, len is {len(self.output_constraint)}"
         )
 
     def _write_gro_file(
