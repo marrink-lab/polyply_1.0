@@ -231,7 +231,10 @@ def compute_ligand_distance_modifier(
     resid,
     lig_core_surface_atoms,
 ):
-    """ """
+    """
+    Create the ligand distance from surface modifier to enure that we have sufficient
+    space between the core surface and the ligand
+    """
     modifier = (
         rotated_value
         / absolute_vectors[resid][0]
@@ -782,9 +785,7 @@ class NanoparticleModels(Processor):
                     meta={},
                 )
                 logging.info(f"generating bonds between {entry} and {base_anchor}")
-
                 self.np_molecule_new.interactions["bonds"].append(interaction)
-
             logging.info(
                 f"core length is {self.core_len}, number of atoms with ligands added is {self.ligand_block_specs[key]['length'] * self.ligand_block_specs[key]['N']} "
             )
