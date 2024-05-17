@@ -38,7 +38,7 @@ GLY                1
  1   SP1   1     GLY    BB     1      0      
  2    VS   1     GLY    CA     1      0   0
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 [ virtual_sitesn ]
 2 1 -- 1
 
@@ -66,7 +66,7 @@ ALA                1
 ;  i     j   funct   length  
 BB   SC1    1       0.270  $stiff_fc
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; CYSTEINE
 
@@ -87,7 +87,7 @@ CYS                1
 ;  i     j   funct   length  force.c.
   BB   SC1    1       0.341     7500        
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; VALINE
 
@@ -114,7 +114,7 @@ VAL                1
   BB   SC1    1       0.292  $stiff_fc
 
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; LEUCINE
 
@@ -136,7 +136,7 @@ LEU                1
   BB   SC1    1       0.363     7500    
 
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; ISOLEUCINE
 
@@ -163,7 +163,7 @@ ILE                1
   BB   SC1    1       0.341  $stiff_fc
 
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; METHIONINE
 
@@ -185,7 +185,7 @@ MET                1
   BB   SC1    1       0.40     2500
 
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; PROLINE
 
@@ -208,7 +208,7 @@ PRO                1
   BB   SC1   1       0.330     7500
 
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 [ moleculetype ]
 ; molname       nrexcl
@@ -229,7 +229,7 @@ HYP                1
   BB   SC1   1       0.300     7500
 
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; ASPARAGINE
 
@@ -251,7 +251,7 @@ ASN                1
   BB   SC1    1       0.352     5000
 
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; GLUTAMINE
 
@@ -273,7 +273,7 @@ GLN                1
   BB   SC1    1       0.400    5000     
 
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; ASPARTATE
 
@@ -295,7 +295,7 @@ ASP                1
   BB   SC1    1       0.352     7500
 
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; GLUTAMATE
 
@@ -317,7 +317,7 @@ GLU                1
   BB   SC1    1       0.400    5000     
 
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; THREONINE
 
@@ -344,7 +344,7 @@ THR                1
   BB   SC1    1       0.305  $stiff_fc
 
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; SERINE
 
@@ -366,7 +366,7 @@ SER                1
   BB   SC1    1       0.287     7500
 
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; LYSINE 
 
@@ -395,7 +395,7 @@ LYS                1
   BB   SC1  SC2       2   180.000    25.0      
 
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; ARGININE 
 
@@ -424,7 +424,7 @@ ARG                1
   BB   SC1  SC2       2   180.000    25.0      
 
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; HISTIDINE 
 
@@ -476,7 +476,7 @@ SC1 SC2 SC3
 SC2 SC3
 
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 [ moleculetype ]
 ;molname       nrexcl
@@ -530,7 +530,7 @@ SC1 SC2 SC3
 SC2 SC3
 
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; PHENYLALANINE
 
@@ -582,7 +582,7 @@ SC1 SC2 SC3
 SC2 SC3
 
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; TYROSINE
 
@@ -641,7 +641,7 @@ SC2 SC3 SC4
 SC3 SC4
 
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; TRYPTOPHAN
 
@@ -707,7 +707,7 @@ SC3 SC4 SC5
 SC4 SC5
 
 [ position_restraints ]
-1  1  1 1000 1000 1000 {"ifdef": "POSRES"}
+1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; Links
 
