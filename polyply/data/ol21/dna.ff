@@ -1,6 +1,8 @@
 [ macros ]
 base_pairs "DA5|DA|DA3|DC5|DC|DC3|DT5|DT|DT3|DG5|DG|DG3"
 all_nts "DA5|DA|DA3|DC5|DC|DC3|DT5|DT|DT3|DG5|DG|DG3|DAN|DTN|DGN|DCN"
+all_purine_nts "DA5|DA|DA3|DG5|DG|DG3|DGN|DAN"
+all_pyrimidine_nts "DC5|DC|DC3|DT5|DT|DT3|DTN|DCN"
 
 [ citations ]
 ol21_DNA_a
@@ -5256,7 +5258,7 @@ C5'   -O3' 1
 P     -H3' 1
 
 [ link ]
-resname $all_nts
+resname $all_purine_nts
 [ impropers ]
 ; dihedrals for chirality building
 C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C1'", "ifdef":"eq_polyply"}
@@ -5265,3 +5267,15 @@ C4' C5' C3' O4'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center O4'", 
 C1' C2' N9 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
 C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
 C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
+
+[ link ]
+resname $all_pyrimidine_nts
+[ impropers ]
+; dihedrals for chirality building
+C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C1'", "ifdef":"eq_polyply"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C3'", "ifdef":"eq_polyply"}
+C4' C5' C3' O4'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center O4'", "ifdef":"eq_polyply"}
+C1' C2' N1 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
+
