@@ -1,5 +1,8 @@
 [ macros ]
 rna_bases "RA5|RA|RA3|RC5|RC|RC3|RU5|RU|RU3|RG5|RG|RG3"
+all_purine_nts "RA5|RA|RA3|RG5|RG|RG3|RGN|RAN"
+all_pyrimidine_nts "RC5|RC|RC3|RU5|RU|RU3|RUN|RCN"
+
 
 [ citations ]
 ol21_RNA
@@ -39,19 +42,6 @@ RA5 3
 29 OH 1 RA5 O2' 29 -0.6139
 30 HO 1 RA5 HO'2 30 0.4186
 31 OS 1 RA5 O3' 31 -0.5246
-[ impropers ]
-C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C1'", "ifdef":"eq_polyply"}
-C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C3'", "ifdef":"eq_polyply"}
-C4' C5' C3' O4'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center O4'", "ifdef":"eq_polyply"}
-
-C1' C2' N9 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
-
-; RNA specific
-C2' C3' C1' H2'1 2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-C2' C3' C1' O2' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-
 [ bonds ]
 H5T O5' 1 {}
 O5' C5' 1 {}
@@ -347,17 +337,6 @@ RA 3
 31 OH 1 RA O2' 31 -0.6139
 32 HO 1 RA HO'2 32 0.4186
 33 OS 1 RA O3' 33 -0.5246
-[ impropers ]
-C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C1'", "ifdef":"eq_polyply"}
-C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C3'", "ifdef":"eq_polyply"}
-C4' C5' C3' O4'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center O4'", "ifdef":"eq_polyply"}
-
-C1' C2' N9 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
-; RNA specific
-C2' C3' C1' H2'1 2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-C2' C3' C1' O2' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
 [ bonds ]
 P O1P 1 {}
 P O2P 1 {}
@@ -663,18 +642,6 @@ RA3 3
 32 HO 1 RA3 HO'2 32 0.4186
 33 OH 1 RA3 O3' 33 -0.6541
 34 HO 1 RA3 H3T 34 0.4376
-[ impropers ]
-C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C1'", "ifdef":"eq_polyply"}
-C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C3'", "ifdef":"eq_polyply"}
-C4' C5' C3' O4'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center O4'", "ifdef":"eq_polyply"}
-
-C1' C2' N9 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
-; RNA specific
-C2' C3' C1' H2'1 2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-C2' C3' C1' O2' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-
 [ bonds ]
 P O1P 1 {}
 P O2P 1 {}
@@ -1285,19 +1252,6 @@ RU5 3
 26 OH 1 RU5 O2' 26 -0.6139
 27 HO 1 RU5 HO'2 27 0.4186
 28 OS 1 RU5 O3' 28 -0.5246
-[ impropers ]
-C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCO4'", "ifdef":"eq_polyply"}
-
-
-C1' C2' N1 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
-; RNA specific
-C2' C3' C1' H2'1 2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-C2' C3' C1' O2' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-
 [ bonds ]
 H5T O5' 1 {}
 O5' C5' 1 {}
@@ -1570,19 +1524,6 @@ RU 3
 28 OH 1 RU O2' 28 -0.6139
 29 HO 1 RU HO'2 29 0.4186
 30 OS 1 RU O3' 30 -0.5246
-[ impropers ]
-C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCO4'", "ifdef":"eq_polyply"}
-
-C1' C2' N1 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
-
-; RNA specific
-C2' C3' C1' H2'1 2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-C2' C3' C1' O2' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-
 [ bonds ]
 P O1P 1 {}
 P O2P 1 {}
@@ -1865,19 +1806,6 @@ RU3 3
 29 HO 1 RU3 HO'2 29 0.4186
 30 OH 1 RU3 O3' 30 -0.6541
 31 HO 1 RU3 H3T 31 0.4376
-[ impropers ]
-C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCO4'", "ifdef":"eq_polyply"}
-
-C1' C2' N1 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
-
-; RNA specific
-C2' C3' C1' H2'1 2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-C2' C3' C1' O2' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-
 [ bonds ]
 P O1P 1 {}
 P O2P 1 {}
@@ -2448,19 +2376,6 @@ RG5 3
 30 OH 1 RG5 O2' 30 -0.6139
 31 HO 1 RG5 HO'2 31 0.4186
 32 OS 1 RG5 O3' 32 -0.5246
-[ impropers ]
-C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGO4'", "ifdef":"eq_polyply"}
-
-C1' C2' N9 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
-
-; RNA specific
-C2' C3' C1' H2'1 2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-C2' C3' C1' O2' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-
 [ bonds ]
 H5T O5' 1 {}
 O5' C5' 1 {}
@@ -2769,19 +2684,6 @@ RG 3
 32 OH 1 RG O2' 32 -0.6139
 33 HO 1 RG HO'2 33 0.4186
 34 OS 1 RG O3' 34 -0.5246
-[ impropers ]
-C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGO4'", "ifdef":"eq_polyply"}
-
-C1' C2' N9 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
-
-; RNA specific
-C2' C3' C1' H2'1 2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-C2' C3' C1' O2' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-
 [ bonds ]
 P O1P 1 {}
 P O2P 1 {}
@@ -3100,19 +3002,6 @@ RG3 3
 33 HO 1 RG3 HO'2 33 0.4186
 34 OH 1 RG3 O3' 34 -0.6541
 35 HO 1 RG3 H3T 35 0.4376
-[ impropers ]
-C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DGO4'", "ifdef":"eq_polyply"}
-
-C1' C2' N9 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
-
-; RNA specific
-C2' C3' C1' H2'1 2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-C2' C3' C1' O2' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-
 [ bonds ]
 P O1P 1 {}
 P O2P 1 {}
@@ -3748,19 +3637,6 @@ RC5 3
 27 OH 1 RC5 O2' 27 -0.6139
 28 HO 1 RC5 HO'2 28 0.4186
 29 OS 1 RC5 O3' 29 -0.5246
-[ impropers ]
-C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCO4'", "ifdef":"eq_polyply"}
-
-C1' C2' N1 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
-
-; RNA specific
-C2' C3' C1' H2'1 2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-C2' C3' C1' O2' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-
 [ bonds ]
 H5T O5' 1 {}
 O5' C5' 1 {}
@@ -4036,19 +3912,6 @@ RC 3
 29 OH 1 RC O2' 29 -0.6139
 30 HO 1 RC HO'2 30 0.4186
 31 OS 1 RC O3' 31 -0.5246
-[ impropers ]
-C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCO4'", "ifdef":"eq_polyply"}
-
-C1' C2' N1 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
-
-; RNA specific
-C2' C3' C1' H2'1 2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-C2' C3' C1' O2' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-
 [ bonds ]
 P O1P 1 {}
 P O2P 1 {}
@@ -4334,19 +4197,6 @@ RC3 3
 30 HO 1 RC3 HO'2 30 0.4186
 31 OH 1 RC3 O3' 31 -0.6541
 32 HO 1 RC3 H3T 32 0.4376
-[ impropers ]
-C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCO4'", "ifdef":"eq_polyply"}
-
-C1' C2' N1 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
-C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
-C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
-
-; RNA specific
-C2' C3' C1' H2'1 2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-C2' C3' C1' O2' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
-
 [ bonds ]
 P O1P 1 {}
 P O2P 1 {}
@@ -4913,3 +4763,32 @@ O5'   -C3' 1
 P     -C2' 1
 C5'   -O3' 1
 P     -H3' 1
+
+[ link ] 
+resname $all_purine_nts
+[ impropers ]
+; dihedrals for chirality building
+C1' C2' N9 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C1'", "ifdef":"eq_polyply"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C3'", "ifdef":"eq_polyply"}
+C4' C5' C3' O4'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center O4'", "ifdef":"eq_polyply"}
+C1' C2' N9 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
+; RNA specific
+C2' C3' C1' H2'1 2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
+C2' C3' C1' O2' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
+
+[ link ] 
+resname $all_pyrimidine_nts
+[ impropers ]
+; dihedrals for chirality building
+C1' C2' N1 O4'   2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' C2'  2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' O4' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center DCO4'", "ifdef":"eq_polyply"}
+C1' C2' N1 H1'   2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC1'", "ifdef":"eq_polyply"}
+C3' O3' C4' H3'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HC3'", "ifdef":"eq_polyply"}
+C4' C5' C3' H4'  2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center HO4'", "ifdef":"eq_polyply"}
+; RNA specific
+C2' C3' C1' H2'1 2  -3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
+C2' C3' C1' O2' 2  3.5264390e+01  3.3484625e+03 {"group": "chiral-center C2'", "ifdef":"eq_polyply"}
+
