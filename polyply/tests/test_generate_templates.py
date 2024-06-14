@@ -22,6 +22,7 @@ import math
 import networkx as nx
 import vermouth
 from vermouth.molecule import Interaction
+from vermouth.gmx.itp_read import read_itp
 import polyply
 from polyply import TEST_DATA
 from polyply.src.linalg_functions import center_of_geometry
@@ -75,34 +76,6 @@ class TestGenTemps:
         assert len(coords) == 4
         for pos in coords.values():
             assert len(pos) == 3
-
-      @staticmethod
-      def test_compute_volume():
-          lines = """
-          [ moleculetype ]
-          GLY 1
-
-          [ atoms ]
-          1 P1 1 ALA BB 1
-          2 P1 1 ALA SC1 2
-          3 P1 1 ALA SC2 3
-          4 P1 1 ALA SC3 3
-
-          [ bonds ]
-          1 2 1 0.2 100
-          2 3 1 0.6 700
-          3 4 1 0.2 700
-          """
-          meta_mol = polyply.MetaMolecule()
-          nonbond_params = {frozenset(["P1", "P1"]): {"nb1": 0.47, "nb2":0.5}}
-
-          lines = textwrap.dedent(lines).splitlines()
-          ff = vermouth.forcefield.ForceField(name='test_ff')
-          polyply.src.polyply_parser.read_polyply(lines, ff)
-          block = ff.blocks['GLY']
-          coords = _expand_inital_coords(block)
-          vol = compute_volume(block, coords, nonbond_params)
-          assert vol > 0.
 
       @staticmethod
       def test_map_from_CoG():
@@ -178,7 +151,7 @@ class TestGenTemps:
 
       @staticmethod
       def test_run_molecule():
-          top = polyply.src.topology.Topology.from_gmx_topfile(TEST_DATA + "/topology_test/system.top", "test")
+          top = polyply.src.topology.Topology.from_gmx_topfile(TEST_DATA / "topology_test" / "system.top", "test")
           top.gen_pairs()
           top.convert_nonbond_to_sig_eps()
           GenerateTemplates(topology=top, max_opt=10).run_molecule(top.molecules[0])
@@ -249,3 +222,83 @@ class TestGenTemps:
           block = ff.blocks['test']
           with pytest.raises(IOError):
                find_interaction_involving(block, 1, 2)
+
+@pytest.mark.parametrize('lines, coords, volume',
+    [("""
+      [ moleculetype ]
+      GLY 1
+      [ atoms ]
+      1 P1 1 ALA BB 1
+      2 P1 1 ALA SC1 2
+      3 P1 1 ALA SC2 3
+      4 P1 1 ALA SC3 3
+      [ bonds ]
+      1 2 1 0.2 100
+      2 3 1 0.6 700
+      3 4 1 0.2 700
+      """,
+      np.array([[0.00, 0.0, 0.0],
+                [0.47, 0.0, 0.0],
+                [0.94, 0.0, 0.0],
+                [1.41, 0.0, 0.0]]),
+      0.9689298220201501),
+    ("""
+      [ moleculetype ]
+      GLY 1
+      [ atoms ]
+      1 P2 1 ALA BB 1
+      2 P1 1 ALA SC1 2
+      3 P2 1 ALA SC2 3
+      4 P1 1 ALA SC3 3
+      [ bonds ]
+      1 2 1 0.2 100
+      2 3 1 0.6 700
+      3 4 1 0.2 700
+      """,
+      np.array([[0.00, 0.0, 0.0],
+                [0.47, 0.0, 0.0],
+                [0.94, 0.0, 0.0],
+                [1.41, 0.0, 0.0]]),
+      0.861408729930223),
+     ("""
+      [ moleculetype ]
+      GLY 1
+      [ atoms ]
+      1 P1 1 ALA BB 1
+      2 P1 1 ALA SC1 2
+      3 P1 1 ALA SC2 3
+      4 P1 1 ALA SC3 3
+      [ bonds ]
+      1 2 1 0.2 100
+      2 3 1 0.6 700
+      [ virtual_sitesn ]
+      4 1 1
+      """,
+      np.array([[0.00, 0.0, 0.0],
+                [0.47, 0.0, 0.0],
+                [0.94, 0.0, 0.0],
+                [0.00, 0.0, 0.0]]),
+      0.8391178403537848),
+     ("""
+      [ moleculetype ]
+      GLY 1
+      [ atoms ]
+      1 P1 1 ALA BB 1
+      """,
+      np.array([[0.00, 0.0, 0.0]]),
+      0.47),
+])
+def test_compute_volume(lines, coords, volume):
+    meta_mol = polyply.MetaMolecule()
+    nonbond_params = {frozenset(["P1", "P1"]): {"nb1": 0.47, "nb2":0.5},
+                      frozenset(["P2", "P2"]): {"nb1": 0.23, "nb2":0.5},
+                      frozenset(["P2", "P1"]): {"nb1": 0.35, "nb2":0.5},}
+
+    lines = textwrap.dedent(lines).splitlines()
+    ff = vermouth.forcefield.ForceField(name='test_ff')
+    read_itp(lines, ff)
+    block = ff.blocks['GLY']
+    coord_dict = {node: coord for node, coord in zip(block.nodes, coords)}
+    new_vol = compute_volume(block, coord_dict, nonbond_params)
+    print(new_vol)
+    assert np.isclose(new_vol, volume, atol=0.000001)

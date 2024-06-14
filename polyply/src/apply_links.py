@@ -489,7 +489,12 @@ class ApplyLinks(Processor):
 
         # take care to remove nodes if there are any scheduled for removal
         # we do this here becuase that's more efficent
-        molecule.remove_nodes_from(self.nodes_to_remove)
+        if self.nodes_to_remove:
+            molecule.remove_nodes_from(self.nodes_to_remove)
+            # make sure the residue graph is updated; this takes care that
+            # nodes are also removed from the fragment graphs in the
+            # meta_molecule.nodes['graph'] attribute
+            meta_molecule.relabel_and_redo_res_graph(mapping={})
         # now we add all interactions but not the ones that contain the removed
         # nodes
         for inter_type in self.applied_links:

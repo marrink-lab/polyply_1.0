@@ -566,3 +566,28 @@ BB3 +BB2
 BB2 BB3 +BB1 +BB2     1  180.00000     2     3 {"group": "link"}
 BB3 +BB1 +BB2 +BB3    9   85.00000     2     2 {"group": "link", "version": "1"}
 BB3 +BB1 +BB2 +BB3    9  160.00000     2     3 {"group": "link", "version": "2"}
+
+;
+; CIRCULAR MARTINI DNA
+;
+
+[ link ]
+resname "DT|DG|DA|DC"
+[ atoms ]
+BB3 { }
+>BB1 { }
+[ bonds ]
+BB3  >BB1 1  0.35300 10000 {"group": "link-circle", "edge": false}
+[ angles ]
+BB2 BB3  >BB1  2  102.00000   150 {"group": "backbone-circle", "edge": false}
+BB3 >BB1 >BB2  2  106.00000    75 {"group": "backbone-circle", "edge": false}
+[ exclusions ]
+#meta {"edge": false}
+BB2 >BB1
+BB3 >BB2
+[ dihedrals ]
+BB2 BB3 >BB1 >BB2     1  180.00000     2     3 {"group": "link-circle", "edge": false}
+BB3 >BB1 >BB2 >BB3    9   85.00000     2     2 {"group": "link-circle", "version": "1", "edge": false}
+BB3 >BB1 >BB2 >BB3    9  160.00000     2     3 {"group": "link-circle", "version": "2", "edge": false}
+[ edges ]
+BB3 >BB1 {"linktype": "circle"}

@@ -16,6 +16,7 @@ Test that force field files are properly read.
 """
 import math
 import pytest
+import random
 import numpy as np
 from numpy.linalg import norm
 import networkx as nx
@@ -131,7 +132,7 @@ def test__take_step():
 
 @pytest.fixture
 def nonbond_matrix():
-    toppath = TEST_DATA + "/struc_build/system.top"
+    toppath = TEST_DATA / "struc_build" / "system.top"
     topology = Topology.from_gmx_topfile(name="test", path=toppath)
     topology.preprocess()
     topology.volumes = {"PEO":0.43}
@@ -140,7 +141,7 @@ def nonbond_matrix():
                                        box=np.array([10., 10., 10.]))
 @pytest.fixture
 def molecule():
-    toppath = TEST_DATA + "/struc_build/system.top"
+    toppath = TEST_DATA / "struc_build" / "system.top"
     topology = Topology.from_gmx_topfile(name="test", path=toppath)
     return topology.molecules[0]
 
@@ -187,6 +188,33 @@ def test_is_overlap(nonbond_matrix, molecule, new_point, result):
     proccessor.molecule = molecule
     # node 4 is already placed and hence is skipped over
     assert proccessor._is_overlap(new_point, 7, nrexcl=1) == result
+
+@pytest.mark.parametrize('n_coords, new_point, prev_prob, lp, result', (
+    # only 1 previous node -> always True
+    (1, None, 1, 10, True,),
+    # no lp is given -> always True
+    (1, None, 1, None, True,),
+    # 180 degrees should be fine even with high prev prob
+    (2, np.array([1., 1., 1.11]), 1, 10, True),
+    # small angle and prev prob high
+    (2, np.array([1., 1.47, 0.1]), 1., 10, False),
+    # small angle and prev prob low
+    (2, np.array([1., 1.47, 0.1]), 0., 10, True),
+    # medium angle, prev prob high, unifrom prob low
+    (2, np.array([1., 1.57, 1.74]), 1., 10, True),
+))
+def test_bendiness(nonbond_matrix, molecule, n_coords, new_point, prev_prob, lp, result):
+    # set random seed for reproducability
+    random.seed(1)
+    nb_matrix = add_positions(nonbond_matrix, n_coords)
+    # the bending constant for a series of PEO monomers
+    # the value is the same as in the high test case from
+    # test nb matrix
+    nb_matrix.bending_matrix = {("PEO", "PEO", "PEO"): lp}
+    processor = RandomWalk(mol_idx=0, nonbond_matrix=nb_matrix)
+    processor.molecule = molecule
+    processor.prev_prob = prev_prob
+    assert processor.bendiness(new_point, n_coords) == result
 
 @pytest.mark.parametrize('new_point, restraint, result', (
    # distance restraint true upper_bound
