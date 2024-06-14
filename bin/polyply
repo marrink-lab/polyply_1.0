@@ -74,6 +74,10 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
                            help='A linear sequence of residue names.')
     seq_group.add_argument('-seqf', dest='seq_file', type=Path,
                            help='A graph input file (JSON|TXT|FASTA|IG)')
+    protein_termini_group = parser_gen_itp.add_argument_group('Protein termini group')
+    protein_termini_group.add_argument('-ter', dest='ter', action='store_true',
+                                       help='patch termini with correct parameters'
+                                       )
 
     parser_gen_itp.set_defaults(func=gen_itp)
 
