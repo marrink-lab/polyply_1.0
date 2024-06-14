@@ -16,6 +16,24 @@ from vermouth.log_helpers import StyleAdapter, get_logger
 from vermouth.processors.annotate_mut_mod import parse_residue_spec
 LOGGER = StyleAdapter(get_logger(__name__))
 from .processor import Processor
+import networkx as nx
+
+def annotate_protein(meta_molecule):
+    """
+    make a resspec for a protein with correct N-ter and C-ter
+    """
+
+    resids = nx.get_node_attributes(meta_molecule.molecule, 'resid')
+    last_resid = max([val for val in resids.values()])
+
+    resnames = nx.get_node_attributes(meta_molecule.molecule, 'resname')
+    last_resname = [val for val in resnames.values()][-1]
+
+    protein_termini = [({'resid': 1, 'resname': resnames[0]}, 'N-ter'),
+                       ({'resid': last_resid, 'resname': last_resname}, 'C-ter')
+                       ]
+
+    return protein_termini
 
 def apply_terminal_mod(meta_molecule, modifications):
     """
@@ -74,13 +92,18 @@ def apply_terminal_mod(meta_molecule, modifications):
     return meta_molecule
 
 class ApplyModifications(Processor):
-    def __init__(self, modifications=None):
+    def __init__(self, modifications=None, protter=False):
         if not modifications:
             modifications = []
         self.modifications = []
         for resspec, val in modifications:
             self.modifications.append((parse_residue_spec(resspec), val))
+        self.protter = protter
+
     def run_molecule(self, meta_molecule):
+
+        if self.protter:
+            self.modifications = annotate_protein(meta_molecule)
 
         meta_molecule = apply_terminal_mod(meta_molecule, self.modifications)
 

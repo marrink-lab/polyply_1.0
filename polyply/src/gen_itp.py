@@ -63,7 +63,7 @@ def split_seq_string(sequence):
 
 def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[],
                lib=None, seq=None, seq_file=None,
-               dsdna=False, mods = []):
+               dsdna=False, mods = [], protter=False):
 
     """
     Top level function for running the polyply parameter generation.
@@ -111,7 +111,7 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[],
     LOGGER.info("applying links between residues",  type="step")
     meta_molecule = ApplyLinks().run_molecule(meta_molecule)
 
-    meta_molecule = ApplyModifications(modifications=mods).run_molecule(meta_molecule)
+    meta_molecule = ApplyModifications(modifications=mods, protter=protter).run_molecule(meta_molecule)
 
     # Raise warning if molecule is disconnected
     msg = "Missing a link between residue {idxA} {resA} and residue {idxB} {resB}."

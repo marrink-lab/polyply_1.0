@@ -77,13 +77,20 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
     dna_group = parser_gen_itp.add_argument_group('DNA specifc options')
     dna_group.add_argument('-dsdna', dest='dsdna', action='store_true',
                            help='complement single sequence to dsDNA sequence')
-    modifications_group = parser_gen_itp.add_argument_group('Protein termini group')
+    modifications_group = parser_gen_itp.add_argument_group('Modifications group')
     modifications_group.add_argument('-mods', dest='mods', action='append',
                                      default=[], type=lambda s: s.split(":"),
                                      help=('Add a modification to a residue. The format is '
                                            '<resname><resid>:modification_name, '
                                            'e.g. ASP1:N-ter')
                                      )
+    modifications_group.add_argument('-protter', dest='protter',
+                                     action='store_true',
+                                     help=('Apply N-ter and C-ter modifications to a protein. '
+                                           'Alias for "-mods RES1:N-ter -mods RESN:C-ter", '
+                                           'where RES1 is the name and resid of the first '
+                                           'residue in the protein and RESN is the name and resid of the last')
+                                    )
 
     parser_gen_itp.set_defaults(func=gen_itp)
 
