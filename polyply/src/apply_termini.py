@@ -54,7 +54,6 @@ def apply_terminal_mod(meta_molecule, term, res):
             # Raise some info about it so people know
             resname = meta_molecule.molecule.nodes[node]['resname']
             meta_molecule.molecule.nodes[node]['resname'] = resname + term[0]
-            LOGGER.info("Changing terminal resnames by their patch. Check your index file.")
 
             # add the modification from the modifications dict
             aname = meta_molecule.molecule.nodes[node]['atomname']
@@ -80,6 +79,7 @@ def prot_termini(meta_molecule):
     modifications = [('N-ter', 1),
                      ('C-ter', max_res)]
 
+    LOGGER.info("Changing terminal resnames by their patch. Check your index file.")
     for mod, res in modifications:
         meta_molecule = apply_terminal_mod(meta_molecule, mod, res)
 
