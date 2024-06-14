@@ -108,6 +108,7 @@ def gen_coords(toppath,
                grid_spacing=0.2,
                grid=None,
                maxiter=800,
+               skip_filter=False,
                start=[],
                density=None,
                box=None,
@@ -254,12 +255,15 @@ def gen_coords(toppath,
             LOGGER.warning(msg,  type="warning")
 
     # do a sanity check
-#    LOGGER.info("checking residue integrity",  type="step")
-#    check_residue_equivalence(topology)
+    if skip_filter:
+        LOGGER.info("checking residue integrity",  type="step")
+        check_residue_equivalence(topology)
 
     # Build polymer structure
     LOGGER.info("generating templates",  type="step")
-    GenerateTemplates(topology=topology, max_opt=10).run_system(topology)
+    GenerateTemplates(topology=topology,
+                      max_opt=10,
+                      skip_filter=skip_filter).run_system(topology)
     LOGGER.info("annotating ligands",  type="step")
     ligand_annotator = AnnotateLigands(topology, ligands)
     ligand_annotator.run_system(topology)

@@ -21,6 +21,7 @@ from .linalg_functions import (u_vect, center_of_geometry,
                                radius_of_gyration)
 from .topology import replace_defined_interaction
 from .linalg_functions import dih
+from .check_residue_equivalence import group_residues_by_isomorphism
 from tqdm import tqdm
 """
 Processor generating coordinates for all residues of a meta_molecule
@@ -29,8 +30,15 @@ matching those in the meta_molecule.molecule attribute.
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
-def _atoms_match(node1, node2):
-    return node1["atomname"] == node2["atomname"]
+def _extract_template_graphs(meta_molecule, template_graphs={}, skip_filter=False):
+    if skip_filter:
+        for node in meta_molecule.nodes:
+            resname = meta_molecule.nodes[node]["resname"]
+            if resname not in template_graphs:
+                template_graphs[resname] = meta_molecule.nodes[node]["graph"]
+    else:
+        template_graphs = group_residues_by_isomorphism(meta_molecule, template_graphs)
+    return template_graphs
 
 def find_atoms(molecule, attr, value):
     """
@@ -261,8 +269,6 @@ def extract_block(molecule, template_graph, defines):
     -------
     :class:vermouth.molecule.Block
     """
-    #nodes = find_atoms(molecule, "resname", resname)
-    #resid = molecule.nodes[nodes[0]]["resid"]
     block = vermouth.molecule.Block()
 
     # select all nodes with the same first resid and
@@ -287,35 +293,7 @@ def extract_block(molecule, template_graph, defines):
                        "virtual_sites2", "virtual_sites3", "virtual_sites4"]:
         block.make_edges_from_interaction_type(inter_type)
 
-  # if not nx.is_connected(block):
-  #     resname = 
-  #     msg = ('\n Residue {} with id {} consistes of two disconnected parts. '
-  #            'Make sure all atoms/particles in a residue are connected by bonds,'
-  #            ' constraints or virual-sites.')
-  #     raise IOError(msg.format(resname, resid))
-
     return block
-
-def group_by_isomorphism(meta_molecule, template_graphs={}):
-    """
-    Extract all unique fragment graphs from meta_molecule
-    using the full subgraph isomorphism check.
-    """
-    template_graphs = {}
-    for node in meta_molecule.nodes:
-        resname = meta_molecule.nodes[node]["resname"]
-        graph = meta_molecule.nodes[node]["graph"]
-        if resname in template_graphs and not nx.is_isomorphic(graph,
-                                                               template_graphs[resname],
-                                                               node_match=_atoms_match,
-                                                              ):
-            template_name = resname + str(len(template_graphs))
-            meta_molecule.nodes[node]["template"] = template_name
-            template_graphs[template_name] = graph
-        else:
-            meta_molecule.nodes[node]["template"] = resname
-            template_graphs[resname] = graph
-    return template_graphs
 
 class GenerateTemplates(Processor):
     """
@@ -325,12 +303,13 @@ class GenerateTemplates(Processor):
     in the templates attribute. The processor also stores the volume
     of each block in the volume attribute.
     """
-    def __init__(self, topology, max_opt, *args, **kwargs):
+    def __init__(self, topology, max_opt, skip_filter, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.max_opt = max_opt
         self.topology = topology
         self.volumes = self.topology.volumes
         self.templates = {}
+        self.skip_filter = skip_filter
 
     def gen_templates(self, meta_molecule, template_graphs):
         """
@@ -351,7 +330,6 @@ class GenerateTemplates(Processor):
         self.templates
         self.volumes
         """
-        #print(len(template_graphs))
         for resname, template_graph in tqdm(template_graphs.items()):
             if resname not in self.templates:
                 block = extract_block(meta_molecule.molecule,
@@ -394,10 +372,14 @@ class GenerateTemplates(Processor):
         """
         if hasattr(meta_molecule, "templates"):
             template_graphs = {res: None for res in meta_molecule.templates}
-            template_graphs = group_by_isomorphism(meta_molecule, template_graphs)
-            self.templates.update(meta_molecule.templates)
         else:
-            template_graphs = group_by_isomorphism(meta_molecule)
+            template_graphs = {}
+            meta_molecule.templates = {}
+
+        template_graphs = _extract_template_graphs(meta_molecule,
+                                                   skip_filter=self.skip_filter,
+                                                   template_graphs=template_graphs)
+        self.templates.update(meta_molecule.templates)
 
         self.gen_templates(meta_molecule, template_graphs)
         meta_molecule.templates = self.templates
