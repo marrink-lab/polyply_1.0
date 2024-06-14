@@ -1,6 +1,7 @@
-; /coarse/chris/python_packages/new_polyply/new_env/bin/polyply gen_params -seqf PNt.fasta -name PNt -o PNt.itp -lib martini3
+; /grain/chris/new_protein_testing/new_protein_env/bin/polyply gen_itp -lib martini3 -seqf ../PNt.fasta -o PROT.itp -name PROT -ter
 
 ; Please cite the following papers:
+; Souza, P C T; Araujo, L P B; Brasnett, C; Moreira, R A; Grunewald, F; Park, P; Wang, L; Razmazma, H; Borges-Araujo, A C; Cofas-Vargas, L F; Monticelli, L; Mera-Adasme, R; Melo, M N; Wu, S; Marrink, S J; Poma, A B; Thallmair, S;  2024; 10.1101/2024.04.15.589479
 ; Souza, P C T; Alessandri, R; Barnoud, J; Thallmair, S; Faustino, I; Grünewald, F; Patmanidis, I; Abdizadeh, H; Bruininks, B M H; Wassenaar, T A; Kroon, P C; Melcr, J; Nieto, V; Corradi, V; Khan, H M; Domański, J; Javanainen, M; Martinez-Seara, H; Reuter, N; Best, R B; Vattulainen, I; Monticelli, L; Periole, X; Tieleman, D P; de Vries, A H; Marrink, S J;  Nature Methods 2021; 10.1038/s41592-021-01098-3
 ; Grunewald, F; Alessandri, R; Kroon, P C; Monticelli, L; Souza, P C; Marrink, S J;  Nature Communications 2022; 10.1038/s41467-021-27627-4
 
@@ -8,1356 +9,1356 @@
 PROT 1
 
 [ atoms ]
-   1 Q5     1 ASP BB    1    1     
-   2 SQ5n   1 ASP SC1   1 -1.0     
-   3 VS     1 ASP CA    1  0.0  0.0
-   4 P2     2 TRP BB    2  0.0     
-   5 TC4    2 TRP SC1   2  0.0 36.0
-   6 TN6d   2 TRP SC2   2  0.0 36.0
-   7 TC5    2 TRP SC3   2  0.0  0.0
-   8 TC5    2 TRP SC4   2  0.0 36.0
-   9 TC5    2 TRP SC5   2  0.0 36.0
-  10 VS     2 TRP CA    2  0.0  0.0
-  11 P2     3 ASN BB    3  0.0     
-  12 SP5    3 ASN SC1   3  0.0     
-  13 VS     3 ASN CA    3  0.0  0.0
-  14 P2     4 ASN BB    4  0.0     
-  15 SP5    4 ASN SC1   4  0.0     
-  16 VS     4 ASN CA    4  0.0  0.0
-  17 P2     5 GLN BB    5  0.0     
-  18 P5     5 GLN SC1   5  0.0     
-  19 VS     5 GLN CA    5  0.0  0.0
-  20 P2     6 SER BB    6  0.0     
-  21 TP1    6 SER SC1   6  0.0     
-  22 VS     6 SER CA    6  0.0  0.0
-  23 P2     7 ILE BB    7  0.0     
-  24 SC2    7 ILE SC1   7  0.0     
-  25 VS     7 ILE CA    7  0.0  0.0
-  26 SP2    8 VAL BB    8  0.0     
-  27 SC3    8 VAL SC1   8  0.0     
-  28 VS     8 VAL CA    8  0.0  0.0
-  29 P2     9 LYS BB    9  0.0     
-  30 SC3    9 LYS SC1   9  0.0     
-  31 SQ4p   9 LYS SC2   9  1.0     
-  32 VS     9 LYS CA    9  0.0  0.0
-  33 P2    10 THR BB   10  0.0     
-  34 SP1   10 THR SC1  10  0.0     
-  35 VS    10 THR CA   10  0.0  0.0
-  36 SP1   11 GLY BB   11  0.0     
-  37 VS    11 GLY CA   11  0.0  0.0
-  38 P2    12 GLU BB   12  0.0     
-  39 Q5n   12 GLU SC1  12 -1.0     
-  40 VS    12 GLU CA   12  0.0  0.0
-  41 P2    13 ARG BB   13  0.0     
-  42 SC3   13 ARG SC1  13  0.0     
-  43 SQ3p  13 ARG SC2  13  1.0     
-  44 VS    13 ARG CA   13  0.0  0.0
-  45 P2    14 GLN BB   14  0.0     
-  46 P5    14 GLN SC1  14  0.0     
-  47 VS    14 GLN CA   14  0.0  0.0
-  48 P2    15 HIS BB   15  0.0     
-  49 TC4   15 HIS SC1  15  0.0     
-  50 TN6d  15 HIS SC2  15  0.0     
-  51 TN5a  15 HIS SC3  15  0.0     
-  52 VS    15 HIS CA   15  0.0  0.0
-  53 SP1   16 GLY BB   16  0.0     
-  54 VS    16 GLY CA   16  0.0  0.0
-  55 P2    17 ILE BB   17  0.0     
-  56 SC2   17 ILE SC1  17  0.0     
-  57 VS    17 ILE CA   17  0.0  0.0
-  58 P2    18 HIS BB   18  0.0     
-  59 TC4   18 HIS SC1  18  0.0     
-  60 TN6d  18 HIS SC2  18  0.0     
-  61 TN5a  18 HIS SC3  18  0.0     
-  62 VS    18 HIS CA   18  0.0  0.0
-  63 P2    19 ILE BB   19  0.0     
-  64 SC2   19 ILE SC1  19  0.0     
-  65 VS    19 ILE CA   19  0.0  0.0
-  66 P2    20 GLN BB   20  0.0     
-  67 P5    20 GLN SC1  20  0.0     
-  68 VS    20 GLN CA   20  0.0  0.0
-  69 SP1   21 GLY BB   21  0.0     
-  70 VS    21 GLY CA   21  0.0  0.0
-  71 P2    22 SER BB   22  0.0     
-  72 TP1   22 SER SC1  22  0.0     
-  73 VS    22 SER CA   22  0.0  0.0
-  74 P2    23 ASP BB   23  0.0     
-  75 SQ5n  23 ASP SC1  23 -1.0     
-  76 VS    23 ASP CA   23  0.0  0.0
-  77 SP2a  24 PRO BB   24  0.0     
-  78 SC3   24 PRO SC1  24  0.0     
-  79 VS    24 PRO CA   24  0.0  0.0
-  80 SP1   25 GLY BB   25  0.0     
-  81 VS    25 GLY CA   25  0.0  0.0
-  82 SP1   26 GLY BB   26  0.0     
-  83 VS    26 GLY CA   26  0.0  0.0
-  84 SP2   27 VAL BB   27  0.0     
-  85 SC3   27 VAL SC1  27  0.0     
-  86 VS    27 VAL CA   27  0.0  0.0
-  87 P2    28 ARG BB   28  0.0     
-  88 SC3   28 ARG SC1  28  0.0     
-  89 SQ3p  28 ARG SC2  28  1.0     
-  90 VS    28 ARG CA   28  0.0  0.0
-  91 P2    29 THR BB   29  0.0     
-  92 SP1   29 THR SC1  29  0.0     
-  93 VS    29 THR CA   29  0.0  0.0
-  94 SP2   30 ALA BB   30  0.0     
-  95 TC3   30 ALA SC1  30  0.0     
-  96 VS    30 ALA CA   30  0.0  0.0
-  97 P2    31 SER BB   31  0.0     
-  98 TP1   31 SER SC1  31  0.0     
-  99 VS    31 SER CA   31  0.0  0.0
- 100 SP1   32 GLY BB   32  0.0     
- 101 VS    32 GLY CA   32  0.0  0.0
- 102 P2    33 THR BB   33  0.0     
- 103 SP1   33 THR SC1  33  0.0     
- 104 VS    33 THR CA   33  0.0  0.0
- 105 P2    34 THR BB   34  0.0     
- 106 SP1   34 THR SC1  34  0.0     
- 107 VS    34 THR CA   34  0.0  0.0
- 108 P2    35 ILE BB   35  0.0     
- 109 SC2   35 ILE SC1  35  0.0     
- 110 VS    35 ILE CA   35  0.0  0.0
- 111 P2    36 LYS BB   36  0.0     
- 112 SC3   36 LYS SC1  36  0.0     
- 113 SQ4p  36 LYS SC2  36  1.0     
- 114 VS    36 LYS CA   36  0.0  0.0
- 115 SP2   37 VAL BB   37  0.0     
- 116 SC3   37 VAL SC1  37  0.0     
- 117 VS    37 VAL CA   37  0.0  0.0
- 118 P2    38 SER BB   38  0.0     
- 119 TP1   38 SER SC1  38  0.0     
- 120 VS    38 SER CA   38  0.0  0.0
- 121 SP1   39 GLY BB   39  0.0     
- 122 VS    39 GLY CA   39  0.0  0.0
- 123 P2    40 ARG BB   40  0.0     
- 124 SC3   40 ARG SC1  40  0.0     
- 125 SQ3p  40 ARG SC2  40  1.0     
- 126 VS    40 ARG CA   40  0.0  0.0
- 127 P2    41 GLN BB   41  0.0     
- 128 P5    41 GLN SC1  41  0.0     
- 129 VS    41 GLN CA   41  0.0  0.0
- 130 SP2   42 ALA BB   42  0.0     
- 131 TC3   42 ALA SC1  42  0.0     
- 132 VS    42 ALA CA   42  0.0  0.0
- 133 P2    43 GLN BB   43  0.0     
- 134 P5    43 GLN SC1  43  0.0     
- 135 VS    43 GLN CA   43  0.0  0.0
- 136 SP1   44 GLY BB   44  0.0     
- 137 VS    44 GLY CA   44  0.0  0.0
- 138 P2    45 ILE BB   45  0.0     
- 139 SC2   45 ILE SC1  45  0.0     
- 140 VS    45 ILE CA   45  0.0  0.0
- 141 P2    46 LEU BB   46  0.0     
- 142 SC2   46 LEU SC1  46  0.0     
- 143 VS    46 LEU CA   46  0.0  0.0
- 144 P2    47 LEU BB   47  0.0     
- 145 SC2   47 LEU SC1  47  0.0     
- 146 VS    47 LEU CA   47  0.0  0.0
- 147 P2    48 GLU BB   48  0.0     
- 148 Q5n   48 GLU SC1  48 -1.0     
- 149 VS    48 GLU CA   48  0.0  0.0
- 150 P2    49 ASN BB   49  0.0     
- 151 SP5   49 ASN SC1  49  0.0     
- 152 VS    49 ASN CA   49  0.0  0.0
- 153 SP2a  50 PRO BB   50  0.0     
- 154 SC3   50 PRO SC1  50  0.0     
- 155 VS    50 PRO CA   50  0.0  0.0
- 156 SP2   51 ALA BB   51  0.0     
- 157 TC3   51 ALA SC1  51  0.0     
- 158 VS    51 ALA CA   51  0.0  0.0
- 159 SP2   52 ALA BB   52  0.0     
- 160 TC3   52 ALA SC1  52  0.0     
- 161 VS    52 ALA CA   52  0.0  0.0
- 162 P2    53 GLU BB   53  0.0     
- 163 Q5n   53 GLU SC1  53 -1.0     
- 164 VS    53 GLU CA   53  0.0  0.0
- 165 P2    54 LEU BB   54  0.0     
- 166 SC2   54 LEU SC1  54  0.0     
- 167 VS    54 LEU CA   54  0.0  0.0
- 168 P2    55 GLN BB   55  0.0     
- 169 P5    55 GLN SC1  55  0.0     
- 170 VS    55 GLN CA   55  0.0  0.0
- 171 P2    56 PHE BB   56  0.0     
- 172 SC4   56 PHE SC1  56  0.0     
- 173 TC5   56 PHE SC2  56  0.0     
- 174 TC5   56 PHE SC3  56  0.0     
- 175 VS    56 PHE CA   56  0.0  0.0
- 176 P2    57 ARG BB   57  0.0     
- 177 SC3   57 ARG SC1  57  0.0     
- 178 SQ3p  57 ARG SC2  57  1.0     
- 179 VS    57 ARG CA   57  0.0  0.0
- 180 P2    58 ASN BB   58  0.0     
- 181 SP5   58 ASN SC1  58  0.0     
- 182 VS    58 ASN CA   58  0.0  0.0
- 183 SP1   59 GLY BB   59  0.0     
- 184 VS    59 GLY CA   59  0.0  0.0
- 185 P2    60 SER BB   60  0.0     
- 186 TP1   60 SER SC1  60  0.0     
- 187 VS    60 SER CA   60  0.0  0.0
- 188 SP2   61 VAL BB   61  0.0     
- 189 SC3   61 VAL SC1  61  0.0     
- 190 VS    61 VAL CA   61  0.0  0.0
- 191 P2    62 THR BB   62  0.0     
- 192 SP1   62 THR SC1  62  0.0     
- 193 VS    62 THR CA   62  0.0  0.0
- 194 P2    63 SER BB   63  0.0     
- 195 TP1   63 SER SC1  63  0.0     
- 196 VS    63 SER CA   63  0.0  0.0
- 197 P2    64 SER BB   64  0.0     
- 198 TP1   64 SER SC1  64  0.0     
- 199 VS    64 SER CA   64  0.0  0.0
- 200 SP1   65 GLY BB   65  0.0     
- 201 VS    65 GLY CA   65  0.0  0.0
- 202 P2    66 GLN BB   66  0.0     
- 203 P5    66 GLN SC1  66  0.0     
- 204 VS    66 GLN CA   66  0.0  0.0
- 205 P2    67 LEU BB   67  0.0     
- 206 SC2   67 LEU SC1  67  0.0     
- 207 VS    67 LEU CA   67  0.0  0.0
- 208 P2    68 SER BB   68  0.0     
- 209 TP1   68 SER SC1  68  0.0     
- 210 VS    68 SER CA   68  0.0  0.0
- 211 P2    69 ASP BB   69  0.0     
- 212 SQ5n  69 ASP SC1  69 -1.0     
- 213 VS    69 ASP CA   69  0.0  0.0
- 214 P2    70 ASP BB   70  0.0     
- 215 SQ5n  70 ASP SC1  70 -1.0     
- 216 VS    70 ASP CA   70  0.0  0.0
- 217 SP1   71 GLY BB   71  0.0     
- 218 VS    71 GLY CA   71  0.0  0.0
- 219 P2    72 ILE BB   72  0.0     
- 220 SC2   72 ILE SC1  72  0.0     
- 221 VS    72 ILE CA   72  0.0  0.0
- 222 P2    73 ARG BB   73  0.0     
- 223 SC3   73 ARG SC1  73  0.0     
- 224 SQ3p  73 ARG SC2  73  1.0     
- 225 VS    73 ARG CA   73  0.0  0.0
- 226 P2    74 ARG BB   74  0.0     
- 227 SC3   74 ARG SC1  74  0.0     
- 228 SQ3p  74 ARG SC2  74  1.0     
- 229 VS    74 ARG CA   74  0.0  0.0
- 230 P2    75 PHE BB   75  0.0     
- 231 SC4   75 PHE SC1  75  0.0     
- 232 TC5   75 PHE SC2  75  0.0     
- 233 TC5   75 PHE SC3  75  0.0     
- 234 VS    75 PHE CA   75  0.0  0.0
- 235 P2    76 LEU BB   76  0.0     
- 236 SC2   76 LEU SC1  76  0.0     
- 237 VS    76 LEU CA   76  0.0  0.0
- 238 SP1   77 GLY BB   77  0.0     
- 239 VS    77 GLY CA   77  0.0  0.0
- 240 P2    78 THR BB   78  0.0     
- 241 SP1   78 THR SC1  78  0.0     
- 242 VS    78 THR CA   78  0.0  0.0
- 243 SP2   79 VAL BB   79  0.0     
- 244 SC3   79 VAL SC1  79  0.0     
- 245 VS    79 VAL CA   79  0.0  0.0
- 246 P2    80 THR BB   80  0.0     
- 247 SP1   80 THR SC1  80  0.0     
- 248 VS    80 THR CA   80  0.0  0.0
- 249 SP2   81 VAL BB   81  0.0     
- 250 SC3   81 VAL SC1  81  0.0     
- 251 VS    81 VAL CA   81  0.0  0.0
- 252 P2    82 LYS BB   82  0.0     
- 253 SC3   82 LYS SC1  82  0.0     
- 254 SQ4p  82 LYS SC2  82  1.0     
- 255 VS    82 LYS CA   82  0.0  0.0
- 256 SP2   83 ALA BB   83  0.0     
- 257 TC3   83 ALA SC1  83  0.0     
- 258 VS    83 ALA CA   83  0.0  0.0
- 259 SP1   84 GLY BB   84  0.0     
- 260 VS    84 GLY CA   84  0.0  0.0
- 261 P2    85 LYS BB   85  0.0     
- 262 SC3   85 LYS SC1  85  0.0     
- 263 SQ4p  85 LYS SC2  85  1.0     
- 264 VS    85 LYS CA   85  0.0  0.0
- 265 P2    86 LEU BB   86  0.0     
- 266 SC2   86 LEU SC1  86  0.0     
- 267 VS    86 LEU CA   86  0.0  0.0
- 268 SP2   87 VAL BB   87  0.0     
- 269 SC3   87 VAL SC1  87  0.0     
- 270 VS    87 VAL CA   87  0.0  0.0
- 271 SP2   88 ALA BB   88  0.0     
- 272 TC3   88 ALA SC1  88  0.0     
- 273 VS    88 ALA CA   88  0.0  0.0
- 274 P2    89 ASP BB   89  0.0     
- 275 SQ5n  89 ASP SC1  89 -1.0     
- 276 VS    89 ASP CA   89  0.0  0.0
- 277 P2    90 HIS BB   90  0.0     
- 278 TC4   90 HIS SC1  90  0.0     
- 279 TN6d  90 HIS SC2  90  0.0     
- 280 TN5a  90 HIS SC3  90  0.0     
- 281 VS    90 HIS CA   90  0.0  0.0
- 282 SP2   91 ALA BB   91  0.0     
- 283 TC3   91 ALA SC1  91  0.0     
- 284 VS    91 ALA CA   91  0.0  0.0
- 285 P2    92 THR BB   92  0.0     
- 286 SP1   92 THR SC1  92  0.0     
- 287 VS    92 THR CA   92  0.0  0.0
- 288 P2    93 LEU BB   93  0.0     
- 289 SC2   93 LEU SC1  93  0.0     
- 290 VS    93 LEU CA   93  0.0  0.0
- 291 SP2   94 ALA BB   94  0.0     
- 292 TC3   94 ALA SC1  94  0.0     
- 293 VS    94 ALA CA   94  0.0  0.0
- 294 P2    95 ASN BB   95  0.0     
- 295 SP5   95 ASN SC1  95  0.0     
- 296 VS    95 ASN CA   95  0.0  0.0
- 297 SP2   96 VAL BB   96  0.0     
- 298 SC3   96 VAL SC1  96  0.0     
- 299 VS    96 VAL CA   96  0.0  0.0
- 300 SP1   97 GLY BB   97  0.0     
- 301 VS    97 GLY CA   97  0.0  0.0
- 302 P2    98 ASP BB   98  0.0     
- 303 SQ5n  98 ASP SC1  98 -1.0     
- 304 VS    98 ASP CA   98  0.0  0.0
- 305 P2    99 THR BB   99  0.0     
- 306 SP1   99 THR SC1  99  0.0     
- 307 VS    99 THR CA   99  0.0  0.0
- 308 P2   100 TRP BB  100  0.0     
- 309 TC4  100 TRP SC1 100  0.0 36.0
- 310 TN6d 100 TRP SC2 100  0.0 36.0
- 311 TC5  100 TRP SC3 100  0.0  0.0
- 312 TC5  100 TRP SC4 100  0.0 36.0
- 313 TC5  100 TRP SC5 100  0.0 36.0
- 314 VS   100 TRP CA  100  0.0  0.0
- 315 P2   101 ASP BB  101  0.0     
- 316 SQ5n 101 ASP SC1 101 -1.0     
- 317 VS   101 ASP CA  101  0.0  0.0
- 318 P2   102 ASP BB  102  0.0     
- 319 SQ5n 102 ASP SC1 102 -1.0     
- 320 VS   102 ASP CA  102  0.0  0.0
- 321 P2   103 ASP BB  103  0.0     
- 322 SQ5n 103 ASP SC1 103 -1.0     
- 323 VS   103 ASP CA  103  0.0  0.0
- 324 SP1  104 GLY BB  104  0.0     
- 325 VS   104 GLY CA  104  0.0  0.0
- 326 P2   105 ILE BB  105  0.0     
- 327 SC2  105 ILE SC1 105  0.0     
- 328 VS   105 ILE CA  105  0.0  0.0
- 329 SP2  106 ALA BB  106  0.0     
- 330 TC3  106 ALA SC1 106  0.0     
- 331 VS   106 ALA CA  106  0.0  0.0
- 332 P2   107 LEU BB  107  0.0     
- 333 SC2  107 LEU SC1 107  0.0     
- 334 VS   107 LEU CA  107  0.0  0.0
- 335 P2   108 TYR BB  108  0.0     
- 336 TC4  108 TYR SC1 108  0.0     
- 337 TC5  108 TYR SC2 108  0.0     
- 338 TC5  108 TYR SC3 108  0.0     
- 339 TN6  108 TYR SC4 108  0.0     
- 340 VS   108 TYR CA  108  0.0  0.0
- 341 SP2  109 VAL BB  109  0.0     
- 342 SC3  109 VAL SC1 109  0.0     
- 343 VS   109 VAL CA  109  0.0  0.0
- 344 SP2  110 ALA BB  110  0.0     
- 345 TC3  110 ALA SC1 110  0.0     
- 346 VS   110 ALA CA  110  0.0  0.0
- 347 SP1  111 GLY BB  111  0.0     
- 348 VS   111 GLY CA  111  0.0  0.0
- 349 P2   112 GLU BB  112  0.0     
- 350 Q5n  112 GLU SC1 112 -1.0     
- 351 VS   112 GLU CA  112  0.0  0.0
- 352 P2   113 GLN BB  113  0.0     
- 353 P5   113 GLN SC1 113  0.0     
- 354 VS   113 GLN CA  113  0.0  0.0
- 355 SP2  114 ALA BB  114  0.0     
- 356 TC3  114 ALA SC1 114  0.0     
- 357 VS   114 ALA CA  114  0.0  0.0
- 358 P2   115 GLN BB  115  0.0     
- 359 P5   115 GLN SC1 115  0.0     
- 360 VS   115 GLN CA  115  0.0  0.0
- 361 SP2  116 ALA BB  116  0.0     
- 362 TC3  116 ALA SC1 116  0.0     
- 363 VS   116 ALA CA  116  0.0  0.0
- 364 P2   117 SER BB  117  0.0     
- 365 TP1  117 SER SC1 117  0.0     
- 366 VS   117 SER CA  117  0.0  0.0
- 367 P2   118 ILE BB  118  0.0     
- 368 SC2  118 ILE SC1 118  0.0     
- 369 VS   118 ILE CA  118  0.0  0.0
- 370 SP2  119 ALA BB  119  0.0     
- 371 TC3  119 ALA SC1 119  0.0     
- 372 VS   119 ALA CA  119  0.0  0.0
- 373 P2   120 ASP BB  120  0.0     
- 374 SQ5n 120 ASP SC1 120 -1.0     
- 375 VS   120 ASP CA  120  0.0  0.0
- 376 P2   121 SER BB  121  0.0     
- 377 TP1  121 SER SC1 121  0.0     
- 378 VS   121 SER CA  121  0.0  0.0
- 379 P2   122 THR BB  122  0.0     
- 380 SP1  122 THR SC1 122  0.0     
- 381 VS   122 THR CA  122  0.0  0.0
- 382 P2   123 LEU BB  123  0.0     
- 383 SC2  123 LEU SC1 123  0.0     
- 384 VS   123 LEU CA  123  0.0  0.0
- 385 P2   124 GLN BB  124  0.0     
- 386 P5   124 GLN SC1 124  0.0     
- 387 VS   124 GLN CA  124  0.0  0.0
- 388 SP1  125 GLY BB  125  0.0     
- 389 VS   125 GLY CA  125  0.0  0.0
- 390 SP2  126 ALA BB  126  0.0     
- 391 TC3  126 ALA SC1 126  0.0     
- 392 VS   126 ALA CA  126  0.0  0.0
- 393 SP1  127 GLY BB  127  0.0     
- 394 VS   127 GLY CA  127  0.0  0.0
- 395 SP1  128 GLY BB  128  0.0     
- 396 VS   128 GLY CA  128  0.0  0.0
- 397 SP2  129 VAL BB  129  0.0     
- 398 SC3  129 VAL SC1 129  0.0     
- 399 VS   129 VAL CA  129  0.0  0.0
- 400 P2   130 GLN BB  130  0.0     
- 401 P5   130 GLN SC1 130  0.0     
- 402 VS   130 GLN CA  130  0.0  0.0
- 403 P2   131 ILE BB  131  0.0     
- 404 SC2  131 ILE SC1 131  0.0     
- 405 VS   131 ILE CA  131  0.0  0.0
- 406 P2   132 GLU BB  132  0.0     
- 407 Q5n  132 GLU SC1 132 -1.0     
- 408 VS   132 GLU CA  132  0.0  0.0
- 409 P2   133 ARG BB  133  0.0     
- 410 SC3  133 ARG SC1 133  0.0     
- 411 SQ3p 133 ARG SC2 133  1.0     
- 412 VS   133 ARG CA  133  0.0  0.0
- 413 SP1  134 GLY BB  134  0.0     
- 414 VS   134 GLY CA  134  0.0  0.0
- 415 SP2  135 ALA BB  135  0.0     
- 416 TC3  135 ALA SC1 135  0.0     
- 417 VS   135 ALA CA  135  0.0  0.0
- 418 P2   136 ASN BB  136  0.0     
- 419 SP5  136 ASN SC1 136  0.0     
- 420 VS   136 ASN CA  136  0.0  0.0
- 421 SP2  137 VAL BB  137  0.0     
- 422 SC3  137 VAL SC1 137  0.0     
- 423 VS   137 VAL CA  137  0.0  0.0
- 424 P2   138 THR BB  138  0.0     
- 425 SP1  138 THR SC1 138  0.0     
- 426 VS   138 THR CA  138  0.0  0.0
- 427 SP2  139 VAL BB  139  0.0     
- 428 SC3  139 VAL SC1 139  0.0     
- 429 VS   139 VAL CA  139  0.0  0.0
- 430 P2   140 GLN BB  140  0.0     
- 431 P5   140 GLN SC1 140  0.0     
- 432 VS   140 GLN CA  140  0.0  0.0
- 433 P2   141 ARG BB  141  0.0     
- 434 SC3  141 ARG SC1 141  0.0     
- 435 SQ3p 141 ARG SC2 141  1.0     
- 436 VS   141 ARG CA  141  0.0  0.0
- 437 P2   142 SER BB  142  0.0     
- 438 TP1  142 SER SC1 142  0.0     
- 439 VS   142 SER CA  142  0.0  0.0
- 440 SP2  143 ALA BB  143  0.0     
- 441 TC3  143 ALA SC1 143  0.0     
- 442 VS   143 ALA CA  143  0.0  0.0
- 443 P2   144 ILE BB  144  0.0     
- 444 SC2  144 ILE SC1 144  0.0     
- 445 VS   144 ILE CA  144  0.0  0.0
- 446 SP2  145 VAL BB  145  0.0     
- 447 SC3  145 VAL SC1 145  0.0     
- 448 VS   145 VAL CA  145  0.0  0.0
- 449 P2   146 ASP BB  146  0.0     
- 450 SQ5n 146 ASP SC1 146 -1.0     
- 451 VS   146 ASP CA  146  0.0  0.0
- 452 SP1  147 GLY BB  147  0.0     
- 453 VS   147 GLY CA  147  0.0  0.0
- 454 SP1  148 GLY BB  148  0.0     
- 455 VS   148 GLY CA  148  0.0  0.0
- 456 P2   149 LEU BB  149  0.0     
- 457 SC2  149 LEU SC1 149  0.0     
- 458 VS   149 LEU CA  149  0.0  0.0
- 459 P2   150 HIS BB  150  0.0     
- 460 TC4  150 HIS SC1 150  0.0     
- 461 TN6d 150 HIS SC2 150  0.0     
- 462 TN5a 150 HIS SC3 150  0.0     
- 463 VS   150 HIS CA  150  0.0  0.0
- 464 P2   151 ILE BB  151  0.0     
- 465 SC2  151 ILE SC1 151  0.0     
- 466 VS   151 ILE CA  151  0.0  0.0
- 467 SP1  152 GLY BB  152  0.0     
- 468 VS   152 GLY CA  152  0.0  0.0
- 469 SP2  153 ALA BB  153  0.0     
- 470 TC3  153 ALA SC1 153  0.0     
- 471 VS   153 ALA CA  153  0.0  0.0
- 472 P2   154 LEU BB  154  0.0     
- 473 SC2  154 LEU SC1 154  0.0     
- 474 VS   154 LEU CA  154  0.0  0.0
- 475 P2   155 GLN BB  155  0.0     
- 476 P5   155 GLN SC1 155  0.0     
- 477 VS   155 GLN CA  155  0.0  0.0
- 478 P2   156 SER BB  156  0.0     
- 479 TP1  156 SER SC1 156  0.0     
- 480 VS   156 SER CA  156  0.0  0.0
- 481 P2   157 LEU BB  157  0.0     
- 482 SC2  157 LEU SC1 157  0.0     
- 483 VS   157 LEU CA  157  0.0  0.0
- 484 P2   158 GLN BB  158  0.0     
- 485 P5   158 GLN SC1 158  0.0     
- 486 VS   158 GLN CA  158  0.0  0.0
- 487 SP2a 159 PRO BB  159  0.0     
- 488 SC3  159 PRO SC1 159  0.0     
- 489 VS   159 PRO CA  159  0.0  0.0
- 490 P2   160 GLU BB  160  0.0     
- 491 Q5n  160 GLU SC1 160 -1.0     
- 492 VS   160 GLU CA  160  0.0  0.0
- 493 P2   161 ASP BB  161  0.0     
- 494 SQ5n 161 ASP SC1 161 -1.0     
- 495 VS   161 ASP CA  161  0.0  0.0
- 496 P2   162 LEU BB  162  0.0     
- 497 SC2  162 LEU SC1 162  0.0     
- 498 VS   162 LEU CA  162  0.0  0.0
- 499 SP2a 163 PRO BB  163  0.0     
- 500 SC3  163 PRO SC1 163  0.0     
- 501 VS   163 PRO CA  163  0.0  0.0
- 502 SP2a 164 PRO BB  164  0.0     
- 503 SC3  164 PRO SC1 164  0.0     
- 504 VS   164 PRO CA  164  0.0  0.0
- 505 P2   165 SER BB  165  0.0     
- 506 TP1  165 SER SC1 165  0.0     
- 507 VS   165 SER CA  165  0.0  0.0
- 508 P2   166 ARG BB  166  0.0     
- 509 SC3  166 ARG SC1 166  0.0     
- 510 SQ3p 166 ARG SC2 166  1.0     
- 511 VS   166 ARG CA  166  0.0  0.0
- 512 SP2  167 VAL BB  167  0.0     
- 513 SC3  167 VAL SC1 167  0.0     
- 514 VS   167 VAL CA  167  0.0  0.0
- 515 SP2  168 VAL BB  168  0.0     
- 516 SC3  168 VAL SC1 168  0.0     
- 517 VS   168 VAL CA  168  0.0  0.0
- 518 P2   169 LEU BB  169  0.0     
- 519 SC2  169 LEU SC1 169  0.0     
- 520 VS   169 LEU CA  169  0.0  0.0
- 521 P2   170 ARG BB  170  0.0     
- 522 SC3  170 ARG SC1 170  0.0     
- 523 SQ3p 170 ARG SC2 170  1.0     
- 524 VS   170 ARG CA  170  0.0  0.0
- 525 P2   171 ASP BB  171  0.0     
- 526 SQ5n 171 ASP SC1 171 -1.0     
- 527 VS   171 ASP CA  171  0.0  0.0
- 528 P2   172 THR BB  172  0.0     
- 529 SP1  172 THR SC1 172  0.0     
- 530 VS   172 THR CA  172  0.0  0.0
- 531 P2   173 ASN BB  173  0.0     
- 532 SP5  173 ASN SC1 173  0.0     
- 533 VS   173 ASN CA  173  0.0  0.0
- 534 SP2  174 VAL BB  174  0.0     
- 535 SC3  174 VAL SC1 174  0.0     
- 536 VS   174 VAL CA  174  0.0  0.0
- 537 P2   175 THR BB  175  0.0     
- 538 SP1  175 THR SC1 175  0.0     
- 539 VS   175 THR CA  175  0.0  0.0
- 540 SP2  176 ALA BB  176  0.0     
- 541 TC3  176 ALA SC1 176  0.0     
- 542 VS   176 ALA CA  176  0.0  0.0
- 543 SP2  177 VAL BB  177  0.0     
- 544 SC3  177 VAL SC1 177  0.0     
- 545 VS   177 VAL CA  177  0.0  0.0
- 546 SP2a 178 PRO BB  178  0.0     
- 547 SC3  178 PRO SC1 178  0.0     
- 548 VS   178 PRO CA  178  0.0  0.0
- 549 SP2  179 ALA BB  179  0.0     
- 550 TC3  179 ALA SC1 179  0.0     
- 551 VS   179 ALA CA  179  0.0  0.0
- 552 P2   180 SER BB  180  0.0     
- 553 TP1  180 SER SC1 180  0.0     
- 554 VS   180 SER CA  180  0.0  0.0
- 555 SP1  181 GLY BB  181  0.0     
- 556 VS   181 GLY CA  181  0.0  0.0
- 557 SP2  182 ALA BB  182  0.0     
- 558 TC3  182 ALA SC1 182  0.0     
- 559 VS   182 ALA CA  182  0.0  0.0
- 560 SP2a 183 PRO BB  183  0.0     
- 561 SC3  183 PRO SC1 183  0.0     
- 562 VS   183 PRO CA  183  0.0  0.0
- 563 SP2  184 ALA BB  184  0.0     
- 564 TC3  184 ALA SC1 184  0.0     
- 565 VS   184 ALA CA  184  0.0  0.0
- 566 SP2  185 ALA BB  185  0.0     
- 567 TC3  185 ALA SC1 185  0.0     
- 568 VS   185 ALA CA  185  0.0  0.0
- 569 SP2  186 VAL BB  186  0.0     
- 570 SC3  186 VAL SC1 186  0.0     
- 571 VS   186 VAL CA  186  0.0  0.0
- 572 P2   187 SER BB  187  0.0     
- 573 TP1  187 SER SC1 187  0.0     
- 574 VS   187 SER CA  187  0.0  0.0
- 575 SP2  188 VAL BB  188  0.0     
- 576 SC3  188 VAL SC1 188  0.0     
- 577 VS   188 VAL CA  188  0.0  0.0
- 578 P2   189 LEU BB  189  0.0     
- 579 SC2  189 LEU SC1 189  0.0     
- 580 VS   189 LEU CA  189  0.0  0.0
- 581 SP1  190 GLY BB  190  0.0     
- 582 VS   190 GLY CA  190  0.0  0.0
- 583 SP2  191 ALA BB  191  0.0     
- 584 TC3  191 ALA SC1 191  0.0     
- 585 VS   191 ALA CA  191  0.0  0.0
- 586 P2   192 SER BB  192  0.0     
- 587 TP1  192 SER SC1 192  0.0     
- 588 VS   192 SER CA  192  0.0  0.0
- 589 P2   193 GLU BB  193  0.0     
- 590 Q5n  193 GLU SC1 193 -1.0     
- 591 VS   193 GLU CA  193  0.0  0.0
- 592 P2   194 LEU BB  194  0.0     
- 593 SC2  194 LEU SC1 194  0.0     
- 594 VS   194 LEU CA  194  0.0  0.0
- 595 P2   195 THR BB  195  0.0     
- 596 SP1  195 THR SC1 195  0.0     
- 597 VS   195 THR CA  195  0.0  0.0
- 598 P2   196 LEU BB  196  0.0     
- 599 SC2  196 LEU SC1 196  0.0     
- 600 VS   196 LEU CA  196  0.0  0.0
- 601 P2   197 ASP BB  197  0.0     
- 602 SQ5n 197 ASP SC1 197 -1.0     
- 603 VS   197 ASP CA  197  0.0  0.0
- 604 SP1  198 GLY BB  198  0.0     
- 605 VS   198 GLY CA  198  0.0  0.0
- 606 SP1  199 GLY BB  199  0.0     
- 607 VS   199 GLY CA  199  0.0  0.0
- 608 P2   200 HIS BB  200  0.0     
- 609 TC4  200 HIS SC1 200  0.0     
- 610 TN6d 200 HIS SC2 200  0.0     
- 611 TN5a 200 HIS SC3 200  0.0     
- 612 VS   200 HIS CA  200  0.0  0.0
- 613 P2   201 ILE BB  201  0.0     
- 614 SC2  201 ILE SC1 201  0.0     
- 615 VS   201 ILE CA  201  0.0  0.0
- 616 P2   202 THR BB  202  0.0     
- 617 SP1  202 THR SC1 202  0.0     
- 618 VS   202 THR CA  202  0.0  0.0
- 619 SP1  203 GLY BB  203  0.0     
- 620 VS   203 GLY CA  203  0.0  0.0
- 621 SP1  204 GLY BB  204  0.0     
- 622 VS   204 GLY CA  204  0.0  0.0
- 623 P2   205 ARG BB  205  0.0     
- 624 SC3  205 ARG SC1 205  0.0     
- 625 SQ3p 205 ARG SC2 205  1.0     
- 626 VS   205 ARG CA  205  0.0  0.0
- 627 SP2  206 ALA BB  206  0.0     
- 628 TC3  206 ALA SC1 206  0.0     
- 629 VS   206 ALA CA  206  0.0  0.0
- 630 SP2  207 ALA BB  207  0.0     
- 631 TC3  207 ALA SC1 207  0.0     
- 632 VS   207 ALA CA  207  0.0  0.0
- 633 SP1  208 GLY BB  208  0.0     
- 634 VS   208 GLY CA  208  0.0  0.0
- 635 SP2  209 VAL BB  209  0.0     
- 636 SC3  209 VAL SC1 209  0.0     
- 637 VS   209 VAL CA  209  0.0  0.0
- 638 SP2  210 ALA BB  210  0.0     
- 639 TC3  210 ALA SC1 210  0.0     
- 640 VS   210 ALA CA  210  0.0  0.0
- 641 SP2  211 ALA BB  211  0.0     
- 642 TC3  211 ALA SC1 211  0.0     
- 643 VS   211 ALA CA  211  0.0  0.0
- 644 P2   212 MET BB  212  0.0     
- 645 C6   212 MET SC1 212  0.0     
- 646 VS   212 MET CA  212  0.0  0.0
- 647 P2   213 GLN BB  213  0.0     
- 648 P5   213 GLN SC1 213  0.0     
- 649 VS   213 GLN CA  213  0.0  0.0
- 650 SP1  214 GLY BB  214  0.0     
- 651 VS   214 GLY CA  214  0.0  0.0
- 652 SP2  215 ALA BB  215  0.0     
- 653 TC3  215 ALA SC1 215  0.0     
- 654 VS   215 ALA CA  215  0.0  0.0
- 655 SP2  216 VAL BB  216  0.0     
- 656 SC3  216 VAL SC1 216  0.0     
- 657 VS   216 VAL CA  216  0.0  0.0
- 658 SP2  217 VAL BB  217  0.0     
- 659 SC3  217 VAL SC1 217  0.0     
- 660 VS   217 VAL CA  217  0.0  0.0
- 661 P2   218 HIS BB  218  0.0     
- 662 TC4  218 HIS SC1 218  0.0     
- 663 TN6d 218 HIS SC2 218  0.0     
- 664 TN5a 218 HIS SC3 218  0.0     
- 665 VS   218 HIS CA  218  0.0  0.0
- 666 P2   219 LEU BB  219  0.0     
- 667 SC2  219 LEU SC1 219  0.0     
- 668 VS   219 LEU CA  219  0.0  0.0
- 669 P2   220 GLN BB  220  0.0     
- 670 P5   220 GLN SC1 220  0.0     
- 671 VS   220 GLN CA  220  0.0  0.0
- 672 P2   221 ARG BB  221  0.0     
- 673 SC3  221 ARG SC1 221  0.0     
- 674 SQ3p 221 ARG SC2 221  1.0     
- 675 VS   221 ARG CA  221  0.0  0.0
- 676 SP2  222 ALA BB  222  0.0     
- 677 TC3  222 ALA SC1 222  0.0     
- 678 VS   222 ALA CA  222  0.0  0.0
- 679 P2   223 THR BB  223  0.0     
- 680 SP1  223 THR SC1 223  0.0     
- 681 VS   223 THR CA  223  0.0  0.0
- 682 P2   224 ILE BB  224  0.0     
- 683 SC2  224 ILE SC1 224  0.0     
- 684 VS   224 ILE CA  224  0.0  0.0
- 685 P2   225 ARG BB  225  0.0     
- 686 SC3  225 ARG SC1 225  0.0     
- 687 SQ3p 225 ARG SC2 225  1.0     
- 688 VS   225 ARG CA  225  0.0  0.0
- 689 P2   226 ARG BB  226  0.0     
- 690 SC3  226 ARG SC1 226  0.0     
- 691 SQ3p 226 ARG SC2 226  1.0     
- 692 VS   226 ARG CA  226  0.0  0.0
- 693 SP1  227 GLY BB  227  0.0     
- 694 VS   227 GLY CA  227  0.0  0.0
- 695 P2   228 ASP BB  228  0.0     
- 696 SQ5n 228 ASP SC1 228 -1.0     
- 697 VS   228 ASP CA  228  0.0  0.0
- 698 SP2  229 ALA BB  229  0.0     
- 699 TC3  229 ALA SC1 229  0.0     
- 700 VS   229 ALA CA  229  0.0  0.0
- 701 P2   230 LEU BB  230  0.0     
- 702 SC2  230 LEU SC1 230  0.0     
- 703 VS   230 LEU CA  230  0.0  0.0
- 704 SP2  231 ALA BB  231  0.0     
- 705 TC3  231 ALA SC1 231  0.0     
- 706 VS   231 ALA CA  231  0.0  0.0
- 707 SP1  232 GLY BB  232  0.0     
- 708 VS   232 GLY CA  232  0.0  0.0
- 709 SP1  233 GLY BB  233  0.0     
- 710 VS   233 GLY CA  233  0.0  0.0
- 711 SP2  234 ALA BB  234  0.0     
- 712 TC3  234 ALA SC1 234  0.0     
- 713 VS   234 ALA CA  234  0.0  0.0
- 714 SP2  235 VAL BB  235  0.0     
- 715 SC3  235 VAL SC1 235  0.0     
- 716 VS   235 VAL CA  235  0.0  0.0
- 717 SP2a 236 PRO BB  236  0.0     
- 718 SC3  236 PRO SC1 236  0.0     
- 719 VS   236 PRO CA  236  0.0  0.0
- 720 SP1  237 GLY BB  237  0.0     
- 721 VS   237 GLY CA  237  0.0  0.0
- 722 SP1  238 GLY BB  238  0.0     
- 723 VS   238 GLY CA  238  0.0  0.0
- 724 SP2  239 ALA BB  239  0.0     
- 725 TC3  239 ALA SC1 239  0.0     
- 726 VS   239 ALA CA  239  0.0  0.0
- 727 SP2  240 VAL BB  240  0.0     
- 728 SC3  240 VAL SC1 240  0.0     
- 729 VS   240 VAL CA  240  0.0  0.0
- 730 SP2a 241 PRO BB  241  0.0     
- 731 SC3  241 PRO SC1 241  0.0     
- 732 VS   241 PRO CA  241  0.0  0.0
- 733 SP1  242 GLY BB  242  0.0     
- 734 VS   242 GLY CA  242  0.0  0.0
- 735 SP1  243 GLY BB  243  0.0     
- 736 VS   243 GLY CA  243  0.0  0.0
- 737 SP2  244 ALA BB  244  0.0     
- 738 TC3  244 ALA SC1 244  0.0     
- 739 VS   244 ALA CA  244  0.0  0.0
- 740 SP2  245 VAL BB  245  0.0     
- 741 SC3  245 VAL SC1 245  0.0     
- 742 VS   245 VAL CA  245  0.0  0.0
- 743 SP2a 246 PRO BB  246  0.0     
- 744 SC3  246 PRO SC1 246  0.0     
- 745 VS   246 PRO CA  246  0.0  0.0
- 746 SP1  247 GLY BB  247  0.0     
- 747 VS   247 GLY CA  247  0.0  0.0
- 748 SP1  248 GLY BB  248  0.0     
- 749 VS   248 GLY CA  248  0.0  0.0
- 750 P2   249 PHE BB  249  0.0     
- 751 SC4  249 PHE SC1 249  0.0     
- 752 TC5  249 PHE SC2 249  0.0     
- 753 TC5  249 PHE SC3 249  0.0     
- 754 VS   249 PHE CA  249  0.0  0.0
- 755 SP1  250 GLY BB  250  0.0     
- 756 VS   250 GLY CA  250  0.0  0.0
- 757 SP2a 251 PRO BB  251  0.0     
- 758 SC3  251 PRO SC1 251  0.0     
- 759 VS   251 PRO CA  251  0.0  0.0
- 760 SP1  252 GLY BB  252  0.0     
- 761 VS   252 GLY CA  252  0.0  0.0
- 762 SP1  253 GLY BB  253  0.0     
- 763 VS   253 GLY CA  253  0.0  0.0
- 764 P2   254 PHE BB  254  0.0     
- 765 SC4  254 PHE SC1 254  0.0     
- 766 TC5  254 PHE SC2 254  0.0     
- 767 TC5  254 PHE SC3 254  0.0     
- 768 VS   254 PHE CA  254  0.0  0.0
- 769 SP1  255 GLY BB  255  0.0     
- 770 VS   255 GLY CA  255  0.0  0.0
- 771 SP2a 256 PRO BB  256  0.0     
- 772 SC3  256 PRO SC1 256  0.0     
- 773 VS   256 PRO CA  256  0.0  0.0
- 774 SP2  257 VAL BB  257  0.0     
- 775 SC3  257 VAL SC1 257  0.0     
- 776 VS   257 VAL CA  257  0.0  0.0
- 777 P2   258 LEU BB  258  0.0     
- 778 SC2  258 LEU SC1 258  0.0     
- 779 VS   258 LEU CA  258  0.0  0.0
- 780 P2   259 ASP BB  259  0.0     
- 781 SQ5n 259 ASP SC1 259 -1.0     
- 782 VS   259 ASP CA  259  0.0  0.0
- 783 SP1  260 GLY BB  260  0.0     
- 784 VS   260 GLY CA  260  0.0  0.0
- 785 P2   261 TRP BB  261  0.0     
- 786 TC4  261 TRP SC1 261  0.0 36.0
- 787 TN6d 261 TRP SC2 261  0.0 36.0
- 788 TC5  261 TRP SC3 261  0.0  0.0
- 789 TC5  261 TRP SC4 261  0.0 36.0
- 790 TC5  261 TRP SC5 261  0.0 36.0
- 791 VS   261 TRP CA  261  0.0  0.0
- 792 P2   262 TYR BB  262  0.0     
- 793 TC4  262 TYR SC1 262  0.0     
- 794 TC5  262 TYR SC2 262  0.0     
- 795 TC5  262 TYR SC3 262  0.0     
- 796 TN6  262 TYR SC4 262  0.0     
- 797 VS   262 TYR CA  262  0.0  0.0
- 798 SP1  263 GLY BB  263  0.0     
- 799 VS   263 GLY CA  263  0.0  0.0
- 800 SP2  264 VAL BB  264  0.0     
- 801 SC3  264 VAL SC1 264  0.0     
- 802 VS   264 VAL CA  264  0.0  0.0
- 803 P2   265 ASP BB  265  0.0     
- 804 SQ5n 265 ASP SC1 265 -1.0     
- 805 VS   265 ASP CA  265  0.0  0.0
- 806 SP2  266 VAL BB  266  0.0     
- 807 SC3  266 VAL SC1 266  0.0     
- 808 VS   266 VAL CA  266  0.0  0.0
- 809 P2   267 SER BB  267  0.0     
- 810 TP1  267 SER SC1 267  0.0     
- 811 VS   267 SER CA  267  0.0  0.0
- 812 SP1  268 GLY BB  268  0.0     
- 813 VS   268 GLY CA  268  0.0  0.0
- 814 P2   269 SER BB  269  0.0     
- 815 TP1  269 SER SC1 269  0.0     
- 816 VS   269 SER CA  269  0.0  0.0
- 817 P2   270 SER BB  270  0.0     
- 818 TP1  270 SER SC1 270  0.0     
- 819 VS   270 SER CA  270  0.0  0.0
- 820 SP2  271 VAL BB  271  0.0     
- 821 SC3  271 VAL SC1 271  0.0     
- 822 VS   271 VAL CA  271  0.0  0.0
- 823 P2   272 GLU BB  272  0.0     
- 824 Q5n  272 GLU SC1 272 -1.0     
- 825 VS   272 GLU CA  272  0.0  0.0
- 826 P2   273 LEU BB  273  0.0     
- 827 SC2  273 LEU SC1 273  0.0     
- 828 VS   273 LEU CA  273  0.0  0.0
- 829 SP2  274 ALA BB  274  0.0     
- 830 TC3  274 ALA SC1 274  0.0     
- 831 VS   274 ALA CA  274  0.0  0.0
- 832 P2   275 GLN BB  275  0.0     
- 833 P5   275 GLN SC1 275  0.0     
- 834 VS   275 GLN CA  275  0.0  0.0
- 835 P2   276 SER BB  276  0.0     
- 836 TP1  276 SER SC1 276  0.0     
- 837 VS   276 SER CA  276  0.0  0.0
- 838 P2   277 ILE BB  277  0.0     
- 839 SC2  277 ILE SC1 277  0.0     
- 840 VS   277 ILE CA  277  0.0  0.0
- 841 SP2  278 VAL BB  278  0.0     
- 842 SC3  278 VAL SC1 278  0.0     
- 843 VS   278 VAL CA  278  0.0  0.0
- 844 P2   279 GLU BB  279  0.0     
- 845 Q5n  279 GLU SC1 279 -1.0     
- 846 VS   279 GLU CA  279  0.0  0.0
- 847 SP2  280 ALA BB  280  0.0     
- 848 TC3  280 ALA SC1 280  0.0     
- 849 VS   280 ALA CA  280  0.0  0.0
- 850 SP2a 281 PRO BB  281  0.0     
- 851 SC3  281 PRO SC1 281  0.0     
- 852 VS   281 PRO CA  281  0.0  0.0
- 853 P2   282 GLU BB  282  0.0     
- 854 Q5n  282 GLU SC1 282 -1.0     
- 855 VS   282 GLU CA  282  0.0  0.0
- 856 P2   283 LEU BB  283  0.0     
- 857 SC2  283 LEU SC1 283  0.0     
- 858 VS   283 LEU CA  283  0.0  0.0
- 859 SP1  284 GLY BB  284  0.0     
- 860 VS   284 GLY CA  284  0.0  0.0
- 861 SP2  285 ALA BB  285  0.0     
- 862 TC3  285 ALA SC1 285  0.0     
- 863 VS   285 ALA CA  285  0.0  0.0
- 864 SP2  286 ALA BB  286  0.0     
- 865 TC3  286 ALA SC1 286  0.0     
- 866 VS   286 ALA CA  286  0.0  0.0
- 867 P2   287 ILE BB  287  0.0     
- 868 SC2  287 ILE SC1 287  0.0     
- 869 VS   287 ILE CA  287  0.0  0.0
- 870 P2   288 ARG BB  288  0.0     
- 871 SC3  288 ARG SC1 288  0.0     
- 872 SQ3p 288 ARG SC2 288  1.0     
- 873 VS   288 ARG CA  288  0.0  0.0
- 874 SP2  289 VAL BB  289  0.0     
- 875 SC3  289 VAL SC1 289  0.0     
- 876 VS   289 VAL CA  289  0.0  0.0
- 877 SP1  290 GLY BB  290  0.0     
- 878 VS   290 GLY CA  290  0.0  0.0
- 879 P2   291 ARG BB  291  0.0     
- 880 SC3  291 ARG SC1 291  0.0     
- 881 SQ3p 291 ARG SC2 291  1.0     
- 882 VS   291 ARG CA  291  0.0  0.0
- 883 SP1  292 GLY BB  292  0.0     
- 884 VS   292 GLY CA  292  0.0  0.0
- 885 SP2  293 ALA BB  293  0.0     
- 886 TC3  293 ALA SC1 293  0.0     
- 887 VS   293 ALA CA  293  0.0  0.0
- 888 P2   294 ARG BB  294  0.0     
- 889 SC3  294 ARG SC1 294  0.0     
- 890 SQ3p 294 ARG SC2 294  1.0     
- 891 VS   294 ARG CA  294  0.0  0.0
- 892 SP2  295 VAL BB  295  0.0     
- 893 SC3  295 VAL SC1 295  0.0     
- 894 VS   295 VAL CA  295  0.0  0.0
- 895 P2   296 THR BB  296  0.0     
- 896 SP1  296 THR SC1 296  0.0     
- 897 VS   296 THR CA  296  0.0  0.0
- 898 SP2  297 VAL BB  297  0.0     
- 899 SC3  297 VAL SC1 297  0.0     
- 900 VS   297 VAL CA  297  0.0  0.0
- 901 SP2a 298 PRO BB  298  0.0     
- 902 SC3  298 PRO SC1 298  0.0     
- 903 VS   298 PRO CA  298  0.0  0.0
- 904 SP1  299 GLY BB  299  0.0     
- 905 VS   299 GLY CA  299  0.0  0.0
- 906 SP1  300 GLY BB  300  0.0     
- 907 VS   300 GLY CA  300  0.0  0.0
- 908 P2   301 SER BB  301  0.0     
- 909 TP1  301 SER SC1 301  0.0     
- 910 VS   301 SER CA  301  0.0  0.0
- 911 P2   302 LEU BB  302  0.0     
- 912 SC2  302 LEU SC1 302  0.0     
- 913 VS   302 LEU CA  302  0.0  0.0
- 914 P2   303 SER BB  303  0.0     
- 915 TP1  303 SER SC1 303  0.0     
- 916 VS   303 SER CA  303  0.0  0.0
- 917 SP2  304 ALA BB  304  0.0     
- 918 TC3  304 ALA SC1 304  0.0     
- 919 VS   304 ALA CA  304  0.0  0.0
- 920 SP2a 305 PRO BB  305  0.0     
- 921 SC3  305 PRO SC1 305  0.0     
- 922 VS   305 PRO CA  305  0.0  0.0
- 923 P2   306 HIS BB  306  0.0     
- 924 TC4  306 HIS SC1 306  0.0     
- 925 TN6d 306 HIS SC2 306  0.0     
- 926 TN5a 306 HIS SC3 306  0.0     
- 927 VS   306 HIS CA  306  0.0  0.0
- 928 SP1  307 GLY BB  307  0.0     
- 929 VS   307 GLY CA  307  0.0  0.0
- 930 P2   308 ASN BB  308  0.0     
- 931 SP5  308 ASN SC1 308  0.0     
- 932 VS   308 ASN CA  308  0.0  0.0
- 933 SP2  309 VAL BB  309  0.0     
- 934 SC3  309 VAL SC1 309  0.0     
- 935 VS   309 VAL CA  309  0.0  0.0
- 936 P2   310 ILE BB  310  0.0     
- 937 SC2  310 ILE SC1 310  0.0     
- 938 VS   310 ILE CA  310  0.0  0.0
- 939 P2   311 GLU BB  311  0.0     
- 940 Q5n  311 GLU SC1 311 -1.0     
- 941 VS   311 GLU CA  311  0.0  0.0
- 942 P2   312 THR BB  312  0.0     
- 943 SP1  312 THR SC1 312  0.0     
- 944 VS   312 THR CA  312  0.0  0.0
- 945 SP1  313 GLY BB  313  0.0     
- 946 VS   313 GLY CA  313  0.0  0.0
- 947 SP1  314 GLY BB  314  0.0     
- 948 VS   314 GLY CA  314  0.0  0.0
- 949 SP2  315 ALA BB  315  0.0     
- 950 TC3  315 ALA SC1 315  0.0     
- 951 VS   315 ALA CA  315  0.0  0.0
- 952 P2   316 ARG BB  316  0.0     
- 953 SC3  316 ARG SC1 316  0.0     
- 954 SQ3p 316 ARG SC2 316  1.0     
- 955 VS   316 ARG CA  316  0.0  0.0
- 956 P2   317 ARG BB  317  0.0     
- 957 SC3  317 ARG SC1 317  0.0     
- 958 SQ3p 317 ARG SC2 317  1.0     
- 959 VS   317 ARG CA  317  0.0  0.0
- 960 P2   318 PHE BB  318  0.0     
- 961 SC4  318 PHE SC1 318  0.0     
- 962 TC5  318 PHE SC2 318  0.0     
- 963 TC5  318 PHE SC3 318  0.0     
- 964 VS   318 PHE CA  318  0.0  0.0
- 965 SP2  319 ALA BB  319  0.0     
- 966 TC3  319 ALA SC1 319  0.0     
- 967 VS   319 ALA CA  319  0.0  0.0
- 968 SP2a 320 PRO BB  320  0.0     
- 969 SC3  320 PRO SC1 320  0.0     
- 970 VS   320 PRO CA  320  0.0  0.0
- 971 P2   321 GLN BB  321  0.0     
- 972 P5   321 GLN SC1 321  0.0     
- 973 VS   321 GLN CA  321  0.0  0.0
- 974 SP2  322 ALA BB  322  0.0     
- 975 TC3  322 ALA SC1 322  0.0     
- 976 VS   322 ALA CA  322  0.0  0.0
- 977 SP2  323 ALA BB  323  0.0     
- 978 TC3  323 ALA SC1 323  0.0     
- 979 VS   323 ALA CA  323  0.0  0.0
- 980 SP2a 324 PRO BB  324  0.0     
- 981 SC3  324 PRO SC1 324  0.0     
- 982 VS   324 PRO CA  324  0.0  0.0
- 983 P2   325 LEU BB  325  0.0     
- 984 SC2  325 LEU SC1 325  0.0     
- 985 VS   325 LEU CA  325  0.0  0.0
- 986 P2   326 SER BB  326  0.0     
- 987 TP1  326 SER SC1 326  0.0     
- 988 VS   326 SER CA  326  0.0  0.0
- 989 P2   327 ILE BB  327  0.0     
- 990 SC2  327 ILE SC1 327  0.0     
- 991 VS   327 ILE CA  327  0.0  0.0
- 992 P2   328 THR BB  328  0.0     
- 993 SP1  328 THR SC1 328  0.0     
- 994 VS   328 THR CA  328  0.0  0.0
- 995 P2   329 LEU BB  329  0.0     
- 996 SC2  329 LEU SC1 329  0.0     
- 997 VS   329 LEU CA  329  0.0  0.0
- 998 P2   330 GLN BB  330  0.0     
- 999 P5   330 GLN SC1 330  0.0     
-1000 VS   330 GLN CA  330  0.0  0.0
-1001 SP2  331 ALA BB  331  0.0     
-1002 TC3  331 ALA SC1 331  0.0     
-1003 VS   331 ALA CA  331  0.0  0.0
-1004 SP1  332 GLY BB  332  0.0     
-1005 VS   332 GLY CA  332  0.0  0.0
-1006 SP2  333 ALA BB  333  0.0     
-1007 TC3  333 ALA SC1 333  0.0     
-1008 VS   333 ALA CA  333  0.0  0.0
-1009 Q5   334 HIS BB  334   -1     
-1010 TC4  334 HIS SC1 334  0.0     
-1011 TN6d 334 HIS SC2 334  0.0     
-1012 TN5a 334 HIS SC3 334  0.0     
-1013 VS   334 HIS CA  334  0.0  0.0
+   1 Q5     1 ASPN BB    1  1.0     
+   2 SQ5n   1 ASPN SC1   1 -1.0     
+   3 VS     1 ASPN CA    1  0.0  0.0
+   4 P2     2 TRP  BB    2  0.0     
+   5 TC4    2 TRP  SC1   2  0.0 36.0
+   6 TN6d   2 TRP  SC2   2  0.0 36.0
+   7 TC5    2 TRP  SC3   2  0.0  0.0
+   8 TC5    2 TRP  SC4   2  0.0 36.0
+   9 TC5    2 TRP  SC5   2  0.0 36.0
+  10 VS     2 TRP  CA    2  0.0  0.0
+  11 P2     3 ASN  BB    3  0.0     
+  12 SP5    3 ASN  SC1   3  0.0     
+  13 VS     3 ASN  CA    3  0.0  0.0
+  14 P2     4 ASN  BB    4  0.0     
+  15 SP5    4 ASN  SC1   4  0.0     
+  16 VS     4 ASN  CA    4  0.0  0.0
+  17 P2     5 GLN  BB    5  0.0     
+  18 P5     5 GLN  SC1   5  0.0     
+  19 VS     5 GLN  CA    5  0.0  0.0
+  20 P2     6 SER  BB    6  0.0     
+  21 TP1    6 SER  SC1   6  0.0     
+  22 VS     6 SER  CA    6  0.0  0.0
+  23 P2     7 ILE  BB    7  0.0     
+  24 SC2    7 ILE  SC1   7  0.0     
+  25 VS     7 ILE  CA    7  0.0  0.0
+  26 SP2    8 VAL  BB    8  0.0     
+  27 SC3    8 VAL  SC1   8  0.0     
+  28 VS     8 VAL  CA    8  0.0  0.0
+  29 P2     9 LYS  BB    9  0.0     
+  30 SC3    9 LYS  SC1   9  0.0     
+  31 SQ4p   9 LYS  SC2   9  1.0     
+  32 VS     9 LYS  CA    9  0.0  0.0
+  33 P2    10 THR  BB   10  0.0     
+  34 SP1   10 THR  SC1  10  0.0     
+  35 VS    10 THR  CA   10  0.0  0.0
+  36 SP1   11 GLY  BB   11  0.0     
+  37 VS    11 GLY  CA   11  0.0  0.0
+  38 P2    12 GLU  BB   12  0.0     
+  39 Q5n   12 GLU  SC1  12 -1.0     
+  40 VS    12 GLU  CA   12  0.0  0.0
+  41 P2    13 ARG  BB   13  0.0     
+  42 SC3   13 ARG  SC1  13  0.0     
+  43 SQ3p  13 ARG  SC2  13  1.0     
+  44 VS    13 ARG  CA   13  0.0  0.0
+  45 P2    14 GLN  BB   14  0.0     
+  46 P5    14 GLN  SC1  14  0.0     
+  47 VS    14 GLN  CA   14  0.0  0.0
+  48 P2    15 HIS  BB   15  0.0     
+  49 TC4   15 HIS  SC1  15  0.0     
+  50 TN6d  15 HIS  SC2  15  0.0     
+  51 TN5a  15 HIS  SC3  15  0.0     
+  52 VS    15 HIS  CA   15  0.0  0.0
+  53 SP1   16 GLY  BB   16  0.0     
+  54 VS    16 GLY  CA   16  0.0  0.0
+  55 P2    17 ILE  BB   17  0.0     
+  56 SC2   17 ILE  SC1  17  0.0     
+  57 VS    17 ILE  CA   17  0.0  0.0
+  58 P2    18 HIS  BB   18  0.0     
+  59 TC4   18 HIS  SC1  18  0.0     
+  60 TN6d  18 HIS  SC2  18  0.0     
+  61 TN5a  18 HIS  SC3  18  0.0     
+  62 VS    18 HIS  CA   18  0.0  0.0
+  63 P2    19 ILE  BB   19  0.0     
+  64 SC2   19 ILE  SC1  19  0.0     
+  65 VS    19 ILE  CA   19  0.0  0.0
+  66 P2    20 GLN  BB   20  0.0     
+  67 P5    20 GLN  SC1  20  0.0     
+  68 VS    20 GLN  CA   20  0.0  0.0
+  69 SP1   21 GLY  BB   21  0.0     
+  70 VS    21 GLY  CA   21  0.0  0.0
+  71 P2    22 SER  BB   22  0.0     
+  72 TP1   22 SER  SC1  22  0.0     
+  73 VS    22 SER  CA   22  0.0  0.0
+  74 P2    23 ASP  BB   23  0.0     
+  75 SQ5n  23 ASP  SC1  23 -1.0     
+  76 VS    23 ASP  CA   23  0.0  0.0
+  77 SP2a  24 PRO  BB   24  0.0     
+  78 SC3   24 PRO  SC1  24  0.0     
+  79 VS    24 PRO  CA   24  0.0  0.0
+  80 SP1   25 GLY  BB   25  0.0     
+  81 VS    25 GLY  CA   25  0.0  0.0
+  82 SP1   26 GLY  BB   26  0.0     
+  83 VS    26 GLY  CA   26  0.0  0.0
+  84 SP2   27 VAL  BB   27  0.0     
+  85 SC3   27 VAL  SC1  27  0.0     
+  86 VS    27 VAL  CA   27  0.0  0.0
+  87 P2    28 ARG  BB   28  0.0     
+  88 SC3   28 ARG  SC1  28  0.0     
+  89 SQ3p  28 ARG  SC2  28  1.0     
+  90 VS    28 ARG  CA   28  0.0  0.0
+  91 P2    29 THR  BB   29  0.0     
+  92 SP1   29 THR  SC1  29  0.0     
+  93 VS    29 THR  CA   29  0.0  0.0
+  94 SP2   30 ALA  BB   30  0.0     
+  95 TC3   30 ALA  SC1  30  0.0     
+  96 VS    30 ALA  CA   30  0.0  0.0
+  97 P2    31 SER  BB   31  0.0     
+  98 TP1   31 SER  SC1  31  0.0     
+  99 VS    31 SER  CA   31  0.0  0.0
+ 100 SP1   32 GLY  BB   32  0.0     
+ 101 VS    32 GLY  CA   32  0.0  0.0
+ 102 P2    33 THR  BB   33  0.0     
+ 103 SP1   33 THR  SC1  33  0.0     
+ 104 VS    33 THR  CA   33  0.0  0.0
+ 105 P2    34 THR  BB   34  0.0     
+ 106 SP1   34 THR  SC1  34  0.0     
+ 107 VS    34 THR  CA   34  0.0  0.0
+ 108 P2    35 ILE  BB   35  0.0     
+ 109 SC2   35 ILE  SC1  35  0.0     
+ 110 VS    35 ILE  CA   35  0.0  0.0
+ 111 P2    36 LYS  BB   36  0.0     
+ 112 SC3   36 LYS  SC1  36  0.0     
+ 113 SQ4p  36 LYS  SC2  36  1.0     
+ 114 VS    36 LYS  CA   36  0.0  0.0
+ 115 SP2   37 VAL  BB   37  0.0     
+ 116 SC3   37 VAL  SC1  37  0.0     
+ 117 VS    37 VAL  CA   37  0.0  0.0
+ 118 P2    38 SER  BB   38  0.0     
+ 119 TP1   38 SER  SC1  38  0.0     
+ 120 VS    38 SER  CA   38  0.0  0.0
+ 121 SP1   39 GLY  BB   39  0.0     
+ 122 VS    39 GLY  CA   39  0.0  0.0
+ 123 P2    40 ARG  BB   40  0.0     
+ 124 SC3   40 ARG  SC1  40  0.0     
+ 125 SQ3p  40 ARG  SC2  40  1.0     
+ 126 VS    40 ARG  CA   40  0.0  0.0
+ 127 P2    41 GLN  BB   41  0.0     
+ 128 P5    41 GLN  SC1  41  0.0     
+ 129 VS    41 GLN  CA   41  0.0  0.0
+ 130 SP2   42 ALA  BB   42  0.0     
+ 131 TC3   42 ALA  SC1  42  0.0     
+ 132 VS    42 ALA  CA   42  0.0  0.0
+ 133 P2    43 GLN  BB   43  0.0     
+ 134 P5    43 GLN  SC1  43  0.0     
+ 135 VS    43 GLN  CA   43  0.0  0.0
+ 136 SP1   44 GLY  BB   44  0.0     
+ 137 VS    44 GLY  CA   44  0.0  0.0
+ 138 P2    45 ILE  BB   45  0.0     
+ 139 SC2   45 ILE  SC1  45  0.0     
+ 140 VS    45 ILE  CA   45  0.0  0.0
+ 141 P2    46 LEU  BB   46  0.0     
+ 142 SC2   46 LEU  SC1  46  0.0     
+ 143 VS    46 LEU  CA   46  0.0  0.0
+ 144 P2    47 LEU  BB   47  0.0     
+ 145 SC2   47 LEU  SC1  47  0.0     
+ 146 VS    47 LEU  CA   47  0.0  0.0
+ 147 P2    48 GLU  BB   48  0.0     
+ 148 Q5n   48 GLU  SC1  48 -1.0     
+ 149 VS    48 GLU  CA   48  0.0  0.0
+ 150 P2    49 ASN  BB   49  0.0     
+ 151 SP5   49 ASN  SC1  49  0.0     
+ 152 VS    49 ASN  CA   49  0.0  0.0
+ 153 SP2a  50 PRO  BB   50  0.0     
+ 154 SC3   50 PRO  SC1  50  0.0     
+ 155 VS    50 PRO  CA   50  0.0  0.0
+ 156 SP2   51 ALA  BB   51  0.0     
+ 157 TC3   51 ALA  SC1  51  0.0     
+ 158 VS    51 ALA  CA   51  0.0  0.0
+ 159 SP2   52 ALA  BB   52  0.0     
+ 160 TC3   52 ALA  SC1  52  0.0     
+ 161 VS    52 ALA  CA   52  0.0  0.0
+ 162 P2    53 GLU  BB   53  0.0     
+ 163 Q5n   53 GLU  SC1  53 -1.0     
+ 164 VS    53 GLU  CA   53  0.0  0.0
+ 165 P2    54 LEU  BB   54  0.0     
+ 166 SC2   54 LEU  SC1  54  0.0     
+ 167 VS    54 LEU  CA   54  0.0  0.0
+ 168 P2    55 GLN  BB   55  0.0     
+ 169 P5    55 GLN  SC1  55  0.0     
+ 170 VS    55 GLN  CA   55  0.0  0.0
+ 171 P2    56 PHE  BB   56  0.0     
+ 172 SC4   56 PHE  SC1  56  0.0     
+ 173 TC5   56 PHE  SC2  56  0.0     
+ 174 TC5   56 PHE  SC3  56  0.0     
+ 175 VS    56 PHE  CA   56  0.0  0.0
+ 176 P2    57 ARG  BB   57  0.0     
+ 177 SC3   57 ARG  SC1  57  0.0     
+ 178 SQ3p  57 ARG  SC2  57  1.0     
+ 179 VS    57 ARG  CA   57  0.0  0.0
+ 180 P2    58 ASN  BB   58  0.0     
+ 181 SP5   58 ASN  SC1  58  0.0     
+ 182 VS    58 ASN  CA   58  0.0  0.0
+ 183 SP1   59 GLY  BB   59  0.0     
+ 184 VS    59 GLY  CA   59  0.0  0.0
+ 185 P2    60 SER  BB   60  0.0     
+ 186 TP1   60 SER  SC1  60  0.0     
+ 187 VS    60 SER  CA   60  0.0  0.0
+ 188 SP2   61 VAL  BB   61  0.0     
+ 189 SC3   61 VAL  SC1  61  0.0     
+ 190 VS    61 VAL  CA   61  0.0  0.0
+ 191 P2    62 THR  BB   62  0.0     
+ 192 SP1   62 THR  SC1  62  0.0     
+ 193 VS    62 THR  CA   62  0.0  0.0
+ 194 P2    63 SER  BB   63  0.0     
+ 195 TP1   63 SER  SC1  63  0.0     
+ 196 VS    63 SER  CA   63  0.0  0.0
+ 197 P2    64 SER  BB   64  0.0     
+ 198 TP1   64 SER  SC1  64  0.0     
+ 199 VS    64 SER  CA   64  0.0  0.0
+ 200 SP1   65 GLY  BB   65  0.0     
+ 201 VS    65 GLY  CA   65  0.0  0.0
+ 202 P2    66 GLN  BB   66  0.0     
+ 203 P5    66 GLN  SC1  66  0.0     
+ 204 VS    66 GLN  CA   66  0.0  0.0
+ 205 P2    67 LEU  BB   67  0.0     
+ 206 SC2   67 LEU  SC1  67  0.0     
+ 207 VS    67 LEU  CA   67  0.0  0.0
+ 208 P2    68 SER  BB   68  0.0     
+ 209 TP1   68 SER  SC1  68  0.0     
+ 210 VS    68 SER  CA   68  0.0  0.0
+ 211 P2    69 ASP  BB   69  0.0     
+ 212 SQ5n  69 ASP  SC1  69 -1.0     
+ 213 VS    69 ASP  CA   69  0.0  0.0
+ 214 P2    70 ASP  BB   70  0.0     
+ 215 SQ5n  70 ASP  SC1  70 -1.0     
+ 216 VS    70 ASP  CA   70  0.0  0.0
+ 217 SP1   71 GLY  BB   71  0.0     
+ 218 VS    71 GLY  CA   71  0.0  0.0
+ 219 P2    72 ILE  BB   72  0.0     
+ 220 SC2   72 ILE  SC1  72  0.0     
+ 221 VS    72 ILE  CA   72  0.0  0.0
+ 222 P2    73 ARG  BB   73  0.0     
+ 223 SC3   73 ARG  SC1  73  0.0     
+ 224 SQ3p  73 ARG  SC2  73  1.0     
+ 225 VS    73 ARG  CA   73  0.0  0.0
+ 226 P2    74 ARG  BB   74  0.0     
+ 227 SC3   74 ARG  SC1  74  0.0     
+ 228 SQ3p  74 ARG  SC2  74  1.0     
+ 229 VS    74 ARG  CA   74  0.0  0.0
+ 230 P2    75 PHE  BB   75  0.0     
+ 231 SC4   75 PHE  SC1  75  0.0     
+ 232 TC5   75 PHE  SC2  75  0.0     
+ 233 TC5   75 PHE  SC3  75  0.0     
+ 234 VS    75 PHE  CA   75  0.0  0.0
+ 235 P2    76 LEU  BB   76  0.0     
+ 236 SC2   76 LEU  SC1  76  0.0     
+ 237 VS    76 LEU  CA   76  0.0  0.0
+ 238 SP1   77 GLY  BB   77  0.0     
+ 239 VS    77 GLY  CA   77  0.0  0.0
+ 240 P2    78 THR  BB   78  0.0     
+ 241 SP1   78 THR  SC1  78  0.0     
+ 242 VS    78 THR  CA   78  0.0  0.0
+ 243 SP2   79 VAL  BB   79  0.0     
+ 244 SC3   79 VAL  SC1  79  0.0     
+ 245 VS    79 VAL  CA   79  0.0  0.0
+ 246 P2    80 THR  BB   80  0.0     
+ 247 SP1   80 THR  SC1  80  0.0     
+ 248 VS    80 THR  CA   80  0.0  0.0
+ 249 SP2   81 VAL  BB   81  0.0     
+ 250 SC3   81 VAL  SC1  81  0.0     
+ 251 VS    81 VAL  CA   81  0.0  0.0
+ 252 P2    82 LYS  BB   82  0.0     
+ 253 SC3   82 LYS  SC1  82  0.0     
+ 254 SQ4p  82 LYS  SC2  82  1.0     
+ 255 VS    82 LYS  CA   82  0.0  0.0
+ 256 SP2   83 ALA  BB   83  0.0     
+ 257 TC3   83 ALA  SC1  83  0.0     
+ 258 VS    83 ALA  CA   83  0.0  0.0
+ 259 SP1   84 GLY  BB   84  0.0     
+ 260 VS    84 GLY  CA   84  0.0  0.0
+ 261 P2    85 LYS  BB   85  0.0     
+ 262 SC3   85 LYS  SC1  85  0.0     
+ 263 SQ4p  85 LYS  SC2  85  1.0     
+ 264 VS    85 LYS  CA   85  0.0  0.0
+ 265 P2    86 LEU  BB   86  0.0     
+ 266 SC2   86 LEU  SC1  86  0.0     
+ 267 VS    86 LEU  CA   86  0.0  0.0
+ 268 SP2   87 VAL  BB   87  0.0     
+ 269 SC3   87 VAL  SC1  87  0.0     
+ 270 VS    87 VAL  CA   87  0.0  0.0
+ 271 SP2   88 ALA  BB   88  0.0     
+ 272 TC3   88 ALA  SC1  88  0.0     
+ 273 VS    88 ALA  CA   88  0.0  0.0
+ 274 P2    89 ASP  BB   89  0.0     
+ 275 SQ5n  89 ASP  SC1  89 -1.0     
+ 276 VS    89 ASP  CA   89  0.0  0.0
+ 277 P2    90 HIS  BB   90  0.0     
+ 278 TC4   90 HIS  SC1  90  0.0     
+ 279 TN6d  90 HIS  SC2  90  0.0     
+ 280 TN5a  90 HIS  SC3  90  0.0     
+ 281 VS    90 HIS  CA   90  0.0  0.0
+ 282 SP2   91 ALA  BB   91  0.0     
+ 283 TC3   91 ALA  SC1  91  0.0     
+ 284 VS    91 ALA  CA   91  0.0  0.0
+ 285 P2    92 THR  BB   92  0.0     
+ 286 SP1   92 THR  SC1  92  0.0     
+ 287 VS    92 THR  CA   92  0.0  0.0
+ 288 P2    93 LEU  BB   93  0.0     
+ 289 SC2   93 LEU  SC1  93  0.0     
+ 290 VS    93 LEU  CA   93  0.0  0.0
+ 291 SP2   94 ALA  BB   94  0.0     
+ 292 TC3   94 ALA  SC1  94  0.0     
+ 293 VS    94 ALA  CA   94  0.0  0.0
+ 294 P2    95 ASN  BB   95  0.0     
+ 295 SP5   95 ASN  SC1  95  0.0     
+ 296 VS    95 ASN  CA   95  0.0  0.0
+ 297 SP2   96 VAL  BB   96  0.0     
+ 298 SC3   96 VAL  SC1  96  0.0     
+ 299 VS    96 VAL  CA   96  0.0  0.0
+ 300 SP1   97 GLY  BB   97  0.0     
+ 301 VS    97 GLY  CA   97  0.0  0.0
+ 302 P2    98 ASP  BB   98  0.0     
+ 303 SQ5n  98 ASP  SC1  98 -1.0     
+ 304 VS    98 ASP  CA   98  0.0  0.0
+ 305 P2    99 THR  BB   99  0.0     
+ 306 SP1   99 THR  SC1  99  0.0     
+ 307 VS    99 THR  CA   99  0.0  0.0
+ 308 P2   100 TRP  BB  100  0.0     
+ 309 TC4  100 TRP  SC1 100  0.0 36.0
+ 310 TN6d 100 TRP  SC2 100  0.0 36.0
+ 311 TC5  100 TRP  SC3 100  0.0  0.0
+ 312 TC5  100 TRP  SC4 100  0.0 36.0
+ 313 TC5  100 TRP  SC5 100  0.0 36.0
+ 314 VS   100 TRP  CA  100  0.0  0.0
+ 315 P2   101 ASP  BB  101  0.0     
+ 316 SQ5n 101 ASP  SC1 101 -1.0     
+ 317 VS   101 ASP  CA  101  0.0  0.0
+ 318 P2   102 ASP  BB  102  0.0     
+ 319 SQ5n 102 ASP  SC1 102 -1.0     
+ 320 VS   102 ASP  CA  102  0.0  0.0
+ 321 P2   103 ASP  BB  103  0.0     
+ 322 SQ5n 103 ASP  SC1 103 -1.0     
+ 323 VS   103 ASP  CA  103  0.0  0.0
+ 324 SP1  104 GLY  BB  104  0.0     
+ 325 VS   104 GLY  CA  104  0.0  0.0
+ 326 P2   105 ILE  BB  105  0.0     
+ 327 SC2  105 ILE  SC1 105  0.0     
+ 328 VS   105 ILE  CA  105  0.0  0.0
+ 329 SP2  106 ALA  BB  106  0.0     
+ 330 TC3  106 ALA  SC1 106  0.0     
+ 331 VS   106 ALA  CA  106  0.0  0.0
+ 332 P2   107 LEU  BB  107  0.0     
+ 333 SC2  107 LEU  SC1 107  0.0     
+ 334 VS   107 LEU  CA  107  0.0  0.0
+ 335 P2   108 TYR  BB  108  0.0     
+ 336 TC4  108 TYR  SC1 108  0.0     
+ 337 TC5  108 TYR  SC2 108  0.0     
+ 338 TC5  108 TYR  SC3 108  0.0     
+ 339 TN6  108 TYR  SC4 108  0.0     
+ 340 VS   108 TYR  CA  108  0.0  0.0
+ 341 SP2  109 VAL  BB  109  0.0     
+ 342 SC3  109 VAL  SC1 109  0.0     
+ 343 VS   109 VAL  CA  109  0.0  0.0
+ 344 SP2  110 ALA  BB  110  0.0     
+ 345 TC3  110 ALA  SC1 110  0.0     
+ 346 VS   110 ALA  CA  110  0.0  0.0
+ 347 SP1  111 GLY  BB  111  0.0     
+ 348 VS   111 GLY  CA  111  0.0  0.0
+ 349 P2   112 GLU  BB  112  0.0     
+ 350 Q5n  112 GLU  SC1 112 -1.0     
+ 351 VS   112 GLU  CA  112  0.0  0.0
+ 352 P2   113 GLN  BB  113  0.0     
+ 353 P5   113 GLN  SC1 113  0.0     
+ 354 VS   113 GLN  CA  113  0.0  0.0
+ 355 SP2  114 ALA  BB  114  0.0     
+ 356 TC3  114 ALA  SC1 114  0.0     
+ 357 VS   114 ALA  CA  114  0.0  0.0
+ 358 P2   115 GLN  BB  115  0.0     
+ 359 P5   115 GLN  SC1 115  0.0     
+ 360 VS   115 GLN  CA  115  0.0  0.0
+ 361 SP2  116 ALA  BB  116  0.0     
+ 362 TC3  116 ALA  SC1 116  0.0     
+ 363 VS   116 ALA  CA  116  0.0  0.0
+ 364 P2   117 SER  BB  117  0.0     
+ 365 TP1  117 SER  SC1 117  0.0     
+ 366 VS   117 SER  CA  117  0.0  0.0
+ 367 P2   118 ILE  BB  118  0.0     
+ 368 SC2  118 ILE  SC1 118  0.0     
+ 369 VS   118 ILE  CA  118  0.0  0.0
+ 370 SP2  119 ALA  BB  119  0.0     
+ 371 TC3  119 ALA  SC1 119  0.0     
+ 372 VS   119 ALA  CA  119  0.0  0.0
+ 373 P2   120 ASP  BB  120  0.0     
+ 374 SQ5n 120 ASP  SC1 120 -1.0     
+ 375 VS   120 ASP  CA  120  0.0  0.0
+ 376 P2   121 SER  BB  121  0.0     
+ 377 TP1  121 SER  SC1 121  0.0     
+ 378 VS   121 SER  CA  121  0.0  0.0
+ 379 P2   122 THR  BB  122  0.0     
+ 380 SP1  122 THR  SC1 122  0.0     
+ 381 VS   122 THR  CA  122  0.0  0.0
+ 382 P2   123 LEU  BB  123  0.0     
+ 383 SC2  123 LEU  SC1 123  0.0     
+ 384 VS   123 LEU  CA  123  0.0  0.0
+ 385 P2   124 GLN  BB  124  0.0     
+ 386 P5   124 GLN  SC1 124  0.0     
+ 387 VS   124 GLN  CA  124  0.0  0.0
+ 388 SP1  125 GLY  BB  125  0.0     
+ 389 VS   125 GLY  CA  125  0.0  0.0
+ 390 SP2  126 ALA  BB  126  0.0     
+ 391 TC3  126 ALA  SC1 126  0.0     
+ 392 VS   126 ALA  CA  126  0.0  0.0
+ 393 SP1  127 GLY  BB  127  0.0     
+ 394 VS   127 GLY  CA  127  0.0  0.0
+ 395 SP1  128 GLY  BB  128  0.0     
+ 396 VS   128 GLY  CA  128  0.0  0.0
+ 397 SP2  129 VAL  BB  129  0.0     
+ 398 SC3  129 VAL  SC1 129  0.0     
+ 399 VS   129 VAL  CA  129  0.0  0.0
+ 400 P2   130 GLN  BB  130  0.0     
+ 401 P5   130 GLN  SC1 130  0.0     
+ 402 VS   130 GLN  CA  130  0.0  0.0
+ 403 P2   131 ILE  BB  131  0.0     
+ 404 SC2  131 ILE  SC1 131  0.0     
+ 405 VS   131 ILE  CA  131  0.0  0.0
+ 406 P2   132 GLU  BB  132  0.0     
+ 407 Q5n  132 GLU  SC1 132 -1.0     
+ 408 VS   132 GLU  CA  132  0.0  0.0
+ 409 P2   133 ARG  BB  133  0.0     
+ 410 SC3  133 ARG  SC1 133  0.0     
+ 411 SQ3p 133 ARG  SC2 133  1.0     
+ 412 VS   133 ARG  CA  133  0.0  0.0
+ 413 SP1  134 GLY  BB  134  0.0     
+ 414 VS   134 GLY  CA  134  0.0  0.0
+ 415 SP2  135 ALA  BB  135  0.0     
+ 416 TC3  135 ALA  SC1 135  0.0     
+ 417 VS   135 ALA  CA  135  0.0  0.0
+ 418 P2   136 ASN  BB  136  0.0     
+ 419 SP5  136 ASN  SC1 136  0.0     
+ 420 VS   136 ASN  CA  136  0.0  0.0
+ 421 SP2  137 VAL  BB  137  0.0     
+ 422 SC3  137 VAL  SC1 137  0.0     
+ 423 VS   137 VAL  CA  137  0.0  0.0
+ 424 P2   138 THR  BB  138  0.0     
+ 425 SP1  138 THR  SC1 138  0.0     
+ 426 VS   138 THR  CA  138  0.0  0.0
+ 427 SP2  139 VAL  BB  139  0.0     
+ 428 SC3  139 VAL  SC1 139  0.0     
+ 429 VS   139 VAL  CA  139  0.0  0.0
+ 430 P2   140 GLN  BB  140  0.0     
+ 431 P5   140 GLN  SC1 140  0.0     
+ 432 VS   140 GLN  CA  140  0.0  0.0
+ 433 P2   141 ARG  BB  141  0.0     
+ 434 SC3  141 ARG  SC1 141  0.0     
+ 435 SQ3p 141 ARG  SC2 141  1.0     
+ 436 VS   141 ARG  CA  141  0.0  0.0
+ 437 P2   142 SER  BB  142  0.0     
+ 438 TP1  142 SER  SC1 142  0.0     
+ 439 VS   142 SER  CA  142  0.0  0.0
+ 440 SP2  143 ALA  BB  143  0.0     
+ 441 TC3  143 ALA  SC1 143  0.0     
+ 442 VS   143 ALA  CA  143  0.0  0.0
+ 443 P2   144 ILE  BB  144  0.0     
+ 444 SC2  144 ILE  SC1 144  0.0     
+ 445 VS   144 ILE  CA  144  0.0  0.0
+ 446 SP2  145 VAL  BB  145  0.0     
+ 447 SC3  145 VAL  SC1 145  0.0     
+ 448 VS   145 VAL  CA  145  0.0  0.0
+ 449 P2   146 ASP  BB  146  0.0     
+ 450 SQ5n 146 ASP  SC1 146 -1.0     
+ 451 VS   146 ASP  CA  146  0.0  0.0
+ 452 SP1  147 GLY  BB  147  0.0     
+ 453 VS   147 GLY  CA  147  0.0  0.0
+ 454 SP1  148 GLY  BB  148  0.0     
+ 455 VS   148 GLY  CA  148  0.0  0.0
+ 456 P2   149 LEU  BB  149  0.0     
+ 457 SC2  149 LEU  SC1 149  0.0     
+ 458 VS   149 LEU  CA  149  0.0  0.0
+ 459 P2   150 HIS  BB  150  0.0     
+ 460 TC4  150 HIS  SC1 150  0.0     
+ 461 TN6d 150 HIS  SC2 150  0.0     
+ 462 TN5a 150 HIS  SC3 150  0.0     
+ 463 VS   150 HIS  CA  150  0.0  0.0
+ 464 P2   151 ILE  BB  151  0.0     
+ 465 SC2  151 ILE  SC1 151  0.0     
+ 466 VS   151 ILE  CA  151  0.0  0.0
+ 467 SP1  152 GLY  BB  152  0.0     
+ 468 VS   152 GLY  CA  152  0.0  0.0
+ 469 SP2  153 ALA  BB  153  0.0     
+ 470 TC3  153 ALA  SC1 153  0.0     
+ 471 VS   153 ALA  CA  153  0.0  0.0
+ 472 P2   154 LEU  BB  154  0.0     
+ 473 SC2  154 LEU  SC1 154  0.0     
+ 474 VS   154 LEU  CA  154  0.0  0.0
+ 475 P2   155 GLN  BB  155  0.0     
+ 476 P5   155 GLN  SC1 155  0.0     
+ 477 VS   155 GLN  CA  155  0.0  0.0
+ 478 P2   156 SER  BB  156  0.0     
+ 479 TP1  156 SER  SC1 156  0.0     
+ 480 VS   156 SER  CA  156  0.0  0.0
+ 481 P2   157 LEU  BB  157  0.0     
+ 482 SC2  157 LEU  SC1 157  0.0     
+ 483 VS   157 LEU  CA  157  0.0  0.0
+ 484 P2   158 GLN  BB  158  0.0     
+ 485 P5   158 GLN  SC1 158  0.0     
+ 486 VS   158 GLN  CA  158  0.0  0.0
+ 487 SP2a 159 PRO  BB  159  0.0     
+ 488 SC3  159 PRO  SC1 159  0.0     
+ 489 VS   159 PRO  CA  159  0.0  0.0
+ 490 P2   160 GLU  BB  160  0.0     
+ 491 Q5n  160 GLU  SC1 160 -1.0     
+ 492 VS   160 GLU  CA  160  0.0  0.0
+ 493 P2   161 ASP  BB  161  0.0     
+ 494 SQ5n 161 ASP  SC1 161 -1.0     
+ 495 VS   161 ASP  CA  161  0.0  0.0
+ 496 P2   162 LEU  BB  162  0.0     
+ 497 SC2  162 LEU  SC1 162  0.0     
+ 498 VS   162 LEU  CA  162  0.0  0.0
+ 499 SP2a 163 PRO  BB  163  0.0     
+ 500 SC3  163 PRO  SC1 163  0.0     
+ 501 VS   163 PRO  CA  163  0.0  0.0
+ 502 SP2a 164 PRO  BB  164  0.0     
+ 503 SC3  164 PRO  SC1 164  0.0     
+ 504 VS   164 PRO  CA  164  0.0  0.0
+ 505 P2   165 SER  BB  165  0.0     
+ 506 TP1  165 SER  SC1 165  0.0     
+ 507 VS   165 SER  CA  165  0.0  0.0
+ 508 P2   166 ARG  BB  166  0.0     
+ 509 SC3  166 ARG  SC1 166  0.0     
+ 510 SQ3p 166 ARG  SC2 166  1.0     
+ 511 VS   166 ARG  CA  166  0.0  0.0
+ 512 SP2  167 VAL  BB  167  0.0     
+ 513 SC3  167 VAL  SC1 167  0.0     
+ 514 VS   167 VAL  CA  167  0.0  0.0
+ 515 SP2  168 VAL  BB  168  0.0     
+ 516 SC3  168 VAL  SC1 168  0.0     
+ 517 VS   168 VAL  CA  168  0.0  0.0
+ 518 P2   169 LEU  BB  169  0.0     
+ 519 SC2  169 LEU  SC1 169  0.0     
+ 520 VS   169 LEU  CA  169  0.0  0.0
+ 521 P2   170 ARG  BB  170  0.0     
+ 522 SC3  170 ARG  SC1 170  0.0     
+ 523 SQ3p 170 ARG  SC2 170  1.0     
+ 524 VS   170 ARG  CA  170  0.0  0.0
+ 525 P2   171 ASP  BB  171  0.0     
+ 526 SQ5n 171 ASP  SC1 171 -1.0     
+ 527 VS   171 ASP  CA  171  0.0  0.0
+ 528 P2   172 THR  BB  172  0.0     
+ 529 SP1  172 THR  SC1 172  0.0     
+ 530 VS   172 THR  CA  172  0.0  0.0
+ 531 P2   173 ASN  BB  173  0.0     
+ 532 SP5  173 ASN  SC1 173  0.0     
+ 533 VS   173 ASN  CA  173  0.0  0.0
+ 534 SP2  174 VAL  BB  174  0.0     
+ 535 SC3  174 VAL  SC1 174  0.0     
+ 536 VS   174 VAL  CA  174  0.0  0.0
+ 537 P2   175 THR  BB  175  0.0     
+ 538 SP1  175 THR  SC1 175  0.0     
+ 539 VS   175 THR  CA  175  0.0  0.0
+ 540 SP2  176 ALA  BB  176  0.0     
+ 541 TC3  176 ALA  SC1 176  0.0     
+ 542 VS   176 ALA  CA  176  0.0  0.0
+ 543 SP2  177 VAL  BB  177  0.0     
+ 544 SC3  177 VAL  SC1 177  0.0     
+ 545 VS   177 VAL  CA  177  0.0  0.0
+ 546 SP2a 178 PRO  BB  178  0.0     
+ 547 SC3  178 PRO  SC1 178  0.0     
+ 548 VS   178 PRO  CA  178  0.0  0.0
+ 549 SP2  179 ALA  BB  179  0.0     
+ 550 TC3  179 ALA  SC1 179  0.0     
+ 551 VS   179 ALA  CA  179  0.0  0.0
+ 552 P2   180 SER  BB  180  0.0     
+ 553 TP1  180 SER  SC1 180  0.0     
+ 554 VS   180 SER  CA  180  0.0  0.0
+ 555 SP1  181 GLY  BB  181  0.0     
+ 556 VS   181 GLY  CA  181  0.0  0.0
+ 557 SP2  182 ALA  BB  182  0.0     
+ 558 TC3  182 ALA  SC1 182  0.0     
+ 559 VS   182 ALA  CA  182  0.0  0.0
+ 560 SP2a 183 PRO  BB  183  0.0     
+ 561 SC3  183 PRO  SC1 183  0.0     
+ 562 VS   183 PRO  CA  183  0.0  0.0
+ 563 SP2  184 ALA  BB  184  0.0     
+ 564 TC3  184 ALA  SC1 184  0.0     
+ 565 VS   184 ALA  CA  184  0.0  0.0
+ 566 SP2  185 ALA  BB  185  0.0     
+ 567 TC3  185 ALA  SC1 185  0.0     
+ 568 VS   185 ALA  CA  185  0.0  0.0
+ 569 SP2  186 VAL  BB  186  0.0     
+ 570 SC3  186 VAL  SC1 186  0.0     
+ 571 VS   186 VAL  CA  186  0.0  0.0
+ 572 P2   187 SER  BB  187  0.0     
+ 573 TP1  187 SER  SC1 187  0.0     
+ 574 VS   187 SER  CA  187  0.0  0.0
+ 575 SP2  188 VAL  BB  188  0.0     
+ 576 SC3  188 VAL  SC1 188  0.0     
+ 577 VS   188 VAL  CA  188  0.0  0.0
+ 578 P2   189 LEU  BB  189  0.0     
+ 579 SC2  189 LEU  SC1 189  0.0     
+ 580 VS   189 LEU  CA  189  0.0  0.0
+ 581 SP1  190 GLY  BB  190  0.0     
+ 582 VS   190 GLY  CA  190  0.0  0.0
+ 583 SP2  191 ALA  BB  191  0.0     
+ 584 TC3  191 ALA  SC1 191  0.0     
+ 585 VS   191 ALA  CA  191  0.0  0.0
+ 586 P2   192 SER  BB  192  0.0     
+ 587 TP1  192 SER  SC1 192  0.0     
+ 588 VS   192 SER  CA  192  0.0  0.0
+ 589 P2   193 GLU  BB  193  0.0     
+ 590 Q5n  193 GLU  SC1 193 -1.0     
+ 591 VS   193 GLU  CA  193  0.0  0.0
+ 592 P2   194 LEU  BB  194  0.0     
+ 593 SC2  194 LEU  SC1 194  0.0     
+ 594 VS   194 LEU  CA  194  0.0  0.0
+ 595 P2   195 THR  BB  195  0.0     
+ 596 SP1  195 THR  SC1 195  0.0     
+ 597 VS   195 THR  CA  195  0.0  0.0
+ 598 P2   196 LEU  BB  196  0.0     
+ 599 SC2  196 LEU  SC1 196  0.0     
+ 600 VS   196 LEU  CA  196  0.0  0.0
+ 601 P2   197 ASP  BB  197  0.0     
+ 602 SQ5n 197 ASP  SC1 197 -1.0     
+ 603 VS   197 ASP  CA  197  0.0  0.0
+ 604 SP1  198 GLY  BB  198  0.0     
+ 605 VS   198 GLY  CA  198  0.0  0.0
+ 606 SP1  199 GLY  BB  199  0.0     
+ 607 VS   199 GLY  CA  199  0.0  0.0
+ 608 P2   200 HIS  BB  200  0.0     
+ 609 TC4  200 HIS  SC1 200  0.0     
+ 610 TN6d 200 HIS  SC2 200  0.0     
+ 611 TN5a 200 HIS  SC3 200  0.0     
+ 612 VS   200 HIS  CA  200  0.0  0.0
+ 613 P2   201 ILE  BB  201  0.0     
+ 614 SC2  201 ILE  SC1 201  0.0     
+ 615 VS   201 ILE  CA  201  0.0  0.0
+ 616 P2   202 THR  BB  202  0.0     
+ 617 SP1  202 THR  SC1 202  0.0     
+ 618 VS   202 THR  CA  202  0.0  0.0
+ 619 SP1  203 GLY  BB  203  0.0     
+ 620 VS   203 GLY  CA  203  0.0  0.0
+ 621 SP1  204 GLY  BB  204  0.0     
+ 622 VS   204 GLY  CA  204  0.0  0.0
+ 623 P2   205 ARG  BB  205  0.0     
+ 624 SC3  205 ARG  SC1 205  0.0     
+ 625 SQ3p 205 ARG  SC2 205  1.0     
+ 626 VS   205 ARG  CA  205  0.0  0.0
+ 627 SP2  206 ALA  BB  206  0.0     
+ 628 TC3  206 ALA  SC1 206  0.0     
+ 629 VS   206 ALA  CA  206  0.0  0.0
+ 630 SP2  207 ALA  BB  207  0.0     
+ 631 TC3  207 ALA  SC1 207  0.0     
+ 632 VS   207 ALA  CA  207  0.0  0.0
+ 633 SP1  208 GLY  BB  208  0.0     
+ 634 VS   208 GLY  CA  208  0.0  0.0
+ 635 SP2  209 VAL  BB  209  0.0     
+ 636 SC3  209 VAL  SC1 209  0.0     
+ 637 VS   209 VAL  CA  209  0.0  0.0
+ 638 SP2  210 ALA  BB  210  0.0     
+ 639 TC3  210 ALA  SC1 210  0.0     
+ 640 VS   210 ALA  CA  210  0.0  0.0
+ 641 SP2  211 ALA  BB  211  0.0     
+ 642 TC3  211 ALA  SC1 211  0.0     
+ 643 VS   211 ALA  CA  211  0.0  0.0
+ 644 P2   212 MET  BB  212  0.0     
+ 645 C6   212 MET  SC1 212  0.0     
+ 646 VS   212 MET  CA  212  0.0  0.0
+ 647 P2   213 GLN  BB  213  0.0     
+ 648 P5   213 GLN  SC1 213  0.0     
+ 649 VS   213 GLN  CA  213  0.0  0.0
+ 650 SP1  214 GLY  BB  214  0.0     
+ 651 VS   214 GLY  CA  214  0.0  0.0
+ 652 SP2  215 ALA  BB  215  0.0     
+ 653 TC3  215 ALA  SC1 215  0.0     
+ 654 VS   215 ALA  CA  215  0.0  0.0
+ 655 SP2  216 VAL  BB  216  0.0     
+ 656 SC3  216 VAL  SC1 216  0.0     
+ 657 VS   216 VAL  CA  216  0.0  0.0
+ 658 SP2  217 VAL  BB  217  0.0     
+ 659 SC3  217 VAL  SC1 217  0.0     
+ 660 VS   217 VAL  CA  217  0.0  0.0
+ 661 P2   218 HIS  BB  218  0.0     
+ 662 TC4  218 HIS  SC1 218  0.0     
+ 663 TN6d 218 HIS  SC2 218  0.0     
+ 664 TN5a 218 HIS  SC3 218  0.0     
+ 665 VS   218 HIS  CA  218  0.0  0.0
+ 666 P2   219 LEU  BB  219  0.0     
+ 667 SC2  219 LEU  SC1 219  0.0     
+ 668 VS   219 LEU  CA  219  0.0  0.0
+ 669 P2   220 GLN  BB  220  0.0     
+ 670 P5   220 GLN  SC1 220  0.0     
+ 671 VS   220 GLN  CA  220  0.0  0.0
+ 672 P2   221 ARG  BB  221  0.0     
+ 673 SC3  221 ARG  SC1 221  0.0     
+ 674 SQ3p 221 ARG  SC2 221  1.0     
+ 675 VS   221 ARG  CA  221  0.0  0.0
+ 676 SP2  222 ALA  BB  222  0.0     
+ 677 TC3  222 ALA  SC1 222  0.0     
+ 678 VS   222 ALA  CA  222  0.0  0.0
+ 679 P2   223 THR  BB  223  0.0     
+ 680 SP1  223 THR  SC1 223  0.0     
+ 681 VS   223 THR  CA  223  0.0  0.0
+ 682 P2   224 ILE  BB  224  0.0     
+ 683 SC2  224 ILE  SC1 224  0.0     
+ 684 VS   224 ILE  CA  224  0.0  0.0
+ 685 P2   225 ARG  BB  225  0.0     
+ 686 SC3  225 ARG  SC1 225  0.0     
+ 687 SQ3p 225 ARG  SC2 225  1.0     
+ 688 VS   225 ARG  CA  225  0.0  0.0
+ 689 P2   226 ARG  BB  226  0.0     
+ 690 SC3  226 ARG  SC1 226  0.0     
+ 691 SQ3p 226 ARG  SC2 226  1.0     
+ 692 VS   226 ARG  CA  226  0.0  0.0
+ 693 SP1  227 GLY  BB  227  0.0     
+ 694 VS   227 GLY  CA  227  0.0  0.0
+ 695 P2   228 ASP  BB  228  0.0     
+ 696 SQ5n 228 ASP  SC1 228 -1.0     
+ 697 VS   228 ASP  CA  228  0.0  0.0
+ 698 SP2  229 ALA  BB  229  0.0     
+ 699 TC3  229 ALA  SC1 229  0.0     
+ 700 VS   229 ALA  CA  229  0.0  0.0
+ 701 P2   230 LEU  BB  230  0.0     
+ 702 SC2  230 LEU  SC1 230  0.0     
+ 703 VS   230 LEU  CA  230  0.0  0.0
+ 704 SP2  231 ALA  BB  231  0.0     
+ 705 TC3  231 ALA  SC1 231  0.0     
+ 706 VS   231 ALA  CA  231  0.0  0.0
+ 707 SP1  232 GLY  BB  232  0.0     
+ 708 VS   232 GLY  CA  232  0.0  0.0
+ 709 SP1  233 GLY  BB  233  0.0     
+ 710 VS   233 GLY  CA  233  0.0  0.0
+ 711 SP2  234 ALA  BB  234  0.0     
+ 712 TC3  234 ALA  SC1 234  0.0     
+ 713 VS   234 ALA  CA  234  0.0  0.0
+ 714 SP2  235 VAL  BB  235  0.0     
+ 715 SC3  235 VAL  SC1 235  0.0     
+ 716 VS   235 VAL  CA  235  0.0  0.0
+ 717 SP2a 236 PRO  BB  236  0.0     
+ 718 SC3  236 PRO  SC1 236  0.0     
+ 719 VS   236 PRO  CA  236  0.0  0.0
+ 720 SP1  237 GLY  BB  237  0.0     
+ 721 VS   237 GLY  CA  237  0.0  0.0
+ 722 SP1  238 GLY  BB  238  0.0     
+ 723 VS   238 GLY  CA  238  0.0  0.0
+ 724 SP2  239 ALA  BB  239  0.0     
+ 725 TC3  239 ALA  SC1 239  0.0     
+ 726 VS   239 ALA  CA  239  0.0  0.0
+ 727 SP2  240 VAL  BB  240  0.0     
+ 728 SC3  240 VAL  SC1 240  0.0     
+ 729 VS   240 VAL  CA  240  0.0  0.0
+ 730 SP2a 241 PRO  BB  241  0.0     
+ 731 SC3  241 PRO  SC1 241  0.0     
+ 732 VS   241 PRO  CA  241  0.0  0.0
+ 733 SP1  242 GLY  BB  242  0.0     
+ 734 VS   242 GLY  CA  242  0.0  0.0
+ 735 SP1  243 GLY  BB  243  0.0     
+ 736 VS   243 GLY  CA  243  0.0  0.0
+ 737 SP2  244 ALA  BB  244  0.0     
+ 738 TC3  244 ALA  SC1 244  0.0     
+ 739 VS   244 ALA  CA  244  0.0  0.0
+ 740 SP2  245 VAL  BB  245  0.0     
+ 741 SC3  245 VAL  SC1 245  0.0     
+ 742 VS   245 VAL  CA  245  0.0  0.0
+ 743 SP2a 246 PRO  BB  246  0.0     
+ 744 SC3  246 PRO  SC1 246  0.0     
+ 745 VS   246 PRO  CA  246  0.0  0.0
+ 746 SP1  247 GLY  BB  247  0.0     
+ 747 VS   247 GLY  CA  247  0.0  0.0
+ 748 SP1  248 GLY  BB  248  0.0     
+ 749 VS   248 GLY  CA  248  0.0  0.0
+ 750 P2   249 PHE  BB  249  0.0     
+ 751 SC4  249 PHE  SC1 249  0.0     
+ 752 TC5  249 PHE  SC2 249  0.0     
+ 753 TC5  249 PHE  SC3 249  0.0     
+ 754 VS   249 PHE  CA  249  0.0  0.0
+ 755 SP1  250 GLY  BB  250  0.0     
+ 756 VS   250 GLY  CA  250  0.0  0.0
+ 757 SP2a 251 PRO  BB  251  0.0     
+ 758 SC3  251 PRO  SC1 251  0.0     
+ 759 VS   251 PRO  CA  251  0.0  0.0
+ 760 SP1  252 GLY  BB  252  0.0     
+ 761 VS   252 GLY  CA  252  0.0  0.0
+ 762 SP1  253 GLY  BB  253  0.0     
+ 763 VS   253 GLY  CA  253  0.0  0.0
+ 764 P2   254 PHE  BB  254  0.0     
+ 765 SC4  254 PHE  SC1 254  0.0     
+ 766 TC5  254 PHE  SC2 254  0.0     
+ 767 TC5  254 PHE  SC3 254  0.0     
+ 768 VS   254 PHE  CA  254  0.0  0.0
+ 769 SP1  255 GLY  BB  255  0.0     
+ 770 VS   255 GLY  CA  255  0.0  0.0
+ 771 SP2a 256 PRO  BB  256  0.0     
+ 772 SC3  256 PRO  SC1 256  0.0     
+ 773 VS   256 PRO  CA  256  0.0  0.0
+ 774 SP2  257 VAL  BB  257  0.0     
+ 775 SC3  257 VAL  SC1 257  0.0     
+ 776 VS   257 VAL  CA  257  0.0  0.0
+ 777 P2   258 LEU  BB  258  0.0     
+ 778 SC2  258 LEU  SC1 258  0.0     
+ 779 VS   258 LEU  CA  258  0.0  0.0
+ 780 P2   259 ASP  BB  259  0.0     
+ 781 SQ5n 259 ASP  SC1 259 -1.0     
+ 782 VS   259 ASP  CA  259  0.0  0.0
+ 783 SP1  260 GLY  BB  260  0.0     
+ 784 VS   260 GLY  CA  260  0.0  0.0
+ 785 P2   261 TRP  BB  261  0.0     
+ 786 TC4  261 TRP  SC1 261  0.0 36.0
+ 787 TN6d 261 TRP  SC2 261  0.0 36.0
+ 788 TC5  261 TRP  SC3 261  0.0  0.0
+ 789 TC5  261 TRP  SC4 261  0.0 36.0
+ 790 TC5  261 TRP  SC5 261  0.0 36.0
+ 791 VS   261 TRP  CA  261  0.0  0.0
+ 792 P2   262 TYR  BB  262  0.0     
+ 793 TC4  262 TYR  SC1 262  0.0     
+ 794 TC5  262 TYR  SC2 262  0.0     
+ 795 TC5  262 TYR  SC3 262  0.0     
+ 796 TN6  262 TYR  SC4 262  0.0     
+ 797 VS   262 TYR  CA  262  0.0  0.0
+ 798 SP1  263 GLY  BB  263  0.0     
+ 799 VS   263 GLY  CA  263  0.0  0.0
+ 800 SP2  264 VAL  BB  264  0.0     
+ 801 SC3  264 VAL  SC1 264  0.0     
+ 802 VS   264 VAL  CA  264  0.0  0.0
+ 803 P2   265 ASP  BB  265  0.0     
+ 804 SQ5n 265 ASP  SC1 265 -1.0     
+ 805 VS   265 ASP  CA  265  0.0  0.0
+ 806 SP2  266 VAL  BB  266  0.0     
+ 807 SC3  266 VAL  SC1 266  0.0     
+ 808 VS   266 VAL  CA  266  0.0  0.0
+ 809 P2   267 SER  BB  267  0.0     
+ 810 TP1  267 SER  SC1 267  0.0     
+ 811 VS   267 SER  CA  267  0.0  0.0
+ 812 SP1  268 GLY  BB  268  0.0     
+ 813 VS   268 GLY  CA  268  0.0  0.0
+ 814 P2   269 SER  BB  269  0.0     
+ 815 TP1  269 SER  SC1 269  0.0     
+ 816 VS   269 SER  CA  269  0.0  0.0
+ 817 P2   270 SER  BB  270  0.0     
+ 818 TP1  270 SER  SC1 270  0.0     
+ 819 VS   270 SER  CA  270  0.0  0.0
+ 820 SP2  271 VAL  BB  271  0.0     
+ 821 SC3  271 VAL  SC1 271  0.0     
+ 822 VS   271 VAL  CA  271  0.0  0.0
+ 823 P2   272 GLU  BB  272  0.0     
+ 824 Q5n  272 GLU  SC1 272 -1.0     
+ 825 VS   272 GLU  CA  272  0.0  0.0
+ 826 P2   273 LEU  BB  273  0.0     
+ 827 SC2  273 LEU  SC1 273  0.0     
+ 828 VS   273 LEU  CA  273  0.0  0.0
+ 829 SP2  274 ALA  BB  274  0.0     
+ 830 TC3  274 ALA  SC1 274  0.0     
+ 831 VS   274 ALA  CA  274  0.0  0.0
+ 832 P2   275 GLN  BB  275  0.0     
+ 833 P5   275 GLN  SC1 275  0.0     
+ 834 VS   275 GLN  CA  275  0.0  0.0
+ 835 P2   276 SER  BB  276  0.0     
+ 836 TP1  276 SER  SC1 276  0.0     
+ 837 VS   276 SER  CA  276  0.0  0.0
+ 838 P2   277 ILE  BB  277  0.0     
+ 839 SC2  277 ILE  SC1 277  0.0     
+ 840 VS   277 ILE  CA  277  0.0  0.0
+ 841 SP2  278 VAL  BB  278  0.0     
+ 842 SC3  278 VAL  SC1 278  0.0     
+ 843 VS   278 VAL  CA  278  0.0  0.0
+ 844 P2   279 GLU  BB  279  0.0     
+ 845 Q5n  279 GLU  SC1 279 -1.0     
+ 846 VS   279 GLU  CA  279  0.0  0.0
+ 847 SP2  280 ALA  BB  280  0.0     
+ 848 TC3  280 ALA  SC1 280  0.0     
+ 849 VS   280 ALA  CA  280  0.0  0.0
+ 850 SP2a 281 PRO  BB  281  0.0     
+ 851 SC3  281 PRO  SC1 281  0.0     
+ 852 VS   281 PRO  CA  281  0.0  0.0
+ 853 P2   282 GLU  BB  282  0.0     
+ 854 Q5n  282 GLU  SC1 282 -1.0     
+ 855 VS   282 GLU  CA  282  0.0  0.0
+ 856 P2   283 LEU  BB  283  0.0     
+ 857 SC2  283 LEU  SC1 283  0.0     
+ 858 VS   283 LEU  CA  283  0.0  0.0
+ 859 SP1  284 GLY  BB  284  0.0     
+ 860 VS   284 GLY  CA  284  0.0  0.0
+ 861 SP2  285 ALA  BB  285  0.0     
+ 862 TC3  285 ALA  SC1 285  0.0     
+ 863 VS   285 ALA  CA  285  0.0  0.0
+ 864 SP2  286 ALA  BB  286  0.0     
+ 865 TC3  286 ALA  SC1 286  0.0     
+ 866 VS   286 ALA  CA  286  0.0  0.0
+ 867 P2   287 ILE  BB  287  0.0     
+ 868 SC2  287 ILE  SC1 287  0.0     
+ 869 VS   287 ILE  CA  287  0.0  0.0
+ 870 P2   288 ARG  BB  288  0.0     
+ 871 SC3  288 ARG  SC1 288  0.0     
+ 872 SQ3p 288 ARG  SC2 288  1.0     
+ 873 VS   288 ARG  CA  288  0.0  0.0
+ 874 SP2  289 VAL  BB  289  0.0     
+ 875 SC3  289 VAL  SC1 289  0.0     
+ 876 VS   289 VAL  CA  289  0.0  0.0
+ 877 SP1  290 GLY  BB  290  0.0     
+ 878 VS   290 GLY  CA  290  0.0  0.0
+ 879 P2   291 ARG  BB  291  0.0     
+ 880 SC3  291 ARG  SC1 291  0.0     
+ 881 SQ3p 291 ARG  SC2 291  1.0     
+ 882 VS   291 ARG  CA  291  0.0  0.0
+ 883 SP1  292 GLY  BB  292  0.0     
+ 884 VS   292 GLY  CA  292  0.0  0.0
+ 885 SP2  293 ALA  BB  293  0.0     
+ 886 TC3  293 ALA  SC1 293  0.0     
+ 887 VS   293 ALA  CA  293  0.0  0.0
+ 888 P2   294 ARG  BB  294  0.0     
+ 889 SC3  294 ARG  SC1 294  0.0     
+ 890 SQ3p 294 ARG  SC2 294  1.0     
+ 891 VS   294 ARG  CA  294  0.0  0.0
+ 892 SP2  295 VAL  BB  295  0.0     
+ 893 SC3  295 VAL  SC1 295  0.0     
+ 894 VS   295 VAL  CA  295  0.0  0.0
+ 895 P2   296 THR  BB  296  0.0     
+ 896 SP1  296 THR  SC1 296  0.0     
+ 897 VS   296 THR  CA  296  0.0  0.0
+ 898 SP2  297 VAL  BB  297  0.0     
+ 899 SC3  297 VAL  SC1 297  0.0     
+ 900 VS   297 VAL  CA  297  0.0  0.0
+ 901 SP2a 298 PRO  BB  298  0.0     
+ 902 SC3  298 PRO  SC1 298  0.0     
+ 903 VS   298 PRO  CA  298  0.0  0.0
+ 904 SP1  299 GLY  BB  299  0.0     
+ 905 VS   299 GLY  CA  299  0.0  0.0
+ 906 SP1  300 GLY  BB  300  0.0     
+ 907 VS   300 GLY  CA  300  0.0  0.0
+ 908 P2   301 SER  BB  301  0.0     
+ 909 TP1  301 SER  SC1 301  0.0     
+ 910 VS   301 SER  CA  301  0.0  0.0
+ 911 P2   302 LEU  BB  302  0.0     
+ 912 SC2  302 LEU  SC1 302  0.0     
+ 913 VS   302 LEU  CA  302  0.0  0.0
+ 914 P2   303 SER  BB  303  0.0     
+ 915 TP1  303 SER  SC1 303  0.0     
+ 916 VS   303 SER  CA  303  0.0  0.0
+ 917 SP2  304 ALA  BB  304  0.0     
+ 918 TC3  304 ALA  SC1 304  0.0     
+ 919 VS   304 ALA  CA  304  0.0  0.0
+ 920 SP2a 305 PRO  BB  305  0.0     
+ 921 SC3  305 PRO  SC1 305  0.0     
+ 922 VS   305 PRO  CA  305  0.0  0.0
+ 923 P2   306 HIS  BB  306  0.0     
+ 924 TC4  306 HIS  SC1 306  0.0     
+ 925 TN6d 306 HIS  SC2 306  0.0     
+ 926 TN5a 306 HIS  SC3 306  0.0     
+ 927 VS   306 HIS  CA  306  0.0  0.0
+ 928 SP1  307 GLY  BB  307  0.0     
+ 929 VS   307 GLY  CA  307  0.0  0.0
+ 930 P2   308 ASN  BB  308  0.0     
+ 931 SP5  308 ASN  SC1 308  0.0     
+ 932 VS   308 ASN  CA  308  0.0  0.0
+ 933 SP2  309 VAL  BB  309  0.0     
+ 934 SC3  309 VAL  SC1 309  0.0     
+ 935 VS   309 VAL  CA  309  0.0  0.0
+ 936 P2   310 ILE  BB  310  0.0     
+ 937 SC2  310 ILE  SC1 310  0.0     
+ 938 VS   310 ILE  CA  310  0.0  0.0
+ 939 P2   311 GLU  BB  311  0.0     
+ 940 Q5n  311 GLU  SC1 311 -1.0     
+ 941 VS   311 GLU  CA  311  0.0  0.0
+ 942 P2   312 THR  BB  312  0.0     
+ 943 SP1  312 THR  SC1 312  0.0     
+ 944 VS   312 THR  CA  312  0.0  0.0
+ 945 SP1  313 GLY  BB  313  0.0     
+ 946 VS   313 GLY  CA  313  0.0  0.0
+ 947 SP1  314 GLY  BB  314  0.0     
+ 948 VS   314 GLY  CA  314  0.0  0.0
+ 949 SP2  315 ALA  BB  315  0.0     
+ 950 TC3  315 ALA  SC1 315  0.0     
+ 951 VS   315 ALA  CA  315  0.0  0.0
+ 952 P2   316 ARG  BB  316  0.0     
+ 953 SC3  316 ARG  SC1 316  0.0     
+ 954 SQ3p 316 ARG  SC2 316  1.0     
+ 955 VS   316 ARG  CA  316  0.0  0.0
+ 956 P2   317 ARG  BB  317  0.0     
+ 957 SC3  317 ARG  SC1 317  0.0     
+ 958 SQ3p 317 ARG  SC2 317  1.0     
+ 959 VS   317 ARG  CA  317  0.0  0.0
+ 960 P2   318 PHE  BB  318  0.0     
+ 961 SC4  318 PHE  SC1 318  0.0     
+ 962 TC5  318 PHE  SC2 318  0.0     
+ 963 TC5  318 PHE  SC3 318  0.0     
+ 964 VS   318 PHE  CA  318  0.0  0.0
+ 965 SP2  319 ALA  BB  319  0.0     
+ 966 TC3  319 ALA  SC1 319  0.0     
+ 967 VS   319 ALA  CA  319  0.0  0.0
+ 968 SP2a 320 PRO  BB  320  0.0     
+ 969 SC3  320 PRO  SC1 320  0.0     
+ 970 VS   320 PRO  CA  320  0.0  0.0
+ 971 P2   321 GLN  BB  321  0.0     
+ 972 P5   321 GLN  SC1 321  0.0     
+ 973 VS   321 GLN  CA  321  0.0  0.0
+ 974 SP2  322 ALA  BB  322  0.0     
+ 975 TC3  322 ALA  SC1 322  0.0     
+ 976 VS   322 ALA  CA  322  0.0  0.0
+ 977 SP2  323 ALA  BB  323  0.0     
+ 978 TC3  323 ALA  SC1 323  0.0     
+ 979 VS   323 ALA  CA  323  0.0  0.0
+ 980 SP2a 324 PRO  BB  324  0.0     
+ 981 SC3  324 PRO  SC1 324  0.0     
+ 982 VS   324 PRO  CA  324  0.0  0.0
+ 983 P2   325 LEU  BB  325  0.0     
+ 984 SC2  325 LEU  SC1 325  0.0     
+ 985 VS   325 LEU  CA  325  0.0  0.0
+ 986 P2   326 SER  BB  326  0.0     
+ 987 TP1  326 SER  SC1 326  0.0     
+ 988 VS   326 SER  CA  326  0.0  0.0
+ 989 P2   327 ILE  BB  327  0.0     
+ 990 SC2  327 ILE  SC1 327  0.0     
+ 991 VS   327 ILE  CA  327  0.0  0.0
+ 992 P2   328 THR  BB  328  0.0     
+ 993 SP1  328 THR  SC1 328  0.0     
+ 994 VS   328 THR  CA  328  0.0  0.0
+ 995 P2   329 LEU  BB  329  0.0     
+ 996 SC2  329 LEU  SC1 329  0.0     
+ 997 VS   329 LEU  CA  329  0.0  0.0
+ 998 P2   330 GLN  BB  330  0.0     
+ 999 P5   330 GLN  SC1 330  0.0     
+1000 VS   330 GLN  CA  330  0.0  0.0
+1001 SP2  331 ALA  BB  331  0.0     
+1002 TC3  331 ALA  SC1 331  0.0     
+1003 VS   331 ALA  CA  331  0.0  0.0
+1004 SP1  332 GLY  BB  332  0.0     
+1005 VS   332 GLY  CA  332  0.0  0.0
+1006 SP2  333 ALA  BB  333  0.0     
+1007 TC3  333 ALA  SC1 333  0.0     
+1008 VS   333 ALA  CA  333  0.0  0.0
+1009 Q5   334 HISC BB  334 -1.0     
+1010 TC4  334 HISC SC1 334  0.0     
+1011 TN6d 334 HISC SC2 334  0.0     
+1012 TN5a 334 HISC SC3 334  0.0     
+1013 VS   334 HISC CA  334  0.0  0.0
 
 [ position_restraints ]
 #ifdef POSRES
-   1 1 1 1000 1000 1000
-   4 1 1 1000 1000 1000
-  11 1 1 1000 1000 1000
-  14 1 1 1000 1000 1000
-  17 1 1 1000 1000 1000
-  20 1 1 1000 1000 1000
-  23 1 1 1000 1000 1000
-  26 1 1 1000 1000 1000
-  29 1 1 1000 1000 1000
-  33 1 1 1000 1000 1000
-  36 1 1 1000 1000 1000
-  38 1 1 1000 1000 1000
-  41 1 1 1000 1000 1000
-  45 1 1 1000 1000 1000
-  48 1 1 1000 1000 1000
-  53 1 1 1000 1000 1000
-  55 1 1 1000 1000 1000
-  58 1 1 1000 1000 1000
-  63 1 1 1000 1000 1000
-  66 1 1 1000 1000 1000
-  69 1 1 1000 1000 1000
-  71 1 1 1000 1000 1000
-  74 1 1 1000 1000 1000
-  77 1 1 1000 1000 1000
-  80 1 1 1000 1000 1000
-  82 1 1 1000 1000 1000
-  84 1 1 1000 1000 1000
-  87 1 1 1000 1000 1000
-  91 1 1 1000 1000 1000
-  94 1 1 1000 1000 1000
-  97 1 1 1000 1000 1000
- 100 1 1 1000 1000 1000
- 102 1 1 1000 1000 1000
- 105 1 1 1000 1000 1000
- 108 1 1 1000 1000 1000
- 111 1 1 1000 1000 1000
- 115 1 1 1000 1000 1000
- 118 1 1 1000 1000 1000
- 121 1 1 1000 1000 1000
- 123 1 1 1000 1000 1000
- 127 1 1 1000 1000 1000
- 130 1 1 1000 1000 1000
- 133 1 1 1000 1000 1000
- 136 1 1 1000 1000 1000
- 138 1 1 1000 1000 1000
- 141 1 1 1000 1000 1000
- 144 1 1 1000 1000 1000
- 147 1 1 1000 1000 1000
- 150 1 1 1000 1000 1000
- 153 1 1 1000 1000 1000
- 156 1 1 1000 1000 1000
- 159 1 1 1000 1000 1000
- 162 1 1 1000 1000 1000
- 165 1 1 1000 1000 1000
- 168 1 1 1000 1000 1000
- 171 1 1 1000 1000 1000
- 176 1 1 1000 1000 1000
- 180 1 1 1000 1000 1000
- 183 1 1 1000 1000 1000
- 185 1 1 1000 1000 1000
- 188 1 1 1000 1000 1000
- 191 1 1 1000 1000 1000
- 194 1 1 1000 1000 1000
- 197 1 1 1000 1000 1000
- 200 1 1 1000 1000 1000
- 202 1 1 1000 1000 1000
- 205 1 1 1000 1000 1000
- 208 1 1 1000 1000 1000
- 211 1 1 1000 1000 1000
- 214 1 1 1000 1000 1000
- 217 1 1 1000 1000 1000
- 219 1 1 1000 1000 1000
- 222 1 1 1000 1000 1000
- 226 1 1 1000 1000 1000
- 230 1 1 1000 1000 1000
- 235 1 1 1000 1000 1000
- 238 1 1 1000 1000 1000
- 240 1 1 1000 1000 1000
- 243 1 1 1000 1000 1000
- 246 1 1 1000 1000 1000
- 249 1 1 1000 1000 1000
- 252 1 1 1000 1000 1000
- 256 1 1 1000 1000 1000
- 259 1 1 1000 1000 1000
- 261 1 1 1000 1000 1000
- 265 1 1 1000 1000 1000
- 268 1 1 1000 1000 1000
- 271 1 1 1000 1000 1000
- 274 1 1 1000 1000 1000
- 277 1 1 1000 1000 1000
- 282 1 1 1000 1000 1000
- 285 1 1 1000 1000 1000
- 288 1 1 1000 1000 1000
- 291 1 1 1000 1000 1000
- 294 1 1 1000 1000 1000
- 297 1 1 1000 1000 1000
- 300 1 1 1000 1000 1000
- 302 1 1 1000 1000 1000
- 305 1 1 1000 1000 1000
- 308 1 1 1000 1000 1000
- 315 1 1 1000 1000 1000
- 318 1 1 1000 1000 1000
- 321 1 1 1000 1000 1000
- 324 1 1 1000 1000 1000
- 326 1 1 1000 1000 1000
- 329 1 1 1000 1000 1000
- 332 1 1 1000 1000 1000
- 335 1 1 1000 1000 1000
- 341 1 1 1000 1000 1000
- 344 1 1 1000 1000 1000
- 347 1 1 1000 1000 1000
- 349 1 1 1000 1000 1000
- 352 1 1 1000 1000 1000
- 355 1 1 1000 1000 1000
- 358 1 1 1000 1000 1000
- 361 1 1 1000 1000 1000
- 364 1 1 1000 1000 1000
- 367 1 1 1000 1000 1000
- 370 1 1 1000 1000 1000
- 373 1 1 1000 1000 1000
- 376 1 1 1000 1000 1000
- 379 1 1 1000 1000 1000
- 382 1 1 1000 1000 1000
- 385 1 1 1000 1000 1000
- 388 1 1 1000 1000 1000
- 390 1 1 1000 1000 1000
- 393 1 1 1000 1000 1000
- 395 1 1 1000 1000 1000
- 397 1 1 1000 1000 1000
- 400 1 1 1000 1000 1000
- 403 1 1 1000 1000 1000
- 406 1 1 1000 1000 1000
- 409 1 1 1000 1000 1000
- 413 1 1 1000 1000 1000
- 415 1 1 1000 1000 1000
- 418 1 1 1000 1000 1000
- 421 1 1 1000 1000 1000
- 424 1 1 1000 1000 1000
- 427 1 1 1000 1000 1000
- 430 1 1 1000 1000 1000
- 433 1 1 1000 1000 1000
- 437 1 1 1000 1000 1000
- 440 1 1 1000 1000 1000
- 443 1 1 1000 1000 1000
- 446 1 1 1000 1000 1000
- 449 1 1 1000 1000 1000
- 452 1 1 1000 1000 1000
- 454 1 1 1000 1000 1000
- 456 1 1 1000 1000 1000
- 459 1 1 1000 1000 1000
- 464 1 1 1000 1000 1000
- 467 1 1 1000 1000 1000
- 469 1 1 1000 1000 1000
- 472 1 1 1000 1000 1000
- 475 1 1 1000 1000 1000
- 478 1 1 1000 1000 1000
- 481 1 1 1000 1000 1000
- 484 1 1 1000 1000 1000
- 487 1 1 1000 1000 1000
- 490 1 1 1000 1000 1000
- 493 1 1 1000 1000 1000
- 496 1 1 1000 1000 1000
- 499 1 1 1000 1000 1000
- 502 1 1 1000 1000 1000
- 505 1 1 1000 1000 1000
- 508 1 1 1000 1000 1000
- 512 1 1 1000 1000 1000
- 515 1 1 1000 1000 1000
- 518 1 1 1000 1000 1000
- 521 1 1 1000 1000 1000
- 525 1 1 1000 1000 1000
- 528 1 1 1000 1000 1000
- 531 1 1 1000 1000 1000
- 534 1 1 1000 1000 1000
- 537 1 1 1000 1000 1000
- 540 1 1 1000 1000 1000
- 543 1 1 1000 1000 1000
- 546 1 1 1000 1000 1000
- 549 1 1 1000 1000 1000
- 552 1 1 1000 1000 1000
- 555 1 1 1000 1000 1000
- 557 1 1 1000 1000 1000
- 560 1 1 1000 1000 1000
- 563 1 1 1000 1000 1000
- 566 1 1 1000 1000 1000
- 569 1 1 1000 1000 1000
- 572 1 1 1000 1000 1000
- 575 1 1 1000 1000 1000
- 578 1 1 1000 1000 1000
- 581 1 1 1000 1000 1000
- 583 1 1 1000 1000 1000
- 586 1 1 1000 1000 1000
- 589 1 1 1000 1000 1000
- 592 1 1 1000 1000 1000
- 595 1 1 1000 1000 1000
- 598 1 1 1000 1000 1000
- 601 1 1 1000 1000 1000
- 604 1 1 1000 1000 1000
- 606 1 1 1000 1000 1000
- 608 1 1 1000 1000 1000
- 613 1 1 1000 1000 1000
- 616 1 1 1000 1000 1000
- 619 1 1 1000 1000 1000
- 621 1 1 1000 1000 1000
- 623 1 1 1000 1000 1000
- 627 1 1 1000 1000 1000
- 630 1 1 1000 1000 1000
- 633 1 1 1000 1000 1000
- 635 1 1 1000 1000 1000
- 638 1 1 1000 1000 1000
- 641 1 1 1000 1000 1000
- 644 1 1 1000 1000 1000
- 647 1 1 1000 1000 1000
- 650 1 1 1000 1000 1000
- 652 1 1 1000 1000 1000
- 655 1 1 1000 1000 1000
- 658 1 1 1000 1000 1000
- 661 1 1 1000 1000 1000
- 666 1 1 1000 1000 1000
- 669 1 1 1000 1000 1000
- 672 1 1 1000 1000 1000
- 676 1 1 1000 1000 1000
- 679 1 1 1000 1000 1000
- 682 1 1 1000 1000 1000
- 685 1 1 1000 1000 1000
- 689 1 1 1000 1000 1000
- 693 1 1 1000 1000 1000
- 695 1 1 1000 1000 1000
- 698 1 1 1000 1000 1000
- 701 1 1 1000 1000 1000
- 704 1 1 1000 1000 1000
- 707 1 1 1000 1000 1000
- 709 1 1 1000 1000 1000
- 711 1 1 1000 1000 1000
- 714 1 1 1000 1000 1000
- 717 1 1 1000 1000 1000
- 720 1 1 1000 1000 1000
- 722 1 1 1000 1000 1000
- 724 1 1 1000 1000 1000
- 727 1 1 1000 1000 1000
- 730 1 1 1000 1000 1000
- 733 1 1 1000 1000 1000
- 735 1 1 1000 1000 1000
- 737 1 1 1000 1000 1000
- 740 1 1 1000 1000 1000
- 743 1 1 1000 1000 1000
- 746 1 1 1000 1000 1000
- 748 1 1 1000 1000 1000
- 750 1 1 1000 1000 1000
- 755 1 1 1000 1000 1000
- 757 1 1 1000 1000 1000
- 760 1 1 1000 1000 1000
- 762 1 1 1000 1000 1000
- 764 1 1 1000 1000 1000
- 769 1 1 1000 1000 1000
- 771 1 1 1000 1000 1000
- 774 1 1 1000 1000 1000
- 777 1 1 1000 1000 1000
- 780 1 1 1000 1000 1000
- 783 1 1 1000 1000 1000
- 785 1 1 1000 1000 1000
- 792 1 1 1000 1000 1000
- 798 1 1 1000 1000 1000
- 800 1 1 1000 1000 1000
- 803 1 1 1000 1000 1000
- 806 1 1 1000 1000 1000
- 809 1 1 1000 1000 1000
- 812 1 1 1000 1000 1000
- 814 1 1 1000 1000 1000
- 817 1 1 1000 1000 1000
- 820 1 1 1000 1000 1000
- 823 1 1 1000 1000 1000
- 826 1 1 1000 1000 1000
- 829 1 1 1000 1000 1000
- 832 1 1 1000 1000 1000
- 835 1 1 1000 1000 1000
- 838 1 1 1000 1000 1000
- 841 1 1 1000 1000 1000
- 844 1 1 1000 1000 1000
- 847 1 1 1000 1000 1000
- 850 1 1 1000 1000 1000
- 853 1 1 1000 1000 1000
- 856 1 1 1000 1000 1000
- 859 1 1 1000 1000 1000
- 861 1 1 1000 1000 1000
- 864 1 1 1000 1000 1000
- 867 1 1 1000 1000 1000
- 870 1 1 1000 1000 1000
- 874 1 1 1000 1000 1000
- 877 1 1 1000 1000 1000
- 879 1 1 1000 1000 1000
- 883 1 1 1000 1000 1000
- 885 1 1 1000 1000 1000
- 888 1 1 1000 1000 1000
- 892 1 1 1000 1000 1000
- 895 1 1 1000 1000 1000
- 898 1 1 1000 1000 1000
- 901 1 1 1000 1000 1000
- 904 1 1 1000 1000 1000
- 906 1 1 1000 1000 1000
- 908 1 1 1000 1000 1000
- 911 1 1 1000 1000 1000
- 914 1 1 1000 1000 1000
- 917 1 1 1000 1000 1000
- 920 1 1 1000 1000 1000
- 923 1 1 1000 1000 1000
- 928 1 1 1000 1000 1000
- 930 1 1 1000 1000 1000
- 933 1 1 1000 1000 1000
- 936 1 1 1000 1000 1000
- 939 1 1 1000 1000 1000
- 942 1 1 1000 1000 1000
- 945 1 1 1000 1000 1000
- 947 1 1 1000 1000 1000
- 949 1 1 1000 1000 1000
- 952 1 1 1000 1000 1000
- 956 1 1 1000 1000 1000
- 960 1 1 1000 1000 1000
- 965 1 1 1000 1000 1000
- 968 1 1 1000 1000 1000
- 971 1 1 1000 1000 1000
- 974 1 1 1000 1000 1000
- 977 1 1 1000 1000 1000
- 980 1 1 1000 1000 1000
- 983 1 1 1000 1000 1000
- 986 1 1 1000 1000 1000
- 989 1 1 1000 1000 1000
- 992 1 1 1000 1000 1000
- 995 1 1 1000 1000 1000
- 998 1 1 1000 1000 1000
-1001 1 1 1000 1000 1000
-1004 1 1 1000 1000 1000
-1006 1 1 1000 1000 1000
-1009 1 1 1000 1000 1000
+   1 1 1000 1000 1000
+   4 1 1000 1000 1000
+  11 1 1000 1000 1000
+  14 1 1000 1000 1000
+  17 1 1000 1000 1000
+  20 1 1000 1000 1000
+  23 1 1000 1000 1000
+  26 1 1000 1000 1000
+  29 1 1000 1000 1000
+  33 1 1000 1000 1000
+  36 1 1000 1000 1000
+  38 1 1000 1000 1000
+  41 1 1000 1000 1000
+  45 1 1000 1000 1000
+  48 1 1000 1000 1000
+  53 1 1000 1000 1000
+  55 1 1000 1000 1000
+  58 1 1000 1000 1000
+  63 1 1000 1000 1000
+  66 1 1000 1000 1000
+  69 1 1000 1000 1000
+  71 1 1000 1000 1000
+  74 1 1000 1000 1000
+  77 1 1000 1000 1000
+  80 1 1000 1000 1000
+  82 1 1000 1000 1000
+  84 1 1000 1000 1000
+  87 1 1000 1000 1000
+  91 1 1000 1000 1000
+  94 1 1000 1000 1000
+  97 1 1000 1000 1000
+ 100 1 1000 1000 1000
+ 102 1 1000 1000 1000
+ 105 1 1000 1000 1000
+ 108 1 1000 1000 1000
+ 111 1 1000 1000 1000
+ 115 1 1000 1000 1000
+ 118 1 1000 1000 1000
+ 121 1 1000 1000 1000
+ 123 1 1000 1000 1000
+ 127 1 1000 1000 1000
+ 130 1 1000 1000 1000
+ 133 1 1000 1000 1000
+ 136 1 1000 1000 1000
+ 138 1 1000 1000 1000
+ 141 1 1000 1000 1000
+ 144 1 1000 1000 1000
+ 147 1 1000 1000 1000
+ 150 1 1000 1000 1000
+ 153 1 1000 1000 1000
+ 156 1 1000 1000 1000
+ 159 1 1000 1000 1000
+ 162 1 1000 1000 1000
+ 165 1 1000 1000 1000
+ 168 1 1000 1000 1000
+ 171 1 1000 1000 1000
+ 176 1 1000 1000 1000
+ 180 1 1000 1000 1000
+ 183 1 1000 1000 1000
+ 185 1 1000 1000 1000
+ 188 1 1000 1000 1000
+ 191 1 1000 1000 1000
+ 194 1 1000 1000 1000
+ 197 1 1000 1000 1000
+ 200 1 1000 1000 1000
+ 202 1 1000 1000 1000
+ 205 1 1000 1000 1000
+ 208 1 1000 1000 1000
+ 211 1 1000 1000 1000
+ 214 1 1000 1000 1000
+ 217 1 1000 1000 1000
+ 219 1 1000 1000 1000
+ 222 1 1000 1000 1000
+ 226 1 1000 1000 1000
+ 230 1 1000 1000 1000
+ 235 1 1000 1000 1000
+ 238 1 1000 1000 1000
+ 240 1 1000 1000 1000
+ 243 1 1000 1000 1000
+ 246 1 1000 1000 1000
+ 249 1 1000 1000 1000
+ 252 1 1000 1000 1000
+ 256 1 1000 1000 1000
+ 259 1 1000 1000 1000
+ 261 1 1000 1000 1000
+ 265 1 1000 1000 1000
+ 268 1 1000 1000 1000
+ 271 1 1000 1000 1000
+ 274 1 1000 1000 1000
+ 277 1 1000 1000 1000
+ 282 1 1000 1000 1000
+ 285 1 1000 1000 1000
+ 288 1 1000 1000 1000
+ 291 1 1000 1000 1000
+ 294 1 1000 1000 1000
+ 297 1 1000 1000 1000
+ 300 1 1000 1000 1000
+ 302 1 1000 1000 1000
+ 305 1 1000 1000 1000
+ 308 1 1000 1000 1000
+ 315 1 1000 1000 1000
+ 318 1 1000 1000 1000
+ 321 1 1000 1000 1000
+ 324 1 1000 1000 1000
+ 326 1 1000 1000 1000
+ 329 1 1000 1000 1000
+ 332 1 1000 1000 1000
+ 335 1 1000 1000 1000
+ 341 1 1000 1000 1000
+ 344 1 1000 1000 1000
+ 347 1 1000 1000 1000
+ 349 1 1000 1000 1000
+ 352 1 1000 1000 1000
+ 355 1 1000 1000 1000
+ 358 1 1000 1000 1000
+ 361 1 1000 1000 1000
+ 364 1 1000 1000 1000
+ 367 1 1000 1000 1000
+ 370 1 1000 1000 1000
+ 373 1 1000 1000 1000
+ 376 1 1000 1000 1000
+ 379 1 1000 1000 1000
+ 382 1 1000 1000 1000
+ 385 1 1000 1000 1000
+ 388 1 1000 1000 1000
+ 390 1 1000 1000 1000
+ 393 1 1000 1000 1000
+ 395 1 1000 1000 1000
+ 397 1 1000 1000 1000
+ 400 1 1000 1000 1000
+ 403 1 1000 1000 1000
+ 406 1 1000 1000 1000
+ 409 1 1000 1000 1000
+ 413 1 1000 1000 1000
+ 415 1 1000 1000 1000
+ 418 1 1000 1000 1000
+ 421 1 1000 1000 1000
+ 424 1 1000 1000 1000
+ 427 1 1000 1000 1000
+ 430 1 1000 1000 1000
+ 433 1 1000 1000 1000
+ 437 1 1000 1000 1000
+ 440 1 1000 1000 1000
+ 443 1 1000 1000 1000
+ 446 1 1000 1000 1000
+ 449 1 1000 1000 1000
+ 452 1 1000 1000 1000
+ 454 1 1000 1000 1000
+ 456 1 1000 1000 1000
+ 459 1 1000 1000 1000
+ 464 1 1000 1000 1000
+ 467 1 1000 1000 1000
+ 469 1 1000 1000 1000
+ 472 1 1000 1000 1000
+ 475 1 1000 1000 1000
+ 478 1 1000 1000 1000
+ 481 1 1000 1000 1000
+ 484 1 1000 1000 1000
+ 487 1 1000 1000 1000
+ 490 1 1000 1000 1000
+ 493 1 1000 1000 1000
+ 496 1 1000 1000 1000
+ 499 1 1000 1000 1000
+ 502 1 1000 1000 1000
+ 505 1 1000 1000 1000
+ 508 1 1000 1000 1000
+ 512 1 1000 1000 1000
+ 515 1 1000 1000 1000
+ 518 1 1000 1000 1000
+ 521 1 1000 1000 1000
+ 525 1 1000 1000 1000
+ 528 1 1000 1000 1000
+ 531 1 1000 1000 1000
+ 534 1 1000 1000 1000
+ 537 1 1000 1000 1000
+ 540 1 1000 1000 1000
+ 543 1 1000 1000 1000
+ 546 1 1000 1000 1000
+ 549 1 1000 1000 1000
+ 552 1 1000 1000 1000
+ 555 1 1000 1000 1000
+ 557 1 1000 1000 1000
+ 560 1 1000 1000 1000
+ 563 1 1000 1000 1000
+ 566 1 1000 1000 1000
+ 569 1 1000 1000 1000
+ 572 1 1000 1000 1000
+ 575 1 1000 1000 1000
+ 578 1 1000 1000 1000
+ 581 1 1000 1000 1000
+ 583 1 1000 1000 1000
+ 586 1 1000 1000 1000
+ 589 1 1000 1000 1000
+ 592 1 1000 1000 1000
+ 595 1 1000 1000 1000
+ 598 1 1000 1000 1000
+ 601 1 1000 1000 1000
+ 604 1 1000 1000 1000
+ 606 1 1000 1000 1000
+ 608 1 1000 1000 1000
+ 613 1 1000 1000 1000
+ 616 1 1000 1000 1000
+ 619 1 1000 1000 1000
+ 621 1 1000 1000 1000
+ 623 1 1000 1000 1000
+ 627 1 1000 1000 1000
+ 630 1 1000 1000 1000
+ 633 1 1000 1000 1000
+ 635 1 1000 1000 1000
+ 638 1 1000 1000 1000
+ 641 1 1000 1000 1000
+ 644 1 1000 1000 1000
+ 647 1 1000 1000 1000
+ 650 1 1000 1000 1000
+ 652 1 1000 1000 1000
+ 655 1 1000 1000 1000
+ 658 1 1000 1000 1000
+ 661 1 1000 1000 1000
+ 666 1 1000 1000 1000
+ 669 1 1000 1000 1000
+ 672 1 1000 1000 1000
+ 676 1 1000 1000 1000
+ 679 1 1000 1000 1000
+ 682 1 1000 1000 1000
+ 685 1 1000 1000 1000
+ 689 1 1000 1000 1000
+ 693 1 1000 1000 1000
+ 695 1 1000 1000 1000
+ 698 1 1000 1000 1000
+ 701 1 1000 1000 1000
+ 704 1 1000 1000 1000
+ 707 1 1000 1000 1000
+ 709 1 1000 1000 1000
+ 711 1 1000 1000 1000
+ 714 1 1000 1000 1000
+ 717 1 1000 1000 1000
+ 720 1 1000 1000 1000
+ 722 1 1000 1000 1000
+ 724 1 1000 1000 1000
+ 727 1 1000 1000 1000
+ 730 1 1000 1000 1000
+ 733 1 1000 1000 1000
+ 735 1 1000 1000 1000
+ 737 1 1000 1000 1000
+ 740 1 1000 1000 1000
+ 743 1 1000 1000 1000
+ 746 1 1000 1000 1000
+ 748 1 1000 1000 1000
+ 750 1 1000 1000 1000
+ 755 1 1000 1000 1000
+ 757 1 1000 1000 1000
+ 760 1 1000 1000 1000
+ 762 1 1000 1000 1000
+ 764 1 1000 1000 1000
+ 769 1 1000 1000 1000
+ 771 1 1000 1000 1000
+ 774 1 1000 1000 1000
+ 777 1 1000 1000 1000
+ 780 1 1000 1000 1000
+ 783 1 1000 1000 1000
+ 785 1 1000 1000 1000
+ 792 1 1000 1000 1000
+ 798 1 1000 1000 1000
+ 800 1 1000 1000 1000
+ 803 1 1000 1000 1000
+ 806 1 1000 1000 1000
+ 809 1 1000 1000 1000
+ 812 1 1000 1000 1000
+ 814 1 1000 1000 1000
+ 817 1 1000 1000 1000
+ 820 1 1000 1000 1000
+ 823 1 1000 1000 1000
+ 826 1 1000 1000 1000
+ 829 1 1000 1000 1000
+ 832 1 1000 1000 1000
+ 835 1 1000 1000 1000
+ 838 1 1000 1000 1000
+ 841 1 1000 1000 1000
+ 844 1 1000 1000 1000
+ 847 1 1000 1000 1000
+ 850 1 1000 1000 1000
+ 853 1 1000 1000 1000
+ 856 1 1000 1000 1000
+ 859 1 1000 1000 1000
+ 861 1 1000 1000 1000
+ 864 1 1000 1000 1000
+ 867 1 1000 1000 1000
+ 870 1 1000 1000 1000
+ 874 1 1000 1000 1000
+ 877 1 1000 1000 1000
+ 879 1 1000 1000 1000
+ 883 1 1000 1000 1000
+ 885 1 1000 1000 1000
+ 888 1 1000 1000 1000
+ 892 1 1000 1000 1000
+ 895 1 1000 1000 1000
+ 898 1 1000 1000 1000
+ 901 1 1000 1000 1000
+ 904 1 1000 1000 1000
+ 906 1 1000 1000 1000
+ 908 1 1000 1000 1000
+ 911 1 1000 1000 1000
+ 914 1 1000 1000 1000
+ 917 1 1000 1000 1000
+ 920 1 1000 1000 1000
+ 923 1 1000 1000 1000
+ 928 1 1000 1000 1000
+ 930 1 1000 1000 1000
+ 933 1 1000 1000 1000
+ 936 1 1000 1000 1000
+ 939 1 1000 1000 1000
+ 942 1 1000 1000 1000
+ 945 1 1000 1000 1000
+ 947 1 1000 1000 1000
+ 949 1 1000 1000 1000
+ 952 1 1000 1000 1000
+ 956 1 1000 1000 1000
+ 960 1 1000 1000 1000
+ 965 1 1000 1000 1000
+ 968 1 1000 1000 1000
+ 971 1 1000 1000 1000
+ 974 1 1000 1000 1000
+ 977 1 1000 1000 1000
+ 980 1 1000 1000 1000
+ 983 1 1000 1000 1000
+ 986 1 1000 1000 1000
+ 989 1 1000 1000 1000
+ 992 1 1000 1000 1000
+ 995 1 1000 1000 1000
+ 998 1 1000 1000 1000
+1001 1 1000 1000 1000
+1004 1 1000 1000 1000
+1006 1 1000 1000 1000
+1009 1 1000 1000 1000
 #endif
 
 [ bonds ]
@@ -2987,7 +2988,7 @@ PROT 1
 1009 1010 1011 2 120.000 50.0
 1009 1010 1012 2 120.000 50.0
 
-; idp-fix-chris
+; idp-fix
    1    4    5 10 85 10
    4   11   12 10 85 10
   11   14   15 10 85 10
@@ -3544,7 +3545,7 @@ PROT 1
 1007 1006 1009 10 85 10
 
 [ dihedrals ]
-; idp-fix-chris
+; idp-fix
    1    4   11   14 9 -120 -1 1 ; BB-BB-BB-BB-v1
    1    4   11   14 9 -120 -1 2 ; BB-BB-BB-BB-v2
    4   11   14   17 9 -120 -1 1 ; BB-BB-BB-BB-v1
@@ -5166,337 +5167,4 @@ PROT 1
 1005 1004  ; CA-BB-same
 1008 1006  ; CA-BB-same
 1013 1009  ; CA-BB-same
-   3    4  ; CA-BB
-  10   11  ; CA-BB
-  13   14  ; CA-BB
-  16   17  ; CA-BB
-  19   20  ; CA-BB
-  22   23  ; CA-BB
-  25   26  ; CA-BB
-  28   29  ; CA-BB
-  32   33  ; CA-BB
-  35   36  ; CA-BB
-  37   38  ; CA-BB
-  40   41  ; CA-BB
-  44   45  ; CA-BB
-  47   48  ; CA-BB
-  52   53  ; CA-BB
-  54   55  ; CA-BB
-  57   58  ; CA-BB
-  62   63  ; CA-BB
-  65   66  ; CA-BB
-  68   69  ; CA-BB
-  70   71  ; CA-BB
-  73   74  ; CA-BB
-  76   77  ; CA-BB
-  79   80  ; CA-BB
-  81   82  ; CA-BB
-  83   84  ; CA-BB
-  86   87  ; CA-BB
-  90   91  ; CA-BB
-  93   94  ; CA-BB
-  96   97  ; CA-BB
-  99  100  ; CA-BB
- 101  102  ; CA-BB
- 104  105  ; CA-BB
- 107  108  ; CA-BB
- 110  111  ; CA-BB
- 114  115  ; CA-BB
- 117  118  ; CA-BB
- 120  121  ; CA-BB
- 122  123  ; CA-BB
- 126  127  ; CA-BB
- 129  130  ; CA-BB
- 132  133  ; CA-BB
- 135  136  ; CA-BB
- 137  138  ; CA-BB
- 140  141  ; CA-BB
- 143  144  ; CA-BB
- 146  147  ; CA-BB
- 149  150  ; CA-BB
- 152  153  ; CA-BB
- 155  156  ; CA-BB
- 158  159  ; CA-BB
- 161  162  ; CA-BB
- 164  165  ; CA-BB
- 167  168  ; CA-BB
- 170  171  ; CA-BB
- 175  176  ; CA-BB
- 179  180  ; CA-BB
- 182  183  ; CA-BB
- 184  185  ; CA-BB
- 187  188  ; CA-BB
- 190  191  ; CA-BB
- 193  194  ; CA-BB
- 196  197  ; CA-BB
- 199  200  ; CA-BB
- 201  202  ; CA-BB
- 204  205  ; CA-BB
- 207  208  ; CA-BB
- 210  211  ; CA-BB
- 213  214  ; CA-BB
- 216  217  ; CA-BB
- 218  219  ; CA-BB
- 221  222  ; CA-BB
- 225  226  ; CA-BB
- 229  230  ; CA-BB
- 234  235  ; CA-BB
- 237  238  ; CA-BB
- 239  240  ; CA-BB
- 242  243  ; CA-BB
- 245  246  ; CA-BB
- 248  249  ; CA-BB
- 251  252  ; CA-BB
- 255  256  ; CA-BB
- 258  259  ; CA-BB
- 260  261  ; CA-BB
- 264  265  ; CA-BB
- 267  268  ; CA-BB
- 270  271  ; CA-BB
- 273  274  ; CA-BB
- 276  277  ; CA-BB
- 281  282  ; CA-BB
- 284  285  ; CA-BB
- 287  288  ; CA-BB
- 290  291  ; CA-BB
- 293  294  ; CA-BB
- 296  297  ; CA-BB
- 299  300  ; CA-BB
- 301  302  ; CA-BB
- 304  305  ; CA-BB
- 307  308  ; CA-BB
- 314  315  ; CA-BB
- 317  318  ; CA-BB
- 320  321  ; CA-BB
- 323  324  ; CA-BB
- 325  326  ; CA-BB
- 328  329  ; CA-BB
- 331  332  ; CA-BB
- 334  335  ; CA-BB
- 340  341  ; CA-BB
- 343  344  ; CA-BB
- 346  347  ; CA-BB
- 348  349  ; CA-BB
- 351  352  ; CA-BB
- 354  355  ; CA-BB
- 357  358  ; CA-BB
- 360  361  ; CA-BB
- 363  364  ; CA-BB
- 366  367  ; CA-BB
- 369  370  ; CA-BB
- 372  373  ; CA-BB
- 375  376  ; CA-BB
- 378  379  ; CA-BB
- 381  382  ; CA-BB
- 384  385  ; CA-BB
- 387  388  ; CA-BB
- 389  390  ; CA-BB
- 392  393  ; CA-BB
- 394  395  ; CA-BB
- 396  397  ; CA-BB
- 399  400  ; CA-BB
- 402  403  ; CA-BB
- 405  406  ; CA-BB
- 408  409  ; CA-BB
- 412  413  ; CA-BB
- 414  415  ; CA-BB
- 417  418  ; CA-BB
- 420  421  ; CA-BB
- 423  424  ; CA-BB
- 426  427  ; CA-BB
- 429  430  ; CA-BB
- 432  433  ; CA-BB
- 436  437  ; CA-BB
- 439  440  ; CA-BB
- 442  443  ; CA-BB
- 445  446  ; CA-BB
- 448  449  ; CA-BB
- 451  452  ; CA-BB
- 453  454  ; CA-BB
- 455  456  ; CA-BB
- 458  459  ; CA-BB
- 463  464  ; CA-BB
- 466  467  ; CA-BB
- 468  469  ; CA-BB
- 471  472  ; CA-BB
- 474  475  ; CA-BB
- 477  478  ; CA-BB
- 480  481  ; CA-BB
- 483  484  ; CA-BB
- 486  487  ; CA-BB
- 489  490  ; CA-BB
- 492  493  ; CA-BB
- 495  496  ; CA-BB
- 498  499  ; CA-BB
- 501  502  ; CA-BB
- 504  505  ; CA-BB
- 507  508  ; CA-BB
- 511  512  ; CA-BB
- 514  515  ; CA-BB
- 517  518  ; CA-BB
- 520  521  ; CA-BB
- 524  525  ; CA-BB
- 527  528  ; CA-BB
- 530  531  ; CA-BB
- 533  534  ; CA-BB
- 536  537  ; CA-BB
- 539  540  ; CA-BB
- 542  543  ; CA-BB
- 545  546  ; CA-BB
- 548  549  ; CA-BB
- 551  552  ; CA-BB
- 554  555  ; CA-BB
- 556  557  ; CA-BB
- 559  560  ; CA-BB
- 562  563  ; CA-BB
- 565  566  ; CA-BB
- 568  569  ; CA-BB
- 571  572  ; CA-BB
- 574  575  ; CA-BB
- 577  578  ; CA-BB
- 580  581  ; CA-BB
- 582  583  ; CA-BB
- 585  586  ; CA-BB
- 588  589  ; CA-BB
- 591  592  ; CA-BB
- 594  595  ; CA-BB
- 597  598  ; CA-BB
- 600  601  ; CA-BB
- 603  604  ; CA-BB
- 605  606  ; CA-BB
- 607  608  ; CA-BB
- 612  613  ; CA-BB
- 615  616  ; CA-BB
- 618  619  ; CA-BB
- 620  621  ; CA-BB
- 622  623  ; CA-BB
- 626  627  ; CA-BB
- 629  630  ; CA-BB
- 632  633  ; CA-BB
- 634  635  ; CA-BB
- 637  638  ; CA-BB
- 640  641  ; CA-BB
- 643  644  ; CA-BB
- 646  647  ; CA-BB
- 649  650  ; CA-BB
- 651  652  ; CA-BB
- 654  655  ; CA-BB
- 657  658  ; CA-BB
- 660  661  ; CA-BB
- 665  666  ; CA-BB
- 668  669  ; CA-BB
- 671  672  ; CA-BB
- 675  676  ; CA-BB
- 678  679  ; CA-BB
- 681  682  ; CA-BB
- 684  685  ; CA-BB
- 688  689  ; CA-BB
- 692  693  ; CA-BB
- 694  695  ; CA-BB
- 697  698  ; CA-BB
- 700  701  ; CA-BB
- 703  704  ; CA-BB
- 706  707  ; CA-BB
- 708  709  ; CA-BB
- 710  711  ; CA-BB
- 713  714  ; CA-BB
- 716  717  ; CA-BB
- 719  720  ; CA-BB
- 721  722  ; CA-BB
- 723  724  ; CA-BB
- 726  727  ; CA-BB
- 729  730  ; CA-BB
- 732  733  ; CA-BB
- 734  735  ; CA-BB
- 736  737  ; CA-BB
- 739  740  ; CA-BB
- 742  743  ; CA-BB
- 745  746  ; CA-BB
- 747  748  ; CA-BB
- 749  750  ; CA-BB
- 754  755  ; CA-BB
- 756  757  ; CA-BB
- 759  760  ; CA-BB
- 761  762  ; CA-BB
- 763  764  ; CA-BB
- 768  769  ; CA-BB
- 770  771  ; CA-BB
- 773  774  ; CA-BB
- 776  777  ; CA-BB
- 779  780  ; CA-BB
- 782  783  ; CA-BB
- 784  785  ; CA-BB
- 791  792  ; CA-BB
- 797  798  ; CA-BB
- 799  800  ; CA-BB
- 802  803  ; CA-BB
- 805  806  ; CA-BB
- 808  809  ; CA-BB
- 811  812  ; CA-BB
- 813  814  ; CA-BB
- 816  817  ; CA-BB
- 819  820  ; CA-BB
- 822  823  ; CA-BB
- 825  826  ; CA-BB
- 828  829  ; CA-BB
- 831  832  ; CA-BB
- 834  835  ; CA-BB
- 837  838  ; CA-BB
- 840  841  ; CA-BB
- 843  844  ; CA-BB
- 846  847  ; CA-BB
- 849  850  ; CA-BB
- 852  853  ; CA-BB
- 855  856  ; CA-BB
- 858  859  ; CA-BB
- 860  861  ; CA-BB
- 863  864  ; CA-BB
- 866  867  ; CA-BB
- 869  870  ; CA-BB
- 873  874  ; CA-BB
- 876  877  ; CA-BB
- 878  879  ; CA-BB
- 882  883  ; CA-BB
- 884  885  ; CA-BB
- 887  888  ; CA-BB
- 891  892  ; CA-BB
- 894  895  ; CA-BB
- 897  898  ; CA-BB
- 900  901  ; CA-BB
- 903  904  ; CA-BB
- 905  906  ; CA-BB
- 907  908  ; CA-BB
- 910  911  ; CA-BB
- 913  914  ; CA-BB
- 916  917  ; CA-BB
- 919  920  ; CA-BB
- 922  923  ; CA-BB
- 927  928  ; CA-BB
- 929  930  ; CA-BB
- 932  933  ; CA-BB
- 935  936  ; CA-BB
- 938  939  ; CA-BB
- 941  942  ; CA-BB
- 944  945  ; CA-BB
- 946  947  ; CA-BB
- 948  949  ; CA-BB
- 951  952  ; CA-BB
- 955  956  ; CA-BB
- 959  960  ; CA-BB
- 964  965  ; CA-BB
- 967  968  ; CA-BB
- 970  971  ; CA-BB
- 973  974  ; CA-BB
- 976  977  ; CA-BB
- 979  980  ; CA-BB
- 982  983  ; CA-BB
- 985  986  ; CA-BB
- 988  989  ; CA-BB
- 991  992  ; CA-BB
- 994  995  ; CA-BB
- 997  998  ; CA-BB
-1000 1001  ; CA-BB
-1003 1004  ; CA-BB
-1005 1006  ; CA-BB
-1008 1009  ; CA-BB
 
