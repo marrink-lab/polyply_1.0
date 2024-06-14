@@ -17,7 +17,7 @@ import numpy as np
 from numpy.linalg import norm
 import networkx as nx
 from .processor import Processor
-from .linalg_functions import _vector_angle_degrees, not_exceeds_max_dimensions, norm_sphere, pbc_complete
+from .linalg_functions import angle, _vector_angle_degrees, not_exceeds_max_dimensions, norm_sphere, pbc_complete
 from .graph_utils import neighborhood
 from .meta_molecule import _find_starting_node
 """
@@ -246,6 +246,7 @@ class RandomWalk(Processor):
         self.start_node = start_node
         self.nrewind = nrewind
         self.placed_nodes = []
+        self.prev_prob = 1
 
     def _rewind(self, current_step):
         nodes = [node for _, node in self.placed_nodes[-self.nrewind:-1]]
@@ -279,6 +280,53 @@ class RandomWalk(Processor):
 
         return True
 
+    def bendiness(self, point, node):
+        """
+        Perform Monte-Carlo like sampling of bending probability.
+
+        Parameters
+        ----------
+        point: np.ndarray
+            new coordinate
+        node: `abc.hashable`
+            the current node for which to get a new point
+        """
+        b_node = list(self.molecule.search_tree.predecessors(node))[0]
+        c_nodes = list(self.molecule.search_tree.predecessors(b_node))
+
+        if len(c_nodes) != 1:
+            return True
+
+        c_node = c_nodes[0]
+        # get the atom types aka resnames
+        typea = self.molecule.nodes[node]['resname']
+        typeb = self.molecule.nodes[b_node]['resname']
+        typec = self.molecule.nodes[c_node]['resname']
+        # get the bending constant
+        lp = self.nonbond_matrix.bending_matrix.get((typea, typeb, typec), None)
+        if not lp:
+            return True
+
+        prob = self.nonbond_matrix.compute_bending_probability(lp,
+                                                               point,
+                                                               self.mol_idx,
+                                                               b_node,
+                                                               c_node)
+        if self.prev_prob < prob:
+            self.prev_prob = prob
+            return True
+
+        # compute test probability from uniform sampling of prob function
+        norm = 180/lp * (np.exp(lp)-1)
+        test_prob = random.uniform(np.exp(lp*1/180)/norm,
+                                   np.exp(lp*179/180)/norm)
+
+        if test_prob < prob:
+            self.prev_prob = prob
+            return True
+
+        return False
+
     def update_positions(self, vector_bundle, current_node, prev_node):
         """
         Take an array of unit vectors `vector_bundle` and generate the coordinates
@@ -308,7 +356,8 @@ class RandomWalk(Processor):
             if fulfill_geometrical_constraints(new_point, self.molecule.nodes[current_node])\
                 and self.checks_milestones(current_node, new_point, step_length)\
                 and is_restricted(new_point, last_point, self.molecule.nodes[current_node])\
-                and not self._is_overlap(new_point, current_node):
+                and not self._is_overlap(new_point, current_node)\
+                and self.bendiness(new_point, current_node):
 
                     self.nonbond_matrix.add_positions(new_point,
                                                       self.mol_idx,
@@ -356,10 +405,8 @@ class RandomWalk(Processor):
         count = 0
         path = list(meta_molecule.search_tree.edges)
         step_count = 0
-
         while step_count < len(path):
             prev_node, current_node = path[step_count]
-
             if not meta_molecule.nodes[current_node]["build"]:
                 step_count += 1
                 continue

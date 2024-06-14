@@ -172,6 +172,31 @@ def test_update_positions_in_molecules(topology):
          for node in mol.nodes:
             assert all(mol.nodes[node]["position"] == np.array([1., 1., 1.]))
 
+@pytest.mark.parametrize('lp, point, ref_prob',(
+                        # low lp, 180 degree,
+                        (0.001, np.array([0., 0., 2.]), 0.00555833379629605),
+                        # low lp, 90 degree,
+                        (0.001, np.array([0., 1., 1.]), 0.005555555324073842),
+                        # low lp, close to zero angle,
+                        (0.001, np.array([0., 0., 0.1]), 0.00555833379629605),
+                        # high lp, 180 degree,
+                        (10, np.array([0., 0., 2.]), 0.05555807788838943),
+                        # high lp, 90 degree,
+                        (10, np.array([0., 1., 1.]), 0.00037434738418303014),
+                        # high lp, close to 0 degree,
+                        (10, np.array([0., 0., 0.1]), 3.3299656173078084e-06),))
+def test_compute_bending_probability(topology, lp, point, ref_prob):
+    # we add two fixed positions to the first molecule
+    positions = [np.array([0., 0., 0,]), np.array([0., 0., 1.])]
+    for node, position in zip([0, 1], positions):
+        topology.molecules[0].nodes[node]["position"] = position
+
+    nb_engine =  NonBondEngine.from_topology(topology.molecules,
+                                             topology,
+                                             box=np.array([10., 10., 10.]))
+    prob = nb_engine.compute_bending_probability(lp, point, 0, 1, 0)
+    assert prob == pytest.approx(ref_prob, abs=10**-5)
+
 @pytest.mark.parametrize('mol_idx_a, mol_idx_b, node_a, node_b, expected',
                         ((0, 0, 0, 1, (0.53+0.67)/2.0),
                          (0, 2, 0, 0, (0.43+0.53)/2.0),

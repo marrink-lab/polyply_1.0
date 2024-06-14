@@ -183,7 +183,8 @@ def optimize_geometry(block, coords, inter_types=[], tolerance={"angles": 5,
                 energy += new
         return energy
 
-    opt_results = scipy.optimize.minimize(target_function, positions, method='L-BFGS-B',
+    opt_results = scipy.optimize.minimize(target_function, positions,
+                                          method='L-BFGS-B',
                                           options={'ftol': 0.001, 'maxiter': 100})
 
     # evaluate if optimization was successful

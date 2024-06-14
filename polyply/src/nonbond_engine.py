@@ -11,12 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import random
 import itertools
 import numpy as np
 import scipy.spatial
 from polyply import jit
 from .topology import lorentz_berthelot_rule
-from .linalg_functions import not_exceeds_max_dimensions
+from .linalg_functions import angle, not_exceeds_max_dimensions
 
 def _lennard_jones_force(dist, point, ref, params):
     """
@@ -54,7 +55,6 @@ lennard_jones_force = jit(_lennard_jones_force)
 
 POTENTIAL_FUNC = {"LJ": lennard_jones_force}
 
-
 def _n_particles(molecules):
     """
     Count the number of meta_molecule nodes
@@ -77,6 +77,8 @@ class NonBondEngine():
                  nodes_to_idx,
                  atom_types,
                  interaction_matrix,
+                 bending_matrix,
+                 torsion_matrix,
                  cut_off,
                  boxsize):
         """
@@ -93,6 +95,12 @@ class NonBondEngine():
              Dict mapping the atom_types to LJ type interaction parameters,
              that is sigma, epsilon or C6, C12 depending on the potential
              used. Currently only the sigma epsilon form is implemented.
+        bending_matrix: dict[frozenset(str, str), float]
+             Dict mapping the residue types to a bending constant for the
+             bending probability
+        torsion_matrix: dict[frozenset(str, str), float]
+             Dict mapping the residue types to a torsion constant for the
+             torsion probability
         cut_off: float
              cut-off for which to compute the interaction in nm
         boxsize: np.ndarray
@@ -103,6 +111,8 @@ class NonBondEngine():
         self.nodes_to_gndx = nodes_to_idx
         self.atypes = np.asarray(atom_types, dtype=str)
         self.interaction_matrix = interaction_matrix
+        self.bending_matrix = bending_matrix
+        self.torsion_matrix = torsion_matrix
         self.cut_off = cut_off
         self.boxsize = boxsize
 
@@ -292,6 +302,42 @@ class NonBondEngine():
                     force += POTENTIAL_FUNC[potential](dist, point, self.positions[gndx_pair], params)
         return force
 
+    def compute_bending_probability(self, lp, point, mol_idx, node_b, node_c):
+        """
+        Compute probability of an angle between three points (`point`, `node_b`,
+        `node_c`) according to a simple decay function modulated by a bending
+        constant `lp`. If lp is large the distribution increases with the highest
+        probability being at 180 degrees (i.e. more straight angles), whilst if lp
+        is low the angles occur with almost equal probability.
+
+        Parameters
+        ----------
+        lp: float
+            bending constant
+        point: np.ndarray(1, 3)
+            coordinates of the new point
+        mol_idx: int
+            index of the molecule at hand
+        node_b: abc.hashable
+            first predecessor of the node corresponding to `point`
+        node_c: abc.hashable
+            second predecessor of the node corresponding to `point`
+
+        Returns
+        -------
+        float
+            the probability
+        """
+        # get the missing positions
+        B_pos = self.get_point(mol_idx, node_b)
+        C_pos = self.get_point(mol_idx, node_c)
+        # compute angle
+        ang_val = angle(point, B_pos, C_pos)
+        # compute probability
+        # denominator is normalization
+        prob = np.exp(lp*ang_val/180)/(180*(np.exp(lp)-1)/lp)
+        return prob
+
     @classmethod
     def from_topology(cls, molecules, topology, box):
         """
@@ -360,5 +406,7 @@ class NonBondEngine():
         # dynamically set the cut-off as twice the largest vdw-radius
         cut_off = max(list(inter_matrix.values()))[0] * 2.
         nonbond_matrix = cls(positions, nodes_to_gndx,
-                             atom_types, inter_matrix, cut_off=cut_off, boxsize=box)
+                             atom_types, inter_matrix,
+                             cut_off=cut_off, boxsize=box,
+                             torsion_matrix=None, bending_matrix=topology.bending)
         return nonbond_matrix
