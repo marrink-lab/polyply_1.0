@@ -54,7 +54,7 @@ def apply_terminal_mod(meta_molecule, modifications):
     """
 
     if not modifications:
-        return
+        return meta_molecule
 
     molecule = meta_molecule.molecule
 
@@ -105,6 +105,6 @@ class ApplyModifications(Processor):
         if self.protter:
             self.modifications = annotate_protein(meta_molecule)
 
-        meta_molecule = apply_terminal_mod(meta_molecule, self.modifications)
+        apply_terminal_mod(meta_molecule, self.modifications)
 
         return meta_molecule
