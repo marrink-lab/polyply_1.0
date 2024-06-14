@@ -158,19 +158,29 @@ def test_warning_partial_metamol_coords(tmp_path, monkeypatch, caplog):
         else:
             assert False
 
-def test_coords_workflow_non_unique_resname(tmp_path, monkeypatch):
+@pytest.mark.parametrize('skip, error', [
+                         (True, IOError),
+                         (False, None)
+
+])
+def test_coords_workflow_non_unique_resname(tmp_path, monkeypatch, skip, error):
     """
     This integration test checks that we can handle non-unique
     residue names when generating templates.
     """
     top_file = TEST_DATA / "topology_test" / "uff.top"
     out_file = tmp_path / "out.gro"
+    args = {'toppath': top_file,
+            'outpath': out_file,
+            'name': "test",
+            'skip_filter': skip,
+            'box': np.array([11, 11, 11])}
 
-    gen_coords(toppath=top_file,
-               outpath=out_file,
-               name="test",
-               box=np.array([11, 11, 11]))
-
-    molecule_out = read_gro(out_file, exclude=())
-    for node in molecule_out.nodes:
-        assert np.all(np.isfinite(molecule_out.nodes[node].get('position', np.inf)))
+    if skip:
+        with pytest.raises(error):
+            gen_coords(**args)
+    else:
+        gen_coords(**args)
+        molecule_out = read_gro(out_file, exclude=())
+        for node in molecule_out.nodes:
+            assert np.all(np.isfinite(molecule_out.nodes[node].get('position', np.inf)))
