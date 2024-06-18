@@ -1,0 +1,65 @@
+; /grain/chris/new_protein_testing/new_protein_env/bin/polyply gen_params -lib martini3 -seq GLY:5 -name pGLY -o GLY5.itp
+
+; Please cite the following papers:
+; Souza, P C T; Alessandri, R; Barnoud, J; Thallmair, S; Faustino, I; Grünewald, F; Patmanidis, I; Abdizadeh, H; Bruininks, B M H; Wassenaar, T A; Kroon, P C; Melcr, J; Nieto, V; Corradi, V; Khan, H M; Domański, J; Javanainen, M; Martinez-Seara, H; Reuter, N; Best, R B; Vattulainen, I; Monticelli, L; Periole, X; Tieleman, D P; de Vries, A H; Marrink, S J;  Nature Methods 2021; 10.1038/s41592-021-01098-3
+; Grunewald, F; Alessandri, R; Kroon, P C; Monticelli, L; Souza, P C; Marrink, S J;  Nature Communications 2022; 10.1038/s41467-021-27627-4
+; Souza, P C T; Araujo, L P B; Brasnett, C; Moreira, R A; Grunewald, F; Park, P; Wang, L; Razmazma, H; Borges-Araujo, A C; Cofas-Vargas, L F; Monticelli, L; Mera-Adasme, R; Melo, M N; Wu, S; Marrink, S J; Poma, A B; Thallmair, S;  2024; 10.1101/2024.04.15.589479
+
+[ moleculetype ]
+pGLY 1
+
+[ atoms ]
+ 1 SP1 1 GLY BB 1 0.0    
+ 2 VS  1 GLY CA 1 0.0 0.0
+ 3 SP1 2 GLY BB 2 0.0    
+ 4 VS  2 GLY CA 2 0.0 0.0
+ 5 SP1 3 GLY BB 3 0.0    
+ 6 VS  3 GLY CA 3 0.0 0.0
+ 7 SP1 4 GLY BB 4 0.0    
+ 8 VS  4 GLY CA 4 0.0 0.0
+ 9 SP1 5 GLY BB 5 0.0    
+10 VS  5 GLY CA 5 0.0 0.0
+
+[ position_restraints ]
+#ifdef POSRES
+ 1 1 1000 1000 1000
+ 3 1 1000 1000 1000
+ 5 1 1000 1000 1000
+ 7 1 1000 1000 1000
+ 9 1 1000 1000 1000
+#endif
+
+[ bonds ]
+; Backbone bonds
+ 1  3 1 0.350 4000
+ 3  5 1 0.350 4000
+ 5  7 1 0.350 4000
+ 7  9 1 0.350 4000
+
+[ exclusions ]
+ 2  1  ; CA-BB-same
+ 4  3  ; CA-BB-same
+ 6  5  ; CA-BB-same
+ 8  7  ; CA-BB-same
+10  9  ; CA-BB-same
+
+[ virtual_sitesn ]
+ 2 1  1
+ 4 1  3
+ 6 1  5
+ 8 1  7
+10 1  9
+
+[ angles ]
+; BBB angles
+ 1  3  5 10 127 20
+ 3  5  7 10 127 20
+ 5  7  9 10 127 20
+
+[ dihedrals ]
+; idp-fix
+ 1  3  5  7 9 -120 -1 1 ; BB-BB-BB-BB-v1
+ 1  3  5  7 9 -120 -1 2 ; BB-BB-BB-BB-v2
+ 3  5  7  9 9 -120 -1 1 ; BB-BB-BB-BB-v1
+ 3  5  7  9 9 -120 -1 2 ; BB-BB-BB-BB-v2
+

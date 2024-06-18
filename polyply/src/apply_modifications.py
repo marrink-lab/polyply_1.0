@@ -18,7 +18,7 @@ LOGGER = StyleAdapter(get_logger(__name__))
 from .processor import Processor
 import networkx as nx
 
-def annotate_protein(meta_molecule):
+def _get_protein_termini(meta_molecule):
     """
     make a resspec for a protein with correct N-ter and C-ter
     """
@@ -35,7 +35,7 @@ def annotate_protein(meta_molecule):
 
     return protein_termini
 
-def apply_terminal_mod(meta_molecule, modifications):
+def apply_mod(meta_molecule, modifications):
     """
 
     Apply a terminal modification.
@@ -58,6 +58,10 @@ def apply_terminal_mod(meta_molecule, modifications):
 
     molecule = meta_molecule.molecule
 
+    if not molecule.force_field.modifications:
+        LOGGER.warning('No modifications present in forcefield, none will be applied')
+        return meta_molecule
+
     for target, desired_mod in modifications:
 
         target_resid = target['resid']
@@ -69,10 +73,11 @@ def apply_terminal_mod(meta_molecule, modifications):
             else:
                 mod_atoms[mod_atom['atomname']] = {}
 
-
         anum_dict = {}
         for atomid, node in enumerate(meta_molecule.molecule.nodes):
             if meta_molecule.molecule.nodes[node]['resid'] == target_resid:
+                resname = meta_molecule.molecule.nodes[node]['resname']
+                meta_molecule.molecule.nodes[node]['resname'] = resname + 'M'
                 # add the modification from the modifications dict
                 aname = meta_molecule.molecule.nodes[node]['atomname']
                 if aname in mod_atoms.keys():
@@ -103,8 +108,8 @@ class ApplyModifications(Processor):
     def run_molecule(self, meta_molecule):
 
         if self.protter:
-            self.modifications = annotate_protein(meta_molecule)
+            self.modifications = _get_protein_termini(meta_molecule)
 
-        apply_terminal_mod(meta_molecule, self.modifications)
+        apply_mod(meta_molecule, self.modifications)
 
         return meta_molecule
