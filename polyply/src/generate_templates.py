@@ -261,7 +261,8 @@ def extract_block(molecule, template_graph, defines):
     Parameters
     ----------
     molecule:  :class:vermouth.molecule.Molecule
-    resname:   str
+    template_graph: :class:`nx.Graph`
+        the graph of the template reisdue
     defines:   dict
       dict of type define: value
 
