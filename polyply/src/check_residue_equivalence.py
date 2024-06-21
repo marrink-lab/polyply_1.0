@@ -44,12 +44,13 @@ def check_residue_equivalence(topology):
                 molnames[resname] = mol_name
                 resids[resname] = molecule.nodes[node]["resid"]
 
-def group_residues_by_isomorphism(meta_molecule, template_graphs={}):
+def group_residues_by_hash(meta_molecule, template_graphs={}):
     """
-    Collect all unique residue graphs. If the same resname matches
-    multiple graphs the resname is appended by a number. If required
-    template_graphs can be given that are used for matching rather
-    than the first founds residue.
+    Collect all unique residue graphs using the Weisfeiler-Lehman has.
+    A dict of unique graphs with the hash as key is returned. The
+    `meta_molecule` nodes are annotated with the hash using the template
+    keyword. If required template_graphs can be given that are used for
+    matching rather than the first founds residue.
 
     Parameters
     ----------

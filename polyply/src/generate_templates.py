@@ -21,7 +21,7 @@ from .linalg_functions import (u_vect, center_of_geometry,
                                radius_of_gyration)
 from .topology import replace_defined_interaction
 from .linalg_functions import dih
-from .check_residue_equivalence import group_residues_by_isomorphism
+from .check_residue_equivalence import group_residues_by_hash
 from tqdm import tqdm
 """
 Processor generating coordinates for all residues of a meta_molecule
@@ -37,7 +37,7 @@ def _extract_template_graphs(meta_molecule, template_graphs={}, skip_filter=Fals
             if resname not in template_graphs:
                 template_graphs[resname] = meta_molecule.nodes[node]["graph"]
     else:
-        template_graphs = group_residues_by_isomorphism(meta_molecule, template_graphs)
+        template_graphs = group_residues_by_hash(meta_molecule, template_graphs)
     return template_graphs
 
 def find_atoms(molecule, attr, value):
