@@ -166,8 +166,6 @@ class Backmap(Processor):
         ----------
         meta_molecule: :class:`polyply.src.MetaMolecule`
         """
-        #print(meta_molecule.templates.keys())
-        #print(meta_molecule.templates["PEI2"].keys())
         built_nodes = []
         for node in meta_molecule.nodes:
             if  meta_molecule.nodes[node]["backmap"]:
