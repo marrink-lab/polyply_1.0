@@ -384,7 +384,8 @@ class NonBondEngine():
                                 "Make sure all coordiantes are wrapped inside the box.")
                         raise IOError(msg)
 
-                resname = molecule.nodes[node]["resname"]
+                # try getting the template name; if no template name is given use resname
+                resname = molecule.nodes[node].get("template", molecule.nodes[node]["resname"])
                 atom_types.append(resname)
                 nodes_to_gndx[(mol_count, node)] = idx
                 idx += 1

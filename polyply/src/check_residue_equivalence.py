@@ -1,5 +1,6 @@
 import networkx as nx
 from vermouth.molecule import attributes_match
+from collections import defaultdict
 
 def _atoms_match(node1, node2):
     return node1["atomname"] == node2["atomname"]
@@ -53,17 +54,16 @@ def group_residues_by_isomorphism(meta_molecule, template_graphs={}):
     template_graphs can be given that are used for matching rather
     than the first founds residue.
     """
-    unique_graphs = template_graphs
+    unique_graphs = {}
+    for graph in template_graphs.values():
+        graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='atomname')
+        unique_graphs[graph_hash] = graph
+
     for node in meta_molecule.nodes:
-        resname = meta_molecule.nodes[node]["resname"]
         graph = meta_molecule.nodes[node]["graph"]
-        if resname in unique_graphs and not nx.is_isomorphic(graph,
-                                                             template_graphs[resname],
-                                                             node_match=_atoms_match,):
-            template_name = resname + str(len(template_graphs))
-            meta_molecule.nodes[node]["template"] = template_name
-            unique_graphs[template_name] = graph
-        else:
-            meta_molecule.nodes[node]["template"] = resname
-            unique_graphs[resname] = graph
-    return template_graphs
+        graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='atomname')
+        if graph_hash not in unique_graphs:
+            unique_graphs[graph_hash] = graph
+        meta_molecule.nodes[node]["template"] = graph_hash
+
+    return unique_graphs

@@ -156,8 +156,10 @@ class TestGenTemps:
           top.gen_pairs()
           top.convert_nonbond_to_sig_eps()
           GenerateTemplates(topology=top, skip_filter=False, max_opt=10).run_molecule(top.molecules[0])
-          assert "PMMA" in top.volumes
-          assert "PMMA" in top.molecules[0].templates
+          graph = top.molecules[0].nodes[0]['graph']
+          graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='atomname')
+          assert graph_hash in top.volumes
+          assert graph_hash in top.molecules[0].templates
 
       @staticmethod
       @pytest.mark.parametrize('lines, result', (
