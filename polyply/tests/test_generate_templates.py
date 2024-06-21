@@ -31,7 +31,9 @@ from polyply.src.generate_templates import (find_atoms,
                                             _relabel_interaction_atoms,
                                             compute_volume, map_from_CoG,
                                             extract_block, GenerateTemplates,
-					    find_interaction_involving)
+					                        find_interaction_involving,
+                                            _extract_template_graphs)
+from .example_fixtures import example_meta_molecule
 
 class TestGenTemps:
 
@@ -307,3 +309,36 @@ def test_compute_volume(lines, coords, volume):
     assert np.isclose(new_vol, volume, atol=0.000001)
 
 
+@pytest.mark.parametrize('resnames, gen_template_graphs, skip_filter', (
+                        # two different residues no template_graphs
+                        (['A', 'B', 'A'], [], False),
+                        # two different residues no template_graphs
+                        (['A', 'B', 'A'], [], True),
+                        # two different residues one template_graphs
+                        (['A', 'B', 'A'], [1], True),
+                        # two different residues one template_graphs
+                        (['A', 'B', 'A'], [1], False),
+))
+def test_extract_template_graphs(example_meta_molecule, resnames, gen_template_graphs, skip_filter):
+    # set the residue names
+    for resname, node in zip(resnames, example_meta_molecule.nodes):
+        example_meta_molecule.nodes[node]['resname'] = resname
+        nx.set_node_attributes(example_meta_molecule.nodes[node]['graph'], resname, 'resname')
+
+    # extract template graphs if needed
+    template_graphs = {}
+    for node in gen_template_graphs:
+        graph = example_meta_molecule.nodes[node]['graph']
+        nx.set_node_attributes(graph, True, 'template')
+        template_graphs[example_meta_molecule.nodes[node]['resname']] = graph
+
+    # perfrom the grouping
+    unique_graphs = _extract_template_graphs(example_meta_molecule, template_graphs, skip_filter)
+
+    # check the outcome
+    assert len(unique_graphs) == 2
+
+    for graph in template_graphs.values():
+        graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='atomname')
+        templated = list(nx.get_node_attributes(unique_graphs[graph_hash], 'template').values())
+        assert all(templated)

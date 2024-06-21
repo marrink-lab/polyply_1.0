@@ -34,8 +34,13 @@ def _extract_template_graphs(meta_molecule, template_graphs={}, skip_filter=Fals
     if skip_filter:
         for node in meta_molecule.nodes:
             resname = meta_molecule.nodes[node]["resname"]
-            if resname not in template_graphs:
-                template_graphs[resname] = meta_molecule.nodes[node]["graph"]
+            graph = meta_molecule.nodes[node]["graph"]
+            graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='atomname')
+            if resname in template_graphs:
+                template_graphs[graph_hash] = graph
+                del template_graphs[resname]
+            elif resname not in template_graphs and graph_hash not in template_graphs:
+                template_graphs[graph_hash] = graph
     else:
         template_graphs = group_residues_by_hash(meta_molecule, template_graphs)
     return template_graphs
