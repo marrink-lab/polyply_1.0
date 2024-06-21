@@ -2,9 +2,6 @@ import networkx as nx
 from vermouth.molecule import attributes_match
 from collections import defaultdict
 
-def _atoms_match(node1, node2):
-    return node1["atomname"] == node2["atomname"]
-
 def check_residue_equivalence(topology):
     """
     Check that each residue in all moleculetypes
@@ -53,6 +50,16 @@ def group_residues_by_isomorphism(meta_molecule, template_graphs={}):
     multiple graphs the resname is appended by a number. If required
     template_graphs can be given that are used for matching rather
     than the first founds residue.
+
+    Parameters
+    ----------
+    meta_molecule: `:class:polyply.meta_molecule.MetaMolecule`
+    template_graphs: dict[`:class:nx.Graph`]
+
+    Returns
+    -------
+    dict[`:class:nx.Graph`]
+        keys are the hash of the graph
     """
     unique_graphs = {}
     for graph in template_graphs.values():
