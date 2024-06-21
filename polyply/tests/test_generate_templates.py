@@ -31,7 +31,7 @@ from polyply.src.generate_templates import (find_atoms,
                                             _relabel_interaction_atoms,
                                             compute_volume, map_from_CoG,
                                             extract_block, GenerateTemplates,
-					                        find_interaction_involving,
+                                            find_interaction_involving,
                                             _extract_template_graphs)
 from .example_fixtures import example_meta_molecule
 
