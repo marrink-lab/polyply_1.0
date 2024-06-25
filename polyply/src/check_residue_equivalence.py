@@ -1,5 +1,6 @@
 import networkx as nx
 from vermouth.molecule import attributes_match
+from collections import defaultdict
 
 def check_residue_equivalence(topology):
     """
@@ -42,3 +43,35 @@ def check_residue_equivalence(topology):
                 visited_residues[resname] = graph
                 molnames[resname] = mol_name
                 resids[resname] = molecule.nodes[node]["resid"]
+
+def group_residues_by_hash(meta_molecule, template_graphs={}):
+    """
+    Collect all unique residue graphs using the Weisfeiler-Lehman has.
+    A dict of unique graphs with the hash as key is returned. The
+    `meta_molecule` nodes are annotated with the hash using the template
+    keyword. If required template_graphs can be given that are used for
+    matching rather than the first founds residue.
+
+    Parameters
+    ----------
+    meta_molecule: `:class:polyply.meta_molecule.MetaMolecule`
+    template_graphs: dict[`:class:nx.Graph`]
+
+    Returns
+    -------
+    dict[`:class:nx.Graph`]
+        keys are the hash of the graph
+    """
+    unique_graphs = {}
+    for graph in template_graphs.values():
+        graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='atomname')
+        unique_graphs[graph_hash] = graph
+
+    for node in meta_molecule.nodes:
+        graph = meta_molecule.nodes[node]["graph"]
+        graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='atomname')
+        if graph_hash not in unique_graphs:
+            unique_graphs[graph_hash] = graph
+        meta_molecule.nodes[node]["template"] = graph_hash
+
+    return unique_graphs

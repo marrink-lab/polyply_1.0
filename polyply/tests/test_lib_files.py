@@ -237,7 +237,7 @@ def test_integration_protein(tmp_path, monkeypatch, library, polymer):
     # with open(str(data_path/'citation')) as cite_file:
     #     for line in cite_file:
     #         citations.append(line.strip())
-
+    print(command)
     proc = subprocess.run(command, cwd='.', timeout=60, check=False,
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE,

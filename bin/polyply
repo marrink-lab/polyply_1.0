@@ -152,6 +152,9 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
                               help='file with grid-points', default=None)
     system_group.add_argument('-mi', dest='maxiter', type=int,
                               help='max number of trys to grow a molecule', default=800)
+    system_group.add_argument('-skip_filter', action='store_true', dest='skip_filter',
+                              help='do not group residues by isomophism when making '
+                                   'templates but just resname')
     system_group.add_argument('-start', dest='start', nargs='+', type=str,
                               default=[],
                               help=('Specify which residue to build first. The syntax is '
