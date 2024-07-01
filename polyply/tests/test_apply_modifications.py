@@ -21,7 +21,7 @@ import pytest
 import vermouth.forcefield
 import vermouth.ffinput
 from polyply.src.meta_molecule import MetaMolecule
-from polyply.src.apply_modifications import _get_protein_termini, apply_mod
+from polyply.src.apply_modifications import _get_protein_termini, apply_mod, ApplyModifications
 from polyply import TEST_DATA
 import polyply.src.ff_parser_sub
 import networkx as nx
@@ -110,4 +110,25 @@ def test_apply_mod(caplog):
                                                    parameters=interaction.parameters,
                                                    meta=interaction.meta)
                         assert _interaction in meta_mol.molecule.interactions[interaction_type]
+
+@pytest.mark.parametrize('modifications, protein_termini, expected',
+     (
+             (
+                 None,
+                 False,
+                 True
+             ),
+
+             (None,
+              True,
+              False)
+     ))
+def test_ApplyModifications(example_meta_molecule, caplog, modifications, protein_termini, expected):
+
+    ApplyModifications(modifications=modifications,
+                       protter=protein_termini).run_molecule(example_meta_molecule)
+
+    if expected:
+        print(caplog.records)
+        assert any(rec.levelname == 'WARNING' for rec in caplog.records)
 

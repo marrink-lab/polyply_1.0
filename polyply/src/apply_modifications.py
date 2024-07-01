@@ -50,9 +50,6 @@ def apply_mod(meta_molecule, modifications):
     meta_molecule
     """
 
-    if not modifications:
-        return meta_molecule
-
     molecule = meta_molecule.molecule
 
     if not molecule.force_field.modifications:
