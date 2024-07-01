@@ -1,0 +1,14 @@
+
+[ modification ]
+C-ter
+[ atoms ]
+BB {"replace": {"atype": "Q5", "charge": -1}}
+SC1 { }
+[ constraints ]
+BB SC1 1 1 {"group": "BB-SC1  C-TERM"}
+
+[ modification ]
+N-ter
+[ atoms ]
+BB {"replace": {"atype": "Q5", "charge": 1}}
+

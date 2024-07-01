@@ -230,16 +230,16 @@ def match_link_and_residue_atoms(meta_molecule, link, link_to_resid):
         # relative resid has been asserted before so we can
         # exclude it here
         ignore = ['order', 'charge_group', 'replace', 'resid']
-        matchs = list(find_atoms(block, ignore=ignore, **attrs))
+        matches = list(find_atoms(block, ignore=ignore, **attrs))
 
-        if len(matchs) == 1:
-            link_to_mol[node] = matchs[0]
-        elif len(matchs) == 0:
-            msg = "Found no matchs for node {} in resiue {}. Cannot apply link."
+        if len(matches) == 1:
+            link_to_mol[node] = matches[0]
+        elif len(matches) == 0:
+            msg = "Found no matches for node {} in resiue {}. Cannot apply link."
             raise MatchError(msg.format(node, resid))
         else:
             msg = "Found {} matches for node {} in resiue {}. Cannot apply link."
-            raise MatchError(msg.format(len(matchs), node, resid))
+            raise MatchError(msg.format(len(matches), node, resid))
 
     return link_to_mol
 
@@ -475,8 +475,8 @@ class ApplyLinks(Processor):
                                              res_link,
                                              node_match=_res_match,
                                              edge_match=_linktype_match)
-            raw_matchs = GM.subgraph_isomorphisms_iter()
-            for match in raw_matchs:
+            raw_matches = GM.subgraph_isomorphisms_iter()
+            for match in raw_matches:
                 nodes = match.keys()
                 resids =[meta_molecule.nodes[node]["resid"] for node in nodes]
                 orders = [ res_link.nodes[match[node]]["order"] for node in nodes]
