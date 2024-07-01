@@ -1,0 +1,107 @@
+; /grain/chris/new_protein_testing/new_protein_env/bin/polyply gen_params -lib martini3 -seq ALA:5 -name pALA -o ALA5.itp
+
+; Please cite the following papers:
+; Grunewald, F; Alessandri, R; Kroon, P C; Monticelli, L; Souza, P C; Marrink, S J;  Nature Communications 2022; 10.1038/s41467-021-27627-4
+; Souza, P C T; Alessandri, R; Barnoud, J; Thallmair, S; Faustino, I; Grünewald, F; Patmanidis, I; Abdizadeh, H; Bruininks, B M H; Wassenaar, T A; Kroon, P C; Melcr, J; Nieto, V; Corradi, V; Khan, H M; Domański, J; Javanainen, M; Martinez-Seara, H; Reuter, N; Best, R B; Vattulainen, I; Monticelli, L; Periole, X; Tieleman, D P; de Vries, A H; Marrink, S J;  Nature Methods 2021; 10.1038/s41592-021-01098-3
+; Souza, P C T; Araujo, L P B; Brasnett, C; Moreira, R A; Grunewald, F; Park, P; Wang, L; Razmazma, H; Borges-Araujo, A C; Cofas-Vargas, L F; Monticelli, L; Mera-Adasme, R; Melo, M N; Wu, S; Marrink, S J; Poma, A B; Thallmair, S;  2024; 10.1101/2024.04.15.589479
+
+[ moleculetype ]
+pALA 1
+
+[ atoms ]
+ 1 SP2 1 ALA BB  1 0.0    
+ 2 TC3 1 ALA SC1 1 0.0    
+ 3 VS  1 ALA CA  1 0.0 0.0
+ 4 SP2 2 ALA BB  2 0.0    
+ 5 TC3 2 ALA SC1 2 0.0    
+ 6 VS  2 ALA CA  2 0.0 0.0
+ 7 SP2 3 ALA BB  3 0.0    
+ 8 TC3 3 ALA SC1 3 0.0    
+ 9 VS  3 ALA CA  3 0.0 0.0
+10 SP2 4 ALA BB  4 0.0    
+11 TC3 4 ALA SC1 4 0.0    
+12 VS  4 ALA CA  4 0.0 0.0
+13 SP2 5 ALA BB  5 0.0    
+14 TC3 5 ALA SC1 5 0.0    
+15 VS  5 ALA CA  5 0.0 0.0
+
+[ position_restraints ]
+#ifdef POSRES
+ 1 1 1000 1000 1000
+ 4 1 1000 1000 1000
+ 7 1 1000 1000 1000
+10 1 1000 1000 1000
+13 1 1000 1000 1000
+#endif
+
+[ bonds ]
+; Backbone bonds
+ 1  4 1 0.350 4000
+ 4  7 1 0.350 4000
+ 7 10 1 0.350 4000
+10 13 1 0.350 4000
+
+#ifdef FLEXIBLE
+; Side chain bonds
+ 1  2 1 0.270 1000000
+ 4  5 1 0.270 1000000
+ 7  8 1 0.270 1000000
+10 11 1 0.270 1000000
+13 14 1 0.270 1000000
+#endif
+
+[ constraints ]
+#ifndef FLEXIBLE
+; Side chain bonds
+ 1  2 1 0.270
+ 4  5 1 0.270
+ 7  8 1 0.270
+10 11 1 0.270
+13 14 1 0.270
+#endif
+
+[ exclusions ]
+ 3  1  ; CA-BB-same
+ 6  4  ; CA-BB-same
+ 9  7  ; CA-BB-same
+12 10  ; CA-BB-same
+15 13  ; CA-BB-same
+
+[ virtual_sitesn ]
+ 3 1  1
+ 6 1  4
+ 9 1  7
+12 1 10
+15 1 13
+
+[ angles ]
+; BBB angles
+ 1  4  7 10 127 20
+ 4  7 10 10 127 20
+ 7 10 13 10 127 20
+
+; idp-fix
+ 1  4  5 10 85 10
+ 4  7  8 10 85 10
+ 7 10 11 10 85 10
+10 13 14 10 85 10
+ 2  1  4 10 85 10
+ 5  4  7 10 85 10
+ 8  7 10 10 85 10
+11 10 13 10 85 10
+
+[ dihedrals ]
+; idp-fix
+ 1  4  7 10 9 -120 -1 1 ; BB-BB-BB-BB-v1
+ 1  4  7 10 9 -120 -1 2 ; BB-BB-BB-BB-v2
+ 4  7 10 13 9 -120 -1 1 ; BB-BB-BB-BB-v1
+ 4  7 10 13 9 -120 -1 2 ; BB-BB-BB-BB-v2
+ 2  1  4  5 9 -130 -1.5 1 ; SC1-BB-BB-SC1-v1
+ 2  1  4  5 9 100 -1.5 2 ; SC1-BB-BB-SC1-v2
+ 5  4  7  8 9 -130 -1.5 1 ; SC1-BB-BB-SC1-v1
+ 5  4  7  8 9 100 -1.5 2 ; SC1-BB-BB-SC1-v2
+ 8  7 10 11 9 -130 -1.5 1 ; SC1-BB-BB-SC1-v1
+ 8  7 10 11 9 100 -1.5 2 ; SC1-BB-BB-SC1-v2
+11 10 13 14 9 -130 -1.5 1 ; SC1-BB-BB-SC1-v1
+11 10 13 14 9 100 -1.5 2 ; SC1-BB-BB-SC1-v2
+

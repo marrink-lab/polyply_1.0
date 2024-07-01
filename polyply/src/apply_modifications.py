@@ -22,9 +22,8 @@ def _get_protein_termini(meta_molecule):
     """
     make a resspec for a protein with correct N-ter and C-ter
     """
-
     max_resid = meta_molecule.max_resid
-    last_node = max_resid -1
+    last_node = max_resid - 1
     last_resname = meta_molecule.nodes[last_node]['resname']
 
     protein_termini = [({'resid': 1, 'resname': meta_molecule.nodes[0]['resname']}, 'N-ter'),
