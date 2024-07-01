@@ -23,14 +23,12 @@ def _get_protein_termini(meta_molecule):
     make a resspec for a protein with correct N-ter and C-ter
     """
 
-    resids = nx.get_node_attributes(meta_molecule.molecule, 'resid')
-    last_resid = max([val for val in resids.values()])
+    max_resid = meta_molecule.max_resid
+    last_node = max_resid -1
+    last_resname = meta_molecule.nodes[last_node]['resname']
 
-    resnames = nx.get_node_attributes(meta_molecule.molecule, 'resname')
-    last_resname = [val for val in resnames.values()][-1]
-
-    protein_termini = [({'resid': 1, 'resname': resnames[0]}, 'N-ter'),
-                       ({'resid': last_resid, 'resname': last_resname}, 'C-ter')
+    protein_termini = [({'resid': 1, 'resname': meta_molecule.nodes[0]['resname']}, 'N-ter'),
+                       ({'resid': max_resid, 'resname': last_resname}, 'C-ter')
                        ]
 
     return protein_termini
@@ -74,16 +72,14 @@ def apply_mod(meta_molecule, modifications):
                 mod_atoms[mod_atom['atomname']] = {}
 
         anum_dict = {}
-        for atomid, node in enumerate(meta_molecule.molecule.nodes):
-            if meta_molecule.molecule.nodes[node]['resid'] == target_resid:
-                resname = meta_molecule.molecule.nodes[node]['resname']
-                meta_molecule.molecule.nodes[node]['resname'] = resname + 'M'
+        for atomid, node in enumerate(molecule.nodes):
+            if molecule.nodes[node]['resid'] == target_resid:
                 # add the modification from the modifications dict
-                aname = meta_molecule.molecule.nodes[node]['atomname']
+                aname = molecule.nodes[node]['atomname']
                 if aname in mod_atoms.keys():
                     anum_dict[aname] = atomid
                     for key, value in mod_atoms[aname].items():
-                        meta_molecule.molecule.nodes[node][key] = value
+                        molecule.nodes[node][key] = value
 
         mod_interactions = molecule.force_field.modifications[desired_mod].interactions
         for i in mod_interactions:

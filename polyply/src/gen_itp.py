@@ -63,7 +63,7 @@ def split_seq_string(sequence):
 
 def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[],
                lib=None, seq=None, seq_file=None,
-               dsdna=False, mods = [], protter=False):
+               dsdna=False, mods=[], protter=False):
 
     """
     Top level function for running the polyply parameter generation.
