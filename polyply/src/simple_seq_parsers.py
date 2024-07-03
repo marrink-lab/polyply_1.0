@@ -342,3 +342,26 @@ def parse_json(filepath):
     seq_graph.add_nodes_from(nodes)
     seq_graph.add_edges_from(init_json_graph.edges(data=True))
     return seq_graph
+
+def parese_simple_seq_string(sequence):
+    """
+    Split a string definition for a linear sequence into monomer
+    blocks and raise errors if the sequence is not valid.
+
+    Parameters
+    -----------
+    sequence: str
+            string of residues format name:number
+
+    Returns:
+    ----------
+    list
+       list of `polyply.Monomers`
+    """
+    raw_monomers = sequence
+    monomers = []
+    for monomer in raw_monomers:
+        resname, n_blocks = monomer.split(":")
+        n_blocks = int(n_blocks)
+        monomers.append(Monomer(resname=resname, n_blocks=n_blocks))
+    return monomers
