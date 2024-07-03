@@ -37,29 +37,6 @@ from .gen_dna import complement_dsDNA
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
-def split_seq_string(sequence):
-    """
-    Split a string definition for a linear sequence into monomer
-    blocks and raise errors if the sequence is not valid.
-
-    Parameters
-    -----------
-    sequence: str
-            string of residues format name:number
-
-    Returns:
-    ----------
-    list
-       list of `polyply.Monomers`
-    """
-    raw_monomers = sequence
-    monomers = []
-    for monomer in raw_monomers:
-        resname, n_blocks = monomer.split(":")
-        n_blocks = int(n_blocks)
-        monomers.append(Monomer(resname=resname, n_blocks=n_blocks))
-    return monomers
-
 def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[], lib=None, seq=None, seq_file=None, dsdna=False):
     """
     Top level function for running the polyply parameter generation.
@@ -89,10 +66,16 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[], lib=None,
     # Generate the MetaMolecule
     if seq:
         LOGGER.info("reading sequence from command",  type="step")
-        monomers = split_seq_string(seq)
-        meta_molecule = MetaMolecule.from_monomer_seq_linear(monomers=monomers,
-                                                             force_field=force_field,
-                                                             mol_name=name)
+        # We are dealing with a cgsmiles string
+        if len(seq) == 1 and seq[0].startswith("{"):
+            meta_molecule = MetaMolecule.from_cgsmiles_str(cgsmiles_str=seq[0],
+                                                           force_field=force_field,
+                                                           mol_name=name)
+        else:
+            monomers = parse_simple_seq_string(seq)
+            meta_molecule = MetaMolecule.from_monomer_seq_linear(monomers=monomers,
+                                                                 force_field=force_field,
+                                                                 mol_name=name)
     elif seq_file:
         LOGGER.info("reading sequence from file",  type="step")
         meta_molecule = MetaMolecule.from_sequence_file(force_field, seq_file, name)
