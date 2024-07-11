@@ -24,7 +24,7 @@ import polyply
 from polyply import itp_to_ff, gen_params
 from polyply.src.graph_utils import find_one_ismags_match
 from .test_ffoutput import (_read_force_field, equal_ffs)
-from .test_lib_files import _interaction_equal 
+from .test_lib_files import _interaction_equal
 
 def _mass_match(node1, node2):
     return node1['mass'] == node2['mass']
@@ -81,7 +81,7 @@ def itp_equal(ref_mol, new_mol):
     # test case 2 PEO-PBE block cooplymer with two termini
     ("PEG_PBE",
      "in_itp.itp",
-     "{[#CH3ter][#PBE]|4[#PEO]|2[#OHter]}.{#PEO=[>]COC[<],#OHter=[<]CO,#CH3ter=[>][CH3],#PBE=[>]CC[<]C=C}",
+     "{[#CH3ter][#PBE]|4[#PEO]|2[#OHter]}.{#PEO=[>]COC[<],#OHter=[<]CO,#CH3ter=[>]C,#PBE=[>]CC[<]C=C}",
     [("CH3ter", 0), ("PBE", 0), ("PEO", 0), ("OHter", 0)],
     ),
     # test case 3 complex sequence with charged ion in the center

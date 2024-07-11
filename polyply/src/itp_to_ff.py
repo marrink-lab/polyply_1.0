@@ -14,6 +14,7 @@
 import networkx as nx
 from vermouth.forcefield import ForceField
 from vermouth.gmx.itp_read import read_itp
+from polyply.src.meta_molecule import MetaMolecule
 from polyply.src.topology import Topology
 from polyply.src.molecule_utils import extract_block, extract_links, find_termini_mods
 from polyply.src.fragment_finder import FragmentFinder
@@ -60,7 +61,11 @@ def itp_to_ff(itppath, smile_str, outpath, inpath=[], res_charges=None):
         target_mol = _read_itp_file(itppath)
 
     # read the big-smile representation
-    meta_mol = DefBigSmileParser(force_field).parse(smile_str)
+    meta_mol = MetaMolecule.from_cgsmiles_str(force_field=force_field,
+                                          mol_name="ref",
+                                          cgsmiles_str=smile_str,
+                                          seq_only=False,
+                                          all_atom=True)
 
     # identify and extract all unique fragments
     unique_fragments, res_graph = FragmentFinder(target_mol).extract_unique_fragments(meta_mol.molecule)

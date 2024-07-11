@@ -399,26 +399,29 @@ class MetaMolecule(nx.Graph):
             take_resname_from = 'fragname'
         elif seq_only:
             # initalize the cgsmiles molecule resolver
-            resolver = MoleculeResolver(cgsmiles_str, last_all_atom=all_atom)
+            resolver = MoleculeResolver.from_string(cgsmiles_str, last_all_atom=all_atom)
             # grep the last graph of the resolve iter
-            *_, (_, meta_graph) = resolver.resolve_iter()
+            _, meta_graph = resolver.resolve_all()
             take_resname_from = 'atomname'
         else:
             # initalize the cgsmiles molecule resolver
-            resolver = MoleculeResolver(cgsmiles_str, last_all_atom=all_atom)
+            resolver = MoleculeResolver.from_string(cgsmiles_str, last_all_atom=all_atom)
             *_, (meta_graph, molecule) = resolver.resolve_iter()
+            take_resname_from = 'fragname'
 
         # we have to set some node attribute accoding to polyply specs
         for node in meta_graph.nodes:
-            if seq_only:
-                resname = meta_graph.nodes[node][take_resname_from]
-                meta_graph.nodes[node]['resname'] = resname
-            else:
-                for atom in meta_graph.nodes['graph'].nodes:
-                    meta_graph.nodes['graph'].nodes[atom]['resname'] = resname
-                    meta_graph.nodes['graph'].nodes[atom]['resid'] = node + 1
+            resname = meta_graph.nodes[node][take_resname_from]
+            meta_graph.nodes[node]['resname'] = resname
+            if not seq_only:
+                for atom in meta_graph.nodes[node]['graph'].nodes:
+                    meta_graph.nodes[node]['graph'].nodes[atom]['resname'] = resname
+                    meta_graph.nodes[node]['graph'].nodes[atom]['resname'] = resname
                     molecule.nodes[atom]['resname'] = resname
                     molecule.nodes[atom]['resid'] = node + 1
+                    #print(meta_graph.nodes[node]['graph'].nodes[atom])
+                    atomname = meta_graph.nodes[node]['graph'].nodes[atom]['atomname']
+                    molecule.nodes[atom]['atomname'] = atomname
 
             if 'atomname' in meta_graph.nodes[node]:
                 del meta_graph.nodes[node]['atomname']

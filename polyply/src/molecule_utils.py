@@ -284,6 +284,7 @@ def find_termini_mods(meta_molecule, molecule, force_field):
             for attr in ['atype', 'mass']:
                 if target_attrs[attr] != ref_attrs[attr]:
                     replace_dict[node][attr] = target_attrs[attr]
+                    print(target_attrs['atomname'], target_attrs[attr], ref_attrs[attr])
         # a little dangerous but mostly ok; if there are no changes to
         # the atoms we can continue
         if len(replace_dict) == 0:
