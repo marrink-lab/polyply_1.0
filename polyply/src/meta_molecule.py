@@ -15,6 +15,7 @@ from collections import (namedtuple, OrderedDict)
 import networkx as nx
 from cgsmiles.resolve import MoleculeResolver
 from cgsmiles.read_cgsmiles import read_cgsmiles
+from vermouth.molecule import Molecule
 from vermouth.graph_utils import make_residue_graph
 from vermouth.log_helpers import StyleAdapter, get_logger
 from vermouth.gmx.itp_read import read_itp
@@ -429,6 +430,6 @@ class MetaMolecule(nx.Graph):
 
         meta_mol = cls(meta_graph, force_field=force_field, mol_name=mol_name)
         if not seq_only:
-            meta_mol.molecule = molecule
+            meta_mol.molecule = Molecule(molecule)
 
         return meta_mol

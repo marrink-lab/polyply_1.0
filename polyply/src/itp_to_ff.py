@@ -20,7 +20,6 @@ from polyply.src.molecule_utils import extract_block, extract_links, find_termin
 from polyply.src.fragment_finder import FragmentFinder
 from polyply.src.ffoutput import ForceFieldDirectiveWriter
 from polyply.src.charges import balance_charges, set_charges
-#from polyply.src.big_smile_mol_processor import DefBigSmileParser
 from .load_library import load_ff_library
 
 def _read_itp_file(itppath):
