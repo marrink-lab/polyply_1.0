@@ -342,3 +342,7 @@ def test_extract_template_graphs(example_meta_molecule, resnames, gen_template_g
         graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='atomname')
         templated = list(nx.get_node_attributes(unique_graphs[graph_hash], 'template').values())
         assert all(templated)
+
+    # assert that all nodes have the template attribute
+    for node in example_meta_molecule.nodes:
+        assert example_meta_molecule.nodes[node].get('template', False)

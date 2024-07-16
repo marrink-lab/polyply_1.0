@@ -36,6 +36,7 @@ def _extract_template_graphs(meta_molecule, template_graphs={}, skip_filter=Fals
             resname = meta_molecule.nodes[node]["resname"]
             graph = meta_molecule.nodes[node]["graph"]
             graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='atomname')
+            meta_molecule.nodes[node]["template"] = graph_hash
             if resname in template_graphs:
                 template_graphs[graph_hash] = graph
                 del template_graphs[resname]
