@@ -111,7 +111,8 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[],
     LOGGER.info("applying links between residues",  type="step")
     meta_molecule = ApplyLinks().run_molecule(meta_molecule)
 
-    meta_molecule = ApplyModifications(modifications=mods, protter=protter).run_molecule(meta_molecule)
+    meta_molecule = ApplyModifications(modifications=mods,
+                                       meta_molecule=meta_molecule).run_molecule(meta_molecule)
 
     # Raise warning if molecule is disconnected
     msg = "Missing a link between residue {idxA} {resA} and residue {idxB} {resB}."

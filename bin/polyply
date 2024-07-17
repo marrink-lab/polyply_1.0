@@ -84,13 +84,6 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
                                            '<resname><resid>:modification_name, '
                                            'e.g. ASP1:N-ter')
                                      )
-    modifications_group.add_argument('-protter', dest='protter',
-                                     action='store_true',
-                                     help=('Apply N-ter and C-ter modifications to a protein. '
-                                           'Alias for "-mods RES1:N-ter -mods RESN:C-ter", '
-                                           'where RES1 is the name and resid of the first '
-                                           'residue in the protein and RESN is the name and resid of the last')
-                                    )
 
     parser_gen_itp.set_defaults(func=gen_itp)
 

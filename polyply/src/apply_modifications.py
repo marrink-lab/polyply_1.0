@@ -11,26 +11,33 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import vermouth.molecule
 from vermouth.log_helpers import StyleAdapter, get_logger
 from vermouth.processors.annotate_mut_mod import parse_residue_spec
 LOGGER = StyleAdapter(get_logger(__name__))
 from .processor import Processor
-import networkx as nx
 
-def _get_protein_termini(meta_molecule):
+protein_resnames = "GLY|ALA|CYS|VAL|LEU|ILE|MET|PRO|HYP|ASN|GLN|ASP|ASP0|GLU|GLU0|THR|SER|LYS|LYS0|ARG|ARG0|HIS|HISH|PHE|TYR|TRP"
+
+def _patch_protein_termini(meta_molecule, ter_mods=['N-ter', 'C-ter']):
     """
-    make a resspec for a protein with correct N-ter and C-ter
+    make a resspec for a protein with correct terminal modification
     """
+    protein_termini = [({'resid': 1, 'resname': meta_molecule.nodes[0]['resname']}, ter_mods[0])]
     max_resid = meta_molecule.max_resid
     last_node = max_resid - 1
     last_resname = meta_molecule.nodes[last_node]['resname']
-
-    protein_termini = [({'resid': 1, 'resname': meta_molecule.nodes[0]['resname']}, 'N-ter'),
-                       ({'resid': max_resid, 'resname': last_resname}, 'C-ter')
-                       ]
+    if len(ter_mods) > 1:
+        last_mod = ({'resid': max_resid, 'resname': last_resname}, ter_mods[1])
+        protein_termini.append(last_mod)
+    else:
+        # if only one mod in ter_mods, apply the mod to both start and end residue
+        LOGGER.info("Only one terminal modification specified. "
+                    f"Will apply {ter_mods[0]} to both {meta_molecule.nodes[0]['resname']}1 and {last_resname}{max_resid}")
+        protein_termini.append(({'resid': max_resid, 'resname': last_resname}, ter_mods[0]))
 
     return protein_termini
+
 
 def apply_mod(meta_molecule, modifications):
     """
@@ -67,41 +74,50 @@ def apply_mod(meta_molecule, modifications):
             else:
                 mod_atoms[mod_atom['atomname']] = {}
 
+        target_residue = meta_molecule.nodes[target_resid - 1]
+        # takes care to skip all residues that come from an itp file
+        if not target_residue.get('from_itp', 'False'):
+            continue
+        # checks that the resname is a protein resname as defined above
+        if not vermouth.molecule.attributes_match(target_residue,
+                                              {'resname': vermouth.molecule.Choice(protein_resnames.split("|"))}):
+            continue
+
         anum_dict = {}
-        for atomid, node in enumerate(molecule.nodes):
-            if molecule.nodes[node]['resid'] == target_resid:
-                # add the modification from the modifications dict
-                aname = molecule.nodes[node]['atomname']
-                if aname in mod_atoms.keys():
-                    anum_dict[aname] = atomid
-                    for key, value in mod_atoms[aname].items():
-                        molecule.nodes[node][key] = value
+        # this gives you the correct node indices
+        for node in target_residue['graph'].nodes:
+            aname = molecule.nodes[node]['atomname']
+            if aname in mod_atoms.keys():
+                anum_dict[aname] = node + 1
+                for key, value in mod_atoms[aname].items():
+                    molecule.nodes[node][key] = value
 
         mod_interactions = molecule.force_field.modifications[desired_mod].interactions
         for i in mod_interactions:
             for j in molecule.force_field.modifications[desired_mod].interactions[i]:
                 molecule.add_interaction(i,
-                                         (anum_dict[j.atoms[0]],
-                                          anum_dict[j.atoms[1]]),
+                                         (anum_dict[j.atoms[0]]-1,
+                                          anum_dict[j.atoms[1]]-1),
                                          j.parameters,
                                          meta=j.meta)
 
     return meta_molecule
 
 class ApplyModifications(Processor):
-    def __init__(self, modifications=None, protter=False):
-        if not modifications:
-            modifications = []
-        self.modifications = []
+    """
+    This processor takes a class:`polyply.src.MetaMolecule` and
+    based on modifications defined in the `force-field` attribute of the
+    MetaMolecule applies them when appropriate.
+
+    """
+    def __init__(self, meta_molecule, modifications=[]):
+        self.target_mods = []
         for resspec, val in modifications:
-            self.modifications.append((parse_residue_spec(resspec), val))
-        self.protter = protter
+            self.target_mods.append((parse_residue_spec(resspec), val))
+        if len(self.target_mods) == 0:
+            self.target_mods = _patch_protein_termini(meta_molecule)
 
     def run_molecule(self, meta_molecule):
 
-        if self.protter:
-            self.modifications = _get_protein_termini(meta_molecule)
-
-        apply_mod(meta_molecule, self.modifications)
-
+        apply_mod(meta_molecule, self.target_mods)
         return meta_molecule
