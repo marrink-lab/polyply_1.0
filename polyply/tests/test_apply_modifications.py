@@ -27,15 +27,25 @@ import polyply.src.ff_parser_sub
 import networkx as nx
 from vermouth.molecule import Interaction
 
-def test_annotate_protein(example_meta_molecule):
+
+@pytest.mark.parametrize('input_mods, expected',(
+        (['N-ter', 'C-ter'],
+         [({'resid': 1, 'resname': 'A'}, 'N-ter'),
+          ({'resid': 3, 'resname': 'A'}, 'C-ter')]
+        ),
+        (['Zwitter'],
+        [({'resid': 1, 'resname': 'A'}, 'Zwitter'),
+         ({'resid': 3, 'resname': 'A'}, 'Zwitter')]
+        )
+
+
+))
+def test_annotate_protein(example_meta_molecule, input_mods, expected):
     """"
     test that a protein sequence gets annotated correctly
     """
-    result = [({'resid': 1, 'resname': 'A'}, 'N-ter'),
-               ({'resid': 3, 'resname': 'A'}, 'C-ter')]
 
-    termini = _patch_protein_termini(example_meta_molecule)
-    assert termini == result
+    assert expected == _patch_protein_termini(example_meta_molecule, input_mods)
 
 @pytest.mark.parametrize(
     'ff_files, expected', (
@@ -65,12 +75,22 @@ def test_mods_in_ff(caplog, ff_files, expected):
     with expected:
         assert len(ff.modifications) > 0
 
-def test_apply_mod(caplog):
+@pytest.mark.parametrize('input_itp, molname, expected',
+                         (
+    (
+    'ALA5.itp',
+    'pALA',
+    False),
+    ('PEO.itp',
+     'PEO',
+    True)
+                         ))
+def test_apply_mod(input_itp, molname, expected, caplog):
     """
     test that modifications get applied correctly
     """
     #make the meta molecule from the itp and ff files
-    file_name = TEST_DATA / "itp" / "ALA5.itp"
+    file_name = TEST_DATA / "itp" / input_itp
 
     ff = vermouth.forcefield.ForceField(name='martini3')
 
@@ -80,39 +100,59 @@ def test_apply_mod(caplog):
             ff_lines += f.readlines()
     polyply.src.ff_parser_sub.read_ff(ff_lines, ff)
 
-    name = "pALA"
-    meta_mol = MetaMolecule.from_itp(ff, file_name, name)
+    meta_mol = MetaMolecule.from_itp(ff, file_name, molname)
 
     #apply the mods
     termini = _patch_protein_termini(meta_mol)
     apply_mod(meta_mol, termini)
 
-    #for each mod applied, check that the mod atom and interactions have been changed correctly
-    for target, modname in termini:
-        mod = meta_mol.molecule.force_field.modifications[modname]
-        names = nx.get_node_attributes(meta_mol.molecule, 'atomname')
-        atypes = nx.get_node_attributes(meta_mol.molecule, 'atype')
-        resids = nx.get_node_attributes(meta_mol.molecule, 'resid')
+    if expected:
+        assert any(rec.levelname == 'WARNING' for rec in caplog.records)
 
-        _interaction_atoms = []
-        for modatom in mod.atoms:
-            for ind, (aname, atype, resid) in enumerate(zip(names.values(), atypes.values(), resids.values())):
-                if (resid == target['resid']) and (aname == modatom['atomname']):
-                    if 'replace' in modatom.keys():
-                        assert atype == modatom['replace']['atype']
-                    _interaction_atoms.append(ind)
+    else:
+        #for each mod applied, check that the mod atom and interactions have been changed correctly
+        for target, modname in termini:
+            mod = meta_mol.molecule.force_field.modifications[modname]
+            names = nx.get_node_attributes(meta_mol.molecule, 'atomname')
+            atypes = nx.get_node_attributes(meta_mol.molecule, 'atype')
+            resids = nx.get_node_attributes(meta_mol.molecule, 'resid')
 
-        for interaction_type in mod.interactions:
-            for interaction in mod.interactions[interaction_type]:
-                for aname, atype, resid in zip(names.values(), atypes.values(), resids.values()):
-                    if (resid == target['resid']):
-                        _interaction = Interaction(atoms=tuple(_interaction_atoms),
-                                                   parameters=interaction.parameters,
-                                                   meta=interaction.meta)
-                        assert _interaction in meta_mol.molecule.interactions[interaction_type]
-def test_ApplyModifications(example_meta_molecule, caplog):#
-    ApplyModifications(modifications=[],
+            _interaction_atoms = []
+            for modatom in mod.atoms:
+                for ind, (aname, atype, resid) in enumerate(zip(names.values(), atypes.values(), resids.values())):
+                    if (resid == target['resid']) and (aname == modatom['atomname']):
+                        if 'replace' in modatom.keys():
+                            assert atype == modatom['replace']['atype']
+                        _interaction_atoms.append(ind)
+
+            for interaction_type in mod.interactions:
+                for interaction in mod.interactions[interaction_type]:
+                    for aname, atype, resid in zip(names.values(), atypes.values(), resids.values()):
+                        if (resid == target['resid']):
+                            _interaction = Interaction(atoms=tuple(_interaction_atoms),
+                                                       parameters=interaction.parameters,
+                                                       meta=interaction.meta)
+                            assert _interaction in meta_mol.molecule.interactions[interaction_type]
+
+@pytest.mark.parametrize('modifications, expected',
+     (
+             (
+                 [['A1', 'N-ter']],
+                 True
+             ),
+
+             (
+                 [],
+                 True
+             ),
+
+     ))
+def test_ApplyModifications(example_meta_molecule, caplog, modifications, expected):
+
+
+    ApplyModifications(modifications=modifications,
                        meta_molecule=example_meta_molecule).run_molecule(example_meta_molecule)
 
-    assert any(rec.levelname == 'WARNING' for rec in caplog.records)
+    if expected:
+        assert any(rec.levelname == 'WARNING' for rec in caplog.records)
 

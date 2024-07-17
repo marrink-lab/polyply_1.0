@@ -77,10 +77,13 @@ def apply_mod(meta_molecule, modifications):
         target_residue = meta_molecule.nodes[target_resid - 1]
         # takes care to skip all residues that come from an itp file
         if not target_residue.get('from_itp', 'False'):
+            LOGGER.warning("meta_molecule has come from itp. Will not attempt to modify.")
             continue
         # checks that the resname is a protein resname as defined above
         if not vermouth.molecule.attributes_match(target_residue,
                                               {'resname': vermouth.molecule.Choice(protein_resnames.split("|"))}):
+            LOGGER.warning("The resname of your target residue is not recognised a protein resname. "
+                           "Will not attempt to modify.")
             continue
 
         anum_dict = {}
