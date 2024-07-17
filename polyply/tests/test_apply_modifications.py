@@ -21,7 +21,7 @@ import pytest
 import vermouth.forcefield
 import vermouth.ffinput
 from polyply.src.meta_molecule import MetaMolecule
-from polyply.src.apply_modifications import _get_protein_termini, apply_mod, ApplyModifications
+from polyply.src.apply_modifications import _patch_protein_termini, apply_mod, ApplyModifications
 from polyply import TEST_DATA
 import polyply.src.ff_parser_sub
 import networkx as nx
@@ -34,7 +34,7 @@ def test_annotate_protein(example_meta_molecule):
     result = [({'resid': 1, 'resname': 'A'}, 'N-ter'),
                ({'resid': 3, 'resname': 'A'}, 'C-ter')]
 
-    termini = _get_protein_termini(example_meta_molecule)
+    termini = _patch_protein_termini(example_meta_molecule)
     assert termini == result
 
 @pytest.mark.parametrize(
@@ -84,7 +84,7 @@ def test_apply_mod(caplog):
     meta_mol = MetaMolecule.from_itp(ff, file_name, name)
 
     #apply the mods
-    termini = _get_protein_termini(meta_mol)
+    termini = _patch_protein_termini(meta_mol)
     apply_mod(meta_mol, termini)
 
     #for each mod applied, check that the mod atom and interactions have been changed correctly
@@ -110,25 +110,9 @@ def test_apply_mod(caplog):
                                                    parameters=interaction.parameters,
                                                    meta=interaction.meta)
                         assert _interaction in meta_mol.molecule.interactions[interaction_type]
+def test_ApplyModifications(example_meta_molecule, caplog):#
+    ApplyModifications(modifications=[],
+                       meta_molecule=example_meta_molecule).run_molecule(example_meta_molecule)
 
-@pytest.mark.parametrize('modifications, protein_termini, expected',
-     (
-             (
-                 None,
-                 False,
-                 True
-             ),
-
-             (None,
-              True,
-              False)
-     ))
-def test_ApplyModifications(example_meta_molecule, caplog, modifications, protein_termini, expected):
-
-    ApplyModifications(modifications=modifications,
-                       protter=protein_termini).run_molecule(example_meta_molecule)
-
-    if expected:
-        print(caplog.records)
-        assert any(rec.levelname == 'WARNING' for rec in caplog.records)
+    assert any(rec.levelname == 'WARNING' for rec in caplog.records)
 
