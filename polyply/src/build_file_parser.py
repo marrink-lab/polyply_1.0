@@ -152,6 +152,7 @@ class BuildDirector(SectionLineParser):
         node_name, atype = tokens[0], tokens[1]
         position = np.array(tokens[2:], dtype=float)
         self.current_template.add_node(node_name,
+                                       atomname=node_name,
                                        atype=atype,
                                        position=position)
 
@@ -200,14 +201,16 @@ class BuildDirector(SectionLineParser):
             # if the volume is not defined yet compute the volume, this still
             # can be overwritten by an explicit volume directive later
             resname = self.current_template.name
-            if resname not in self.topology.volumes:
-                self.topology.volumes[resname] = compute_volume(self.current_template,
-                                                                coords,
-                                                                self.topology.nonbond_params,)
+            graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(self.current_template,
+                                                                                  node_attr='atomname')
+            if graph_hash not in self.topology.volumes:
+                self.topology.volumes[graph_hash] = compute_volume(self.current_template,
+                                                                   coords,
+                                                                   self.topology.nonbond_params,)
             # internally a template is defined as vectors from the
             # center of geometry
             mapped_coords = map_from_CoG(coords)
-            self.templates[resname] = mapped_coords
+            self.templates[graph_hash] = mapped_coords
             self.current_template = None
 
     def finalize(self, lineno=0):

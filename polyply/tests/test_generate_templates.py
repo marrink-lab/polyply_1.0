@@ -330,18 +330,14 @@ def test_extract_template_graphs(example_meta_molecule, resnames, gen_template_g
     for node in gen_template_graphs:
         graph = example_meta_molecule.nodes[node]['graph']
         nx.set_node_attributes(graph, True, 'template')
-        template_graphs[example_meta_molecule.nodes[node]['resname']] = graph
+        graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='atomname')
+        template_graphs[graph_hash] = None
 
     # perfrom the grouping
     unique_graphs = _extract_template_graphs(example_meta_molecule, template_graphs, skip_filter)
 
     # check the outcome
     assert len(unique_graphs) == 2
-
-    for graph in template_graphs.values():
-        graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='atomname')
-        templated = list(nx.get_node_attributes(unique_graphs[graph_hash], 'template').values())
-        assert all(templated)
 
     # assert that all nodes have the template attribute
     for node in example_meta_molecule.nodes:
