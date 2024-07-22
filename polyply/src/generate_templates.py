@@ -22,7 +22,6 @@ from .linalg_functions import (u_vect, center_of_geometry,
 from .topology import replace_defined_interaction
 from .linalg_functions import dih
 from .check_residue_equivalence import group_residues_by_hash
-from tqdm import tqdm
 """
 Processor generating coordinates for all residues of a meta_molecule
 matching those in the meta_molecule.molecule attribute.
@@ -337,7 +336,7 @@ class GenerateTemplates(Processor):
         self.templates
         self.volumes
         """
-        for graph_hash, template_graph in tqdm(template_graphs.items()):
+        for graph_hash, template_graph in template_graphs.items():
             if graph_hash not in self.templates:
                 block = extract_block(meta_molecule.molecule,
                                       template_graph,
