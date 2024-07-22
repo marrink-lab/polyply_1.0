@@ -41,6 +41,7 @@ class BuildDirector(SectionLineParser):
         self.persistence_length = {}
         self.templates = {}
         self.current_template = None
+        self.resnames_to_hash = {}
 
     @SectionLineParser.section_parser('molecule')
     def _molecule(self, line, lineno=0):
@@ -211,6 +212,7 @@ class BuildDirector(SectionLineParser):
             # center of geometry
             mapped_coords = map_from_CoG(coords)
             self.templates[graph_hash] = mapped_coords
+            self.resnames_to_hash[resname] = graph_hash
             self.current_template = None
 
     def finalize(self, lineno=0):
@@ -231,6 +233,13 @@ class BuildDirector(SectionLineParser):
             molecule.templates = self.templates
 
         super().finalize(lineno=lineno)
+
+        # if template graphs and volumes are provided
+        # make sure that volumes are indexed by the hash
+        for resname, graph_hash in self.resnames_to_hash.items():
+            if resname in self.topology.volumes:
+                self.topology.volumes[graph_hash] = self.topology.volumes[resname]
+                del self.topology.volumes[resname]
 
     @staticmethod
     def _tag_nodes(molecule, keyword, option, molname=""):

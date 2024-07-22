@@ -63,10 +63,6 @@ def group_residues_by_hash(meta_molecule, template_graphs={}):
         keys are the hash of the graph
     """
     unique_graphs = template_graphs
-#    for graph in template_graphs.values():
-#        graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='atomname')
-#        unique_graphs[graph_hash] = graph
-
     for node in meta_molecule.nodes:
         graph = meta_molecule.nodes[node]["graph"]
         graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='atomname')

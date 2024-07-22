@@ -337,8 +337,8 @@ class GenerateTemplates(Processor):
         self.templates
         self.volumes
         """
-        for resname, template_graph in tqdm(template_graphs.items()):
-            if resname not in self.templates:
+        for graph_hash, template_graph in tqdm(template_graphs.items()):
+            if graph_hash not in self.templates:
                 block = extract_block(meta_molecule.molecule,
                                       template_graph,
                                       self.topology.defines)
@@ -364,13 +364,15 @@ class GenerateTemplates(Processor):
                         break
                     else:
                         opt_counter += 1
-
-                if resname not in self.volumes:
-                    self.volumes[resname] = compute_volume(block,
+                resname = block.nodes[list(block.nodes)[0]]['resname']
+                if resname in self.volumes:
+                    self.volumes[graph_hash] = self.volumes[resname]
+                else:
+                    self.volumes[graph_hash] = compute_volume(block,
                                                            coords,
                                                            self.topology.nonbond_params)
                 coords = map_from_CoG(coords)
-                self.templates[resname] = coords
+                self.templates[graph_hash] = coords
 
     def run_molecule(self, meta_molecule):
         """

@@ -403,12 +403,25 @@ def test_template_volume_parsing(test_system, line, names, edges, positions, out
     polyply.src.build_file_parser.read_build_file(lines,
                                                   test_system,
                                                   test_system.molecules)
-    for mol in test_system.molecules:
-        assert len(mol.templates) == len(names)
-        for idx, name in enumerate(names):
-            template = mol.templates[name]
-            for node_pos in positions[idx]:
-                node = node_pos[0]
-                assert np.all(np.array(node_pos[1:], dtype=float) == template[node])
+    # verify results parsing based on hashes
+    idx = 0
+    for name, edge_list in zip(names, edges):
+        template_graph = nx.Graph()
+        template_graph.add_edges_from(edge_list)
+        atomnames = {node: node for node in template_graph.nodes}
+        nx.set_node_attributes(template_graph, atomnames, 'atomname')
+        graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(template_graph,
+                                                                              node_attr='atomname')
 
-    assert test_system.volumes == out_vol
+        mol = test_system.molecules[idx]
+        assert graph_hash in mol.templates
+
+        for node_pos in positions[idx]:
+            template = mol.templates[graph_hash]
+            node = node_pos[0]
+            assert np.all(np.array(node_pos[1:], dtype=float) == template[node])
+
+        assert graph_hash in test_system.volumes
+        assert test_system.volumes[graph_hash] == out_vol[name]
+
+        idx += 1
