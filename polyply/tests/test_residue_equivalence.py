@@ -28,8 +28,9 @@ def test_group_by_hash(example_meta_molecule, resnames, gen_template_graphs):
     template_graphs = {}
     for node in gen_template_graphs:
         graph = example_meta_molecule.nodes[node]['graph']
+        graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='atomname')
         nx.set_node_attributes(graph, True, 'template')
-        template_graphs[example_meta_molecule.nodes[node]['resname']] = graph
+        template_graphs[graph_hash] = graph
 
     # perfrom the grouping
     unique_graphs = group_residues_by_hash(example_meta_molecule, template_graphs)
@@ -37,8 +38,7 @@ def test_group_by_hash(example_meta_molecule, resnames, gen_template_graphs):
     # check the outcome
     assert len(unique_graphs) == 2
 
-    for graph in template_graphs.values():
-        graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='atomname')
+    for graph_hash in template_graphs:
         templated = list(nx.get_node_attributes(unique_graphs[graph_hash], 'template').values())
         assert all(templated)
 
