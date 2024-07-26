@@ -309,17 +309,24 @@ def test_compute_volume(lines, coords, volume):
     assert np.isclose(new_vol, volume, atol=0.000001)
 
 
-@pytest.mark.parametrize('resnames, gen_template_graphs, skip_filter', (
+@pytest.mark.parametrize('resnames, gen_template_graphs, use_resname, skip_filter', (
                         # two different residues no template_graphs
-                        (['A', 'B', 'A'], [], False),
+                        (['A', 'B', 'A'], [], False, False),
                         # two different residues no template_graphs
-                        (['A', 'B', 'A'], [], True),
+                        (['A', 'B', 'A'], [], False, True),
                         # two different residues one template_graphs
-                        (['A', 'B', 'A'], [1], True),
+                        (['A', 'B', 'A'], [1], False, True),
                         # two different residues one template_graphs
-                        (['A', 'B', 'A'], [1], False),
+                        (['A', 'B', 'A'], [1], False, False),
+                        # here the template is indexed with the resname
+                        # instead of the hash which needs to be cleared
+                        (['A', 'B', 'A'], [1], True, True),
 ))
-def test_extract_template_graphs(example_meta_molecule, resnames, gen_template_graphs, skip_filter):
+def test_extract_template_graphs(example_meta_molecule,
+                                 resnames,
+                                 gen_template_graphs,
+                                 use_resname,
+                                 skip_filter):
     # set the residue names
     for resname, node in zip(resnames, example_meta_molecule.nodes):
         example_meta_molecule.nodes[node]['resname'] = resname
@@ -331,7 +338,11 @@ def test_extract_template_graphs(example_meta_molecule, resnames, gen_template_g
         graph = example_meta_molecule.nodes[node]['graph']
         nx.set_node_attributes(graph, True, 'template')
         graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='atomname')
-        template_graphs[graph_hash] = None
+        if use_resname:
+            resname =  example_meta_molecule.nodes[node]['resname']
+            template_graphs[resname] = None
+        else:
+            template_graphs[graph_hash] = None
 
     # perfrom the grouping
     unique_graphs = _extract_template_graphs(example_meta_molecule, template_graphs, skip_filter)
