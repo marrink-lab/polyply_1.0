@@ -153,14 +153,22 @@ class TestGenTemps:
              len(ff.blocks["GLY"].interactions[inter_type]) == len(new_block.interactions[inter_type])
 
       @staticmethod
-      def test_run_molecule():
+      @pytest.mark.parametrize('volumes', (
+                               None,
+                               {"PMMA": 0.55},
+      ))
+      def test_run_molecule(volumes):
           top = polyply.src.topology.Topology.from_gmx_topfile(TEST_DATA / "topology_test" / "system.top", "test")
           top.gen_pairs()
+          if volumes:
+            top.volumes = volumes
           top.convert_nonbond_to_sig_eps()
           GenerateTemplates(topology=top, skip_filter=False, max_opt=10).run_molecule(top.molecules[0])
           graph = top.molecules[0].nodes[0]['graph']
           graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='atomname')
           assert graph_hash in top.volumes
+          if volumes:
+            assert top.volumes[graph_hash] == volumes['PMMA']
           assert graph_hash in top.molecules[0].templates
 
       @staticmethod
@@ -309,17 +317,24 @@ def test_compute_volume(lines, coords, volume):
     assert np.isclose(new_vol, volume, atol=0.000001)
 
 
-@pytest.mark.parametrize('resnames, gen_template_graphs, skip_filter', (
+@pytest.mark.parametrize('resnames, gen_template_graphs, use_resname, skip_filter', (
                         # two different residues no template_graphs
-                        (['A', 'B', 'A'], [], False),
+                        (['A', 'B', 'A'], [], False, False),
                         # two different residues no template_graphs
-                        (['A', 'B', 'A'], [], True),
+                        (['A', 'B', 'A'], [], False, True),
                         # two different residues one template_graphs
-                        (['A', 'B', 'A'], [1], True),
+                        (['A', 'B', 'A'], [1], False, True),
                         # two different residues one template_graphs
-                        (['A', 'B', 'A'], [1], False),
+                        (['A', 'B', 'A'], [1], False, False),
+                        # here the template is indexed with the resname
+                        # instead of the hash which needs to be cleared
+                        (['A', 'B', 'A'], [1], True, True),
 ))
-def test_extract_template_graphs(example_meta_molecule, resnames, gen_template_graphs, skip_filter):
+def test_extract_template_graphs(example_meta_molecule,
+                                 resnames,
+                                 gen_template_graphs,
+                                 use_resname,
+                                 skip_filter):
     # set the residue names
     for resname, node in zip(resnames, example_meta_molecule.nodes):
         example_meta_molecule.nodes[node]['resname'] = resname
@@ -330,7 +345,12 @@ def test_extract_template_graphs(example_meta_molecule, resnames, gen_template_g
     for node in gen_template_graphs:
         graph = example_meta_molecule.nodes[node]['graph']
         nx.set_node_attributes(graph, True, 'template')
-        template_graphs[example_meta_molecule.nodes[node]['resname']] = graph
+        graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='atomname')
+        if use_resname:
+            resname =  example_meta_molecule.nodes[node]['resname']
+            template_graphs[resname] = None
+        else:
+            template_graphs[graph_hash] = None
 
     # perfrom the grouping
     unique_graphs = _extract_template_graphs(example_meta_molecule, template_graphs, skip_filter)
@@ -338,7 +358,6 @@ def test_extract_template_graphs(example_meta_molecule, resnames, gen_template_g
     # check the outcome
     assert len(unique_graphs) == 2
 
-    for graph in template_graphs.values():
-        graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='atomname')
-        templated = list(nx.get_node_attributes(unique_graphs[graph_hash], 'template').values())
-        assert all(templated)
+    # assert that all nodes have the template attribute
+    for node in example_meta_molecule.nodes:
+        assert example_meta_molecule.nodes[node].get('template', False)
