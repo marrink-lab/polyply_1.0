@@ -153,15 +153,23 @@ class TestGenTemps:
              len(ff.blocks["GLY"].interactions[inter_type]) == len(new_block.interactions[inter_type])
 
       @staticmethod
-      @pytest.mark.parametrize('volumes', (
-                               None,
-                               {"PMMA": 0.55},
+      @pytest.mark.parametrize('volumes, templates', (
+                               (None, None),
+                               ({"PMMA": 0.55}, None),
+                               (None, {"C1": np.array([0, 0, 0]),
+                                       "C2": np.array([0, 0.2, 0]),
+                                       "C3": np.array([0, 0.4, 0]),
+                                       "O4": np.array([0, 0.6, 0.2]),
+                                       "O5": np.array([0, 0.8, 0.0]),
+                                       "C6": np.array([0, 1, -0.2])})
       ))
-      def test_run_molecule(volumes):
+      def test_run_molecule(volumes, templates):
           top = polyply.src.topology.Topology.from_gmx_topfile(TEST_DATA / "topology_test" / "system.top", "test")
           top.gen_pairs()
           if volumes:
             top.volumes = volumes
+          if templates:
+            top.molecules[0].templates = templates
           top.convert_nonbond_to_sig_eps()
           GenerateTemplates(topology=top, skip_filter=False, max_opt=10).run_molecule(top.molecules[0])
           graph = top.molecules[0].nodes[0]['graph']
