@@ -153,14 +153,22 @@ class TestGenTemps:
              len(ff.blocks["GLY"].interactions[inter_type]) == len(new_block.interactions[inter_type])
 
       @staticmethod
-      def test_run_molecule():
+      @pytest.mark.parametrize('volumes', (
+                               None,
+                               {"PMMA": 0.55},
+      ))
+      def test_run_molecule(volumes):
           top = polyply.src.topology.Topology.from_gmx_topfile(TEST_DATA / "topology_test" / "system.top", "test")
           top.gen_pairs()
+          if volumes:
+            top.volumes = volumes
           top.convert_nonbond_to_sig_eps()
           GenerateTemplates(topology=top, skip_filter=False, max_opt=10).run_molecule(top.molecules[0])
           graph = top.molecules[0].nodes[0]['graph']
           graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='atomname')
           assert graph_hash in top.volumes
+          if volumes:
+            assert top.volumes[graph_hash] == volumes['PMMA']
           assert graph_hash in top.molecules[0].templates
 
       @staticmethod
