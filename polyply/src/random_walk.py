@@ -356,8 +356,8 @@ class RandomWalk(Processor):
             if fulfill_geometrical_constraints(new_point, self.molecule.nodes[current_node])\
                 and self.checks_milestones(current_node, new_point, step_length)\
                 and is_restricted(new_point, last_point, self.molecule.nodes[current_node])\
-                and not self._is_overlap(new_point, current_node)\
-                and self.bendiness(new_point, current_node):
+                and self.bendiness(new_point, current_node)\
+                and not self._is_overlap(new_point, current_node):
 
                     self.nonbond_matrix.add_positions(new_point,
                                                       self.mol_idx,
