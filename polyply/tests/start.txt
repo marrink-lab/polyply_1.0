@@ -1,6 +1,0 @@
-store resname hash mapping
-assing volumes if given
-
-else:
-
-template gets generated then 
