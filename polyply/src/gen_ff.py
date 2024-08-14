@@ -35,7 +35,7 @@ def _read_itp_file(itppath):
     mol.make_edges_from_interaction_type(type_="bonds")
     return mol
 
-def itp_to_ff(itppath, smile_str, outpath, inpath=[], res_charges=None):
+def gen_ff(itppath, smile_str, outpath, inpath=[], res_charges=None):
     """
     Main executable for itp to ff tool.
     """
