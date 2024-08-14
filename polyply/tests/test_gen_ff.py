@@ -1,10 +1,10 @@
-# Copyright 2020 University of Groningen
+# Copyright 2024 Dr. Fabian Gruenewald
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the PolyForm Noncommercial License 1.0.0;
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#    http://www.apache.org/licenses/LICENSE-2.0
+#    https://polyformproject.org/licenses/noncommercial/1.0.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@ from vermouth.molecule import Molecule, Interaction
 from vermouth.forcefield import ForceField
 from vermouth.gmx.itp_read import read_itp
 import polyply
-from polyply import itp_to_ff, gen_params
+from polyply import gen_ff, gen_params
 from polyply.src.graph_utils import find_one_ismags_match
 from .test_ffoutput import (_read_force_field, equal_ffs)
 from .test_lib_files import _interaction_equal
@@ -91,14 +91,14 @@ def itp_equal(ref_mol, new_mol):
      [("ter1", 0), ("PMA", 0), ("AOL", 1), ("ter2", 0)],
     )
 ])
-def test_itp_to_ff(tmp_path, case, fname, bigsmile, charges):
+def test_gen_ff(tmp_path, case, fname, bigsmile, charges):
     """
     Call itp-to-ff and check if it generates the same force-field
     as in the ref.ff file.
     """
     tmp_file = Path(tmp_path) / "test.ff"
-    inpath = Path(polyply.TEST_DATA) / "itp_to_ff" / case
-    itp_to_ff(itppath=inpath/fname,
+    inpath = Path(polyply.TEST_DATA) / "gen_ff" / case
+    gen_ff(itppath=inpath/fname,
               smile_str=bigsmile,
               res_charges=charges,
               outpath=tmp_file,)

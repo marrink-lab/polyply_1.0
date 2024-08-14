@@ -56,4 +56,4 @@ from .src.map_to_molecule import MapToMolecule
 from .src.gen_itp import gen_itp, gen_params
 from .src.gen_coords import gen_coords
 from .src.gen_seq import gen_seq
-from .src.itp_to_ff import itp_to_ff
+from .src.gen_ff import gen_ff
