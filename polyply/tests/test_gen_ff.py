@@ -79,11 +79,11 @@ def itp_equal(ref_mol, new_mol):
      [("OHter", 0), ("PEO", 0)],
     ),
     # test case 2 PEO-PBE block cooplymer with two termini
-  # ("PEG_PBE",
-  #  "in_itp.itp",
-  #  "{[#CH3ter][#PBE]|4[#PEO]|2[#OHter]}.{#PEO=[>]COC[<],#OHter=[<]CO,#CH3ter=[>]C,#PBE=[>]CC[<]C=C}",
-  # [("CH3ter", 0), ("PBE", 0), ("PEO", 0), ("OHter", 0)],
-  # ),
+    ("PEG_PBE",
+     "in.top",
+     "{[#CH3ter][#PBE]|4[#PEO]|2[#OHter]}.{#PEO=[>]COC[<],#OHter=[<]CO,#CH3ter=[>]C,#PBE=[>]CC[<]C=C}",
+    [("CH3ter", 0), ("PBE", 0), ("PEO", 0), ("OHter", 0)],
+    ),
     # test case 3 complex sequence with charged ion in the center
    ("ACOL",
     "ref.top",

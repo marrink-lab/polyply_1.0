@@ -22,6 +22,27 @@ from polyply.src.ffoutput import ForceFieldDirectiveWriter
 from polyply.src.charges import balance_charges, set_charges
 from .load_library import load_ff_library
 
+def is_opls(topology):
+    atomtypes = list(topology.atom_types.keys())
+    if "opls" in atomtypes[0]:
+        return True
+    return False
+
+def _clean_opls_atomtypes(topology):
+    old_to_new = {}
+    unique_atypes = {}
+
+    for atype, params in topology.atom_types.items():
+        nb_vals = (str(params['nb1']), str(params['nb2']))
+        if nb_vals not in unique_atypes:
+            unique_atypes[nb_vals] = atype
+        old_to_new[atype] = unique_atypes[nb_vals]
+    for mol in topology.molecules:
+        for node in mol.molecule.nodes:
+            mol.molecule.nodes[node]["atype"] = old_to_new[mol.molecule.nodes[node]["atype"]]
+        mol.relabel_and_redo_res_graph(mapping={})
+    return topology
+
 def _read_itp_file(itppath):
     """
     small wrapper for reading itps
@@ -37,7 +58,7 @@ def _read_itp_file(itppath):
 
 def gen_ff(itppath, smile_str, outpath, inpath=[], res_charges=None):
     """
-    Main executable for itp to ff tool.
+    Main executable for gen_ff tool.
     """
     # load FF files if given
     if inpath:
@@ -53,7 +74,13 @@ def gen_ff(itppath, smile_str, outpath, inpath=[], res_charges=None):
     # read the topology file
     if itppath.suffix == ".top":
         top = Topology.from_gmx_topfile(itppath, name="test")
-        target_mol = top.molecules[0].molecule
+        # opls specific fix
+        # in LigParGen each atom get's its own atype even though
+        # they are the same; pretty strange but this confuses
+        # the terminal modifications module
+        if top and is_opls(top):
+            _clean_opls_atomtypes(top)
+            target_mol = top.molecules[0].molecule
     # read itp file
     elif itppath.suffix == ".itp":
         top = None
