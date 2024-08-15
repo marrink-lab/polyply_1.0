@@ -30,11 +30,12 @@ except ImportError:
 from vermouth.file_writer import DeferredFileWriter
 from vermouth.citation_parser import citation_formatter
 from vermouth.graph_utils import make_residue_graph
-from polyply import (MetaMolecule, ApplyLinks, Monomer, MapToMolecule)
+from polyply import (MetaMolecule, ApplyLinks, MapToMolecule)
 from polyply.src.graph_utils import find_missing_edges
 from .load_library import load_ff_library
 from .gen_dna import complement_dsDNA
 from .apply_modifications import ApplyModifications
+from .simple_seq_parsers import parse_simple_seq_string
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
