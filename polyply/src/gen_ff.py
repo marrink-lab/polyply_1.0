@@ -101,7 +101,7 @@ def gen_ff(itppath, smile_str, outpath, inpath=[], res_charges=None):
         # don't overwrite existing blocks
         if name in force_field.blocks:
             continue
-        new_block = extract_block(target_mol, list(fragment.nodes), defines={})
+        new_block = extract_block(target_mol, fragment, defines={})
         nx.set_node_attributes(new_block, 1, "resid")
         new_block.nrexcl = target_mol.nrexcl
         force_field.blocks[name] = new_block
