@@ -28,12 +28,12 @@ from polyply import TEST_DATA
 from polyply.src.linalg_functions import center_of_geometry
 from polyply.src.generate_templates import (find_atoms,
                                             _expand_inital_coords,
-                                            _relabel_interaction_atoms,
                                             compute_volume, map_from_CoG,
-                                            extract_block, GenerateTemplates,
+                                            GenerateTemplates,
                                             find_interaction_involving,
                                             _extract_template_graphs)
 from .example_fixtures import example_meta_molecule
+from polyply.src.molecule_utils import (extract_block, _relabel_interaction_atoms)
 
 class TestGenTemps:
 
