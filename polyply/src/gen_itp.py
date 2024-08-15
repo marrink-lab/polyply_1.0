@@ -64,7 +64,6 @@ def split_seq_string(sequence):
 def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[],
                lib=None, seq=None, seq_file=None,
                dsdna=False, mods=[], protter=False):
-
     """
     Top level function for running the polyply parameter generation.
     Parameters seq and seq_file are mutually exclusive. Set the other
@@ -93,10 +92,16 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[],
     # Generate the MetaMolecule
     if seq:
         LOGGER.info("reading sequence from command",  type="step")
-        monomers = split_seq_string(seq)
-        meta_molecule = MetaMolecule.from_monomer_seq_linear(monomers=monomers,
-                                                             force_field=force_field,
-                                                             mol_name=name)
+        # We are dealing with a cgsmiles string
+        if len(seq) == 1 and seq[0].startswith("{"):
+            meta_molecule = MetaMolecule.from_cgsmiles_str(cgsmiles_str=seq[0],
+                                                           force_field=force_field,
+                                                           mol_name=name)
+        else:
+            monomers = parse_simple_seq_string(seq)
+            meta_molecule = MetaMolecule.from_monomer_seq_linear(monomers=monomers,
+                                                                 force_field=force_field,
+                                                                 mol_name=name)
     elif seq_file:
         LOGGER.info("reading sequence from file",  type="step")
         meta_molecule = MetaMolecule.from_sequence_file(force_field, seq_file, name)
