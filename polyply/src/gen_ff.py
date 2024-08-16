@@ -80,7 +80,7 @@ def gen_ff(itppath, smile_str, outpath, inpath=[], res_charges=None):
         # the terminal modifications module
         if top and is_opls(top):
             _clean_opls_atomtypes(top)
-            target_mol = top.molecules[0].molecule
+        target_mol = top.molecules[0].molecule
     # read itp file
     elif itppath.suffix == ".itp":
         top = None
