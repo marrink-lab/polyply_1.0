@@ -32,8 +32,8 @@ def _patch_protein_termini(meta_molecule, ter_mods=['N-ter', 'C-ter']):
         protein_termini.append(last_mod)
     else:
         # if only one mod in ter_mods, apply the mod to both start and end residue
-        LOGGER.info("Only one terminal modification specified. "
-                    f"Will apply {ter_mods[0]} to both {meta_molecule.nodes[0]['resname']}1 and {last_resname}{max_resid}")
+        LOGGER.warning("Only one terminal modification specified. "
+                      f"Will apply {ter_mods[0]} to both {meta_molecule.nodes[0]['resname']}1 and {last_resname}{max_resid}")
         protein_termini.append(({'resid': max_resid, 'resname': last_resname}, ter_mods[0]))
 
     return protein_termini
@@ -60,7 +60,7 @@ def apply_mod(meta_molecule, modifications):
     molecule = meta_molecule.molecule
 
     if not molecule.force_field.modifications:
-        LOGGER.warning('No modifications present in forcefield, none will be applied')
+        LOGGER.info('No modifications present in forcefield, none will be applied')
         return meta_molecule
 
     for target, desired_mod in modifications:
@@ -77,13 +77,14 @@ def apply_mod(meta_molecule, modifications):
         target_residue = meta_molecule.nodes[target_resid - 1]
         # takes care to skip all residues that come from an itp file
         if not target_residue.get('from_itp', 'False'):
-            LOGGER.warning("meta_molecule has come from itp. Will not attempt to modify.")
+            LOGGER.info("meta_molecule has come from itp. Will not attempt to modify.")
             continue
+
         # checks that the resname is a protein resname as defined above
         if not vermouth.molecule.attributes_match(target_residue,
                                               {'resname': vermouth.molecule.Choice(protein_resnames.split("|"))}):
-            LOGGER.warning("The resname of your target residue is not recognised a protein resname. "
-                           "Will not attempt to modify.")
+            LOGGER.info("The resname of your target residue is not recognised a protein resname. "
+                        "Will not attempt to modify.")
             continue
 
         anum_dict = {}
@@ -121,6 +122,5 @@ class ApplyModifications(Processor):
             self.target_mods = _patch_protein_termini(meta_molecule)
 
     def run_molecule(self, meta_molecule):
-
         apply_mod(meta_molecule, self.target_mods)
         return meta_molecule
