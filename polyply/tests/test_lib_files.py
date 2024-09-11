@@ -161,8 +161,8 @@ def _interaction_equal(interaction1, interaction2, inter_type):
         a1.reverse()
         if a1 == a2:
             return True
-        else:
-            print(a1, a2)
+       # else:
+       #     print(a1, a2)
 
     elif inter_type in ["angles"]:
         return a1[1] == a2[1] and frozenset([a1[0], a1[2]]) == frozenset([a2[0], a2[2]])
