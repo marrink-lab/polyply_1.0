@@ -221,7 +221,11 @@ class BuildSystem():
                                                                    vector_sphere)
             if success:
                 self.nonbond_matrix = new_nonbond_matrix
-                self.nonbond_matrix.concatenate_trees()
+                # concatanation only makes sense for polymers
+                # longer than 10; it really hurts performance
+                # for for example 1 monomer solvents
+                if len(molecule) > 10:
+                    self.nonbond_matrix.concatenate_trees()
                 mol_idx += 1
                 pbar.update(1)
 

@@ -803,59 +803,6 @@ CA  BB
 [ edges ]
 CA BB
 
-[ link ]
-resname $protein_resnames
-[ atoms ]
-CA { }
-BB { }
-+BB { }
-[ exclusions ]
-#meta {"comment": "CA-BB"}
-CA +BB
-[ edges ]
-BB +BB
-
-;; Protein termini. These links should be applied last.
-[ link ]
-resname $protein_resnames
-[ atoms ]
-BB {"replace": {"atype": "Q5", "charge": 1}}
-[ non-edges ]
-BB -BB
-
-[ link ]
-resname $protein_resnames
-[ atoms ]
-BB {"replace": {"atype": "Q5", "charge": -1}}
-[ non-edges ]
-BB +BB
-
-[ link ]
-resname $protein_resnames
-[ atoms ]
-BB {"replace": {"atype": "P6", "charge": 0}}
-[ non-edges ]
-BB +BB
-BB -BB
-
-[ link ]
-resname $protein_resnames
-[ molmeta ]
-neutral_termini true
-[ atoms ]
-BB {"replace": {"atype": "P5", "charge": 0}}
-[ non-edges ]
-BB -BB
-
-[ link ]
-resname $protein_resnames
-[ molmeta ]
-neutral_termini true
-[ atoms ]
-BB {"replace": {"atype": "P6", "charge": 0}}
-[ non-edges ]
-BB +BB
-
 ;; Cystein bridge
 [ link ]
 resname "CYS"

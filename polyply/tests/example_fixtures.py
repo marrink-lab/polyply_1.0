@@ -47,6 +47,13 @@ def example_meta_molecule():
           3         8           12
     """
     force_field = vermouth.forcefield.ForceField("test")
+
+    # force_field.modifications.update({'N-ter':{'PTM_atom': False,
+    #                                            'replace': {'atype': 'Q5', 'charge': 1.0},
+    #                                            'order': 0, 'atomname': 'BB'}}
+    #                                  )
+
+
     block_A = Block(force_field=force_field)
     block_A.add_nodes_from([(0 , {'resid': 1,  'atomname': 'BB',  'atype': 'A', 'charge': 0.0, 'other': 'A', 'resname': 'A'}),
                             (1 , {'resid': 1,  'atomname': 'BB1', 'atype': 'B', 'charge': 0.0, 'other': 'A', 'resname': 'A'}),
