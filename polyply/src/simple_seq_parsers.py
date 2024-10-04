@@ -51,6 +51,7 @@ ONE_LETTER_AA = {"G": "GLY",
                  "H": "HIS",
                  "D": "ASP",
                  "E": "GLU",
+                 "O": "HYP"
                  }
 
 class FileFormatError(Exception):
