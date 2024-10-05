@@ -75,20 +75,25 @@ def test_mods_in_ff(caplog, ff_files, expected):
     with expected:
         assert len(ff.modifications) > 0
 
-@pytest.mark.parametrize('input_itp, molname, expected',
+@pytest.mark.parametrize('input_itp, molname, expected, text',
                          (
     (
     'ALA5.itp',
     'pALA',
-    False),
+    False,
+    None),
     ('PEO.itp',
      'PEO',
-    True)
-                         ))
-def test_apply_mod(input_itp, molname, expected, caplog):
+    True,
+    ("The resname of your target residue"
+     " is not recognised a protein resname. "
+     "Will not attempt to modify."))
+))
+def test_apply_mod(caplog, input_itp, molname, expected, text):
     """
     test that modifications get applied correctly
     """
+    caplog.set_level(logging.INFO)
     #make the meta molecule from the itp and ff files
     file_name = TEST_DATA / "itp" / input_itp
 
@@ -107,7 +112,12 @@ def test_apply_mod(input_itp, molname, expected, caplog):
     apply_mod(meta_mol, termini)
 
     if expected:
-        assert any(rec.levelname == 'WARNING' for rec in caplog.records)
+        for record in caplog.records:
+            if record.message == text:
+                assert True
+                break
+        else:
+            assert False
 
     else:
         #for each mod applied, check that the mod atom and interactions have been changed correctly
@@ -134,25 +144,32 @@ def test_apply_mod(input_itp, molname, expected, caplog):
                                                        meta=interaction.meta)
                             assert _interaction in meta_mol.molecule.interactions[interaction_type]
 
-@pytest.mark.parametrize('modifications, expected',
+@pytest.mark.parametrize('modifications, expected, text',
      (
              (
                  [['A1', 'N-ter']],
-                 True
+                 True,
+                 None
              ),
 
              (
                  [],
-                 True
+                 True,
+                 "No modifications present in forcefield, none will be applied"
              ),
 
      ))
-def test_ApplyModifications(example_meta_molecule, caplog, modifications, expected):
-
+def test_ApplyModifications(example_meta_molecule, caplog, modifications, expected, text):
+    caplog.set_level(logging.INFO)
 
     ApplyModifications(modifications=modifications,
                        meta_molecule=example_meta_molecule).run_molecule(example_meta_molecule)
 
     if expected:
-        assert any(rec.levelname == 'WARNING' for rec in caplog.records)
-
+        for record in caplog.records:
+            if record.message == text:
+                assert True
+                break
+        else:
+            assert False
+        assert any(rec.levelname == 'INFO' for rec in caplog.records)
