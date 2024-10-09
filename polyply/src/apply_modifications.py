@@ -75,7 +75,7 @@ def apply_mod(meta_molecule, modifications):
 
         target_residue = meta_molecule.nodes[target_resid - 1]
         # takes care to skip all residues that come from an itp file
-        if not target_residue.get('from_itp', 'False'):
+        if target_residue.get('from_itp'):
             LOGGER.info("meta_molecule has come from itp. Will not attempt to modify.")
             continue
         # checks that the resname is a protein resname as defined above

@@ -26,6 +26,7 @@ from polyply import TEST_DATA
 import polyply.src.ff_parser_sub
 import networkx as nx
 from vermouth.molecule import Interaction
+from polyply.src.meta_molecule import MetaMolecule
 
 
 @pytest.mark.parametrize('input_mods, expected',(
@@ -141,6 +142,36 @@ def test_apply_mod(input_itp, molname, expected, caplog, text):
                                                        parameters=interaction.parameters,
                                                        meta=interaction.meta)
                             assert _interaction in meta_mol.molecule.interactions[interaction_type]
+
+def test_from_itp(caplog):
+
+    caplog.set_level(logging.INFO)
+    #make the meta molecule from the itp and ff files
+    file_name = TEST_DATA / "itp" / "ALA5.itp"
+
+    ff = vermouth.forcefield.ForceField(name='martini3')
+
+    ff_lines = []
+    for file in ['aminoacids.ff', 'modifications.ff']:
+        with open(TEST_DATA/ "ff" / file) as f:
+            ff_lines += f.readlines()
+    polyply.src.ff_parser_sub.read_ff(ff_lines, ff)
+
+    meta_mol = MetaMolecule.from_itp(ff, file_name, "pALA")
+
+    for node in meta_mol.nodes:
+        meta_mol.nodes[node]['from_itp'] = 'True'
+
+    termini = _patch_protein_termini(meta_mol)
+    apply_mod(meta_mol, termini)
+
+    expected_msg = "meta_molecule has come from itp. Will not attempt to modify."
+    for record in caplog.records:
+        if record.message == expected_msg:
+            assert True
+            break
+        else:
+            continue
 
 @pytest.mark.parametrize('modifications, expected, text',
      (
