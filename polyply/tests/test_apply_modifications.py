@@ -143,7 +143,15 @@ def test_apply_mod(input_itp, molname, expected, caplog, text):
                                                        meta=interaction.meta)
                             assert _interaction in meta_mol.molecule.interactions[interaction_type]
 
-def test_from_itp(caplog):
+
+@pytest.mark.parametrize('adding, expected',
+                         (
+    (True,
+    True),
+    (False,
+     False)
+                         ))
+def test_from_itp(caplog, adding, expected):
 
     caplog.set_level(logging.INFO)
     #make the meta molecule from the itp and ff files
@@ -159,19 +167,23 @@ def test_from_itp(caplog):
 
     meta_mol = MetaMolecule.from_itp(ff, file_name, "pALA")
 
-    for node in meta_mol.nodes:
-        meta_mol.nodes[node]['from_itp'] = 'True'
+    if adding:
+        for node in meta_mol.nodes:
+            meta_mol.nodes[node]['from_itp'] = 'True'
 
     termini = _patch_protein_termini(meta_mol)
     apply_mod(meta_mol, termini)
 
+    found = False
     expected_msg = "meta_molecule has come from itp. Will not attempt to modify."
     for record in caplog.records:
         if record.message == expected_msg:
-            assert True
+            found = True
             break
         else:
             continue
+
+    assert found == expected
 
 @pytest.mark.parametrize('modifications, expected, text',
      (
