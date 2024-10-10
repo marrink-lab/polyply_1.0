@@ -181,6 +181,7 @@ def _interaction_equal(interaction1, interaction2, inter_type):
      ['oplsaaLigParGen', 'PTMA'],
      ['martini3', 'PDMS'],
      ['martini3', 'PROT'],
+     ['martini3', 'PROTMODS'],
      ['martini3', 'PEO'],
      ['martini3', 'PS'],
      ['martini3', 'PE'],

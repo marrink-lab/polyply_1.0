@@ -1,0 +1,169 @@
+; Please cite the following papers:
+; Souza, P C T; Alessandri, R; Barnoud, J; Thallmair, S; Faustino, I; Grünewald, F; Patmanidis, I; Abdizadeh, H; Bruininks, B M H; Wassenaar, T A; Kroon, P C; Melcr, J; Nieto, V; Corradi, V; Khan, H M; Domański, J; Javanainen, M; Martinez-Seara, H; Reuter, N; Best, R B; Vattulainen, I; Monticelli, L; Periole, X; Tieleman, D P; de Vries, A H; Marrink, S J;  Nature Methods 2021; 10.1038/s41592-021-01098-3
+; Souza, P C T; Araujo, L P B; Brasnett, C; Moreira, R A; Grunewald, F; Park, P; Wang, L; Razmazma, H; Borges-Araujo, A C; Cofas-Vargas, L F; Monticelli, L; Mera-Adasme, R; Melo, M N; Wu, S; Marrink, S J; Poma, A B; Thallmair, S;  2024; 10.1101/2024.04.15.589479
+; Grunewald, F; Alessandri, R; Kroon, P C; Monticelli, L; Souza, P C; Marrink, S J;  Nature Communications 2022; 10.1038/s41467-021-27627-4
+
+[ moleculetype ]
+HIS5_mods 1
+
+[ atoms ]
+ 1 P6   1 HIS BB  1  0.0    
+ 2 TC4  1 HIS SC1 1  0.0    
+ 3 TN5a 1 HIS SC2 1  0.0    
+ 4 TN6a 1 HIS SC3 1  0.0    
+ 5 VS   1 HIS CA  1  0.0 0.0
+ 6 P2   2 HIS BB  2  0.0    
+ 7 TC4  2 HIS SC1 2  0.0    
+ 8 TN6d 2 HIS SC2 2  0.0    
+ 9 TN5a 2 HIS SC3 2  0.0    
+10 VS   2 HIS CA  2  0.0 0.0
+11 P2   3 HIS BB  3  0.0    
+12 TC4  3 HIS SC1 3  0.0    
+13 TN6d 3 HIS SC2 3  0.0    
+14 TN5a 3 HIS SC3 3  0.0    
+15 VS   3 HIS CA  3  0.0 0.0
+16 P2   4 HIS BB  4  0.0    
+17 TC4  4 HIS SC1 4  0.0    
+18 TN6d 4 HIS SC2 4  0.0    
+19 TN5a 4 HIS SC3 4  0.0    
+20 VS   4 HIS CA  4  0.0 0.0
+21 Q5   5 HIS BB  5 -1.0    
+22 TC4  5 HIS SC1 5  0.0    
+23 TN6d 5 HIS SC2 5  0.0    
+24 TN5a 5 HIS SC3 5  0.0    
+25 VS   5 HIS CA  5  0.0 0.0
+
+[ position_restraints ]
+#ifdef POSRES
+ 1 1 1000 1000 1000
+ 6 1 1000 1000 1000
+11 1 1000 1000 1000
+16 1 1000 1000 1000
+21 1 1000 1000 1000
+#endif
+
+[ bonds ]
+; Backbone bonds
+ 1  6 1 0.350 4000
+ 6 11 1 0.350 4000
+11 16 1 0.350 4000
+16 21 1 0.350 4000
+
+; Side chain bonds
+ 1  2 1 0.336 7500
+ 6  7 1 0.336 7500
+11 12 1 0.336 7500
+16 17 1 0.336 7500
+21 22 1 0.336 7500
+
+#ifdef FLEXIBLE
+; Side chain bonds
+ 2  3 1 0.320 1000000
+ 2  4 1 0.300 1000000
+ 3  4 1 0.270 1000000
+ 7  8 1 0.320 1000000
+ 7  9 1 0.300 1000000
+ 8  9 1 0.270 1000000
+12 13 1 0.320 1000000
+12 14 1 0.300 1000000
+13 14 1 0.270 1000000
+17 18 1 0.320 1000000
+17 19 1 0.300 1000000
+18 19 1 0.270 1000000
+22 23 1 0.320 1000000
+22 24 1 0.300 1000000
+23 24 1 0.270 1000000
+#endif
+
+[ constraints ]
+#ifndef FLEXIBLE
+; Side chain bonds
+ 2  3 1 0.320
+ 2  4 1 0.300
+ 3  4 1 0.270
+ 7  8 1 0.320
+ 7  9 1 0.300
+ 8  9 1 0.270
+12 13 1 0.320
+12 14 1 0.300
+13 14 1 0.270
+17 18 1 0.320
+17 19 1 0.300
+18 19 1 0.270
+22 23 1 0.320
+22 24 1 0.300
+23 24 1 0.270
+#endif
+
+[ virtual_sitesn ]
+ 5 1  1
+10 1  6
+15 1 11
+20 1 16
+25 1 21
+
+[ angles ]
+; BBB angles
+ 1  6 11 10 127 20
+ 6 11 16 10 127 20
+11 16 21 10 127 20
+
+; Side chain angles
+ 1  2  3 2 120.000 50.0
+ 1  2  4 2 120.000 50.0
+ 6  7  8 2 120.000 50.0
+ 6  7  9 2 120.000 50.0
+11 12 13 2 120.000 50.0
+11 12 14 2 120.000 50.0
+16 17 18 2 120.000 50.0
+16 17 19 2 120.000 50.0
+21 22 23 2 120.000 50.0
+21 22 24 2 120.000 50.0
+
+; idp-fix
+ 1  6  7 10 85 10
+ 6 11 12 10 85 10
+11 16 17 10 85 10
+16 21 22 10 85 10
+ 2  1  6 10 85 10
+ 7  6 11 10 85 10
+12 11 16 10 85 10
+17 16 21 10 85 10
+
+[ dihedrals ]
+; idp-fix
+ 1  6 11 16 9 -120 -1 1 ; BB-BB-BB-BB-v1
+ 1  6 11 16 9 -120 -1 2 ; BB-BB-BB-BB-v2
+ 6 11 16 21 9 -120 -1 1 ; BB-BB-BB-BB-v1
+ 6 11 16 21 9 -120 -1 2 ; BB-BB-BB-BB-v2
+ 2  1  6  7 9 -130 -1.5 1 ; SC1-BB-BB-SC1-v1
+ 2  1  6  7 9 100 -1.5 2 ; SC1-BB-BB-SC1-v2
+ 7  6 11 12 9 -130 -1.5 1 ; SC1-BB-BB-SC1-v1
+ 7  6 11 12 9 100 -1.5 2 ; SC1-BB-BB-SC1-v2
+12 11 16 17 9 -130 -1.5 1 ; SC1-BB-BB-SC1-v1
+12 11 16 17 9 100 -1.5 2 ; SC1-BB-BB-SC1-v2
+17 16 21 22 9 -130 -1.5 1 ; SC1-BB-BB-SC1-v1
+17 16 21 22 9 100 -1.5 2 ; SC1-BB-BB-SC1-v2
+
+[ exclusions ]
+ 1  2  3  4 
+ 2  3  4 
+ 3  4 
+ 6  7  8  9 
+ 7  8  9 
+ 8  9 
+11 12 13 14 
+12 13 14 
+13 14 
+16 17 18 19 
+17 18 19 
+18 19 
+21 22 23 24 
+22 23 24 
+23 24 
+ 5  1  ; CA-BB-same
+10  6  ; CA-BB-same
+15 11  ; CA-BB-same
+20 16  ; CA-BB-same
+25 21  ; CA-BB-same
+
