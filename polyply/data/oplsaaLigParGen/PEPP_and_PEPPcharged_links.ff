@@ -1,0 +1,252 @@
+[link]
+resname "PEPP"
+[ atoms ]
+[ bonds ]
+ +O01   C15     1    0.1410    267776.000   {"comment":"intermonomer"}
+[angles]
+ +O01   C15   C02     1    109.500   418.400   {"comment":"intermonomer"}
+ +C02  +O01   C15     1    109.500   502.080   {"comment":"intermonomer"}
+  H08   C15  +O01     1    109.500   292.880   {"comment":"intermonomer"}
+  H09   C15  +O01     1    109.500   292.880   {"comment":"intermonomer"}
+[ dihedrals ]
+ +O01   C15   C02   C03     3      2.874      0.582      2.092     -5.548     -0.000      0.000   {"comment":"intermonomer"}
+ +C02  +O01   C15   C02     3      1.715      2.845      1.046     -5.607     -0.000      0.000   {"comment":"intermonomer"}
+ +C03  +C02  +O01   C15     3      1.715      2.845      1.046     -5.607     -0.000      0.000   {"comment":"intermonomer"}
+ +C15  +C02  +O01   C15     3      1.715      2.845      1.046     -5.607     -0.000      0.000   {"comment":"intermonomer"}
+  O01   C02   C15  +O01     3     -1.151      1.151      0.000     -0.000     -0.000      0.000   {"comment":"intermonomer"}
+  H01   C02   C15  +O01     3      0.979      2.937      0.000     -3.916     -0.000      0.000   {"comment":"intermonomer"}
+ +H01  +C02  +O01   C15     3      1.590      4.770      0.000     -6.360     -0.000      0.000   {"comment":"intermonomer"}
+  H08   C15  +O01  +C02     3      1.590      4.770      0.000     -6.360     -0.000      0.000   {"comment":"intermonomer"}
+  H09   C15  +O01  +C02     3      1.590      4.770      0.000     -6.360     -0.000      0.000   {"comment":"intermonomer"}
+[ dihedrals ]
+[ pairs ]
+  C15   +C03       1   {"comment":"intermonomer"}
+  C15   +C15       1   {"comment":"intermonomer"}
+  C15   +H01       1   {"comment":"intermonomer"}
+  C02   +C02       1   {"comment":"intermonomer"}
+  C03   +O01       1   {"comment":"intermonomer"}
+ +O01    O01       1   {"comment":"intermonomer"}
+ +O01    H01       1   {"comment":"intermonomer"}
+ +C02    H08       1   {"comment":"intermonomer"}
+ +C02    H09       1   {"comment":"intermonomer"}
+[link]
+resname "CH3O|PEPP"
+[ atoms ]
+[ bonds ]
+   C1  +O01     1    0.1410    267776.000   {"comment":"alpha-C-link"}
+[angles]
+   C1  +O01  +C02     1    109.500   502.080   {"comment":"alpha-C-link"}
+   H2    C1  +O01     1    109.500   292.880   {"comment":"alpha-C-link"}
+   H3    C1  +O01     1    109.500   292.880   {"comment":"alpha-C-link"}
+   H4    C1  +O01     1    109.500   292.880   {"comment":"alpha-C-link"}
+[ dihedrals ]
+   C1  +O01  +C02  +C15     3      1.715      2.845      1.046     -5.607     -0.000      0.000   {"comment":"alpha-C-link"}
+   H2    C1  +O01  +C02     3      1.590      4.770      0.000     -6.360     -0.000      0.000   {"comment":"alpha-C-link"}
+   H3    C1  +O01  +C02     3      1.590      4.770      0.000     -6.360     -0.000      0.000   {"comment":"alpha-C-link"}
+   H4    C1  +O01  +C02     3      1.590      4.770      0.000     -6.360     -0.000      0.000   {"comment":"alpha-C-link"}
+   C1  +O01  +C02  +C03     3      1.715      2.845      1.046     -5.607     -0.000      0.000   {"comment":"alpha-C-link"}
+ +H01  +C02  +O01    C1     3      1.590      4.770      0.000     -6.360     -0.000      0.000   {"comment":"alpha-C-link"}
+[ dihedrals ]
+[ pairs ]
+ +C15     C1       1   {"comment":"alpha-C-link"}
+ +C02     H2       1   {"comment":"alpha-C-link"}
+ +C02     H3       1   {"comment":"alpha-C-link"}
+ +C02     H4       1   {"comment":"alpha-C-link"}
+ +C03     C1       1   {"comment":"alpha-C-link"}
+   C1   +H01       1   {"comment":"alpha-C-link"}
+[link]
+resname "PEPP|CH3"
+[ atoms ]
+[ bonds ]
+   C1  -C15     1    0.1529    224262.400   {"comment":"beta-C-link"}
+[angles]
+   C1  -C15  -C02     1    112.700   488.273   {"comment":"beta-C-link"}
+   H2    C1  -C15     1    110.700   313.800   {"comment":"beta-C-link"}
+   H3    C1  -C15     1    110.700   313.800   {"comment":"beta-C-link"}
+   H4    C1  -C15     1    110.700   313.800   {"comment":"beta-C-link"}
+ -H08  -C15    C1     1    110.700   313.800   {"comment":"beta-C-link"}
+ -H09  -C15    C1     1    110.700   313.800   {"comment":"beta-C-link"}
+[ dihedrals ]
+   C1  -C15  -C02  -O01     3      2.874      0.582      2.092     -5.548     -0.000      0.000   {"comment":"beta-C-link"}
+   H2    C1  -C15  -C02     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H3    C1  -C15  -C02     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H4    C1  -C15  -C02     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   C1  -C15  -C02  -C03     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"beta-C-link"}
+ -H01  -C02  -C15    C1     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H2    C1  -C15  -H08     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H3    C1  -C15  -H08     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H4    C1  -C15  -H08     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H2    C1  -C15  -H09     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H3    C1  -C15  -H09     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H4    C1  -C15  -H09     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+[ dihedrals ]
+[ pairs ]
+ -O01     C1       1   {"comment":"beta-C-link"}
+ -C02     H2       1   {"comment":"beta-C-link"}
+ -C02     H3       1   {"comment":"beta-C-link"}
+ -C02     H4       1   {"comment":"beta-C-link"}
+ -C03     C1       1   {"comment":"beta-C-link"}
+   C1   -H01       1   {"comment":"beta-C-link"}
+ -H08     H2       1   {"comment":"beta-C-link"}
+ -H08     H3       1   {"comment":"beta-C-link"}
+ -H08     H4       1   {"comment":"beta-C-link"}
+ -H09     H2       1   {"comment":"beta-C-link"}
+ -H09     H3       1   {"comment":"beta-C-link"}
+ -H09     H4       1   {"comment":"beta-C-link"}
+[link]
+resname "PEPPcharged"
+[ atoms ]
+[ bonds ]
+ +O01   C15     1    0.1410    267776.000   {"comment":"intermonomer"}
+[angles]
+ +O01   C15   C02     1    109.500   418.400   {"comment":"intermonomer"}
+ +C02  +O01   C15     1    109.500   502.080   {"comment":"intermonomer"}
+  H08   C15  +O01     1    109.500   292.880   {"comment":"intermonomer"}
+  H09   C15  +O01     1    109.500   292.880   {"comment":"intermonomer"}
+[ dihedrals ]
+ +O01   C15   C02   C03     3      2.874      0.582      2.092     -5.548     -0.000      0.000   {"comment":"intermonomer"}
+ +C02  +O01   C15   C02     3      1.715      2.845      1.046     -5.607     -0.000      0.000   {"comment":"intermonomer"}
+ +C03  +C02  +O01   C15     3      1.715      2.845      1.046     -5.607     -0.000      0.000   {"comment":"intermonomer"}
+ +C15  +C02  +O01   C15     3      1.715      2.845      1.046     -5.607     -0.000      0.000   {"comment":"intermonomer"}
+  O01   C02   C15  +O01     3     -1.151      1.151      0.000     -0.000     -0.000      0.000   {"comment":"intermonomer"}
+  H01   C02   C15  +O01     3      0.979      2.937      0.000     -3.916     -0.000      0.000   {"comment":"intermonomer"}
+ +H01  +C02  +O01   C15     3      1.590      4.770      0.000     -6.360     -0.000      0.000   {"comment":"intermonomer"}
+  H08   C15  +O01  +C02     3      1.590      4.770      0.000     -6.360     -0.000      0.000   {"comment":"intermonomer"}
+  H09   C15  +O01  +C02     3      1.590      4.770      0.000     -6.360     -0.000      0.000   {"comment":"intermonomer"}
+[ dihedrals ]
+[ pairs ]
+  C15   +C03       1   {"comment":"intermonomer"}
+  C15   +C15       1   {"comment":"intermonomer"}
+  C15   +H01       1   {"comment":"intermonomer"}
+  C02   +C02       1   {"comment":"intermonomer"}
+  C03   +O01       1   {"comment":"intermonomer"}
+ +O01    O01       1   {"comment":"intermonomer"}
+ +O01    H01       1   {"comment":"intermonomer"}
+ +C02    H08       1   {"comment":"intermonomer"}
+ +C02    H09       1   {"comment":"intermonomer"}
+[link]
+resname "CH3O|PEPPcharged"
+[ atoms ]
+[ bonds ]
+   C1  +O01     1    0.1410    267776.000   {"comment":"alpha-C-link"}
+[angles]
+   C1  +O01  +C02     1    109.500   502.080   {"comment":"alpha-C-link"}
+   H2    C1  +O01     1    109.500   292.880   {"comment":"alpha-C-link"}
+   H3    C1  +O01     1    109.500   292.880   {"comment":"alpha-C-link"}
+   H4    C1  +O01     1    109.500   292.880   {"comment":"alpha-C-link"}
+[ dihedrals ]
+   C1  +O01  +C02  +C15     3      1.715      2.845      1.046     -5.607     -0.000      0.000   {"comment":"alpha-C-link"}
+   H2    C1  +O01  +C02     3      1.590      4.770      0.000     -6.360     -0.000      0.000   {"comment":"alpha-C-link"}
+   H3    C1  +O01  +C02     3      1.590      4.770      0.000     -6.360     -0.000      0.000   {"comment":"alpha-C-link"}
+   H4    C1  +O01  +C02     3      1.590      4.770      0.000     -6.360     -0.000      0.000   {"comment":"alpha-C-link"}
+   C1  +O01  +C02  +C03     3      1.715      2.845      1.046     -5.607     -0.000      0.000   {"comment":"alpha-C-link"}
+ +H01  +C02  +O01    C1     3      1.590      4.770      0.000     -6.360     -0.000      0.000   {"comment":"alpha-C-link"}
+[ dihedrals ]
+[ pairs ]
+ +C15     C1       1   {"comment":"alpha-C-link"}
+ +C02     H2       1   {"comment":"alpha-C-link"}
+ +C02     H3       1   {"comment":"alpha-C-link"}
+ +C02     H4       1   {"comment":"alpha-C-link"}
+ +C03     C1       1   {"comment":"alpha-C-link"}
+   C1   +H01       1   {"comment":"alpha-C-link"}
+[link]
+resname "PEPPcharged|CH3"
+[ atoms ]
+[ bonds ]
+   C1  -C15     1    0.1529    224262.400   {"comment":"beta-C-link"}
+[angles]
+   C1  -C15  -C02     1    112.700   488.273   {"comment":"beta-C-link"}
+   H2    C1  -C15     1    110.700   313.800   {"comment":"beta-C-link"}
+   H3    C1  -C15     1    110.700   313.800   {"comment":"beta-C-link"}
+   H4    C1  -C15     1    110.700   313.800   {"comment":"beta-C-link"}
+ -H08  -C15    C1     1    110.700   313.800   {"comment":"beta-C-link"}
+ -H09  -C15    C1     1    110.700   313.800   {"comment":"beta-C-link"}
+[ dihedrals ]
+   C1  -C15  -C02  -O01     3      2.874      0.582      2.092     -5.548     -0.000      0.000   {"comment":"beta-C-link"}
+   H2    C1  -C15  -C02     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H3    C1  -C15  -C02     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H4    C1  -C15  -C02     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   C1  -C15  -C02  -C03     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"beta-C-link"}
+ -H01  -C02  -C15    C1     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H2    C1  -C15  -H08     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H3    C1  -C15  -H08     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H4    C1  -C15  -H08     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H2    C1  -C15  -H09     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H3    C1  -C15  -H09     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H4    C1  -C15  -H09     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+[ dihedrals ]
+[ pairs ]
+ -O01     C1       1   {"comment":"beta-C-link"}
+ -C02     H2       1   {"comment":"beta-C-link"}
+ -C02     H3       1   {"comment":"beta-C-link"}
+ -C02     H4       1   {"comment":"beta-C-link"}
+ -C03     C1       1   {"comment":"beta-C-link"}
+   C1   -H01       1   {"comment":"beta-C-link"}
+ -H08     H2       1   {"comment":"beta-C-link"}
+ -H08     H3       1   {"comment":"beta-C-link"}
+ -H08     H4       1   {"comment":"beta-C-link"}
+ -H09     H2       1   {"comment":"beta-C-link"}
+ -H09     H3       1   {"comment":"beta-C-link"}
+ -H09     H4       1   {"comment":"beta-C-link"}
+[link]
+resname "PEPP|PEOPHcharged"
+[ atoms ]
+[ bonds ]
+ +O01   C15     1    0.1410    267776.000   {"comment":"intermonomer"}
+[angles]
+ +O01   C15   C02     1    109.500   418.400   {"comment":"intermonomer"}
+ +C02  +O01   C15     1    109.500   502.080   {"comment":"intermonomer"}
+  H08   C15  +O01     1    109.500   292.880   {"comment":"intermonomer"}
+  H09   C15  +O01     1    109.500   292.880   {"comment":"intermonomer"}
+[ dihedrals ]
+ +O01   C15   C02   C03     3      2.874      0.582      2.092     -5.548     -0.000      0.000   {"comment":"intermonomer"}
+ +C02  +O01   C15   C02     3      1.715      2.845      1.046     -5.607     -0.000      0.000   {"comment":"intermonomer"}
+ +C03  +C02  +O01   C15     3      1.715      2.845      1.046     -5.607     -0.000      0.000   {"comment":"intermonomer"}
+ +C15  +C02  +O01   C15     3      1.715      2.845      1.046     -5.607     -0.000      0.000   {"comment":"intermonomer"}
+  O01   C02   C15  +O01     3     -1.151      1.151      0.000     -0.000     -0.000      0.000   {"comment":"intermonomer"}
+  H01   C02   C15  +O01     3      0.979      2.937      0.000     -3.916     -0.000      0.000   {"comment":"intermonomer"}
+ +H01  +C02  +O01   C15     3      1.590      4.770      0.000     -6.360     -0.000      0.000   {"comment":"intermonomer"}
+  H08   C15  +O01  +C02     3      1.590      4.770      0.000     -6.360     -0.000      0.000   {"comment":"intermonomer"}
+  H09   C15  +O01  +C02     3      1.590      4.770      0.000     -6.360     -0.000      0.000   {"comment":"intermonomer"}
+[ dihedrals ]
+[ pairs ]
+  C15   +C03       1   {"comment":"intermonomer"}
+  C15   +C15       1   {"comment":"intermonomer"}
+  C15   +H01       1   {"comment":"intermonomer"}
+  C02   +C02       1   {"comment":"intermonomer"}
+  C03   +O01       1   {"comment":"intermonomer"}
+ +O01    O01       1   {"comment":"intermonomer"}
+ +O01    H01       1   {"comment":"intermonomer"}
+ +C02    H08       1   {"comment":"intermonomer"}
+ +C02    H09       1   {"comment":"intermonomer"}
+[link]
+resname "PEPPcharged|PEOPH"
+[ atoms ]
+[ bonds ]
+ +O01   C15     1    0.1410    267776.000   {"comment":"intermonomer"}
+[angles]
+ +O01   C15   C02     1    109.500   418.400   {"comment":"intermonomer"}
+ +C02  +O01   C15     1    109.500   502.080   {"comment":"intermonomer"}
+  H08   C15  +O01     1    109.500   292.880   {"comment":"intermonomer"}
+  H09   C15  +O01     1    109.500   292.880   {"comment":"intermonomer"}
+[ dihedrals ]
+ +O01   C15   C02   C03     3      2.874      0.582      2.092     -5.548     -0.000      0.000   {"comment":"intermonomer"}
+ +C02  +O01   C15   C02     3      1.715      2.845      1.046     -5.607     -0.000      0.000   {"comment":"intermonomer"}
+ +C03  +C02  +O01   C15     3      1.715      2.845      1.046     -5.607     -0.000      0.000   {"comment":"intermonomer"}
+ +C15  +C02  +O01   C15     3      1.715      2.845      1.046     -5.607     -0.000      0.000   {"comment":"intermonomer"}
+  O01   C02   C15  +O01     3     -1.151      1.151      0.000     -0.000     -0.000      0.000   {"comment":"intermonomer"}
+  H01   C02   C15  +O01     3      0.979      2.937      0.000     -3.916     -0.000      0.000   {"comment":"intermonomer"}
+ +H01  +C02  +O01   C15     3      1.590      4.770      0.000     -6.360     -0.000      0.000   {"comment":"intermonomer"}
+  H08   C15  +O01  +C02     3      1.590      4.770      0.000     -6.360     -0.000      0.000   {"comment":"intermonomer"}
+  H09   C15  +O01  +C02     3      1.590      4.770      0.000     -6.360     -0.000      0.000   {"comment":"intermonomer"}
+[ dihedrals ]
+[ pairs ]
+  C15   +C03       1   {"comment":"intermonomer"}
+  C15   +C15       1   {"comment":"intermonomer"}
+  C15   +H01       1   {"comment":"intermonomer"}
+  C02   +C02       1   {"comment":"intermonomer"}
+  C03   +O01       1   {"comment":"intermonomer"}
+ +O01    O01       1   {"comment":"intermonomer"}
+ +O01    H01       1   {"comment":"intermonomer"}
+ +C02    H08       1   {"comment":"intermonomer"}
+ +C02    H09       1   {"comment":"intermonomer"}

@@ -1,0 +1,428 @@
+[link]
+resname "PMAP"
+[ atoms ]
+[ bonds ]
+  C02  +C01     1    0.1529    224262.400   {"comment":"intermonomer"}
+[angles]
+  C02  +C01  +C02     1    112.700   488.273   {"comment":"intermonomer"}
+  C03   C02  +C01     1    112.700   488.273   {"comment":"intermonomer"}
+  C04   C02  +C01     1    111.100   527.184   {"comment":"intermonomer"}
+  C01   C02  +C01     1    112.700   488.273   {"comment":"intermonomer"}
+ +H01  +C01   C02     1    110.700   313.800   {"comment":"intermonomer"}
+ +H02  +C01   C02     1    110.700   313.800   {"comment":"intermonomer"}
+[ dihedrals ]
+  C02  +C01  +C02  +C04     3     -4.960      6.286      1.310     -2.636     -0.000      0.000   {"comment":"intermonomer"}
+  C03   C02  +C01  +C02     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+  C04   C02  +C01  +C02     3     -4.960      6.286      1.310     -2.636     -0.000      0.000   {"comment":"intermonomer"}
+  O05   C04   C02  +C01     3      0.000      0.000      0.000     -0.000     -0.000      0.000   {"comment":"intermonomer"}
+  O06   C04   C02  +C01     3     -1.157     -3.471      0.000      4.628     -0.000      0.000   {"comment":"intermonomer"}
+  C01   C02  +C01  +C02     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+  H01   C01   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H02   C01   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H03   C03   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H04   C03   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H05   C03   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  C02  +C01  +C02  +C03     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+ +H01  +C01   C02   C03     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H02  +C01   C02   C03     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H01  +C01   C02   C04     3     -0.209     -0.628      0.000      0.837     -0.000      0.000   {"comment":"intermonomer"}
+ +H02  +C01   C02   C04     3     -0.209     -0.628      0.000      0.837     -0.000      0.000   {"comment":"intermonomer"}
+ +H01  +C01   C02   C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H02  +C01   C02   C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+[ dihedrals ]
+[ pairs ]
+ +C04    C02       1   {"comment":"intermonomer"}
+ +C02    C03       1   {"comment":"intermonomer"}
+ +C02    C04       1   {"comment":"intermonomer"}
+ +C02    C01       1   {"comment":"intermonomer"}
+ +C03    C02       1   {"comment":"intermonomer"}
+ +C01    O05       1   {"comment":"intermonomer"}
+ +C01    O06       1   {"comment":"intermonomer"}
+ +C01    H01       1   {"comment":"intermonomer"}
+ +C01    H02       1   {"comment":"intermonomer"}
+ +C01    H03       1   {"comment":"intermonomer"}
+ +C01    H04       1   {"comment":"intermonomer"}
+ +C01    H05       1   {"comment":"intermonomer"}
+  C03   +H01       1   {"comment":"intermonomer"}
+  C03   +H02       1   {"comment":"intermonomer"}
+  C04   +H01       1   {"comment":"intermonomer"}
+  C04   +H02       1   {"comment":"intermonomer"}
+  C01   +H01       1   {"comment":"intermonomer"}
+  C01   +H02       1   {"comment":"intermonomer"}
+[link]
+; for bonded terms spanning three residues
+resname "PMAP"
+[dihedrals]
+  C02  +C01  +C02 ++C01     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+[pairs]
+++C01    C02       1   {"comment":"intermonomer"}
+[link]
+resname "CH3|PMAP"
+[ atoms ]
+[ bonds ]
+   C1  +C01     1    0.1529    224262.400   {"comment":"alpha-C-link"}
+[angles]
+   C1  +C01  +C02     1    112.700   488.273   {"comment":"alpha-C-link"}
+   H2    C1  +C01     1    110.700   313.800   {"comment":"alpha-C-link"}
+   H3    C1  +C01     1    110.700   313.800   {"comment":"alpha-C-link"}
+   H4    C1  +C01     1    110.700   313.800   {"comment":"alpha-C-link"}
+ +H01  +C01    C1     1    110.700   313.800   {"comment":"alpha-C-link"}
+ +H02  +C01    C1     1    110.700   313.800   {"comment":"alpha-C-link"}
+[ dihedrals ]
+   H2    C1  +C01  +C02     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+   H3    C1  +C01  +C02     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+   H4    C1  +C01  +C02     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+   C1  +C01  +C02  +C03     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"alpha-C-link"}
+   C1  +C01  +C02  +C04     3     -4.960      6.286      1.310     -2.636     -0.000      0.000   {"comment":"alpha-C-link"}
+ +H01  +C01    C1    H2     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+ +H02  +C01    C1    H2     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+ +H01  +C01    C1    H3     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+ +H02  +C01    C1    H3     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+ +H01  +C01    C1    H4     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+ +H02  +C01    C1    H4     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+[ dihedrals ]
+[ pairs ]
+ +C02     H2       1   {"comment":"alpha-C-link"}
+ +C02     H3       1   {"comment":"alpha-C-link"}
+ +C02     H4       1   {"comment":"alpha-C-link"}
+ +C03     C1       1   {"comment":"alpha-C-link"}
+ +C04     C1       1   {"comment":"alpha-C-link"}
+   H2   +H01       1   {"comment":"alpha-C-link"}
+   H2   +H02       1   {"comment":"alpha-C-link"}
+   H3   +H01       1   {"comment":"alpha-C-link"}
+   H3   +H02       1   {"comment":"alpha-C-link"}
+   H4   +H01       1   {"comment":"alpha-C-link"}
+   H4   +H02       1   {"comment":"alpha-C-link"}
+[link]
+; for bonded terms spanning three residues
+resname "CH3|PMAP"
+[dihedrals]
+   C1  +C01  +C02 ++C01     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"alpha-C-link"}
+[pairs]
+++C01     C1       1   {"comment":"alpha-C-link"}
+[link]
+resname "PMAP|CH3"
+[ atoms ]
+[ bonds ]
+   C1  -C02     1    0.1529    224262.400   {"comment":"beta-C-link"}
+[angles]
+   C1  -C02  -C01     1    112.700   488.273   {"comment":"beta-C-link"}
+   H2    C1  -C02     1    110.700   313.800   {"comment":"beta-C-link"}
+   H3    C1  -C02     1    110.700   313.800   {"comment":"beta-C-link"}
+   H4    C1  -C02     1    110.700   313.800   {"comment":"beta-C-link"}
+   C1  -C02  -C03     1    112.700   488.273   {"comment":"beta-C-link"}
+   C1  -C02  -C04     1    111.100   527.184   {"comment":"beta-C-link"}
+[ dihedrals ]
+   H2    C1  -C02  -C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H3    C1  -C02  -C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H4    C1  -C02  -C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H2    C1  -C02  -C03     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H3    C1  -C02  -C03     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H4    C1  -C02  -C03     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H2    C1  -C02  -C04     3     -0.209     -0.628      0.000      0.837     -0.000      0.000   {"comment":"beta-C-link"}
+   H3    C1  -C02  -C04     3     -0.209     -0.628      0.000      0.837     -0.000      0.000   {"comment":"beta-C-link"}
+   H4    C1  -C02  -C04     3     -0.209     -0.628      0.000      0.837     -0.000      0.000   {"comment":"beta-C-link"}
+   C1  -C02  -C04  -O05     3      0.000      0.000      0.000     -0.000     -0.000      0.000   {"comment":"beta-C-link"}
+   C1  -C02  -C04  -O06     3     -1.157     -3.471      0.000      4.628     -0.000      0.000   {"comment":"beta-C-link"}
+ -H01  -C01  -C02    C1     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+ -H02  -C01  -C02    C1     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+ -H03  -C03  -C02    C1     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+ -H04  -C03  -C02    C1     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+ -H05  -C03  -C02    C1     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+[ dihedrals ]
+[ pairs ]
+ -C01     H2       1   {"comment":"beta-C-link"}
+ -C01     H3       1   {"comment":"beta-C-link"}
+ -C01     H4       1   {"comment":"beta-C-link"}
+ -C03     H2       1   {"comment":"beta-C-link"}
+ -C03     H3       1   {"comment":"beta-C-link"}
+ -C03     H4       1   {"comment":"beta-C-link"}
+ -C04     H2       1   {"comment":"beta-C-link"}
+ -C04     H3       1   {"comment":"beta-C-link"}
+ -C04     H4       1   {"comment":"beta-C-link"}
+ -O05     C1       1   {"comment":"beta-C-link"}
+ -O06     C1       1   {"comment":"beta-C-link"}
+   C1   -H01       1   {"comment":"beta-C-link"}
+   C1   -H02       1   {"comment":"beta-C-link"}
+   C1   -H03       1   {"comment":"beta-C-link"}
+   C1   -H04       1   {"comment":"beta-C-link"}
+   C1   -H05       1   {"comment":"beta-C-link"}
+[link]
+; for bonded terms spanning three residues
+resname "PMAP|CH3"
+[dihedrals]
+   C1  -C02  -C01 --C02     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"beta-C-link"}
+[pairs]
+--C02     C1       1   {"comment":"beta-C-link"}
+[link]
+resname "PMAPcharged"
+[ atoms ]
+[ bonds ]
+  C02  +C01     1    0.1529    224262.400   {"comment":"intermonomer"}
+[angles]
+  C02  +C01  +C02     1    112.700   488.273   {"comment":"intermonomer"}
+  C03   C02  +C01     1    112.700   488.273   {"comment":"intermonomer"}
+  C04   C02  +C01     1    111.100   527.184   {"comment":"intermonomer"}
+  C01   C02  +C01     1    112.700   488.273   {"comment":"intermonomer"}
+ +H01  +C01   C02     1    110.700   313.800   {"comment":"intermonomer"}
+ +H02  +C01   C02     1    110.700   313.800   {"comment":"intermonomer"}
+[ dihedrals ]
+  C02  +C01  +C02  +C04     3     -4.960      6.286      1.310     -2.636     -0.000      0.000   {"comment":"intermonomer"}
+  C03   C02  +C01  +C02     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+  C04   C02  +C01  +C02     3     -4.960      6.286      1.310     -2.636     -0.000      0.000   {"comment":"intermonomer"}
+  O05   C04   C02  +C01     3      0.000      0.000      0.000     -0.000     -0.000      0.000   {"comment":"intermonomer"}
+  O06   C04   C02  +C01     3     -1.157     -3.471      0.000      4.628     -0.000      0.000   {"comment":"intermonomer"}
+  C01   C02  +C01  +C02     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+  H01   C01   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H02   C01   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H03   C03   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H04   C03   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H05   C03   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  C02  +C01  +C02  +C03     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+ +H01  +C01   C02   C03     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H02  +C01   C02   C03     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H01  +C01   C02   C04     3     -0.209     -0.628      0.000      0.837     -0.000      0.000   {"comment":"intermonomer"}
+ +H02  +C01   C02   C04     3     -0.209     -0.628      0.000      0.837     -0.000      0.000   {"comment":"intermonomer"}
+ +H01  +C01   C02   C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H02  +C01   C02   C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+[ dihedrals ]
+[ pairs ]
+ +C04    C02       1   {"comment":"intermonomer"}
+ +C02    C03       1   {"comment":"intermonomer"}
+ +C02    C04       1   {"comment":"intermonomer"}
+ +C02    C01       1   {"comment":"intermonomer"}
+ +C03    C02       1   {"comment":"intermonomer"}
+ +C01    O05       1   {"comment":"intermonomer"}
+ +C01    O06       1   {"comment":"intermonomer"}
+ +C01    H01       1   {"comment":"intermonomer"}
+ +C01    H02       1   {"comment":"intermonomer"}
+ +C01    H03       1   {"comment":"intermonomer"}
+ +C01    H04       1   {"comment":"intermonomer"}
+ +C01    H05       1   {"comment":"intermonomer"}
+  C03   +H01       1   {"comment":"intermonomer"}
+  C03   +H02       1   {"comment":"intermonomer"}
+  C04   +H01       1   {"comment":"intermonomer"}
+  C04   +H02       1   {"comment":"intermonomer"}
+  C01   +H01       1   {"comment":"intermonomer"}
+  C01   +H02       1   {"comment":"intermonomer"}
+[link]
+; for bonded terms spanning three residues
+resname "PMAPcharged"
+[dihedrals]
+  C02  +C01  +C02 ++C01     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+[pairs]
+++C01    C02       1   {"comment":"intermonomer"}
+[link]
+resname "CH3|PMAPcharged"
+[ atoms ]
+[ bonds ]
+   C1  +C01     1    0.1529    224262.400   {"comment":"alpha-C-link"}
+[angles]
+   C1  +C01  +C02     1    112.700   488.273   {"comment":"alpha-C-link"}
+   H2    C1  +C01     1    110.700   313.800   {"comment":"alpha-C-link"}
+   H3    C1  +C01     1    110.700   313.800   {"comment":"alpha-C-link"}
+   H4    C1  +C01     1    110.700   313.800   {"comment":"alpha-C-link"}
+ +H01  +C01    C1     1    110.700   313.800   {"comment":"alpha-C-link"}
+ +H02  +C01    C1     1    110.700   313.800   {"comment":"alpha-C-link"}
+[ dihedrals ]
+   H2    C1  +C01  +C02     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+   H3    C1  +C01  +C02     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+   H4    C1  +C01  +C02     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+   C1  +C01  +C02  +C03     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"alpha-C-link"}
+   C1  +C01  +C02  +C04     3     -4.960      6.286      1.310     -2.636     -0.000      0.000   {"comment":"alpha-C-link"}
+ +H01  +C01    C1    H2     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+ +H02  +C01    C1    H2     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+ +H01  +C01    C1    H3     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+ +H02  +C01    C1    H3     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+ +H01  +C01    C1    H4     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+ +H02  +C01    C1    H4     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+[ dihedrals ]
+[ pairs ]
+ +C02     H2       1   {"comment":"alpha-C-link"}
+ +C02     H3       1   {"comment":"alpha-C-link"}
+ +C02     H4       1   {"comment":"alpha-C-link"}
+ +C03     C1       1   {"comment":"alpha-C-link"}
+ +C04     C1       1   {"comment":"alpha-C-link"}
+   H2   +H01       1   {"comment":"alpha-C-link"}
+   H2   +H02       1   {"comment":"alpha-C-link"}
+   H3   +H01       1   {"comment":"alpha-C-link"}
+   H3   +H02       1   {"comment":"alpha-C-link"}
+   H4   +H01       1   {"comment":"alpha-C-link"}
+   H4   +H02       1   {"comment":"alpha-C-link"}
+[link]
+; for bonded terms spanning three residues
+resname "CH3|PMAPcharged"
+[dihedrals]
+   C1  +C01  +C02 ++C01     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"alpha-C-link"}
+[pairs]
+++C01     C1       1   {"comment":"alpha-C-link"}
+[link]
+resname "PMAPcharged|CH3"
+[ atoms ]
+[ bonds ]
+   C1  -C02     1    0.1529    224262.400   {"comment":"beta-C-link"}
+[angles]
+   C1  -C02  -C01     1    112.700   488.273   {"comment":"beta-C-link"}
+   H2    C1  -C02     1    110.700   313.800   {"comment":"beta-C-link"}
+   H3    C1  -C02     1    110.700   313.800   {"comment":"beta-C-link"}
+   H4    C1  -C02     1    110.700   313.800   {"comment":"beta-C-link"}
+   C1  -C02  -C03     1    112.700   488.273   {"comment":"beta-C-link"}
+   C1  -C02  -C04     1    111.100   527.184   {"comment":"beta-C-link"}
+[ dihedrals ]
+   H2    C1  -C02  -C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H3    C1  -C02  -C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H4    C1  -C02  -C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H2    C1  -C02  -C03     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H3    C1  -C02  -C03     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H4    C1  -C02  -C03     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H2    C1  -C02  -C04     3     -0.209     -0.628      0.000      0.837     -0.000      0.000   {"comment":"beta-C-link"}
+   H3    C1  -C02  -C04     3     -0.209     -0.628      0.000      0.837     -0.000      0.000   {"comment":"beta-C-link"}
+   H4    C1  -C02  -C04     3     -0.209     -0.628      0.000      0.837     -0.000      0.000   {"comment":"beta-C-link"}
+   C1  -C02  -C04  -O05     3      0.000      0.000      0.000     -0.000     -0.000      0.000   {"comment":"beta-C-link"}
+   C1  -C02  -C04  -O06     3     -1.157     -3.471      0.000      4.628     -0.000      0.000   {"comment":"beta-C-link"}
+ -H01  -C01  -C02    C1     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+ -H02  -C01  -C02    C1     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+ -H03  -C03  -C02    C1     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+ -H04  -C03  -C02    C1     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+ -H05  -C03  -C02    C1     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+[ dihedrals ]
+[ pairs ]
+ -C01     H2       1   {"comment":"beta-C-link"}
+ -C01     H3       1   {"comment":"beta-C-link"}
+ -C01     H4       1   {"comment":"beta-C-link"}
+ -C03     H2       1   {"comment":"beta-C-link"}
+ -C03     H3       1   {"comment":"beta-C-link"}
+ -C03     H4       1   {"comment":"beta-C-link"}
+ -C04     H2       1   {"comment":"beta-C-link"}
+ -C04     H3       1   {"comment":"beta-C-link"}
+ -C04     H4       1   {"comment":"beta-C-link"}
+ -O05     C1       1   {"comment":"beta-C-link"}
+ -O06     C1       1   {"comment":"beta-C-link"}
+   C1   -H01       1   {"comment":"beta-C-link"}
+   C1   -H02       1   {"comment":"beta-C-link"}
+   C1   -H03       1   {"comment":"beta-C-link"}
+   C1   -H04       1   {"comment":"beta-C-link"}
+   C1   -H05       1   {"comment":"beta-C-link"}
+[link]
+; for bonded terms spanning three residues
+resname "PMAPcharged|CH3"
+[dihedrals]
+   C1  -C02  -C01 --C02     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"beta-C-link"}
+[pairs]
+--C02     C1       1   {"comment":"beta-C-link"}
+[link]
+resname "PMAP|PMAPcharged"
+[ atoms ]
+[ bonds ]
+  C02  +C01     1    0.1529    224262.400   {"comment":"intermonomer"}
+[angles]
+  C02  +C01  +C02     1    112.700   488.273   {"comment":"intermonomer"}
+  C03   C02  +C01     1    112.700   488.273   {"comment":"intermonomer"}
+  C04   C02  +C01     1    111.100   527.184   {"comment":"intermonomer"}
+  C01   C02  +C01     1    112.700   488.273   {"comment":"intermonomer"}
+ +H01  +C01   C02     1    110.700   313.800   {"comment":"intermonomer"}
+ +H02  +C01   C02     1    110.700   313.800   {"comment":"intermonomer"}
+[ dihedrals ]
+  C02  +C01  +C02  +C04     3     -4.960      6.286      1.310     -2.636     -0.000      0.000   {"comment":"intermonomer"}
+  C03   C02  +C01  +C02     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+  C04   C02  +C01  +C02     3     -4.960      6.286      1.310     -2.636     -0.000      0.000   {"comment":"intermonomer"}
+  O05   C04   C02  +C01     3      0.000      0.000      0.000     -0.000     -0.000      0.000   {"comment":"intermonomer"}
+  O06   C04   C02  +C01     3     -1.157     -3.471      0.000      4.628     -0.000      0.000   {"comment":"intermonomer"}
+  C01   C02  +C01  +C02     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+  H01   C01   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H02   C01   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H03   C03   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H04   C03   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H05   C03   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  C02  +C01  +C02  +C03     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+ +H01  +C01   C02   C03     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H02  +C01   C02   C03     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H01  +C01   C02   C04     3     -0.209     -0.628      0.000      0.837     -0.000      0.000   {"comment":"intermonomer"}
+ +H02  +C01   C02   C04     3     -0.209     -0.628      0.000      0.837     -0.000      0.000   {"comment":"intermonomer"}
+ +H01  +C01   C02   C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H02  +C01   C02   C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+[ dihedrals ]
+[ pairs ]
+ +C04    C02       1   {"comment":"intermonomer"}
+ +C02    C03       1   {"comment":"intermonomer"}
+ +C02    C04       1   {"comment":"intermonomer"}
+ +C02    C01       1   {"comment":"intermonomer"}
+ +C03    C02       1   {"comment":"intermonomer"}
+ +C01    O05       1   {"comment":"intermonomer"}
+ +C01    O06       1   {"comment":"intermonomer"}
+ +C01    H01       1   {"comment":"intermonomer"}
+ +C01    H02       1   {"comment":"intermonomer"}
+ +C01    H03       1   {"comment":"intermonomer"}
+ +C01    H04       1   {"comment":"intermonomer"}
+ +C01    H05       1   {"comment":"intermonomer"}
+  C03   +H01       1   {"comment":"intermonomer"}
+  C03   +H02       1   {"comment":"intermonomer"}
+  C04   +H01       1   {"comment":"intermonomer"}
+  C04   +H02       1   {"comment":"intermonomer"}
+  C01   +H01       1   {"comment":"intermonomer"}
+  C01   +H02       1   {"comment":"intermonomer"}
+[link]
+; for bonded terms spanning three residues
+resname "PMAP|PMAPcharged"
+[dihedrals]
+  C02  +C01  +C02 ++C01     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+[pairs]
+++C01    C02       1   {"comment":"intermonomer"}
+[link]
+resname "PMAPcharged|PMAP"
+[ atoms ]
+[ bonds ]
+  C02  +C01     1    0.1529    224262.400   {"comment":"intermonomer"}
+[angles]
+  C02  +C01  +C02     1    112.700   488.273   {"comment":"intermonomer"}
+  C03   C02  +C01     1    112.700   488.273   {"comment":"intermonomer"}
+  C04   C02  +C01     1    111.100   527.184   {"comment":"intermonomer"}
+  C01   C02  +C01     1    112.700   488.273   {"comment":"intermonomer"}
+ +H01  +C01   C02     1    110.700   313.800   {"comment":"intermonomer"}
+ +H02  +C01   C02     1    110.700   313.800   {"comment":"intermonomer"}
+[ dihedrals ]
+  C02  +C01  +C02  +C04     3     -4.960      6.286      1.310     -2.636     -0.000      0.000   {"comment":"intermonomer"}
+  C03   C02  +C01  +C02     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+  C04   C02  +C01  +C02     3     -4.960      6.286      1.310     -2.636     -0.000      0.000   {"comment":"intermonomer"}
+  O05   C04   C02  +C01     3      0.000      0.000      0.000     -0.000     -0.000      0.000   {"comment":"intermonomer"}
+  O06   C04   C02  +C01     3     -1.157     -3.471      0.000      4.628     -0.000      0.000   {"comment":"intermonomer"}
+  C01   C02  +C01  +C02     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+  H01   C01   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H02   C01   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H03   C03   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H04   C03   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H05   C03   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  C02  +C01  +C02  +C03     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+ +H01  +C01   C02   C03     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H02  +C01   C02   C03     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H01  +C01   C02   C04     3     -0.209     -0.628      0.000      0.837     -0.000      0.000   {"comment":"intermonomer"}
+ +H02  +C01   C02   C04     3     -0.209     -0.628      0.000      0.837     -0.000      0.000   {"comment":"intermonomer"}
+ +H01  +C01   C02   C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H02  +C01   C02   C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+[ dihedrals ]
+[ pairs ]
+ +C04    C02       1   {"comment":"intermonomer"}
+ +C02    C03       1   {"comment":"intermonomer"}
+ +C02    C04       1   {"comment":"intermonomer"}
+ +C02    C01       1   {"comment":"intermonomer"}
+ +C03    C02       1   {"comment":"intermonomer"}
+ +C01    O05       1   {"comment":"intermonomer"}
+ +C01    O06       1   {"comment":"intermonomer"}
+ +C01    H01       1   {"comment":"intermonomer"}
+ +C01    H02       1   {"comment":"intermonomer"}
+ +C01    H03       1   {"comment":"intermonomer"}
+ +C01    H04       1   {"comment":"intermonomer"}
+ +C01    H05       1   {"comment":"intermonomer"}
+  C03   +H01       1   {"comment":"intermonomer"}
+  C03   +H02       1   {"comment":"intermonomer"}
+  C04   +H01       1   {"comment":"intermonomer"}
+  C04   +H02       1   {"comment":"intermonomer"}
+  C01   +H01       1   {"comment":"intermonomer"}
+  C01   +H02       1   {"comment":"intermonomer"}
+[link]
+; for bonded terms spanning three residues
+resname "PMAPcharged|PMAP"
+[dihedrals]
+  C02  +C01  +C02 ++C01     3      1.360     -0.523      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+[pairs]
+++C01    C02       1   {"comment":"intermonomer"}
