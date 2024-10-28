@@ -50,9 +50,10 @@ else:
     jit = functools.partial(jit,  nopython=True, cache=True, fastmath=True)
 
 # This could be useful for the high level API
-from .src.meta_molecule import (Monomer, MetaMolecule)
+from .src.meta_molecule import MetaMolecule
 from .src.apply_links import ApplyLinks
 from .src.map_to_molecule import MapToMolecule
 from .src.gen_itp import gen_itp, gen_params
 from .src.gen_coords import gen_coords
 from .src.gen_seq import gen_seq
+from .src.gen_ff import gen_ff
