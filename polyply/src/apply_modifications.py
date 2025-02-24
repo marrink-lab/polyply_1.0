@@ -99,8 +99,7 @@ def apply_mod(meta_molecule, modifications):
         for i in mod_interactions:
             for j in molecule.force_field.modifications[desired_mod].interactions[i]:
                 molecule.add_interaction(i,
-                                         (anum_dict[j.atoms[0]]-1,
-                                          anum_dict[j.atoms[1]]-1),
+                                         [anum_dict[k]-1 for k in j.atoms],
                                          j.parameters,
                                          meta=j.meta)
 
