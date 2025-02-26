@@ -109,7 +109,7 @@ def find_interaction_involving(block, current_node, prev_node):
              linking atom {} and atom {}.'''
     raise IOError(msg.format(block.nodes[0]["resname"], prev_node, current_node))
 
-def _expand_inital_coords(block, max_count=50000):
+def _expand_inital_coords(block, max_count=1000):
     """
     Given a `graph` generate initial coordinates in three dimensions
     using the Kamada-Kawai algorithm.
@@ -343,6 +343,7 @@ class GenerateTemplates(Processor):
                                       self.topology.defines)
 
                 opt_counter = 0
+                resname = block.nodes[list(block.nodes)[0]]['resname']
                 while True:
 
                     coords = _expand_inital_coords(block)
@@ -363,7 +364,6 @@ class GenerateTemplates(Processor):
                         break
                     else:
                         opt_counter += 1
-                resname = block.nodes[list(block.nodes)[0]]['resname']
                 if resname in self.volumes:
                     self.volumes[graph_hash] = self.volumes[resname]
                 else:
