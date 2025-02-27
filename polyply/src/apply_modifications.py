@@ -113,8 +113,13 @@ class ApplyModifications(Processor):
     """
     def __init__(self, meta_molecule, modifications=[]):
         self.target_mods = _patch_protein_termini(meta_molecule)
+        default_resspecs = [i[0] for i in self.target_mods]
         for resspec, val in modifications:
-            self.target_mods.append((parse_residue_spec(resspec), val))
+            parsed_resspec = parse_residue_spec(resspec)
+            # if the residue being targeted in the additional resspec is already there, remove the first instance
+            if parsed_resspec in default_resspecs:
+                del self.target_mods[default_resspecs==parsed_resspec]
+            self.target_mods.append((parsed_resspec, val))
 
     def run_molecule(self, meta_molecule):
         apply_mod(meta_molecule, self.target_mods)
