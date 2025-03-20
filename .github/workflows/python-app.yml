@@ -56,5 +56,5 @@ jobs:
         pip install -r requirements-tests.txt
     - name: Run pylint 
       run: |
-         python run_pylint.py --disable=fixme --fail-under=8.0 polyply
-         python run_pylint.py --disable=fixme --fail-under=9.5 bin/polyply 
+         pylint --disable=fixme --fail-under=8.0 polyply
+         pylint --disable=fixme --fail-under=9.5 bin/polyply 
