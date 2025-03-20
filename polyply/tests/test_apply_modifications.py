@@ -21,7 +21,7 @@ import pytest
 import vermouth.forcefield
 import vermouth.ffinput
 from polyply.src.meta_molecule import MetaMolecule
-from polyply.src.apply_modifications import _patch_protein_termini, apply_mod, ApplyModifications
+from polyply.src.apply_modifications import _patch_protein_termini, apply_mod, ApplyModifications, modifications_finalising
 from polyply import TEST_DATA
 import polyply.src.ff_parser_sub
 import networkx as nx
@@ -147,7 +147,7 @@ def test_apply_mod(input_itp, molname, expected, caplog, text):
 @pytest.mark.parametrize('adding, expected',
                          (
     (True,
-    True),
+     True),
     (False,
      False)
                          ))
@@ -209,3 +209,32 @@ def test_ApplyModifications(example_meta_molecule, caplog, modifications, expect
         else:
             assert False
         assert any(rec.levelname == 'INFO' for rec in caplog.records)
+
+@pytest.mark.parametrize('extras, expected',
+                         (
+                ([],
+                          [({'resid': 1, 'resname': 'ALA'}, 'N-ter'),
+                           ({'resid': 5, 'resname': 'ALA'}, 'C-ter')]),
+                ([['ALA1', 'NH2-ter']],
+                 [({'resid': 5, 'resname': 'ALA'}, 'C-ter'),
+                  ({'resid': 1, 'resname': 'ALA'}, 'NH2-ter')])
+
+                        ))
+def test_multiple_modifications(extras, expected):
+
+    #make the meta molecule from the itp and ff files
+    file_name = TEST_DATA / "itp" / "ALA5.itp"
+
+    ff = vermouth.forcefield.ForceField(name='martini3')
+
+    ff_lines = []
+    for file in ['aminoacids.ff', 'modifications.ff']:
+        with open(TEST_DATA/ "ff" / file) as f:
+            ff_lines += f.readlines()
+    polyply.src.ff_parser_sub.read_ff(ff_lines, ff)
+
+    meta_mol = MetaMolecule.from_itp(ff, file_name, "pALA")
+
+    to_apply = modifications_finalising(meta_mol, extras)
+
+    assert to_apply == expected

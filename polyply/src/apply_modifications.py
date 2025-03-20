@@ -104,6 +104,34 @@ def apply_mod(meta_molecule, modifications):
 
     return meta_molecule
 
+def modifications_finalising(meta_molecule, modifications):
+    """
+    clarify modifications in case we have multiple modifications targeting the same residue
+    """
+    initial_target_mods = _patch_protein_termini(meta_molecule)
+    # parse all additional modifications
+    additional_modifications = []
+    for resspec, val in modifications:
+        additional_modifications.append((parse_residue_spec(resspec), val))
+
+    # check if any of the additional modifications are in the target modifications
+    default_targets = [spec[0] for spec in initial_target_mods]
+    additional_targets = [spec[0] for spec in additional_modifications]
+    to_remove = []
+    for target in additional_targets:
+        if target in default_targets:
+            to_remove.append(default_targets[default_targets == target])
+    # make sure the list is unique in case, eg. modify a terminal residue twice over
+    unique_removals = list({v['resid']: v for v in to_remove}.values())
+    # now filter the default modifications by the overwritten ones
+    final_target_mods = []
+    for spec in initial_target_mods:
+        if spec[0] not in unique_removals:
+            final_target_mods.append(spec)
+
+    final_target_mods.extend(additional_modifications)
+    return final_target_mods
+
 class ApplyModifications(Processor):
     """
     This processor takes a class:`polyply.src.MetaMolecule` and
@@ -112,31 +140,7 @@ class ApplyModifications(Processor):
 
     """
     def __init__(self, meta_molecule, modifications=[]):
-        initial_target_mods = _patch_protein_termini(meta_molecule)
-
-        # parse all additional modifications
-        additional_modifications = []
-        for resspec, val in modifications:
-            additional_modifications.append((parse_residue_spec(resspec), val))
-
-        # check if any of the additional modifications are in the target modifications
-        default_targets = [spec[0] for spec in initial_target_mods]
-        additional_targets = [spec[0] for spec in additional_modifications]
-        to_remove = []
-        for target in additional_targets:
-            if target in default_targets:
-                to_remove.append(default_targets[default_targets == target])
-        # make sure the list is unique in case, eg. modify a terminal residue twice over
-        unique_removals = list({v['resid']: v for v in to_remove}.values())
-        # now filter the default modifications by the overwritten ones
-        final_target_mods = []
-        for spec in initial_target_mods:
-            if spec[0] not in unique_removals:
-                final_target_mods.append(spec)
-
-        final_target_mods.extend(additional_modifications)
-        self.target_mods = final_target_mods
-
+        self.target_mods = modifications_finalising(meta_molecule, modifications)
 
     def run_molecule(self, meta_molecule):
         apply_mod(meta_molecule, self.target_mods)
