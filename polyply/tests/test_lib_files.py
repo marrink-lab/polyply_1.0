@@ -170,6 +170,7 @@ def _interaction_equal(interaction1, interaction2, inter_type):
     return False
 
 @pytest.mark.parametrize("library, polymer", [
+     ['ol21', 'RNA'],
      ['2016H66', 'PP'],
      ['2016H66', 'C12E4'],
      ['2016H66', 'PE'],
