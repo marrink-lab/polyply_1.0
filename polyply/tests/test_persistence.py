@@ -265,8 +265,6 @@ def test_persistence(topology, specs, seed, avg_step, expected):
                                              box=np.array([15., 15., 15.]))
 
     sample_end_to_end_distances(topology, nb_engine, seed=seed)
-    #print(expected)
-    print(topology.molecules[0].edges(data=True)) #["distance_restraints"])
     mol_count = 0
     for batch_count, batch in enumerate(specs):
         print(batch_count)
