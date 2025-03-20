@@ -43,10 +43,10 @@ def worm_like_chain_model(ee_dist, r_max, persistence_length):
         probability to find the end-to-end distance
     """
     alpha = 3*r_max/(4* persistence_length)
-    factor_1 = (np.pi**3/2. * np.exp(-alpha)*alpha**(-3/2.)*(1 + 3/(alpha) + (15/4)/alpha**2.))**-1.
+    factor_1 = (np.pi**(3/2.) * np.exp(-alpha)*alpha**(-3/2.)*(1 + 3/(alpha) + (15/4)/alpha**2.))**-1.
     nominator = 4*np.pi*ee_dist**2.* factor_1
 
-    denominator = r_max*(1-(ee_dist/r_max)**2.)**9/2.
+    denominator = r_max*(1-(ee_dist/r_max)**2.)**(9/2.)
     nominator_exp = -3*r_max
     denominator_exp = 4* persistence_length*(1-(ee_dist/r_max)**2.)
 
