@@ -63,6 +63,7 @@ def apply_mod(meta_molecule, modifications):
         return meta_molecule
 
     for target, desired_mod in modifications:
+        LOGGER.info(f"Applying {desired_mod} to {target['resname']}{target['resid']}")
 
         target_resid = target['resid']
 
@@ -130,6 +131,10 @@ def modifications_finalising(meta_molecule, modifications):
             final_target_mods.append(spec)
 
     final_target_mods.extend(additional_modifications)
+    # check whether the final modifications are the same as the original ones
+    if modifications and (not set(modifications[0]) == set([i[1] for i in final_target_mods])):
+        LOGGER.info("Default modifications overwritten. Check log for modifications applied.")
+
     return final_target_mods
 
 class ApplyModifications(Processor):

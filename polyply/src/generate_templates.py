@@ -109,7 +109,7 @@ def find_interaction_involving(block, current_node, prev_node):
              linking atom {} and atom {}.'''
     raise IOError(msg.format(block.nodes[0]["resname"], prev_node, current_node))
 
-def _expand_inital_coords(block, max_count=1000):
+def _expand_inital_coords(block, max_count=50000):
     """
     Given a `graph` generate initial coordinates in three dimensions
     using the Kamada-Kawai algorithm.
