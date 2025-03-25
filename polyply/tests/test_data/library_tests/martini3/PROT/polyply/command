@@ -1,0 +1,1 @@
+polyply gen_itp -lib martini3 -seqf ../PNt.fasta -o PROT.itp -name PROT
