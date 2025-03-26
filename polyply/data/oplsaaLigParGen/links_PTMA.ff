@@ -126,10 +126,10 @@ resname "CH3|PTMA"
 resname "PTMA|CH3"
 [ atoms ]
   C17  {"replace": {"charge":  0.1111}} 
-  -C1  {"replace": {"charge": -0.1854}}
-  -H2  {"replace": {"charge":  0.0386}}
-  -H3  {"replace": {"charge":  0.0386}}
-  -H4  {"replace": {"charge":  0.0386}}
+  +C1  {"replace": {"charge": -0.1854}}
+  +H2  {"replace": {"charge":  0.0386}}
+  +H3  {"replace": {"charge":  0.0386}}
+  +H4  {"replace": {"charge":  0.0386}}
 [ bonds ]
   +C1   C17     1      0.1529 224262.400  {"comment":"beta-C-link", "group": "termini"}
 [ angles ]
