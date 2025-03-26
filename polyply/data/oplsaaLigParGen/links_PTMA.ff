@@ -64,9 +64,13 @@ resname "PTMA"
 ; Termination of PTMA polymer with a CH3 group on the "alpha" carbon
 ;--------------------------------------------------------------------------
 [link]
-resname "CH3a|PTMA"
+resname "CH3|PTMA"
 [ atoms ]
-  C01  {"replace": {"charge": 0.2237}} 
+  C01  {"replace": {"charge":  0.2237}} 
+  -C1  {"replace": {"charge": -0.3029}}
+  -H2  {"replace": {"charge":  0.0694}}
+  -H3  {"replace": {"charge":  0.0694}}
+  -H4  {"replace": {"charge":  0.0694}}
 [ bonds ]
   -C1   C01     1      0.1529 224262.400  {"comment":"alpha-C-link", "group":"termini"} 
 [ angles ]
@@ -119,9 +123,13 @@ resname "CH3a|PTMA"
 ; Termination of PTMA polymer with a CH3 group on the "beta" carbon
 ;--------------------------------------------------------------------------
 [link]
-resname "PTMA|CH3b"
+resname "PTMA|CH3"
 [ atoms ]
-  C17  {"replace": {"charge": 0.1111}} 
+  C17  {"replace": {"charge":  0.1111}} 
+  -C1  {"replace": {"charge": -0.1854}}
+  -H2  {"replace": {"charge":  0.0386}}
+  -H3  {"replace": {"charge":  0.0386}}
+  -H4  {"replace": {"charge":  0.0386}}
 [ bonds ]
   +C1   C17     1      0.1529 224262.400  {"comment":"beta-C-link", "group": "termini"}
 [ angles ]
@@ -165,7 +173,7 @@ resname "PTMA|CH3b"
 [ atoms ]
 C01 {"resname": "PTMA"}
 [ warning ]
-You should patch PTMA with a CH3a-terminal residue. Use -seq CH3a:1 PTMA:4 CH3b:1
+You should patch PTMA with a CH3-terminal residue. Use -seq CH3:1 PTMA:4 CH3:1
 [ non-edges ]
 C01 -C1
 C01 -C17
@@ -174,7 +182,7 @@ C01 -C17
 [ atoms ]
 C17 {"resname": "PTMA"}
 [ warning ]
-You should patch PTMA with a CH3b-terminal residue. Use -seq CH3a:1 PTMA:4 CH3b:1
+You should patch PTMA with a CH3-terminal residue. Use -seq CH3:1 PTMA:4 CH3:1
 [ non-edges ]
 C17 +C1
 C17 +C01

@@ -1,4 +1,4 @@
-; /Users/alessandri/miniconda3/envs/polyplyRA/bin/polyply gen_params -lib oplsaaLigParGen -name PTMA -seq CH3a:1 PTMA:10 CH3b:1 -o PTMA.itp
+; /Users/alessandri/miniconda3/envs/polyplyRA/bin/polyply gen_params -lib oplsaaLigParGen -name PTMA -seq CH3:1 PTMA:10 CH3:1 -o PTMA.itp
 
 ; Please cite the following papers:
 ; Dodda, L S; Cabeza de Vaca, I; Tirado-Rives, J; Jorgensen, W L;  Nucleic Acids Research 2017; 10.1093/nar/gkx312
@@ -10,10 +10,10 @@
 PTMA 3
 
 [ atoms ]
-  1 opls_135  1 CH3a C1    1 -0.3029 12.011
-  2 opls_140  1 CH3a H2    2  0.0694  1.008
-  3 opls_140  1 CH3a H3    3  0.0694  1.008
-  4 opls_140  1 CH3a H4    4  0.0694  1.008
+  1 opls_135  1 CH3  C1    1 -0.3029 12.011
+  2 opls_140  1 CH3  H2    2  0.0694  1.008
+  3 opls_140  1 CH3  H3    3  0.0694  1.008
+  4 opls_140  1 CH3  H4    4  0.0694  1.008
   5 opls_135  2 PTMA C01   5  0.2237 12.011
   6 opls_135  2 PTMA C02   6 -0.3162 12.011
   7 opls_135  2 PTMA C03   7  0.7197 12.011
@@ -404,10 +404,10 @@ PTMA 3
 392 opls_140 11 PTMA H37 392  0.0805  1.008
 393 opls_140 11 PTMA H38 393 -0.0159  1.008
 394 opls_140 11 PTMA H39 394 -0.0159  1.008
-395 opls_135 12 CH3b C1  395 -0.1854 12.011
-396 opls_140 12 CH3b H2  396  0.0386  1.008
-397 opls_140 12 CH3b H3  397  0.0386  1.008
-398 opls_140 12 CH3b H4  398  0.0386  1.008
+395 opls_135 12 CH3  C1  395 -0.1854 12.011
+396 opls_140 12 CH3  H2  396  0.0386  1.008
+397 opls_140 12 CH3  H3  397  0.0386  1.008
+398 opls_140 12 CH3  H4  398  0.0386  1.008
 
 [ bonds ]
   2   1 1 0.1090 284512.000
