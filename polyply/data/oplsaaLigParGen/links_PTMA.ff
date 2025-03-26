@@ -137,11 +137,8 @@ resname "PTMA|CH3"
   C17   +C1   +H2     1    110.700    313.800  {"comment":"beta-C-link", "group": "termini"}
   C17   +C1   +H3     1    110.700    313.800  {"comment":"beta-C-link", "group": "termini"}
   C17   +C1   +H4     1    110.700    313.800  {"comment":"beta-C-link", "group": "termini"}
-  +H2   +C1   +H3     1    107.800    276.144  {"comment":"beta-C-link", "group": "termini"}
   +C1   C17   H39     1    110.700    313.800  {"comment":"beta-C-link", "group": "termini"}
-  +H2   +C1   +H4     1    107.800    276.144  {"comment":"beta-C-link", "group": "termini"}
   +C1   C17   H38     1    110.700    313.800  {"comment":"beta-C-link", "group": "termini"}
-  +H3   +C1   +H4     1    107.800    276.144  {"comment":"beta-C-link", "group": "termini"}
 [ dihedrals ]
   +C1   C17   C01   C03        3      -4.960   6.286   1.310  -2.636  -0.000   0.000  {"comment":"beta-C-link", "group": "termini"}  
   +C1   C17   C01   C02        3       2.301  -1.464   0.837  -1.674  -0.000   0.000  {"comment":"beta-C-link", "group": "termini"}
