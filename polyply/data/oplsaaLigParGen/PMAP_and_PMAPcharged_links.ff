@@ -59,6 +59,10 @@ resname "PMAP"
 [link]
 resname "CH3|PMAP"
 [ atoms ]
+   C1  {"replace": {"charge": -0.2451}}
+   H2  {"replace": {"charge":  0.0817}}
+   H3  {"replace": {"charge":  0.0817}}
+   H4  {"replace": {"charge":  0.0817}}
 [ bonds ]
    C1  +C01     1    0.1529    224262.400   {"comment":"alpha-C-link"}
 [angles]
@@ -103,6 +107,10 @@ resname "CH3|PMAP"
 [link]
 resname "PMAP|CH3"
 [ atoms ]
+   C1  {"replace": {"charge": -0.2763}}
+   H2  {"replace": {"charge":  0.0921}}
+   H3  {"replace": {"charge":  0.0921}}
+   H4  {"replace": {"charge":  0.0921}}
 [ bonds ]
    C1  -C02     1    0.1529    224262.400   {"comment":"beta-C-link"}
 [angles]
@@ -215,6 +223,10 @@ resname "PMAPcharged"
 [link]
 resname "CH3|PMAPcharged"
 [ atoms ]
+   C1  {"replace": {"charge": -0.2451}}
+   H2  {"replace": {"charge":  0.0817}}
+   H3  {"replace": {"charge":  0.0817}}
+   H4  {"replace": {"charge":  0.0817}}
 [ bonds ]
    C1  +C01     1    0.1529    224262.400   {"comment":"alpha-C-link"}
 [angles]
@@ -259,6 +271,10 @@ resname "CH3|PMAPcharged"
 [link]
 resname "PMAPcharged|CH3"
 [ atoms ]
+   C1  {"replace": {"charge": -0.2763}}
+   H2  {"replace": {"charge":  0.0921}}
+   H3  {"replace": {"charge":  0.0921}}
+   H4  {"replace": {"charge":  0.0921}}
 [ bonds ]
    C1  -C02     1    0.1529    224262.400   {"comment":"beta-C-link"}
 [angles]

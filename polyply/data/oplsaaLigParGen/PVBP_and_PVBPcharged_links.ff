@@ -53,6 +53,10 @@ resname "PVBP"
 [link]
 resname "CH3|PVBP"
 [ atoms ]
+   C1  {"replace": {"charge": -0.2427}}
+   H2  {"replace": {"charge":  0.0809}}
+   H3  {"replace": {"charge":  0.0809}}
+   H4  {"replace": {"charge":  0.0809}}
 [ bonds ]
    C1  +C01     1    0.1529    224262.400   {"comment":"alpha-C-link"}
 [angles]
@@ -97,6 +101,10 @@ resname "CH3|PVBP"
 [link]
 resname "PVBP|CH3"
 [ atoms ]
+   C1  {"replace": {"charge": -0.2427}}
+   H2  {"replace": {"charge":  0.0809}}
+   H3  {"replace": {"charge":  0.0809}}
+   H4  {"replace": {"charge":  0.0809}}
 [ bonds ]
    C1  -C02     1    0.1529    224262.400   {"comment":"beta-C-link"}
 [angles]
@@ -197,6 +205,10 @@ resname "PVBPcharged"
 [link]
 resname "CH3|PVBPcharged"
 [ atoms ]
+   C1  {"replace": {"charge": -0.2427}}
+   H2  {"replace": {"charge":  0.0809}}
+   H3  {"replace": {"charge":  0.0809}}
+   H4  {"replace": {"charge":  0.0809}}
 [ bonds ]
    C1  +C01     1    0.1529    224262.400   {"comment":"alpha-C-link"}
 [angles]
@@ -241,6 +253,10 @@ resname "CH3|PVBPcharged"
 [link]
 resname "PVBPcharged|CH3"
 [ atoms ]
+   C1  {"replace": {"charge": -0.2427}}
+   H2  {"replace": {"charge":  0.0809}}
+   H3  {"replace": {"charge":  0.0809}}
+   H4  {"replace": {"charge":  0.0809}}
 [ bonds ]
    C1  -C02     1    0.1529    224262.400   {"comment":"beta-C-link"}
 [angles]
