@@ -24,6 +24,9 @@
 |Poly(TEMPO methacrylate)       |PTMA                     |[oplsaaLigParGen](polyply/data/oplsaaLigParGen/PTMA.oplsaa.LigParGen.ff)| [martini3](polyply/data/martini3/PTMA.martini3.ff)   |
 |                               |                         |                                                                       | [ibi_cgm3](polyply/data/ibi_cmg3/PTMA.cgm3.ibi.ff)    |
 |                               |                         |                                                                       | [ibi_gbcg](polyply/data/ibi_gbcg/PTMA.gbno2.ibi.ff)   |
+|poly(N-(methacryloxyethyl) phthalimide)|PMAP             |[oplsaaLigParGen](polyply/data/oplsaaLigParGen/PMAP_and_PMAPcharged.oplsaa.LigParGen.ff)|                                      |
+|poly(2,3-epoxy-propylphthalimide)|PEPP                   |[oplsaaLigParGen](polyply/data/oplsaaLigParGen/PEPP_and_PEPPcharged.oplsaa.LigParGen.ff)|                                      |
+|poly(N-(vinylbenzyl) phthalimide)|PVBP                   |[oplsaaLigParGen](polyply/data/oplsaaLigParGen/PVBP_and_PVBPcharged.oplsaa.LigParGen.ff)|                                      |
 |Dextran                        |DEX                      |                                                                       | [martini3](polyply/data/martini3/dextran.martini3.ff) |
 |DNA nucleobases                |Dx, Tx5, Dx3 w/ x=T,G,A,C|[parmbsc1](polyply/data/parmbsc1/dna_final.ff)                         | [martini2](polyply/data/martini2/DNA_M2.ff)           |
 |Aminoacids                     |3 letter code            |                                                                       | [martini3IDP](polyply/data/martini3/aminoacids.ff)    |
