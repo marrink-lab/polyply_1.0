@@ -32,6 +32,29 @@ def _norm_matrix(matrix):
     return norm
 norm_matrix = jit(_norm_matrix)
 
+def orient_template_from_frame(template, orientation_frame):
+    """
+    Orient a template according to orientation frame.
+
+    Parameters:
+    -----------
+    template: dict
+        Dictionary mapping atom names to position vectors
+    orientation_frame: np.ndarray
+
+    Returns:
+    --------
+    dict
+        The oriented template
+    """
+
+    # Apply the rotation to each template vector
+    oriented_template = {}
+    for atom_name, vector in template.items():
+        oriented_template[atom_name] = np.dot(orientation_frame, vector)
+
+    return oriented_template
+
 def orient_template(meta_molecule, current_node, template, built_nodes):
     """
     Given a `template` and a `node` of a `meta_molecule` at lower resolution
@@ -174,9 +197,17 @@ class Backmap(Processor):
                 resid = meta_molecule.nodes[node]["resid"]
                 high_res_atoms = meta_molecule.nodes[node]["graph"].nodes
 
-                template = orient_template(meta_molecule, node,
-                                           meta_molecule.templates[resname],
-                                           built_nodes)
+                # If orientation is provided, use it directly
+                if "orientation" in meta_molecule.nodes[node]:
+                    frame = meta_molecule.nodes[node]["orientation"]
+                    template = orient_template_from_frame(
+                        meta_molecule.templates[resname],
+                        frame
+                    )
+                else:
+                    template = orient_template(meta_molecule, node,
+                                               meta_molecule.templates[resname],
+                                               built_nodes)
 
                 for atom_high  in high_res_atoms:
                     atomname = meta_molecule.molecule.nodes[atom_high]["atomname"]
