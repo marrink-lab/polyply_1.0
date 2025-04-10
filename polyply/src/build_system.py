@@ -122,6 +122,7 @@ class BuildSystem():
                  ignore=[],
                  grid=None,
                  cycles=[],
+                 dsdna=False,
                  **kwargs):
 
         self.topology = topology
@@ -135,6 +136,7 @@ class BuildSystem():
         self.molecules = []
         self.nonbond_matrix = None
         self.cycles = cycles
+        self.dsdna = dsdna
 
         # first we check if **kwargs are actually in random-walk
         valid_kwargs = inspect.getfullargspec(RandomWalk).args
