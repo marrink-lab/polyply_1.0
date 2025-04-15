@@ -48,15 +48,10 @@ def orient_template_from_frame(template, orientation_frame):
         The oriented template
     """
 
-    com = np.zeros(3)
-    for atom_name, vector in template.items():
-        com += vector
-    com /= len(template)
-
     # Apply the rotation to each template vector
     oriented_template = {}
     for atom_name, vector in template.items():
-        oriented_template[atom_name] = np.dot(orientation_frame, vector - com) + com
+        oriented_template[atom_name] = np.dot(orientation_frame, vector)
 
     return oriented_template
 
