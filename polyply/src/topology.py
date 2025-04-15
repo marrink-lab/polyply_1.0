@@ -32,7 +32,7 @@ from .linalg_functions import center_of_geometry
 
 COORD_PARSERS = {"pdb": read_pdb,
                  "gro": read_gro,
-                 "oxdna": read_oxdna}
+                 "dat": read_oxdna}
 
 # small wrapper that is neccessiataed
 # by the fact that gro and pdb readers
