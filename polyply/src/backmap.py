@@ -19,7 +19,7 @@ import networkx as nx
 from tqdm import tqdm
 from polyply import jit
 from .processor import Processor
-from .generate_templates import find_atoms
+from .generate_templates import find_atoms, map_from_CoG
 from .linalg_functions import rotate_xyz
 from .graph_utils import find_connecting_edges
 """
@@ -80,6 +80,9 @@ def orient_template(meta_molecule, current_node, template, built_nodes):
     dict
         the oriented template
     """
+    # 0. Center the template on the CoG before orientation optimization
+    template = map_from_CoG(template)
+
     # 1. find neighbours at meta_mol level
     neighbours = nx.all_neighbors(meta_molecule, current_node)
     current_resid = meta_molecule.nodes[current_node]["resid"]
