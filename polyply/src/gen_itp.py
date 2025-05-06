@@ -122,8 +122,10 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[],
     with deferred_open(outpath, 'w') as outfile:
         header = [ ' '.join(sys.argv) + "\n" ]
         header.append("Please cite the following papers:")
+        citation_map = meta_molecule.molecule.force_field.citations
+        citation_map.update(vermouth.data.COMMON_CITATIONS)
         for citation in meta_molecule.molecule.citations:
-            cite_string =  citation_formatter(meta_molecule.molecule.force_field.citations[citation])
+            cite_string =  citation_formatter(citation_map[citation])
             LOGGER.info("Please cite: " + cite_string)
             header.append(cite_string)
 
