@@ -79,19 +79,32 @@ def _initialize_cylces(topology, cycles, tolerance):
                      list(molecule.search_tree.edges)[-1][1])
             topology.distance_restraints[(mol_name, mol_idx)][nodes] = (0.0, tolerance)
 
-def _check_molecules(molecules):
+def _check_molecules(molecules, dsdna=False):
     """
     Helper method which raises an IOError
     if any molecule in `molecules` is
-    disconnected.
+    disconnected, unless dsdna is True.
     """
+
     # check if molecules are all connected
     for molecule in molecules:
         if not nx.is_connected(molecule):
-            msg = ('\n Molecule {} consistes of two disconnected parts. '
-                   'Make sure all atoms/particles in a molecule are '
-                   'connected by bonds, constraints or virual-sites')
-            raise IOError(msg.format(molecule.name))
+            if dsdna:
+                components = list(nx.connected_components(molecule))
+                if len(components) != 2:
+                    LOGGER.warning("dsDNA molecule has {} disconnected components. "
+                                  "Expected exactly 2 strands for dsDNA.",
+                                  len(components))
+                msg = ("\n Molecule {} consists of two disconnected parts. "
+                       "Since the -dsdna flag was specified we continue "
+                       "but note that this might cause errors for non-double stranded DNA polymers")
+                LOGGER.warning(msg, molecule.name)
+            else:
+                msg = ('\n Molecule {} consists of two disconnected parts. '
+                       'Make sure all atoms/particles in a molecule are '
+                       'connected by bonds, constraints or virtual-sites. '
+                       'If this is a DNA molecule, use the -dsdna flag.')
+                raise IOError(msg.format(molecule.name))
 
 def gen_coords(toppath,
                outpath,
@@ -117,6 +130,7 @@ def gen_coords(toppath,
                max_force=5*10**4.0,
                nrewind=5,
                lib=None,
+               dsdna=False,
                bfudge=0.4):
     """
     Subprogram for coordinate generation which implements the default
@@ -198,7 +212,7 @@ def gen_coords(toppath,
 
     LOGGER.info("processing topology",  type="step")
     topology.preprocess()
-    _check_molecules(topology.molecules)
+    _check_molecules(topology.molecules, dsdna=dsdna)
 
     if split:
         LOGGER.info("splitting residues",  type="step")
@@ -280,7 +294,8 @@ def gen_coords(toppath,
                 ignore=ignore,
                 grid=grid,
                 cycles=cycles,
-                nrewind=nrewind).run_system(topology.molecules)
+                nrewind=nrewind,
+                dsdna=dsdna).run_system(topology.molecules)
     ligand_annotator.split_ligands()
     LOGGER.info("backmapping to target resolution",  type="step")
     Backmap(fudge_coords=bfudge).run_system(topology)

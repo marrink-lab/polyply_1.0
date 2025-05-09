@@ -208,10 +208,7 @@ class BuildDirector(SectionLineParser):
                 self.topology.volumes[graph_hash] = compute_volume(self.current_template,
                                                                    coords,
                                                                    self.topology.nonbond_params,)
-            # internally a template is defined as vectors from the
-            # center of geometry
-            mapped_coords = map_from_CoG(coords)
-            self.templates[graph_hash] = mapped_coords
+            self.templates[graph_hash] = coords
             self.resnames_to_hash[resname] = graph_hash
             self.current_template = None
 
