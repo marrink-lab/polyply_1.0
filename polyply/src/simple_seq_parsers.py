@@ -26,10 +26,10 @@ ONE_LETTER_DNA = {"A": "DA",
                   "G": "DG",
                   "T": "DT"}
 
-ONE_LETTER_RNA = {"A": "A",
-                  "C": "C",
-                  "G": "G",
-                  "T": "U"}
+ONE_LETTER_RNA = {"A": "RA",
+                  "C": "RC",
+                  "G": "RG",
+                  "U": "RU"}
 
 ONE_LETTER_AA = {"G": "GLY",
                  "A": "ALA",
