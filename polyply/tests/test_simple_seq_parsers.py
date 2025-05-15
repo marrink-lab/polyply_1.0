@@ -127,7 +127,7 @@ def test_sequence_parses_RNA(extension):
     part_path = Path("simple_seq_files") / ("test_RNA." + extension)
     filepath = TEST_DATA / part_path
     seq_graph = MetaMolecule.parsers[extension](filepath)
-    monomers = ["A5", "U", "C", "G", "U", "A", "C", "A", "U3"]
+    monomers = ["RA5", "RU", "RC", "RG", "RU", "RA", "RC", "RA", "RU3"]
     ref_graph = _monomers_to_linear_nx_graph(monomers)
     assert nx.is_isomorphic(seq_graph, ref_graph, node_match=_node_match)
 
