@@ -90,7 +90,63 @@ class TestPolyply:
         assert list(meta_mol.nodes) == nodes
         assert list(meta_mol.edges) == edges
 
+    @staticmethod
+    @pytest.mark.parametrize('cgsmiles_str, edges, nodes, attrs', (
+        # multiple blocks from single monomer
+          ("{[#PEO][#PEO]}",
+           [(0,1)],
+           [0,1],
+           {0: 'PEO', 1: 'PEO'}
+          ),
+        # two blocks from two monomers
+          ("{[#PEO][#PS]}",
+           [(0,1)],
+           [0,1],
+           {0: 'PEO', 1: 'PS'}
+           ),
+        # use multilevel descript
+          ("{[#PU]|2}.{#PU=[>][#PEO][#MDI][<]}",
+           [(0,1), (0, 3), (2, 3)],
+           [0, 1, 2, 3],
+           {0: 'PEO', 1: 'MDI', 2: 'PEO', 3: 'MDI'}
+           ),
+        # branched monomers
+          ("{[#PMA][#PMA]([#PEO])[#PMA]}",
+           [(0,1),(1,2),(1,3)],
+           [0,1,2,3],
+           {0: 'PMA', 1: 'PMA', 2: 'PEO', 3: 'PMA'}
+         )))
+    def test_from_cgsmiles_str(cgsmiles_str, edges, nodes, attrs):
+        ff = vermouth.forcefield.ForceField(name='test_ff')
+        name = "test"
+        meta_mol = MetaMolecule.from_cgsmiles_str(ff, cgsmiles_str, name)
 
+        assert nx.get_node_attributes(meta_mol, "resname") == attrs
+        assert list(meta_mol.nodes) == nodes
+        assert list(meta_mol.edges) == edges
+
+    @staticmethod
+    def test_from_cgsmiles_seq_ony():
+        ff = vermouth.forcefield.ForceField(name='test_ff')
+        name = "test"
+        cgsmiles_str = "{[#A][#B][#A]}.{#A=[>][#BB][#BB1][<]([#SC1][#SC2]),#B=[>][#BB][#BB1]([#SC1][#SC2])[#BB2][<]}"
+        meta_mol = MetaMolecule.from_cgsmiles_str(ff,
+                                                  cgsmiles_str,
+                                                  name,
+                                                  seq_only=False,
+                                                  all_atom=False)
+        attrs = {0: "A", 1: "B", 2: "A"}
+        assert nx.get_node_attributes(meta_mol, "resname") == attrs
+        assert list(meta_mol.nodes) == [0, 1, 2]
+        assert list(meta_mol.edges) == [(0, 1), (1, 2)]
+        molecule = meta_mol.molecule
+        attrs = {0: "A", 1: "A", 2: "A", 3: "A",
+                4: "B", 5: "B", 6: "B", 7: "B", 8: "B",
+                9: "A", 10: "A", 11: "A", 12: "A"}
+        assert nx.get_node_attributes(molecule, "resname") == attrs
+        assert list(molecule.edges) == [(0, 1), (0, 8), (1, 2), (2, 3), (4, 5),
+                                        (4, 10), (5, 6), (5, 8), (6, 7), (9, 10),
+                                        (10, 11), (11, 12)]
     @staticmethod
     @pytest.mark.parametrize('file_name, edges, nodes, attrs', (
         # multiple blocks from single monomer

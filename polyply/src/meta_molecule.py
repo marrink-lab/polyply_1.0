@@ -363,7 +363,12 @@ class MetaMolecule(nx.Graph):
         return meta_mol
 
     @classmethod
-    def from_cgsmiles_str(cls,force_field, cgsmiles_str, mol_name, seq_only=True, all_atom=False):
+    def from_cgsmiles_str(cls,
+                          force_field,
+                          cgsmiles_str,
+                          mol_name,
+                          seq_only=True,
+                          all_atom=False):
         """
         Constructs a :class::`MetaMolecule` from an CGSmiles string.
         The force-field must contain the block with mol_name from
@@ -399,24 +404,26 @@ class MetaMolecule(nx.Graph):
             take_resname_from = 'fragname'
         elif seq_only:
             # initalize the cgsmiles molecule resolver
-            resolver = MoleculeResolver(cgsmiles_str, last_all_atom=all_atom)
+            resolver = MoleculeResolver.from_string(cgsmiles_str,
+                                                    last_all_atom=all_atom)
             # grep the last graph of the resolve iter
-            *_, (_, meta_graph) = resolver.resolve_iter()
+            _, meta_graph = resolver.resolve_all()
             take_resname_from = 'atomname'
         else:
             # initalize the cgsmiles molecule resolver
-            resolver = MoleculeResolver(cgsmiles_str, last_all_atom=all_atom)
-            *_, (meta_graph, molecule) = resolver.resolve_iter()
+            take_resname_from = 'fragname'
+            resolver = MoleculeResolver.from_string(cgsmiles_str,
+                                                    last_all_atom=all_atom)
+            meta_graph, molecule = resolver.resolve_all()
 
         # we have to set some node attribute accoding to polyply specs
         for node in meta_graph.nodes:
-            if seq_only:
-                resname = meta_graph.nodes[node][take_resname_from]
-                meta_graph.nodes[node]['resname'] = resname
-            else:
-                for atom in meta_graph.nodes['graph'].nodes:
-                    meta_graph.nodes['graph'].nodes[atom]['resname'] = resname
-                    meta_graph.nodes['graph'].nodes[atom]['resid'] = node + 1
+            resname = meta_graph.nodes[node][take_resname_from]
+            meta_graph.nodes[node]['resname'] = resname
+            if not seq_only:
+                for atom in meta_graph.nodes[node]['graph'].nodes:
+                    meta_graph.nodes[node]['graph'].nodes[atom]['resname'] = resname
+                    meta_graph.nodes[node]['graph'].nodes[atom]['resid'] = node + 1
                     molecule.nodes[atom]['resname'] = resname
                     molecule.nodes[atom]['resid'] = node + 1
 
