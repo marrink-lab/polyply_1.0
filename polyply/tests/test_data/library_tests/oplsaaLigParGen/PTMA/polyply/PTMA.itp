@@ -1,19 +1,19 @@
-; /Users/alessandri/miniconda3/envs/polyplyRA/bin/polyply gen_params -lib oplsaaLigParGen -name PTMA -seq CH3a:1 PTMA:10 CH3b:1 -o PTMA.itp
+; /Users/alessandri/miniconda3/envs/polyply/bin/polyply gen_params -lib oplsaaLigParGen -name PTMA -seq CH3:1 PTMA:10 CH3:1 -o PTMA.itp
 
 ; Please cite the following papers:
-; Dodda, L S; Cabeza de Vaca, I; Tirado-Rives, J; Jorgensen, W L;  Nucleic Acids Research 2017; 10.1093/nar/gkx312
 ; Alessandri, R; de Pablo, J J;  Macromolecules 2023; 10.1021/acs.macromol.3c00141
-; Grunewald, F; Alessandri, R; Kroon, P C; Monticelli, L; Souza, P C; Marrink, S J;  Nature Communications 2022; 10.1038/s41467-021-27627-4
 ; Jorgensen, W L; Tirado-Rives, J;  Proceedings of the National Academy of Sciences 2005; 10.1073/pnas.0408037102
+; Dodda, L S; Cabeza de Vaca, I; Tirado-Rives, J; Jorgensen, W L;  Nucleic Acids Research 2017; 10.1093/nar/gkx312
+; Grunewald, F; Alessandri, R; Kroon, P C; Monticelli, L; Souza, P C; Marrink, S J;  Nature Communications 2022; 10.1038/s41467-021-27627-4
 
 [ moleculetype ]
 PTMA 3
 
 [ atoms ]
-  1 opls_135  1 CH3a C1    1 -0.3029 12.011
-  2 opls_140  1 CH3a H2    2  0.0694  1.008
-  3 opls_140  1 CH3a H3    3  0.0694  1.008
-  4 opls_140  1 CH3a H4    4  0.0694  1.008
+  1 opls_135  1 CH3  C1    1 -0.3029 12.011
+  2 opls_140  1 CH3  H2    2  0.0694  1.008
+  3 opls_140  1 CH3  H3    3  0.0694  1.008
+  4 opls_140  1 CH3  H4    4  0.0694  1.008
   5 opls_135  2 PTMA C01   5  0.2237 12.011
   6 opls_135  2 PTMA C02   6 -0.3162 12.011
   7 opls_135  2 PTMA C03   7  0.7197 12.011
@@ -404,10 +404,10 @@ PTMA 3
 392 opls_140 11 PTMA H37 392  0.0805  1.008
 393 opls_140 11 PTMA H38 393 -0.0159  1.008
 394 opls_140 11 PTMA H39 394 -0.0159  1.008
-395 opls_135 12 CH3b C1  395 -0.1854 12.011
-396 opls_140 12 CH3b H2  396  0.0386  1.008
-397 opls_140 12 CH3b H3  397  0.0386  1.008
-398 opls_140 12 CH3b H4  398  0.0386  1.008
+395 opls_135 12 CH3  C1  395 -0.1854 12.011
+396 opls_140 12 CH3  H2  396  0.0386  1.008
+397 opls_140 12 CH3  H3  397  0.0386  1.008
+398 opls_140 12 CH3  H4  398  0.0386  1.008
 
 [ bonds ]
   2   1 1 0.1090 284512.000
@@ -2028,9 +2028,9 @@ PTMA 3
 394 398 1 ; beta-C-link
 
 [ angles ]
-  2   1   3 1 107.800 276.144
-  3   1   4 1 107.800 276.144
-  2   1   4 1 107.800 276.144
+  3   1   2 1 107.800 276.144
+  4   1   2 1 107.800 276.144
+  4   1   3 1 107.800 276.144
   5   7   8 1 120.400 669.440
   5   7   9 1 111.400 677.808
   7   9  10 1 116.900 694.544
@@ -2761,6 +2761,9 @@ PTMA 3
 391 371 392 1 107.800 276.144
 381 367 383 1 107.800 276.144
 385 368 386 1 107.800 276.144
+397 395 396 1 107.800 276.144
+398 395 396 1 107.800 276.144
+398 395 397 1 107.800 276.144
 
 ; connection
   5  21  44 1 112.700 488.273
@@ -2819,9 +2822,6 @@ PTMA 3
 355 333 356 1 110.700 313.800
 
 ; termini
-396 395 397 1 107.800 276.144 ; beta-C-link
-397 395 398 1 107.800 276.144 ; beta-C-link
-396 395 398 1 107.800 276.144 ; beta-C-link
   1   5   6 1 112.700 488.273 ; alpha-C-link
   1   5   7 1 111.100 527.184 ; alpha-C-link
   1   5  11 1 112.700 488.273 ; alpha-C-link

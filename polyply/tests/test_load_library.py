@@ -20,6 +20,7 @@ import logging
 import pytest
 from pathlib import Path
 from contextlib import contextmanager
+import networkx as nx
 import vermouth
 from polyply import TEST_DATA
 from polyply.src.logging import LOGGER
@@ -72,6 +73,16 @@ def test_read_ff_from_files(caplog):
 
 def test_read_build_options_from_files():
 
+    # PMMA template edge_list
+    edges = [('C1', 'C2'), ('C2', 'C3'), ('C2', 'C4'),
+             ('C4', 'O1'), ('C4', 'O2'), ('O2', 'C5')]
+    g = nx.Graph()
+    g.add_edges_from(edges)
+
+    atomnames = {node: node for node in g.nodes}
+    nx.set_node_attributes(g, atomnames, 'atomname')
+    graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(g, node_attr='atomname')
+
     topfile = Path('topology_test/system.top')
     bldfile = Path('topology_test/test.bld')
     lib_name = '2016H66'
@@ -83,6 +94,6 @@ def test_read_build_options_from_files():
     load_build_files(topology, lib_name, user_files)
 
     # check if build files are parsed
-    assert topology.volumes == {'PMMA': 1.0}
+    assert topology.volumes[graph_hash] == 1.0
     molecule = topology.molecules[0]
-    assert molecule.templates
+    assert graph_hash in molecule.templates

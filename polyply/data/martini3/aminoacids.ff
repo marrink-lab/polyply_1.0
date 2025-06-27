@@ -1,4 +1,4 @@
-; Copyright 2018 University of Groningen
+; Copyright 2025 University of Groningen
 ;
 ; Licensed under the Apache License, Version 2.0 (the "License");
 ; you may not use this file except in compliance with the License.
@@ -12,9 +12,37 @@
 ; See the License for the specific language governing permissions and
 ; limitations under the License.
 
+;Martini-IDP dihedral function7
+
+;Modify BB bondlength to 0.360 8000 for coil
+;Modify BBB angle to 137 25 for coil
+
+;add SC-BB-BB-SC and BB-BB(-1)-BB(+1)-SC improper and exceptional BB-BB(GLY)-BB-SC1 dihedral distribution, give up the BBBS/SBBB definition derivative.
+;add BBS and SBB angles with restricted bended potenial resembling -scfix
+
+; add residue specific BBS/SBB angles
+; add residue specific BB-BB(-1)-BB(+1)-SC improper dihedrals
+; add Pro specific bondlength
+
 [ macros ]
 protein_resnames "GLY|ALA|CYS|VAL|LEU|ILE|MET|PRO|HYP|ASN|GLN|ASP|ASP0|GLU|GLU0|THR|SER|LYS|LYS0|ARG|ARG0|HIS|HISH|PHE|TYR|TRP"
 protein_resnames_non_pro "GLY|ALA|CYS|VAL|LEU|ILE|MET|ASN|GLN|ASP|ASP0|GLU|GLU0|THR|SER|LYS|LYS0|ARG|ARG0|HIS|HISH|PHE|TYR|TRP"
+protein_resnames_non_gly "ALA|CYS|VAL|LEU|ILE|MET|PRO|HYP|ASN|GLN|ASP|ASP0|GLU|GLU0|THR|SER|LYS|LYS0|ARG|ARG0|HIS|HISH|PHE|TYR|TRP"
+
+protein_resnames_BBS_110 "ALA|ILE|VAL|TRP|SER"
+protein_resnames_BBS_100 "CYS|ASP|GLU|PHE|HIS|LYS|LEU|THR|TYR"
+protein_resnames_BBS_90  "MET|ASN|GLN|ARG"
+
+protein_resnames_SBB_70 "SER"
+protein_resnames_SBB_75 "ALA|THR|CYS"
+protein_resnames_SBB_80 "VAL|TRP"
+protein_resnames_SBB_90 "ASP|GLU|PHE|HIS|ILE|LYS|LEU|MET|ASN|GLN|ARG|TYR"
+
+protein_resnames_improper_20 "ALA|HIS|ARG|TRP"
+protein_resnames_improper_25 "ASP|GLU|PHE|ILE|LYS|LEU|ASN|TYR|CYS|SER|THR|VAL"
+protein_resnames_improper_35 "MET"
+protein_resnames_improper_40 "GLN"
+
 prot_default_bb_type P2
 stiff_fc 1000000
 
@@ -26,6 +54,7 @@ res_min_dist 3
 Martini3
 polyply
 M3_GO
+Martini3IDP
 
 ;;; GLYCINE
 
@@ -34,13 +63,8 @@ M3_GO
 GLY                1			
 
 [ atoms ]
-;id  type resnr residu atom cgnr   charge mass
+;id  type resnr residu atom cgnr   charge
  1   SP1   1     GLY    BB     1      0      
- 2    VS   1     GLY    CA     1      0   0
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
-[ virtual_sitesn ]
-2 1 -- 1
 
 ;;; ALANINE
 
@@ -51,22 +75,17 @@ ALA                1
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
  1   SP2    1   ALA    BB     1      0
- 2   TC3    1   ALA    SC1    1      0 
- 3    VS    1   ALA    CA     1      0   0
-[ virtual_sitesn ]
-3 1 -- 1
+ 2   TC3    1   ALA    SC1    2      0 
 
 [ constraints ]
 #meta {"group": "Side chain bonds", "ifndef": "FLEXIBLE"}
 ;  i     j   funct   length  
   BB   SC1    1       0.270
-
+  
 [ bonds ]
-#meta {"group": "Side chain bonds", "ifdef": "FLEXIBLE"}   
+#meta {"group": "Side chain bonds", "ifdef": "FLEXIBLE"}
 ;  i     j   funct   length  
-BB   SC1    1       0.270  $stiff_fc
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
+  BB   SC1    1       0.270  $stiff_fc  
 
 ;;; CYSTEINE
 
@@ -77,17 +96,12 @@ CYS                1
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
  1   $prot_default_bb_type     1   CYS    BB     1      0
- 2   TC6    1   CYS    SC1     1      0     
- 3    VS    1   CYS    CA      1      0   0
-[ virtual_sitesn ]
-3 1 -- 1
+ 2   TC6    1   CYS    SC1    2      0     
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
   BB   SC1    1       0.341     7500        
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; VALINE
 
@@ -98,10 +112,7 @@ VAL                1
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
  1   SP2  1     VAL     BB     1      0    
- 2   SC3  1     VAL     SC1    1      0    
- 3    VS  1     VAL     CA     1      0   0
-[ virtual_sitesn ]
-3 1 -- 1
+ 2   SC3  1     VAL     SC1    2      0    
 
 [ constraints ]
 #meta {"group": "Side chain bonds", "ifndef": "FLEXIBLE"}
@@ -113,9 +124,6 @@ VAL                1
 ;  i     j   funct   length  
   BB   SC1    1       0.292  $stiff_fc
 
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
-
 ;;; LEUCINE
 
 [ moleculetype ]
@@ -125,18 +133,12 @@ LEU                1
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
  1   $prot_default_bb_type   1     LEU     BB     1      0    
- 2   SC2  1     LEU     SC1    1      0    
- 3    VS  1     LEU     CA     1      0   0
-[ virtual_sitesn ]
-3 1 -- 1
+ 2   SC2  1     LEU     SC1    2      0    
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
   BB   SC1    1       0.363     7500    
-
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; ISOLEUCINE
 
@@ -147,10 +149,7 @@ ILE                1
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
  1   $prot_default_bb_type   1     ILE     BB     1      0    
- 2   SC2  1     ILE     SC1    1      0    
- 3    VS  1     ILE     CA     1      0   0
-[ virtual_sitesn ]
-3 1 -- 1
+ 2   SC2  1     ILE     SC1    2      0    
 
 [ constraints ]
 #meta {"group": "Side chain bonds", "ifndef": "FLEXIBLE"}
@@ -162,9 +161,6 @@ ILE                1
 ;  i     j   funct   length  
   BB   SC1    1       0.341  $stiff_fc
 
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
-
 ;;; METHIONINE
 
 [ moleculetype ]
@@ -174,18 +170,12 @@ MET                1
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
  1   $prot_default_bb_type   1     MET     BB     1      0    
- 2   C6   1     MET     SC1    1      0     
- 3    VS  1     MET     CA     1      0   0
-[ virtual_sitesn ]
-3 1 -- 1
+ 2   C6   1     MET     SC1    2      0     
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
   BB   SC1    1       0.40     2500
-
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; PROLINE
 
@@ -196,19 +186,12 @@ PRO                1
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
  1   SP2a   1     PRO     BB     1      0    
- 2   SC3    1     PRO     SC1    1      0    
- 3    VS    1     PRO     CA     1      0   0
-[ virtual_sitesn ]
-3 1 -- 1
-
+ 2   SC3    1     PRO     SC1    2      0    
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
   BB   SC1   1       0.330     7500
-
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 [ moleculetype ]
 ; molname       nrexcl
@@ -217,19 +200,12 @@ HYP                1
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
  1    P1   1     HYP     BB     1      0    
- 2    P1   1     HYP     SC1    1      0    
- 3    VS   1     HYP     CA     1      0   0
-[ virtual_sitesn ]
-3 1 -- 1
-
+ 2    P1   1     HYP     SC1    2      0    
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
   BB   SC1   1       0.300     7500
-
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; ASPARAGINE
 
@@ -240,18 +216,12 @@ ASN                1
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
  1   $prot_default_bb_type    1     ASN     BB     1      0    
- 2   SP5    1     ASN     SC1    1      0    
- 3    VS    1     ASN     CA     1      0   0
-[ virtual_sitesn ]
-3 1 -- 1
+ 2   SP5    1     ASN     SC1    2      0    
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
   BB   SC1    1       0.352     5000
-
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; GLUTAMINE
 
@@ -262,18 +232,12 @@ GLN                1
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
  1   $prot_default_bb_type    1     GLN     BB     1      0    
- 2   P5     1     GLN     SC1    1      0    
- 3   VS     1     GLN     CA     1      0   0
-[ virtual_sitesn ]
-3 1 -- 1
+ 2   P5    1     GLN     SC1    2      0    
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
   BB   SC1    1       0.400    5000     
-
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; ASPARTATE
 
@@ -284,18 +248,12 @@ ASP                1
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
  1   $prot_default_bb_type     1     ASP     BB     1      0    
- 2   SQ5n    1     ASP     SC1    1   -1.0    
- 3   VS      1     ASP     CA     1      0   0
-[ virtual_sitesn ]
-3 1 -- 1
+ 2   SQ5n    1     ASP     SC1    2   -1.0    
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
   BB   SC1    1       0.352     7500
-
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; GLUTAMATE
 
@@ -306,18 +264,12 @@ GLU                1
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
  1   $prot_default_bb_type     1     GLU     BB     1      0    
- 2   Q5n    1     GLU     SC1    1   -1.0    
- 3   VS     1     GLU     CA     1      0   0
-[ virtual_sitesn ]
-3 1 -- 1
+ 2   Q5n    1     GLU     SC1    2   -1.0    
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
   BB   SC1    1       0.400    5000     
-
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; THREONINE
 
@@ -328,10 +280,7 @@ THR                1
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
 1   $prot_default_bb_type     1     THR     BB     1      0    
-2   SP1     1     THR     SC1    1      0    
-3   VS      1     THR     CA     1      0   0
-[ virtual_sitesn ]
-3 1 -- 1
+2   SP1     1     THR     SC1    2      0    
 
 [ constraints ]
 #meta {"group": "Side chain bonds", "ifndef": "FLEXIBLE"}
@@ -343,9 +292,6 @@ THR                1
 ;  i     j   funct   length 
   BB   SC1    1       0.305  $stiff_fc
 
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
-
 ;;; SERINE
 
 [ moleculetype ]
@@ -355,18 +301,12 @@ SER                1
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
 1   $prot_default_bb_type     1    SER     BB     1      0    
-2   TP1     1    SER     SC1    1      0    
-3   VS      1    SER     CA     1      0   0
-[ virtual_sitesn ]
-3 1 -- 1
+2   TP1     1    SER     SC1    2      0    
 
 [bonds]
 #meta {"group": "Side chain bonds"}
 ;  i     j   funct   length  force.c.
   BB   SC1    1       0.287     7500
-
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
 
 ;;; LYSINE 
 
@@ -377,11 +317,8 @@ LYS                1
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
  1   $prot_default_bb_type    1     LYS     BB     1      0    
- 2   SC3    1     LYS     SC1    1      0    
- 3   SQ4p   1     LYS     SC2    1    1.0    
- 4   VS     1     LYS     CA     1      0   0
-[ virtual_sitesn ]
-4 1 -- 1
+ 2   SC3    1     LYS     SC1    2      0    
+ 3   SQ4p   1     LYS     SC2    3    1.0    
 
 [bonds]
 #meta {"group": "Side chain bonds"}
@@ -394,9 +331,6 @@ LYS                1
 ;  i     j    k     funct   angle  force.c.
   BB   SC1  SC2       2   180.000    25.0      
 
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
-
 ;;; ARGININE 
 
 [ moleculetype ]
@@ -406,11 +340,8 @@ ARG                1
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
 1   $prot_default_bb_type     1     ARG     BB     1      0    
-2   SC3      1     ARG     SC1    1      0    
-3   SQ3p     1     ARG     SC2    1    1.0    
-4   VS       1     ARG     CA     1      0   0
-[ virtual_sitesn ]
-4 1 -- 1
+2   SC3      1     ARG     SC1    2      0    
+3   SQ3p     1     ARG     SC2    3    1.0    
 
 [bonds]
 #meta {"group": "Side chain bonds"}
@@ -423,9 +354,6 @@ ARG                1
 ;  i     j    k     funct   angle  force.c.
   BB   SC1  SC2       2   180.000    25.0      
 
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
-
 ;;; HISTIDINE 
 
 [ moleculetype ]
@@ -435,12 +363,9 @@ HIS                1
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
 1   $prot_default_bb_type     1     HIS     BB     1      0    
-2   TC4     1     HIS     SC1    1    0    ; three side chains in triangle
-3   TN6d    1     HIS     SC2    1    0    ; configuration, mimicking
-4   TN5a    1     HIS     SC3    1    0    ; ring structure
-5   VS      1     HIS     CA     1      0   0
-[ virtual_sitesn ]
-5 1 -- 1
+2   TC4     1     HIS     SC1    2    0    ; three side chains in triangle
+3   TN6d    1     HIS     SC2    3    0    ; configuration, mimicking
+4   TN5a    1     HIS     SC3    4    0    ; ring structure
 
 [ bonds ]
 #meta {"group": "Side chain bonds"}
@@ -475,9 +400,6 @@ BB SC1 SC2 SC3
 SC1 SC2 SC3
 SC2 SC3
 
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
-
 [ moleculetype ]
 ;molname       nrexcl
 HIH                1
@@ -491,10 +413,6 @@ HIH                1
 ;2   TC4     1     HIH     SC1    2    0      ; three side chains in triangle 
 ;3   TP3dq   1     HIH     SC2    3   +0.5    ; modelB
 ;4   TP3dq   1     HIH     SC3    4   +0.5    ; 
-5   VS      1     HIH     CA     1      0   0
-[ virtual_sitesn ]
-5 1 -- 1
-
 
 [bonds]
 #meta {"group": "Side chain bonds"}
@@ -529,9 +447,6 @@ BB SC1 SC2 SC3
 SC1 SC2 SC3
 SC2 SC3
 
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
-
 ;;; PHENYLALANINE
 
 [ moleculetype ]
@@ -541,12 +456,9 @@ PHE                1
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
 1   $prot_default_bb_type     1     PHE     BB     1    0
-2   SC4    1     PHE     SC1    1    0    ; three side chains in triangle
-3   TC5    1     PHE     SC2    1    0    ; configuration, mimicking
-4   TC5    1     PHE     SC3    1    0    ; ring structure
-5   VS     1     PHE     CA     1      0   0
-[ virtual_sitesn ]
-5 1 -- 1
+2   SC4    1     PHE     SC1    2    0    ; three side chains in triangle
+3   TC5    1     PHE     SC2    3    0    ; configuration, mimicking
+4   TC5    1     PHE     SC3    4    0    ; ring structure
 
 [bonds]
 #meta {"group": "Side chain bonds"}
@@ -581,9 +493,6 @@ BB SC1 SC2 SC3
 SC1 SC2 SC3
 SC2 SC3
 
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
-
 ;;; TYROSINE
 
 [ moleculetype ]
@@ -593,14 +502,10 @@ TYR                1
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
 1   $prot_default_bb_type     1     TYR     BB     1    0
-2   TC4    1     TYR     SC1    1    0  
-3   TC5    1     TYR     SC2    1    0 
-4   TC5    1     TYR     SC3    1    0  
-5   TN6    1     TYR     SC4    1    0
-6   VS     1     TYR     CA     1      0   0
-[ virtual_sitesn ]
-6 1 -- 1
-
+2   TC4    1     TYR     SC1    2    0  
+3   TC5    1     TYR     SC2    3    0 
+4   TC5    1     TYR     SC3    4    0  
+5   TN6    1     TYR     SC4    5    0
 
 [bonds]
 #meta {"group": "Side chain bonds"}
@@ -640,9 +545,6 @@ SC1 SC2 SC3 SC4
 SC2 SC3 SC4
 SC3 SC4
 
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
-
 ;;; TRYPTOPHAN
 
 [ moleculetype ]
@@ -652,12 +554,11 @@ TRP                1
 [ atoms ]
 ;id type resnr residu atom cgnr   charge
 1   $prot_default_bb_type       1     TRP     BB     1    0
-2   TC4      1     TRP     SC1    1    0       36
-3   TN6d     1     TRP     SC2    1    0       36
-4   TC5      1     TRP     SC3    1    0        0
-5   TC5      1     TRP     SC4    1    0       36
-6   TC5      1     TRP     SC5    1    0       36
-7   VS       1     TRP     CA     1      0   0
+2   TC4      1     TRP     SC1    2    0       36
+3   TN6d     1     TRP     SC2    3    0       36
+4   TC5      1     TRP     SC3    4    0        0
+5   TC5      1     TRP     SC4    5    0       36
+6   TC5      1     TRP     SC5    6    0       36
 
 [ bonds ]
 #meta {"group": "Side chain bonds"}
@@ -692,11 +593,6 @@ TRP                1
 
 [ virtual_sitesn ]
 SC3 SC5 SC4 SC2 SC1 -- 2
-7 1 -- 1
-
-; prevents polyply warning about disconnected molecules
-[ edges ]
-SC3 SC5
 
 [exclusions]
 ; We do not want non-bounded interactions within the residue.
@@ -706,86 +602,133 @@ SC2 SC3 SC4 SC5
 SC3 SC4 SC5
 SC4 SC5
 
-[ position_restraints ]
-1  1 1000 1000 1000 {"ifdef": "POSRES"}
-
 ;;; Links
-
 ;; Links for COIL. We apply them first as coil is the default.
 [ link ]
-resname $protein_resnames
+resname $protein_resnames_non_pro
 [ bonds ]
-; (Modified by Paulo)
-BB +BB 1 0.350 4000 {"group": "Backbone bonds"}
+; (Modified by Liguo)     ****Modify****
+BB +BB 1 0.360 8000 {"group": "Backbone bonds"}
+
 
 [ link ]
-resname $protein_resnames
 [ angles ]
--BB  BB  SC1  2 100 25 {"group": "BBS angles regular martini", "version": 1}
-
-[ link ]
-resname $protein_resnames
-[ angles ]
-#meta {"group": "First SBB regular martini"}
-SC1 BB +BB 2 100 25 {"version": 1}
-[ non-edges ]
-BB -BB
-
-[ link ]
--BB { }
-BB { }
-+BB { }
-[ angles ]
-; (Modified by Paulo)
--BB BB +BB 10 127 25 {"group": "BBB angles"}
+; (Modified by Liguo)     ****Modify****
+-BB BB +BB 10 137 25 {"group": "BBB angles"}
 [ patterns ]
--BB BB {"resname": "PRO|HYP"} +BB 
--BB {"resname": "PRO|HYP"} BB +BB 
--BB  BB +BB {"resname": "PRO|HYP"}
+-BB BB {"cgsecstruct": "C", "resname": "PRO|HYP"} +BB 
+-BB {"cgsecstruct": "C", "resname": "PRO|HYP"} BB +BB 
+-BB  BB +BB {"cgsecstruct": "C", "resname": "PRO|HYP"}
 
 [ link ]
 resname $protein_resnames
 [ angles ]
-; (Modified by Paulo)
--BB BB +BB 10 127 20 {"group": "BBB angles"}
+; (Modified by Liguo)       ****Modify****
+-BB BB +BB 10 137 25 {"group": "BBB angles"}
 [ patterns ]
--BB BB {"resname": $protein_resnames_non_pro} +BB 
--BB {"resname": $protein_resnames_non_pro} BB +BB 
--BB  BB +BB {"resname": $protein_resnames_non_pro}
+-BB BB {"cgsecstruct": "C", "resname": $protein_resnames_non_pro} +BB 
+-BB {"cgsecstruct": "C", "resname": $protein_resnames_non_pro} BB +BB 
+-BB  BB +BB {"cgsecstruct": "C", "resname": $protein_resnames_non_pro}
+-BB {"cgsecstruct": null} BB {"cgsecstruct": null} +BB {"cgsecstruct": null}
 
-;; IDP specific corrections
 
+;; Pro specific bondlength
 [ link ]
-resname $protein_resnames
-[ angles ]
-BB +BB +SC1 10 85 10 {"group": "idp-fix"}
-
-[ link ]
-resname $protein_resnames
-[ angles ]
--SC1 -BB BB 10 85 10 {"group": "idp-fix"}
-
-[ link ]
-resname $protein_resnames
-[ dihedrals ]
-BB +BB ++BB +++BB 9 -120 -1 1 {"group": "idp-fix", "comment": "BB-BB-BB-BB-v1", "version":1}
-BB +BB ++BB +++BB 9 -120 -1 2 {"group": "idp-fix", "comment": "BB-BB-BB-BB-v2", "version":2}
-
-[ link ]
-resname $protein_resnames
-[ dihedrals ]
-SC1 BB +BB +SC1 9 -130 -1.5 1 {"group": "idp-fix", "version": 1, "comment": "SC1-BB-BB-SC1-v1"}
-SC1 BB +BB +SC1 9  100 -1.5 2 {"group": "idp-fix", "version": 2, "comment": "SC1-BB-BB-SC1-v2"}
+[ atoms ]
+ BB {"resname": $protein_resnames_non_pro}
++BB {"resname": "PRO"}
+[ bonds ]
+; (Modified by Liguo)     ****Modify****
+BB +BB 1 0.360 10000 {"group": "Backbone bonds"}
 
 [ link ]
 [ atoms ]
--SC1 {"resname": $protein_resnames}
--BB  {"resname": $protein_resnames}
- BB  {"resname": "GLY"}
-+BB  {"resname": $protein_resnames}
-[ dihedrals ]
--SC1 -BB BB +BB 1 115 -4.5 1 {"group": "idp-fix", "comment": "SC1-BB-BB(GLY)-BB"}
+ BB {"resname": "PRO"}
++BB {"resname": $protein_resnames_non_pro}
+[ bonds ]
+; (Modified by Liguo)     ****Modify****
+BB +BB 1 0.305 10000 {"group": "Backbone bonds"}
 
+[ link ]
+[ atoms ]
+ BB {"resname": "PRO"}
++BB {"resname": "PRO"}
+[ bonds ]
+; (Modified by Liguo)     ****Modify****
+BB +BB 1 0.321 10000 {"group": "Backbone bonds"}
+
+
+;; IDP SC-BB-BB-SC dihedral based on the observation of Chris
+[ link ]
+resname $protein_resnames
+[ dihedrals ]
+SC1 BB +BB +SC1 9 -130 -1.4 1 {"group": "idp-fix-SC1-BB-BB-SC1", "version": 1, "comment": "SC1-BB-BB-SC1-v1"}
+SC1 BB +BB +SC1 9  100 -1.4 2 {"group": "idp-fix-SC1-BB-BB-SC1", "version": 2, "comment": "SC1-BB-BB-SC1-v2"}
+
+
+;; IDP residue specific BB-BB(-1)-BB(+1)-SC improper dihedral
+[ link ]
+[ atoms ]
+ BB {"resname": $protein_resnames_improper_20}
+-BB {"resname": $protein_resnames}
++BB {"resname": $protein_resnames}
+SC1 {"resname": $protein_resnames_improper_20}
+[ dihedrals ]
+BB -BB +BB SC1 2 -20 30 {"group": "BB-BB(-1)-BB(+1)-SC improper"}
+[ edges ]
+BB -BB
++BB SC1
+
+[ link ]
+[ atoms ]
+ BB {"resname": $protein_resnames_improper_25}
+-BB {"resname": $protein_resnames}
++BB {"resname": $protein_resnames}
+SC1 {"resname": $protein_resnames_improper_25}
+[ dihedrals ]
+BB -BB +BB SC1 2 -25 30 {"group": "BB-BB(-1)-BB(+1)-SC improper"}
+[ edges ]
+BB -BB
++BB SC1
+
+[ link ]
+[ atoms ]
+ BB {"resname": $protein_resnames_improper_35}
+-BB {"resname": $protein_resnames}
++BB {"resname": $protein_resnames}
+SC1 {"resname": $protein_resnames_improper_35}
+[ dihedrals ]
+BB -BB +BB SC1 2 -35 30 {"group": "BB-BB(-1)-BB(+1)-SC improper"}
+[ edges ]
+BB -BB
++BB SC1
+
+[ link ]
+[ atoms ]
+ BB {"resname": $protein_resnames_improper_40}
+-BB {"resname": $protein_resnames}
++BB {"resname": $protein_resnames}
+SC1 {"resname": $protein_resnames_improper_40}
+[ dihedrals ]
+BB -BB +BB SC1 2 -40 25 {"group": "BB-BB(-1)-BB(+1)-SC improper"}
+[ edges ]
+BB -BB
++BB SC1
+
+[ link ]
+[ atoms ]
+ BB {"resname": "PRO"}
+-BB {"resname": $protein_resnames}
++BB {"resname": $protein_resnames}
+SC1 {"resname": "PRO"}
+[ dihedrals ]
+BB -BB +BB SC1 2 -10 80 {"group": "BB-BB(-1)-BB(+1)-SC improper"}
+[ edges ]
+BB -BB
++BB SC1
+
+
+;; IDP exceptional BB-BB(GLY)-BB-SC1 dihedral distribution
 [ link ]
 [ atoms ]
 -BB {"resname": $protein_resnames}
@@ -793,73 +736,146 @@ SC1 BB +BB +SC1 9  100 -1.5 2 {"group": "idp-fix", "version": 2, "comment": "SC1
 +BB {"resname": $protein_resnames}
 +SC1 {"resname": $protein_resnames}
 [ dihedrals ]
--BB BB +BB +SC1 1 0 -2.0 1 {"group": "idp-fix", "comment": "BB-BB(GLY)-BB-SC1"}
+-BB BB +BB +SC1 9 -10   3.2 1 {"group": "idp-fix-BB-BB(GLY)-BB-SC1", "version": 1,"comment": "BB-BB(GLY)-BB-SC1-v1"}
+-BB BB +BB +SC1 9  15  -1.3 2 {"group": "idp-fix-BB-BB(GLY)-BB-SC1", "version": 2,"comment": "BB-BB(GLY)-BB-SC1-v2"}
+-BB BB +BB +SC1 9 -120  0.8 1 {"group": "idp-fix-BB-BB(GLY)-BB-SC1", "version": 3,"comment": "BB-BB(GLY)-BB-SC1-v3"}
 
+;; IDP generic BBBB dihedral function for most cases
 [ link ]
 resname $protein_resnames
-[ exclusions ]
-#meta {"comment": "CA-BB-same"}
-CA  BB
-[ edges ]
-CA BB
+[ dihedrals ]
+-BB BB +BB ++BB 9  60   2.8  1   {"group": "idp-BBBB", "version": 1,"comment": "BBBB-v1"}
+-BB BB +BB ++BB 9  150  -0.60  1 {"group": "idp-BBBB", "version": 2,"comment": "BBBB-v2"}
+-BB BB +BB ++BB 9  130  -1.20  2 {"group": "idp-BBBB", "version": 3,"comment": "BBBB-v3"}
 
+;; IDP BBBB dihedral function for specific high Gly content pattern
 [ link ]
-resname $protein_resnames
 [ atoms ]
-CA { }
-BB { }
-+BB { }
-[ exclusions ]
-#meta {"comment": "CA-BB"}
-CA +BB
-[ edges ]
-BB +BB
+-BB {"resname": "GLY"}
+ BB {"resname": "GLY"}
++BB {"resname": "GLY"}
+++BB {"resname": "GLY"}
+[ dihedrals ]
+-BB BB +BB ++BB 9  160  0.8  1 {"group": "idp-BBBB", "version": 1,"comment": "GGGG-v1"}
+-BB BB +BB ++BB 9  -160 0.8  1 {"group": "idp-BBBB", "version": 2,"comment": "GGGG-v2"}
+-BB BB +BB ++BB 9   0   1.2  2 {"group": "idp-BBBB", "version": 3,"comment": "GGGG-v3"}
 
-;; Protein termini. These links should be applied last.
 [ link ]
-resname $protein_resnames
 [ atoms ]
-BB {"replace": {"atype": "Q5", "charge": 1}}
-[ non-edges ]
-BB -BB
+-BB {"resname": "GLY"}
+ BB {"resname": "GLY"}
++BB {"resname": "GLY"}
+++BB {"resname": $protein_resnames_non_gly}
+[ dihedrals ]
+-BB BB +BB ++BB 9  160  0.8  1 {"group": "idp-BBBB", "version": 1,"comment": "GGGX-v1"}
+-BB BB +BB ++BB 9  -160 0.8  1 {"group": "idp-BBBB", "version": 2,"comment": "GGGX-v2"}
+-BB BB +BB ++BB 9   0   1.2  2 {"group": "idp-BBBB", "version": 3,"comment": "GGGX-v3"}
 
 [ link ]
-resname $protein_resnames
 [ atoms ]
-BB {"replace": {"atype": "Q5", "charge": -1}}
-[ non-edges ]
-BB +BB
+-BB {"resname": $protein_resnames_non_gly}
+ BB {"resname": "GLY"}
++BB {"resname": "GLY"}
+++BB {"resname": "GLY"}
+[ dihedrals ]
+-BB BB +BB ++BB 9  160  0.8  1 {"group": "idp-BBBB", "version": 1,"comment": "XGGG-v1"}
+-BB BB +BB ++BB 9 -160  0.8  1 {"group": "idp-BBBB", "version": 2,"comment": "XGGG-v2"}
+-BB BB +BB ++BB 9   0   1.2  2 {"group": "idp-BBBB", "version": 3,"comment": "XGGG-v3"}
 
 [ link ]
-resname $protein_resnames
 [ atoms ]
-BB {"replace": {"atype": "P6", "charge": 0}}
-[ non-edges ]
-BB +BB
-BB -BB
+-BB {"resname": "GLY"}
+ BB {"resname": "GLY"}
++BB {"resname": $protein_resnames_non_gly}
+++BB {"resname": "GLY"}
+[ dihedrals ]
+-BB BB +BB ++BB 9 -160  0.8  1 {"group": "idp-BBBB", "version": 1,"comment": "GGXG-v1"}
+-BB BB +BB ++BB 9 -80   0.8  2 {"group": "idp-BBBB", "version": 2,"comment": "GGXG-v2"}
+-BB BB +BB ++BB 9   0   1.2  2 {"group": "idp-BBBB", "version": 3,"comment": "GGXG-v3"}
 
 [ link ]
-resname $protein_resnames
-[ molmeta ]
-neutral_termini true
 [ atoms ]
-BB {"replace": {"atype": "P5", "charge": 0}}
-[ non-edges ]
-BB -BB
+-BB {"resname": "GLY"}
+ BB {"resname": $protein_resnames_non_gly}
++BB {"resname": "GLY"}
+++BB {"resname": "GLY"}
+[ dihedrals ]
+-BB BB +BB ++BB 9  60  2.0  1 {"group": "idp-BBBB", "version": 1,"comment": "GXGG-v1"}
+-BB BB +BB ++BB 9 -100 0.8  1 {"group": "idp-BBBB", "version": 2,"comment": "GXGG-v2"}
 
+
+;; IDP residue specific BBS angle
 [ link ]
-resname $protein_resnames
-[ molmeta ]
-neutral_termini true
 [ atoms ]
-BB {"replace": {"atype": "P6", "charge": 0}}
-[ non-edges ]
-BB +BB
+-BB {"resname": $protein_resnames}
+ BB {"resname": $protein_resnames_BBS_110}
+SC1 {"resname": $protein_resnames_BBS_110}
+[ angles ]
+-BB  BB  SC1  10 110 15 {"group": "IDP residue specific BBS angles "}
 
-;; Cystein bridge
 [ link ]
-resname "CYS"
-[ constraints ]
-SC1 >SC1 1 0.24 {"comment": "Disulfide bridge"}
-[ features ]
-disulfide
+[ atoms ]
+-BB {"resname": $protein_resnames}
+ BB {"resname": $protein_resnames_BBS_100}
+SC1 {"resname": $protein_resnames_BBS_100}
+[ angles ]
+-BB  BB  SC1  10 100 15 {"group": "IDP residue specific BBS angles "}
+
+[ link ]
+[ atoms ]
+-BB {"resname": $protein_resnames}
+ BB {"resname": $protein_resnames_BBS_90}
+SC1 {"resname": $protein_resnames_BBS_90}
+[ angles ]
+-BB  BB  SC1  10 90 15 {"group": "IDP residue specific BBS angles "}
+
+[ link ]
+[ atoms ]
+-BB {"resname": $protein_resnames}
+ BB {"resname": "PRO"}
+SC1 {"resname": "PRO"}
+[ angles ]
+-BB  BB  SC1  10 85 100 {"group": "IDP residue specific BBS angles "}
+
+
+;; IDP residue specific SBB angle
+[ link ]
+[ atoms ]
+SC1 {"resname": $protein_resnames_SBB_70}
+ BB {"resname": $protein_resnames_SBB_70}
++BB {"resname": $protein_resnames} 
+[ angles ]
+SC1 BB +BB  10 70 15 {"group": "IDP residue specific SBB angles "}
+
+[ link ]
+[ atoms ]
+SC1 {"resname": $protein_resnames_SBB_75}
+ BB {"resname": $protein_resnames_SBB_75}
++BB {"resname": $protein_resnames} 
+[ angles ]
+SC1 BB +BB  10 75 15 {"group": "IDP residue specific SBB angles "}
+
+[ link ]
+[ atoms ]
+SC1 {"resname": $protein_resnames_SBB_80}
+ BB {"resname": $protein_resnames_SBB_80}
++BB {"resname": $protein_resnames} 
+[ angles ]
+SC1 BB +BB  10 80 15 {"group": "IDP residue specific SBB angles "}
+
+[ link ]
+[ atoms ]
+SC1 {"resname": $protein_resnames_SBB_90}
+ BB {"resname": $protein_resnames_SBB_90}
++BB {"resname": $protein_resnames} 
+[ angles ]
+SC1 BB +BB  10 90 15 {"group": "IDP residue specific SBB angles "}
+
+[ link ]
+[ atoms ]
+SC1 {"resname": "PRO"}
+ BB {"resname": "PRO"}
++BB {"resname": $protein_resnames} 
+[ angles ]
+SC1 BB +BB  10 120 30 {"group": "IDP residue specific SBB angles "}
+

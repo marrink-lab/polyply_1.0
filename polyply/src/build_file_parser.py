@@ -41,6 +41,7 @@ class BuildDirector(SectionLineParser):
         self.persistence_length = {}
         self.templates = {}
         self.current_template = None
+        self.resnames_to_hash = {}
 
     @SectionLineParser.section_parser('molecule')
     def _molecule(self, line, lineno=0):
@@ -152,6 +153,7 @@ class BuildDirector(SectionLineParser):
         node_name, atype = tokens[0], tokens[1]
         position = np.array(tokens[2:], dtype=float)
         self.current_template.add_node(node_name,
+                                       atomname=node_name,
                                        atype=atype,
                                        position=position)
 
@@ -200,14 +202,17 @@ class BuildDirector(SectionLineParser):
             # if the volume is not defined yet compute the volume, this still
             # can be overwritten by an explicit volume directive later
             resname = self.current_template.name
-            if resname not in self.topology.volumes:
-                self.topology.volumes[resname] = compute_volume(self.current_template,
-                                                                coords,
-                                                                self.topology.nonbond_params,)
+            graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(self.current_template,
+                                                                                  node_attr='atomname')
+            if graph_hash not in self.topology.volumes:
+                self.topology.volumes[graph_hash] = compute_volume(self.current_template,
+                                                                   coords,
+                                                                   self.topology.nonbond_params,)
             # internally a template is defined as vectors from the
             # center of geometry
             mapped_coords = map_from_CoG(coords)
-            self.templates[resname] = mapped_coords
+            self.templates[graph_hash] = mapped_coords
+            self.resnames_to_hash[resname] = graph_hash
             self.current_template = None
 
     def finalize(self, lineno=0):
@@ -228,6 +233,13 @@ class BuildDirector(SectionLineParser):
             molecule.templates = self.templates
 
         super().finalize(lineno=lineno)
+
+        # if template graphs and volumes are provided
+        # make sure that volumes are indexed by the hash
+        for resname, graph_hash in self.resnames_to_hash.items():
+            if resname in self.topology.volumes:
+                self.topology.volumes[graph_hash] = self.topology.volumes[resname]
+                del self.topology.volumes[resname]
 
     @staticmethod
     def _tag_nodes(molecule, keyword, option, molname=""):

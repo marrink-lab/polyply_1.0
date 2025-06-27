@@ -1,0 +1,106 @@
+[ citations ]
+Martini3
+
+[ modification ]
+C-ter
+[ atoms ]
+BB {"replace": {"atype": "Q5", "charge": -1.0}}
+
+[ modification ]
+N-ter
+[ atoms ]
+BB {"replace": {"atype": "Q5", "charge": 1.0}}
+
+[ modification ]
+zwitter
+[ atoms ]
+BB {"replace": {"atype": "Q5"}}
+
+[ modification ]
+COOH-ter
+[ atoms ]
+BB {"replace": {"atype": "P6", "charge": 0.0}}
+
+[ modification ]
+NH2-ter
+[ atoms ]
+BB {"replace": {"atype": "P6", "charge": 0.0}}
+
+[ modification ]
+CCAP-ter
+[ atoms ]
+BB {"replace": {"atype": "P1", "charge": 0.0}}
+
+[ modification ]
+NCAP-ter
+[ atoms ]
+BB {"replace": {"atype": "P2", "charge": 0.0}}
+
+[ modification ]
+GLU-HE1
+[ atoms ]
+SC1 {"replace": {"atype": "P2", "charge": 0}}
+
+[ modification ]
+GLU-HE2
+[ atoms ]
+SC1 {"replace": {"atype": "P2", "charge": 0}}
+
+[ modification ]
+ASP-HD1
+[ atoms ]
+SC1 {"replace": {"atype": "P2", "charge": 0}}
+
+[ modification ]
+ASP-HD2
+[ atoms ]
+SC1 {"replace": {"atype": "P2", "charge": 0}}
+
+[ modification ]
+LYS-LSN
+[ atoms ]
+SC2 {"resname": "LYS", "replace": {"atype": "SN6d", "charge": 0}}
+
+[ modification ]
+LYS-HZ3
+[ atoms ]
+SC2 {"replace": {"resname": "LYS"}}
+
+[ modification ]
+HIS-HP
+[ atoms ]
+BB  {"resname": "HIS", "replace": {"resname": "HIS"}}
+SC1 {"resname": "HIS", "replace": {"resname": "HIS"}}
+SC2 {"resname": "HIS", "replace": {"atype": "TP1dq", "charge": "0.5", "resname": "HIS"}}
+SC3 {"resname": "HIS", "replace": {"atype": "TP1dq", "charge": "0.5", "resname": "HIS"}}
+;[ edges ]
+;BB SC1
+;SC1 SC2
+;SC1 SC3
+;SC2 SC3
+
+[ modification ]
+HIS-HE
+[ atoms ]
+BB  {"resname": "HIS", "replace": {"resname": "HIS"}}
+SC1 {"resname": "HIS", "replace": {"resname": "HIS"}}
+SC2 {"resname": "HIS", "replace": {"resname": "HIS"}}
+SC3 {"resname": "HIS", "replace": {"resname": "HIS"}}
+;[ edges ]
+;BB SC1
+;SC1 SC2
+;SC1 SC3
+;SC2 SC3
+
+[ modification ]
+HIS-HD
+[ atoms ]
+BB  {"resname": "HIS", "replace": {"resname": "HIS"}}
+SC1 {"resname": "HIS", "replace": {"resname": "HIS"}}
+SC2 {"resname": "HIS", "replace": {"resname": "HIS", "atype": "TN5a"}}
+SC3 {"resname": "HIS", "replace": {"resname": "HIS", "atype": "TN6a"}}
+;[ edges ]
+;BB SC1
+;SC1 SC2
+;SC1 SC3
+;SC2 SC3

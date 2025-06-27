@@ -35,10 +35,13 @@ from polyply.src.graph_utils import find_missing_edges
 from .load_library import load_ff_library
 from .gen_dna import complement_dsDNA
 from .simple_seq_parsers import parse_simple_seq_string
+from .apply_modifications import ApplyModifications
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
-def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[], lib=None, seq=None, seq_file=None, dsdna=False):
+def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[],
+               lib=None, seq=None, seq_file=None,
+               dsdna=False, mods=[], protter=False):
     """
     Top level function for running the polyply parameter generation.
     Parameters seq and seq_file are mutually exclusive. Set the other
@@ -90,6 +93,9 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[], lib=None,
     meta_molecule = MapToMolecule(force_field).run_molecule(meta_molecule)
     LOGGER.info("applying links between residues",  type="step")
     meta_molecule = ApplyLinks().run_molecule(meta_molecule)
+
+    meta_molecule = ApplyModifications(modifications=mods,
+                                       meta_molecule=meta_molecule).run_molecule(meta_molecule)
 
     # Raise warning if molecule is disconnected
     msg = "Missing a link between residue {idxA} {resA} and residue {idxB} {resB}."
