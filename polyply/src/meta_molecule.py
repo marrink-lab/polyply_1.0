@@ -406,7 +406,7 @@ class MetaMolecule(nx.Graph):
             # initalize the cgsmiles molecule resolver
             resolver = MoleculeResolver.from_string(cgsmiles_str,
                                                     last_all_atom=all_atom)
-            # grep the last graph of the resolve iter
+            # grab the last graph of the resolve iter
             _, meta_graph = resolver.resolve_all()
             take_resname_from = 'atomname'
         else:

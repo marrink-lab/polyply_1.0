@@ -353,7 +353,7 @@ def parse_simple_seq_string(sequence):
 
     Parameters
     -----------
-    sequence: str
+    sequence: list[str]
             string of residues format name:number
 
     Returns:
