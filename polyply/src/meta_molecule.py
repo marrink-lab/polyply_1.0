@@ -18,7 +18,7 @@ from cgsmiles.read_cgsmiles import read_cgsmiles
 from vermouth.graph_utils import make_residue_graph
 from vermouth.log_helpers import StyleAdapter, get_logger
 from vermouth.gmx.itp_read import read_itp
-from .graph_utils import find_nodes_with_attributes
+from .graph_utils import find_nodes_with_attributes, find_one_ismags_match
 from .simple_seq_parsers import parse_txt, parse_ig, parse_fasta, parse_json, Monomer
 
 LOGGER = StyleAdapter(get_logger(__name__))
@@ -204,6 +204,46 @@ class MetaMolecule(nx.Graph):
         # relabel graph and redo residue graph
         self.relabel_and_redo_res_graph(mapping)
         return mapping
+
+    def relabel_molecule_from_cgs(self, cgsmiles_str, all_atom=False):
+        """
+        Relabel the residue definition of a molecule from a cgsmiles string.
+
+        As an example consider Martini POPC. Following the PEGylated lipid
+        tutorial we want to relabel the lipid such that the head-group is
+        one residue and the tails are one residue.
+
+        >>> from polyply.src.meta_molecule import MetaMolecule
+        >>> # as input we use a CGsmiles string of the lipid as whole
+        >>> cgs = "{[#POPC]}.{#POPC=[#Q1][#Q5][#SN4a]([#C1][#C4h][#C1B][#C1])[#N4a][#C1][#C1][#C1][#C1]}"
+        >>> mol = MetaMolecule.from_cgsmiles_str([], cgs, "test", seq_only=False)
+        >>> # now we use a different cgsmiles string that has two coarse levels to
+        >>> # relabel the molecule
+        >>> new_cgs = "{[#HEAD][#TAIL]}.{#HEAD=[#Q1][#Q5][$],#TAIL=[$][#SN4a]([#C1][#C4h][#C1B][#C1])[#N4a][#C1][#C1][#C1][#C1]}"
+        >>> mol.relabel_molecule_from_cgs(new_cgs)
+
+        Parameters
+        ----------
+        cgsmiles_str: str
+            string in CGsmiles format describing the molecule. The string needs
+            to have at least one coarse and one fine level. The fine level is
+            used to match against the existing molecule, so you need to make
+            sure that the labels in the CGsmiles string match the molecule
+            atomnames.
+        all_atom: bool
+            default False; is the fine resolution an all-atom molecule
+        """
+        new_meta_mol = self.from_cgsmiles_str(self.force_field,
+                                              cgsmiles_str,
+                                              self.mol_name,
+                                              seq_only=False,
+                                              all_atom=all_atom)
+        def _node_match(n1, n2):
+            return n1['atomname'] == n2['atomname']
+
+        mapping = find_one_ismags_match(new_meta_mol.molecule, self.molecule, node_match=_node_match)
+        res_mapping = {to_node: new_meta_mol.molecule.nodes[from_node]['resname'] for from_node, to_node in mapping.items()}
+        self.relabel_and_redo_res_graph(res_mapping)
 
     @property
     def search_tree(self):
