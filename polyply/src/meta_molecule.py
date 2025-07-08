@@ -167,14 +167,14 @@ class MetaMolecule(nx.Graph):
             element = self.mass_to_element(mass)
             self.molecule.nodes[node]["element"] = element
 
-    def relabel_and_redo_res_graph(self, resname_mapping, resid_mapping={}):
+    def relabel_and_redo_res_graph(self, mapping, resid_mapping={}):
         """
         Relable the nodes of `self.molecule` using `mapping`
         and regenerate the meta_molecule (i.e. residue graph).
 
         Parameters:
         -----------
-        resname_mapping: dict
+        mapping: dict
             mapping of node-key to new residue name
         resid_mapping: dict
             mapping of node-key to new reisdue ID
@@ -182,7 +182,7 @@ class MetaMolecule(nx.Graph):
         # find the maximum resiude id
         max_resid = self.max_resid
         # resname the residues and increase with pseudo-resid
-        for node, resname in resname_mapping.items():
+        for node, resname in mapping.items():
             self.molecule.nodes[node]["resname"] = resname
             old_resid = self.molecule.nodes[node]["resid"]
             self.molecule.nodes[node]["resid"] = resid_mapping.get(node, old_resid+max_resid)
