@@ -167,23 +167,25 @@ class MetaMolecule(nx.Graph):
             element = self.mass_to_element(mass)
             self.molecule.nodes[node]["element"] = element
 
-    def relabel_and_redo_res_graph(self, mapping):
+    def relabel_and_redo_res_graph(self, resname_mapping, resid_mapping={}):
         """
         Relable the nodes of `self.molecule` using `mapping`
         and regenerate the meta_molecule (i.e. residue graph).
 
         Parameters:
         -----------
-        mapping: dict
+        resname_mapping: dict
             mapping of node-key to new residue name
+        resid_mapping: dict
+            mapping of node-key to new reisdue ID
         """
         # find the maximum resiude id
         max_resid = self.max_resid
         # resname the residues and increase with pseudo-resid
-        for node, resname in mapping.items():
+        for node, resname in resname_mapping.items():
             self.molecule.nodes[node]["resname"] = resname
             old_resid = self.molecule.nodes[node]["resid"]
-            self.molecule.nodes[node]["resid"] = old_resid + max_resid
+            self.molecule.nodes[node]["resid"] = resid_mapping.get(node, old_resid+max_resid)
             self.molecule.nodes[node]["build"] = True
             self.molecule.nodes[node]["backmap"] = True
 
@@ -259,7 +261,7 @@ class MetaMolecule(nx.Graph):
         # we need to guess elements
         match_on = 'atomname'
         if all_atom:
-            match_on = 'element'           
+            match_on = 'element'
             self.set_element_from_mass(topology)
 
         new_meta_mol = self.from_cgsmiles_str(self.force_field,
@@ -268,11 +270,12 @@ class MetaMolecule(nx.Graph):
                                               seq_only=False,
                                               all_atom=all_atom)
         def _node_match(n1, n2):
-            if all_atom:
-                return n1[match_on] == n2[match_on]
+            return n1[match_on] == n2[match_on]
+
         mapping = find_one_ismags_match(new_meta_mol.molecule, self.molecule, node_match=_node_match)
-        res_mapping = {to_node: new_meta_mol.molecule.nodes[from_node]['resname'] for from_node, to_node in mapping.items()}
-        self.relabel_and_redo_res_graph(res_mapping)
+        resname_mapping = {to_node: new_meta_mol.molecule.nodes[from_node]['resname'] for from_node, to_node in mapping.items()}
+        resid_mapping = {to_node: new_meta_mol.molecule.nodes[from_node]['resid'] for from_node, to_node in mapping.items()}
+        self.relabel_and_redo_res_graph(resname_mapping, resid_mapping)
 
     @property
     def search_tree(self):

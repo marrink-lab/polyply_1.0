@@ -299,3 +299,46 @@ def test_unkown_fromat_error():
         MetaMolecule.from_sequence_file(force_field=ff,
                                         file_path=test_path,
                                         mol_name="test")
+
+
+@pytest.mark.parametrize('cgs, new_cgs, expct_high_res, expct_low_res, edges, resid_low, resid_high', (
+    # split single residues of one type into three
+    ("{[#A]}.{#A=[#BB]([#SC1][#SC1])[#BB]([#SC1][#SC1])[#BB]([#SC1][#SC1])}",
+     "{[#Q]|3}.{#Q=[$][#BB][$]([#SC1][#SC1])}}",
+     {0: "Q", 1: "Q", 2: "Q", 3: "Q", 4:"Q", 5:"Q", 6:"Q", 7:"Q", 8:"Q"},
+     {0: "Q", 1: "Q", 2: "Q"},
+    [(0, 1), (1, 2)],
+     {0: 0, 1: 1, 2: 2},
+     {0: 0, 1: 0, 2: 0, 3: 1, 4: 1, 5: 1, 6:2, 7:2, 8:2}),
+    # group three residues into one
+    ("{[#Q]|3}.{#Q=[$][#BB][$][#SC1][#SC1]}}",
+     "{[#A]}.{#A=[#BB]([#SC1][#SC1])[#BB]([#SC1][#SC1])[#BB]([#SC1][#SC1])}",
+     {0:"A", 1:"A", 2:"A", 3:"A", 4:"A", 5:"A", 6:"A", 7:"A", 8:"A"},
+     {0: "A"},
+    [],
+     {0: 0},
+     {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6:0, 7:0, 8:0}),
+))
+def test_relabel_from_cgsmiles_str(cgs,
+                                   new_cgs,
+                                   expct_high_res,
+                                   expct_low_res,
+                                   edges,
+                                   resid_low,
+                                   resid_high):
+    mol = MetaMolecule.from_cgsmiles_str([], cgs, "test", seq_only=False)
+    print(mol.edges)
+    print(mol.molecule.edges)
+    mol.relabel_from_cgsmiles_str(new_cgs)
+
+    new_resnames_high = nx.get_node_attributes(mol.molecule, "resname")
+    assert new_resnames_high == expct_high_res
+    new_resnames_low = nx.get_node_attributes(mol, "resname")
+    assert new_resnames_low == expct_low_res
+    new_resid_low = nx.get_node_attributes(mol, "resid")
+    assert new_resid_low == resid_low
+    new_resid_high = nx.get_node_attributes(mol.molecule, "resid")
+    assert new_resid_high == resid_high
+
+    for node_a, node_b in edges:
+        assert mol.has_edge(node_a, node_b)
