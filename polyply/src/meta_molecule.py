@@ -257,7 +257,7 @@ class MetaMolecule(nx.Graph):
             a topology object in case one needs to guess the masses
         """
         # we need to guess elements
-        math_on = 'atomname'
+        match_on = 'atomname'
         if all_atom:
             match_on = 'element'           
             self.set_element_from_mass(topology)
