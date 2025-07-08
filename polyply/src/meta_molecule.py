@@ -107,7 +107,7 @@ class MetaMolecule(nx.Graph):
         self.root = None
         self.dfs = False
         self.max_resid = 0
-        self.__mass_to_element = None
+        self__mass_to_element = None
 
         # add resids to polyply meta-molecule nodes if they are not
         # present. All algorithms rely on proper resids
@@ -149,10 +149,10 @@ class MetaMolecule(nx.Graph):
         return [self.nodes[edge[0]]["resname"], self.nodes[edge[1]]["resname"]]
 
     def mass_to_element(self, mass):
-        if self.__mass_to_element is None:
-            self.__mass_to_element = {round(PTE[ele]['AtomicMass']): ele for ele in PTE if type(ele)==str}
+        if self._mass_to_element is None:
+            self._mass_to_element = {round(PTE[ele]['AtomicMass']): ele for ele in PTE if type(ele)==str}
         try:
-            ele = self.__mass_to_element[round(mass)]
+            ele = self._mass_to_element[round(mass)]
         except KeyError:
             raise IOError(f"Did not find element with mass {mass}.")
         return ele
