@@ -99,6 +99,12 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[],
         the final level is used for itp file generation.
     seqf: :class:`pathlib.Path`
         file path to valid sequence file (.json/.fasta/.ig/.txt)
+    dsdna: bool
+        find complementing DNA strand and write to itp
+    mods: list[str]
+        list of modifications to apply
+    protter: bool
+        apply protein terminal modifications
     """
     # Import of Itp and FF files
     LOGGER.info("reading input and library files",  type="step")
