@@ -49,13 +49,13 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[],
     matched when there is an edge in a residue graph. These interactions
     are defined as vermouth.Links. Blocks and Links can be defined in one
     or more vermouth style .ff files provided by `inpath`. Alternatively,
-    one can resort to the definitions stored in a paticular library, which
+    one can resort to the definitions stored in a particular library, which
     is chosen by providing the `lib` option. Both can be provided at the
-    same time whereby the file paramters overwrite any equivalent parameters
+    same time whereby the file parameters overwrite any equivalent parameters
     in the library files.
 
-    There is no resitriction with regard to how a molecule is partitioned
-    into residues. For a protein the primary amino acid sequeunce may be
+    There is no restriction with regard to how a molecule is partitioned
+    into residues. For a protein the primary amino acid sequence may be
     provided and for synthetic polymers their monomer sequence or graph
     in case of a branched molecule. However, it is common that the terminal
     residues in a protein are different (e.g. protonated, or acetylated) from
@@ -65,7 +65,7 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[],
     aminoacid found in the chain.
 
     DNA presents another special case. For DNA the nucleobase sequence of one
-    strand may be provided. When the `-dsdna` flag is set the complementary
+    strand may be provided. When `dsdna` is `True` the complementary
     sequence is inferred by assuming canonical base pairing. Parameters for the
     complementary strands are also written to the itp file.
 
