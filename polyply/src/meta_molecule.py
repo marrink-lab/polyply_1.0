@@ -107,7 +107,7 @@ class MetaMolecule(nx.Graph):
         self.root = None
         self.dfs = False
         self.max_resid = 0
-        self__mass_to_element = None
+        self._mass_to_element = None
 
         # add resids to polyply meta-molecule nodes if they are not
         # present. All algorithms rely on proper resids
