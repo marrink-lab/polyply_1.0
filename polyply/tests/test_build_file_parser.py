@@ -425,3 +425,65 @@ def test_template_volume_parsing(test_system, line, names, edges, positions, out
         assert test_system.volumes[graph_hash] == out_vol[name]
 
         idx += 1
+# These are the same tests as in meta_molecule. Therefore, we do
+# not have to check in detail that all the attributes match etc.
+# The purpose of these tests is to check if the right molecules
+# are selected, tagged, and relabeled
+@pytest.mark.parametrize('cgs, lines, all_atom, weights, resids', (
+    # split single residues of one type into three
+    ("{[#A]}.{#A=[#BB]([#SC1][#SC1])[#BB]([#SC1][#SC1])[#BB]([#SC1][#SC1])}",
+     """[ relabel ]
+        target 0 {[#Q]|3}.{#Q=[$][#BB][$]([#SC1][#SC1])}}""",
+     False,
+     None,
+     {0: 0, 1: 0, 2: 0, 3: 1, 4: 1, 5: 1, 6: 2, 7: 2, 8: 2}),
+    # group three residues into one
+    ("{[#Q]|3}.{#Q=[$][#BB][$][#SC1][#SC1]}}",
+     """[ relabel ]
+        target 0 {[#A]}.{#A=[#BB]([#SC1][#SC1])[#BB]([#SC1][#SC1])[#BB]([#SC1][#SC1])}""",
+     False,
+     None,
+     {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6:0, 7:0, 8:0},),
+    # an all atom molecule split
+    ("{[#DXE]}.{#DXE=COCCOC}",
+     """[ relabel ]
+        target 1 {[#EO][#EO]}.{#EO=[$]COC[$]}""",
+     True,
+     {"H": {"mass": 1}, "O": {"mass": 16}, "C": {"mass": 12}},
+     {0:0, 1: 0, 2: 0, 3: 1, 4:1, 5:1, 6:0, 7:0,
+      8:0, 9:0, 10:0 , 11:1, 12: 1, 13:1, 14: 1, 15: 1},)
+))
+def test_relabeling(cgs, lines, all_atom, weights, resids):
+    lines = textwrap.dedent(lines).splitlines()
+    mol1 = MetaMolecule.from_cgsmiles_str([],
+                                         cgs,
+                                         "target",
+                                         seq_only=False,
+                                         all_atom=all_atom)
+    # need true copy
+    mol2 = MetaMolecule.from_cgsmiles_str([],
+                                         cgs,
+                                         "decoy",
+                                         seq_only=False,
+                                         all_atom=all_atom)
+    decoy_resids_saved = nx.get_node_attributes(mol2.molecule, "resid")
+
+    force_field = vermouth.forcefield.ForceField(name='test_ff')
+    top = Topology(force_field=force_field)
+    top.molecules = [mol1, mol2]
+    top.mol_idx_by_name = {"target":[0], "decoy": [1]}
+    if weights:
+        top.atom_types = weights
+        ele = nx.get_node_attributes(mol1.molecule, "element")
+        nx.set_node_attributes(mol1.molecule, ele, "atype")
+
+    polyply.src.build_file_parser.read_build_file(lines,
+                                                  top,
+                                                  top.molecules)
+    # check target resids
+    target_resids = nx.get_node_attributes(top.molecules[0].molecule, 'resid')
+    assert target_resids == resids
+
+    # check decoy resids
+    decoy_resids = nx.get_node_attributes(top.molecules[1].molecule, 'resid')
+    assert decoy_resids == decoy_resids_saved

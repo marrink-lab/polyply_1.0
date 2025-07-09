@@ -14,7 +14,7 @@
 """
 Test that force field files are properly read.
 """
-
+from contextlib import nullcontext as does_not_raise
 import textwrap
 import pytest
 from pathlib import Path
@@ -27,6 +27,7 @@ from polyply import TEST_DATA
 import polyply.src.meta_molecule
 from polyply.src.meta_molecule import (MetaMolecule, Monomer)
 from .example_fixtures import example_meta_molecule
+from polyply.src.topology import Topology
 
 class TestPolyply:
     @staticmethod
@@ -299,3 +300,102 @@ def test_unkown_fromat_error():
         MetaMolecule.from_sequence_file(force_field=ff,
                                         file_path=test_path,
                                         mol_name="test")
+
+
+@pytest.mark.parametrize('cgs, new_cgs, expct_high_res, expct_low_res, edges, resid_low, resid_high, all_atom, weights, expected', (
+    # split single residues of one type into three
+    ("{[#A]}.{#A=[#BB]([#SC1][#SC1])[#BB]([#SC1][#SC1])[#BB]([#SC1][#SC1])}",
+     "{[#Q]|3}.{#Q=[$][#BB][$]([#SC1][#SC1])}}",
+     {0: "Q", 1: "Q", 2: "Q", 3: "Q", 4:"Q", 5:"Q", 6:"Q", 7:"Q", 8:"Q"},
+     {0: "Q", 1: "Q", 2: "Q"},
+    [(0, 1), (1, 2)],
+     {0: 0, 1: 1, 2: 2},
+     {0: 0, 1: 0, 2: 0, 3: 1, 4: 1, 5: 1, 6: 2, 7: 2, 8: 2},
+     False,
+     None,
+     does_not_raise()),
+    # group three residues into one
+    ("{[#Q]|3}.{#Q=[$][#BB][$][#SC1][#SC1]}}",
+     "{[#A]}.{#A=[#BB]([#SC1][#SC1])[#BB]([#SC1][#SC1])[#BB]([#SC1][#SC1])}",
+     {0: "A", 1: "A", 2: "A", 3: "A", 4: "A", 5: "A", 6: "A", 7: "A", 8: "A"},
+     {0: "A"},
+    [],
+     {0: 0},
+     {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6:0, 7:0, 8:0},
+     False,
+     None,
+     does_not_raise()),
+    # an all atom molecule split
+    ("{[#DXE]}.{#DXE=COCCOC}",
+     "{[#EO][#EO]}.{#EO=[$]COC[$]}",
+     {0:"EO", 1: "EO", 2: "EO", 3: "EO", 4: "EO", 5: "EO", 6: "EO", 7: "EO",
+      8: "EO", 9: "EO", 10: "EO" , 11: "EO", 12: "EO", 13: "EO", 14: "EO", 15: "EO"},
+     {0: "EO", 1: "EO"},
+     [(0, 1)],
+     {0: 0, 1: 1},
+     {0:0, 1: 0, 2: 0, 3: 1, 4:1, 5:1, 6:0, 7:0,
+      8:0, 9:0, 10:0 , 11:1, 12: 1, 13:1, 14: 1, 15: 1},
+     True,
+     {"H": {"mass": 1}, "O": {"mass": 16}, "C": {"mass": 12}},
+     does_not_raise()),
+    # raises an error due to nonmatching graphs
+    ("{[#DXE]}.{#DXE=COCCOC}",
+     "{[#EO][#EO]}.{#EO=[$]CCOC[$]}",
+     {},
+     {},
+     [],
+     {},
+     {},
+     True,
+     {"H": {"mass": 1}, "O": {"mass": 16}, "C": {"mass": 12}},
+     pytest.raises(IOError)),
+    # raises an error due to missing mass
+    ("{[#DXE]}.{#DXE=COCCOC}",
+     "{[#EO][#EO]}.{#EO=[$]CCOC[$]}",
+     {},
+     {},
+     [],
+     {},
+     {},
+     True,
+     {"H": {"mass": 1}, "O": {"mass": 100}, "C": {"mass": 12}},
+     pytest.raises(IOError)),
+))
+def test_relabel_from_cgsmiles_str(cgs,
+                                   new_cgs,
+                                   expct_high_res,
+                                   expct_low_res,
+                                   edges,
+                                   resid_low,
+                                   resid_high,
+                                   all_atom,
+                                   weights,
+                                   expected):
+    mol = MetaMolecule.from_cgsmiles_str([],
+                                         cgs,
+                                         "test",
+                                         seq_only=False,
+                                         all_atom=all_atom)
+    top = None
+    if weights:
+        top = Topology(force_field=None)
+        top.atom_types = weights
+        ele = nx.get_node_attributes(mol.molecule, "element")
+        nx.set_node_attributes(mol.molecule, ele, "atype")
+
+    with expected:
+        mol.relabel_from_cgsmiles_str(new_cgs, topology=top, all_atom=all_atom)
+
+    if type(expected) is does_not_raise:
+        new_resnames_high = nx.get_node_attributes(mol.molecule, "resname")
+        assert new_resnames_high == expct_high_res
+        new_resnames_low = nx.get_node_attributes(mol, "resname")
+        assert new_resnames_low == expct_low_res
+        new_resid_low = nx.get_node_attributes(mol, "resid")
+        assert new_resid_low == resid_low
+        new_resid_high = nx.get_node_attributes(mol.molecule, "resid")
+        assert new_resid_high == resid_high
+
+        for node_a, node_b in edges:
+            assert mol.has_edge(node_a, node_b)
+

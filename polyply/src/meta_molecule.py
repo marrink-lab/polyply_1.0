@@ -13,12 +13,13 @@
 # limitations under the License.
 from collections import (namedtuple, OrderedDict)
 import networkx as nx
+from pysmiles import PTE
 from cgsmiles.resolve import MoleculeResolver
 from cgsmiles.read_cgsmiles import read_cgsmiles
 from vermouth.graph_utils import make_residue_graph
 from vermouth.log_helpers import StyleAdapter, get_logger
 from vermouth.gmx.itp_read import read_itp
-from .graph_utils import find_nodes_with_attributes
+from .graph_utils import find_nodes_with_attributes, find_one_ismags_match
 from .simple_seq_parsers import parse_txt, parse_ig, parse_fasta, parse_json, Monomer
 
 LOGGER = StyleAdapter(get_logger(__name__))
@@ -106,6 +107,7 @@ class MetaMolecule(nx.Graph):
         self.root = None
         self.dfs = False
         self.max_resid = 0
+        self._mass_to_element = None
 
         # add resids to polyply meta-molecule nodes if they are not
         # present. All algorithms rely on proper resids
@@ -146,7 +148,25 @@ class MetaMolecule(nx.Graph):
     def get_edge_resname(self, edge):
         return [self.nodes[edge[0]]["resname"], self.nodes[edge[1]]["resname"]]
 
-    def relabel_and_redo_res_graph(self, mapping):
+    def mass_to_element(self, mass):
+        if self._mass_to_element is None:
+            self._mass_to_element = {round(PTE[ele]['AtomicMass']): ele for ele in PTE if type(ele)==str}
+        try:
+            ele = self._mass_to_element[round(mass)]
+        except KeyError:
+            raise IOError(f"Did not find element with mass {mass}.")
+        return ele
+
+    def set_element_from_mass(self, topology):
+        """
+        Set the element of an atom by matching its mass to the PTE.
+        """
+        for node in self.molecule.nodes:
+            mass = topology.atom_types[self.molecule.nodes[node]['atype']].get("mass")
+            element = self.mass_to_element(mass)
+            self.molecule.nodes[node]["element"] = element
+
+    def relabel_and_redo_res_graph(self, mapping, resid_mapping={}):
         """
         Relable the nodes of `self.molecule` using `mapping`
         and regenerate the meta_molecule (i.e. residue graph).
@@ -155,6 +175,8 @@ class MetaMolecule(nx.Graph):
         -----------
         mapping: dict
             mapping of node-key to new residue name
+        resid_mapping: dict
+            mapping of node-key to new residue ID
         """
         # find the maximum resiude id
         max_resid = self.max_resid
@@ -162,7 +184,7 @@ class MetaMolecule(nx.Graph):
         for node, resname in mapping.items():
             self.molecule.nodes[node]["resname"] = resname
             old_resid = self.molecule.nodes[node]["resid"]
-            self.molecule.nodes[node]["resid"] = old_resid + max_resid
+            self.molecule.nodes[node]["resid"] = resid_mapping.get(node, old_resid+max_resid)
             self.molecule.nodes[node]["build"] = True
             self.molecule.nodes[node]["backmap"] = True
 
@@ -204,6 +226,54 @@ class MetaMolecule(nx.Graph):
         # relabel graph and redo residue graph
         self.relabel_and_redo_res_graph(mapping)
         return mapping
+
+    def relabel_from_cgsmiles_str(self, cgsmiles_str, all_atom=False, topology=None):
+        """
+        Relabel the residue definition of a molecule from a cgsmiles string.
+
+        As an example consider Martini POPC. Following the PEGylated lipid
+        tutorial we want to relabel the lipid such that the head-group is
+        one residue and the tails are one residue.
+
+        >>> from polyply.src.meta_molecule import MetaMolecule
+        >>> # as input we use a CGsmiles string of the lipid as whole
+        >>> cgs = "{[#POPC]}.{#POPC=[#Q1][#Q5][#SN4a]([#C1][#C4h][#C1B][#C1])[#N4a][#C1][#C1][#C1][#C1]}"
+        >>> mol = MetaMolecule.from_cgsmiles_str([], cgs, "test", seq_only=False)
+        >>> # now we use a different cgsmiles string that has two coarse levels to
+        >>> # relabel the molecule
+        >>> new_cgs = "{[#HEAD][#TAIL]}.{#HEAD=[#Q1][#Q5][$],#TAIL=[$][#SN4a]([#C1][#C4h][#C1B][#C1])[#N4a][#C1][#C1][#C1][#C1]}"
+        >>> mol.relabel_from_cgsmiles_str(new_cgs)
+
+        Parameters
+        ----------
+        cgsmiles_str: str
+            string in CGsmiles format describing the molecule. The string needs
+            to have at least one coarse and one fine level. The fine level is
+            used to match against the existing molecule, so you need to make
+            sure that the labels in the CGsmiles string match the molecule
+            atomnames or elements depending on if the string is at all-atom level.
+        all_atom: bool
+            default False; is the fine resolution an all-atom molecule
+        topology: polyply.src.topology.Topology
+            a topology object in case one needs to guess the masses
+        """
+        # we need to guess elements
+        match_on = 'atomname'
+        if all_atom:
+            match_on = 'element'
+            self.set_element_from_mass(topology)
+
+        new_meta_mol = self.from_cgsmiles_str(self.force_field,
+                                              cgsmiles_str,
+                                              self.mol_name,
+                                              seq_only=False,
+                                              all_atom=all_atom)
+        def _node_match(n1, n2):
+            return n1[match_on] == n2[match_on]
+        mapping = find_one_ismags_match(new_meta_mol.molecule, self.molecule, node_match=_node_match)
+        resname_mapping = {to_node: new_meta_mol.molecule.nodes[from_node]['resname'] for from_node, to_node in mapping.items()}
+        resid_mapping = {to_node: new_meta_mol.molecule.nodes[from_node]['resid'] for from_node, to_node in mapping.items()}
+        self.relabel_and_redo_res_graph(resname_mapping, resid_mapping)
 
     @property
     def search_tree(self):
@@ -415,7 +485,6 @@ class MetaMolecule(nx.Graph):
             resolver = MoleculeResolver.from_string(cgsmiles_str,
                                                     last_all_atom=all_atom)
             meta_graph, molecule = resolver.resolve_all()
-
         # we have to set some node attribute accoding to polyply specs
         for node in meta_graph.nodes:
             resname = meta_graph.nodes[node][take_resname_from]
