@@ -176,7 +176,7 @@ class MetaMolecule(nx.Graph):
         mapping: dict
             mapping of node-key to new residue name
         resid_mapping: dict
-            mapping of node-key to new reisdue ID
+            mapping of node-key to new residue ID
         """
         # find the maximum resiude id
         max_resid = self.max_resid
