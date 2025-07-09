@@ -1,0 +1,1 @@
+polyply gen_params -lib martini3-go -seq HIS:5 -name HIS5_mods -o HIS5_mods.itp -mods HIS1:HIS-HD HIS1:NH2-ter

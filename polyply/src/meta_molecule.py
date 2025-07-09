@@ -13,13 +13,14 @@
 # limitations under the License.
 from collections import (namedtuple, OrderedDict)
 import networkx as nx
+from cgsmiles.resolve import MoleculeResolver
+from cgsmiles.read_cgsmiles import read_cgsmiles
 from vermouth.graph_utils import make_residue_graph
 from vermouth.log_helpers import StyleAdapter, get_logger
 from vermouth.gmx.itp_read import read_itp
 from .graph_utils import find_nodes_with_attributes
-from .simple_seq_parsers import parse_txt, parse_ig, parse_fasta, parse_json
+from .simple_seq_parsers import parse_txt, parse_ig, parse_fasta, parse_json, Monomer
 
-Monomer = namedtuple('Monomer', 'resname, n_blocks')
 LOGGER = StyleAdapter(get_logger(__name__))
 
 def _make_edges(force_field):
@@ -359,4 +360,79 @@ class MetaMolecule(nx.Graph):
         graph = MetaMolecule._block_graph_to_res_graph(block)
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
         meta_mol.molecule = force_field.blocks[mol_name].to_molecule()
+        return meta_mol
+
+    @classmethod
+    def from_cgsmiles_str(cls,
+                          force_field,
+                          cgsmiles_str,
+                          mol_name,
+                          seq_only=True,
+                          all_atom=False):
+        """
+        Constructs a :class::`MetaMolecule` from an CGSmiles string.
+        The force-field must contain the block with mol_name from
+        which to create the MetaMolecule. This function automatically
+        sets the MetaMolecule.molecule attribute.
+
+        Parameters
+        ----------
+        force_field: :class:`vermouth.forcefield.ForceField`
+            the force-field that must contain the block
+        cgsmiles_str:
+            the CGSmiles string describing the molecule graph
+        mol_name: str
+            name of the block matching a key in ForceField.blocks
+        seq_only: bool
+            if the string only describes the sequence; if this is False
+            then the molecule attribute is set
+        all_atom: bool
+            if the last molecule in the sequence is at all-atom resolution
+            can only be used if seq_only is False
+
+        Returns
+        -------
+        :class:`polyply.MetaMolecule`
+        """
+        if seq_only and all_atom:
+            msg = "You cannot define a sequence at all-atom level.\n"
+            raise IOError(msg)
+
+        # check if we have multiple resolutions
+        if cgsmiles_str.count('{') == 1:
+            meta_graph = read_cgsmiles(cgsmiles_str)
+            take_resname_from = 'fragname'
+        elif seq_only:
+            # initalize the cgsmiles molecule resolver
+            resolver = MoleculeResolver.from_string(cgsmiles_str,
+                                                    last_all_atom=all_atom)
+            # grab the last graph of the resolve iter
+            _, meta_graph = resolver.resolve_all()
+            take_resname_from = 'atomname'
+        else:
+            # initalize the cgsmiles molecule resolver
+            take_resname_from = 'fragname'
+            resolver = MoleculeResolver.from_string(cgsmiles_str,
+                                                    last_all_atom=all_atom)
+            meta_graph, molecule = resolver.resolve_all()
+
+        # we have to set some node attribute accoding to polyply specs
+        for node in meta_graph.nodes:
+            resname = meta_graph.nodes[node][take_resname_from]
+            meta_graph.nodes[node]['resname'] = resname
+            if not seq_only:
+                for atom in meta_graph.nodes[node]['graph'].nodes:
+                    meta_graph.nodes[node]['graph'].nodes[atom]['resname'] = resname
+                    meta_graph.nodes[node]['graph'].nodes[atom]['resid'] = node + 1
+                    molecule.nodes[atom]['resname'] = resname
+                    molecule.nodes[atom]['resid'] = node + 1
+
+            if 'atomname' in meta_graph.nodes[node]:
+                del meta_graph.nodes[node]['atomname']
+            meta_graph.nodes[node]['resid'] = node + 1
+
+        meta_mol = cls(meta_graph, force_field=force_field, mol_name=mol_name)
+        if not seq_only:
+            meta_mol.molecule = molecule
+
         return meta_mol

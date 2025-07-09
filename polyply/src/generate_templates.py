@@ -343,6 +343,7 @@ class GenerateTemplates(Processor):
                                       self.topology.defines)
 
                 opt_counter = 0
+                resname = block.nodes[list(block.nodes)[0]]['resname']
                 while True:
 
                     coords = _expand_inital_coords(block)
@@ -363,7 +364,6 @@ class GenerateTemplates(Processor):
                         break
                     else:
                         opt_counter += 1
-                resname = block.nodes[list(block.nodes)[0]]['resname']
                 if resname in self.volumes:
                     self.volumes[graph_hash] = self.volumes[resname]
                 else:
