@@ -162,8 +162,7 @@ class MetaMolecule(nx.Graph):
         Set the element of an atom by matching its mass to the PTE.
         """
         for node in self.molecule.nodes:
-            mass = self.molecule.nodes[node].get('mass',
-                                                 topology.atom_types[self.molecule.nodes[node]['atype']])
+            mass = topology.atom_types[self.molecule.nodes[node]['atype']].get("mass")
             element = self.mass_to_element(mass)
             self.molecule.nodes[node]["element"] = element
 
@@ -271,7 +270,6 @@ class MetaMolecule(nx.Graph):
                                               all_atom=all_atom)
         def _node_match(n1, n2):
             return n1[match_on] == n2[match_on]
-
         mapping = find_one_ismags_match(new_meta_mol.molecule, self.molecule, node_match=_node_match)
         resname_mapping = {to_node: new_meta_mol.molecule.nodes[from_node]['resname'] for from_node, to_node in mapping.items()}
         resid_mapping = {to_node: new_meta_mol.molecule.nodes[from_node]['resid'] for from_node, to_node in mapping.items()}
@@ -487,7 +485,6 @@ class MetaMolecule(nx.Graph):
             resolver = MoleculeResolver.from_string(cgsmiles_str,
                                                     last_all_atom=all_atom)
             meta_graph, molecule = resolver.resolve_all()
-
         # we have to set some node attribute accoding to polyply specs
         for node in meta_graph.nodes:
             resname = meta_graph.nodes[node][take_resname_from]

@@ -27,6 +27,7 @@ from polyply import TEST_DATA
 import polyply.src.meta_molecule
 from polyply.src.meta_molecule import (MetaMolecule, Monomer)
 from .example_fixtures import example_meta_molecule
+from polyply.src.topology import Topology
 
 class TestPolyply:
     @staticmethod
@@ -301,7 +302,7 @@ def test_unkown_fromat_error():
                                         mol_name="test")
 
 
-@pytest.mark.parametrize('cgs, new_cgs, expct_high_res, expct_low_res, edges, resid_low, resid_high', (
+@pytest.mark.parametrize('cgs, new_cgs, expct_high_res, expct_low_res, edges, resid_low, resid_high, all_atom, weights', (
     # split single residues of one type into three
     ("{[#A]}.{#A=[#BB]([#SC1][#SC1])[#BB]([#SC1][#SC1])[#BB]([#SC1][#SC1])}",
      "{[#Q]|3}.{#Q=[$][#BB][$]([#SC1][#SC1])}}",
@@ -309,15 +310,31 @@ def test_unkown_fromat_error():
      {0: "Q", 1: "Q", 2: "Q"},
     [(0, 1), (1, 2)],
      {0: 0, 1: 1, 2: 2},
-     {0: 0, 1: 0, 2: 0, 3: 1, 4: 1, 5: 1, 6:2, 7:2, 8:2}),
+     {0: 0, 1: 0, 2: 0, 3: 1, 4: 1, 5: 1, 6: 2, 7: 2, 8: 2},
+     False,
+     None),
     # group three residues into one
     ("{[#Q]|3}.{#Q=[$][#BB][$][#SC1][#SC1]}}",
      "{[#A]}.{#A=[#BB]([#SC1][#SC1])[#BB]([#SC1][#SC1])[#BB]([#SC1][#SC1])}",
-     {0:"A", 1:"A", 2:"A", 3:"A", 4:"A", 5:"A", 6:"A", 7:"A", 8:"A"},
+     {0: "A", 1: "A", 2: "A", 3: "A", 4: "A", 5: "A", 6: "A", 7: "A", 8: "A"},
      {0: "A"},
     [],
      {0: 0},
-     {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6:0, 7:0, 8:0}),
+     {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6:0, 7:0, 8:0},
+     False,
+     None),
+    # an all atom molecule split
+    ("{[#DXE]}.{#DXE=COCCOC}",
+     "{[#EO][#EO]}.{#EO=[$]COC[$]}",
+     {0:"EO", 1: "EO", 2: "EO", 3: "EO", 4: "EO", 5: "EO", 6: "EO", 7: "EO",
+      8: "EO", 9: "EO", 10: "EO" , 11: "EO", 12: "EO", 13: "EO", 14: "EO", 15: "EO"},
+     {0: "EO", 1: "EO"},
+     [(0, 1)],
+     {0: 0, 1: 1},
+     {0:0, 1: 0, 2: 0, 3: 1, 4:1, 5:1, 6:0, 7:0,
+      8:0, 9:0, 10:0 , 11:1, 12: 1, 13:1, 14: 1, 15: 1},
+     True,
+     {"H": {"mass": 1}, "O": {"mass": 16}, "C": {"mass": 12}})
 ))
 def test_relabel_from_cgsmiles_str(cgs,
                                    new_cgs,
@@ -325,11 +342,22 @@ def test_relabel_from_cgsmiles_str(cgs,
                                    expct_low_res,
                                    edges,
                                    resid_low,
-                                   resid_high):
-    mol = MetaMolecule.from_cgsmiles_str([], cgs, "test", seq_only=False)
-    print(mol.edges)
-    print(mol.molecule.edges)
-    mol.relabel_from_cgsmiles_str(new_cgs)
+                                   resid_high,
+                                   all_atom,
+                                   weights):
+    mol = MetaMolecule.from_cgsmiles_str([],
+                                         cgs,
+                                         "test",
+                                         seq_only=False,
+                                         all_atom=all_atom)
+    top = None
+    if weights:
+        top = Topology(force_field=None)
+        top.atom_types = weights
+        ele = nx.get_node_attributes(mol.molecule, "element")
+        nx.set_node_attributes(mol.molecule, ele, "atype")
+
+    mol.relabel_from_cgsmiles_str(new_cgs, topology=top, all_atom=all_atom)
 
     new_resnames_high = nx.get_node_attributes(mol.molecule, "resname")
     assert new_resnames_high == expct_high_res
