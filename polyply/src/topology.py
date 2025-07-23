@@ -27,10 +27,12 @@ from vermouth.gmx.gro import read_gro
 from vermouth.pdb import read_pdb
 from vermouth.molecule import Interaction
 from .top_parser import read_topology
+from .oxdna_parser import read_oxdna
 from .linalg_functions import center_of_geometry
 
 COORD_PARSERS = {"pdb": read_pdb,
-                 "gro": read_gro}
+                 "gro": read_gro,
+                 "dat": read_oxdna}
 
 # small wrapper that is neccessiataed
 # by the fact that gro and pdb readers
@@ -49,8 +51,9 @@ def _coord_parser(path, extension):
 
     box = molecule.box
     positions = np.array(list(nx.get_node_attributes(molecule, "position").values()))
-    return positions, box
-
+    positions = np.array(list(nx.get_node_attributes(molecule, "position").values()))
+    orientations = np.array(list(nx.get_node_attributes(molecule, "orientation").values()))
+    return positions, orientations, box
 
 def replace_defined_interaction(interaction, defines):
     """
@@ -435,15 +438,16 @@ class Topology(System):
         """
         path = Path(path)
         extension = path.suffix.casefold()[1:]
-        positions, self.box = _coord_parser(path, extension)
+
+        positions, orientations, self.box = _coord_parser(path, extension)
+
         max_coords = len(positions)
         total = 0
         for meta_mol in self.molecules:
             for meta_node in meta_mol.nodes:
                 resname = meta_mol.nodes[meta_node]["resname"]
                 # the fragment graph nodes are not sorted so we sort them by index
-                # as defined in the itp-file to capture cases, where the molecule
-                # graph nodes are permuted with respect to the index
+                # as defined in the itp-file to capture cases, where the molecule graph nodes are permuted with respect to the index
                 idx_nodes = nx.get_node_attributes(meta_mol.nodes[meta_node]['graph'], "index")
                 mol_nodes = sorted(idx_nodes, key=idx_nodes.get)
                 # skip residue if resname is to be skipped or
@@ -457,8 +461,13 @@ class Topology(System):
                 # in that case we only want to backmap
                 elif resolution == 'meta_mol':
                     meta_mol.nodes[meta_node]["position"] = positions[total]
+
+                    if len(orientations) > 0:
+                        meta_mol.nodes[meta_node]["orientation"] = orientations[total]
+
                     meta_mol.nodes[meta_node]["backmap"] = True
                     meta_mol.nodes[meta_node]["build"] = False
+
                     total += 1
                 # here we set molecule coordinates in that case we neither
                 # want to backmap nor build these nodes
