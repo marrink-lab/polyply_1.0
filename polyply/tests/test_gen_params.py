@@ -21,6 +21,7 @@ import networkx as nx
 import vermouth.forcefield
 import vermouth.molecule
 import vermouth.gmx.itp_read
+from vermouth.gmx.itp import _sort_atoms
 from polyply import gen_params, TEST_DATA, MetaMolecule
 from polyply.src.graph_utils import find_missing_edges
 from polyply.src.logging import LOGGER
@@ -91,7 +92,9 @@ def test_gen_params(tmp_path, inpath, seq, seqf, name, ref_file):
 
     for key in force_field.blocks[ref_name].interactions:
         for term in force_field.blocks[ref_name].interactions[key]:
-            assert term in force_field.blocks[name].interactions[key]
+            atoms = _sort_atoms(term.atoms, key)
+            sorted_inter = vermouth.molecule.Interaction(atoms=atoms, parameters=term.parameters, meta=term.meta)
+            assert sorted_inter in force_field.blocks[name].interactions[key]
 
 def test_find_missing_links():
     fname = TEST_DATA / "gen_params" / "ref" / "P3HT_10.itp"
