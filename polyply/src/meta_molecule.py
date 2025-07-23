@@ -433,16 +433,12 @@ class MetaMolecule(nx.Graph):
         return meta_mol
 
     @classmethod
-<<<<<<< HEAD
-    def from_cgsmiles_str(cls,force_field, cgsmiles_str, mol_name, seq_only=True, all_atom=False):
-=======
     def from_cgsmiles_str(cls,
                           force_field,
                           cgsmiles_str,
                           mol_name,
                           seq_only=True,
                           all_atom=False):
->>>>>>> master
         """
         Constructs a :class::`MetaMolecule` from an CGSmiles string.
         The force-field must contain the block with mol_name from
@@ -478,29 +474,17 @@ class MetaMolecule(nx.Graph):
             take_resname_from = 'fragname'
         elif seq_only:
             # initalize the cgsmiles molecule resolver
-<<<<<<< HEAD
-            resolver = MoleculeResolver.from_string(cgsmiles_str, last_all_atom=all_atom)
-            # grep the last graph of the resolve iter
-=======
             resolver = MoleculeResolver.from_string(cgsmiles_str,
                                                     last_all_atom=all_atom)
             # grab the last graph of the resolve iter
->>>>>>> master
             _, meta_graph = resolver.resolve_all()
             take_resname_from = 'atomname'
         else:
             # initalize the cgsmiles molecule resolver
-<<<<<<< HEAD
-            resolver = MoleculeResolver.from_string(cgsmiles_str, last_all_atom=all_atom)
-            *_, (meta_graph, molecule) = resolver.resolve_iter()
-            take_resname_from = 'fragname'
-
-=======
             take_resname_from = 'fragname'
             resolver = MoleculeResolver.from_string(cgsmiles_str,
                                                     last_all_atom=all_atom)
             meta_graph, molecule = resolver.resolve_all()
->>>>>>> master
         # we have to set some node attribute accoding to polyply specs
         for node in meta_graph.nodes:
             resname = meta_graph.nodes[node][take_resname_from]
@@ -508,18 +492,9 @@ class MetaMolecule(nx.Graph):
             if not seq_only:
                 for atom in meta_graph.nodes[node]['graph'].nodes:
                     meta_graph.nodes[node]['graph'].nodes[atom]['resname'] = resname
-<<<<<<< HEAD
-                    meta_graph.nodes[node]['graph'].nodes[atom]['resname'] = resname
-                    molecule.nodes[atom]['resname'] = resname
-                    molecule.nodes[atom]['resid'] = node + 1
-                    #print(meta_graph.nodes[node]['graph'].nodes[atom])
-                    atomname = meta_graph.nodes[node]['graph'].nodes[atom]['atomname']
-                    molecule.nodes[atom]['atomname'] = atomname
-=======
                     meta_graph.nodes[node]['graph'].nodes[atom]['resid'] = node + 1
                     molecule.nodes[atom]['resname'] = resname
                     molecule.nodes[atom]['resid'] = node + 1
->>>>>>> master
 
             if 'atomname' in meta_graph.nodes[node]:
                 del meta_graph.nodes[node]['atomname']
@@ -527,10 +502,6 @@ class MetaMolecule(nx.Graph):
 
         meta_mol = cls(meta_graph, force_field=force_field, mol_name=mol_name)
         if not seq_only:
-<<<<<<< HEAD
-            meta_mol.molecule = Molecule(molecule)
-=======
             meta_mol.molecule = molecule
->>>>>>> master
 
         return meta_mol
