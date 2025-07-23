@@ -28,10 +28,10 @@ ONE_LETTER_DNA = {"A": "DA",
                   "G": "DG",
                   "T": "DT"}
 
-ONE_LETTER_RNA = {"A": "A",
-                  "C": "C",
-                  "G": "G",
-                  "T": "U"}
+ONE_LETTER_RNA = {"A": "RA",
+                  "C": "RC",
+                  "G": "RG",
+                  "U": "RU"}
 
 ONE_LETTER_AA = {"G": "GLY",
                  "A": "ALA",
@@ -53,6 +53,7 @@ ONE_LETTER_AA = {"G": "GLY",
                  "H": "HIS",
                  "D": "ASP",
                  "E": "GLU",
+                 "O": "HYP"
                  }
 
 class FileFormatError(Exception):
@@ -352,8 +353,8 @@ def parse_simple_seq_string(sequence):
 
     Parameters
     -----------
-    sequence: str
-            string of residues format name:number
+    sequence: list[str]
+        string of residues format name:number
 
     Returns:
     ----------

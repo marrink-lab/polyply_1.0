@@ -75,12 +75,12 @@ def main(): # pylint: disable=too-many-locals,too-many-statements
                            help='A linear sequence of residue names.')
     seq_group.add_argument('-seqf', dest='seq_file', type=Path,
                            help='A graph input file (JSON|TXT|FASTA|IG)')
-    dna_group = parser_gen_itp.add_argument_group('DNA specifc options')
+    dna_group = parser_gen_itp.add_argument_group('DNA specific options')
     dna_group.add_argument('-dsdna', dest='dsdna', action='store_true',
                            help='complement single sequence to dsDNA sequence')
     modifications_group = parser_gen_itp.add_argument_group('Modifications group')
-    modifications_group.add_argument('-mods', dest='mods', action='append',
-                                     default=[], type=lambda s: s.split(":"),
+    modifications_group.add_argument('-mods', dest='mods', nargs='+',
+                                     default=[], type=lambda s: [i.split(':') for i in s.split(" ")][0],
                                      help=('Add a modification to a residue. The format is '
                                            '<resname><resid>:modification_name, '
                                            'e.g. ASP1:N-ter')

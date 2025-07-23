@@ -42,6 +42,33 @@ class BuildDirector(SectionLineParser):
         self.templates = {}
         self.current_template = None
         self.resnames_to_hash = {}
+        self.relabel = {}
+
+    def parse_section(self, line, lineno):
+        """
+        Parse `line` with line number `lineno` by looking up the section in
+        :attr:`METH_DICT` and calling that method.
+
+        Parameters
+        ----------
+        line: str
+        lineno: int
+
+        Returns
+        -------
+        object
+            The result returned by calling the registered method.
+        """
+        if tuple(self.section) not in self.METH_DICT:
+            raise IOError("Can't parse line {} in section '{}' because the "
+                          "section is unknown".format(lineno, self.section))
+        try:
+            method, kwargs = self.METH_DICT[tuple(self.section)]
+            return method(self, line, lineno, **kwargs)
+        except Exception as error:
+            raise IOError("Problems parsing line {}. I think it should be a "
+                          "'{}' line, but I can't parse it as such."
+                          "".format(lineno, self.section)) from error
 
     @SectionLineParser.section_parser('molecule')
     def _molecule(self, line, lineno=0):
@@ -186,6 +213,15 @@ class BuildDirector(SectionLineParser):
         resA, resB, resC, bending_const = line.split()
         self.topology.bending[(resA, resB, resC)] = float(bending_const)
 
+    @SectionLineParser.section_parser('relabel')
+    def _relabel(self, line, lineno=0):
+        """
+        Parses the lines in the '[relabel]'
+        directive and stores it.
+        """
+        mol_name, all_atom, cgsmiles_str = line.split()
+        self.relabel[mol_name] = (bool(int(all_atom)), cgsmiles_str)
+
     def finalize_section(self, previous_section, ended_section):
         """
         Called once a section has finished. Here we perform all
@@ -221,6 +257,10 @@ class BuildDirector(SectionLineParser):
         if that molecule is mentioned in the build file by name.
         """
         for mol_idx, molecule in enumerate(self.molecules):
+            # first we need to relabel molecules
+            if molecule.mol_name in self.relabel:
+                all_atom, cgsmiles_str = self.relabel[molecule.mol_name]
+                molecule.relabel_from_cgsmiles_str(cgsmiles_str, all_atom=all_atom, topology=self.topology)
 
             if (molecule.mol_name, mol_idx) in self.build_options:
                 for option in self.build_options[(molecule.mol_name, mol_idx)]:

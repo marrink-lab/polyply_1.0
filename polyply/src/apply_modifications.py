@@ -32,10 +32,9 @@ def _patch_protein_termini(meta_molecule, ter_mods=['N-ter', 'C-ter']):
         protein_termini.append(last_mod)
     else:
         # if only one mod in ter_mods, apply the mod to both start and end residue
-        LOGGER.info("Only one terminal modification specified. "
+        LOGGER.warning("Only one terminal modification specified. "
                     f"Will apply {ter_mods[0]} to both {meta_molecule.nodes[0]['resname']}1 and {last_resname}{max_resid}")
         protein_termini.append(({'resid': max_resid, 'resname': last_resname}, ter_mods[0]))
-
     return protein_termini
 
 
@@ -60,10 +59,11 @@ def apply_mod(meta_molecule, modifications):
     molecule = meta_molecule.molecule
 
     if not molecule.force_field.modifications:
-        LOGGER.warning('No modifications present in forcefield, none will be applied')
+        LOGGER.info('No modifications present in forcefield, none will be applied')
         return meta_molecule
 
     for target, desired_mod in modifications:
+        LOGGER.info(f"Applying {desired_mod} to {target['resname']}{target['resid']}")
 
         target_resid = target['resid']
 
@@ -76,13 +76,13 @@ def apply_mod(meta_molecule, modifications):
 
         target_residue = meta_molecule.nodes[target_resid - 1]
         # takes care to skip all residues that come from an itp file
-        if not target_residue.get('from_itp', 'False'):
-            LOGGER.warning("meta_molecule has come from itp. Will not attempt to modify.")
+        if target_residue.get('from_itp'):
+            LOGGER.info("meta_molecule has come from itp. Will not attempt to modify.")
             continue
         # checks that the resname is a protein resname as defined above
         if not vermouth.molecule.attributes_match(target_residue,
                                               {'resname': vermouth.molecule.Choice(protein_resnames.split("|"))}):
-            LOGGER.warning("The resname of your target residue is not recognised a protein resname. "
+            LOGGER.info("The resname of your target residue is not recognised as a protein resname. "
                            "Will not attempt to modify.")
             continue
 
@@ -99,12 +99,43 @@ def apply_mod(meta_molecule, modifications):
         for i in mod_interactions:
             for j in molecule.force_field.modifications[desired_mod].interactions[i]:
                 molecule.add_interaction(i,
-                                         (anum_dict[j.atoms[0]]-1,
-                                          anum_dict[j.atoms[1]]-1),
+                                         [anum_dict[k]-1 for k in j.atoms],
                                          j.parameters,
                                          meta=j.meta)
 
     return meta_molecule
+
+def modifications_finalising(meta_molecule, modifications):
+    """
+    clarify modifications in case we have multiple modifications targeting the same residue
+    """
+    initial_target_mods = _patch_protein_termini(meta_molecule)
+    # parse all additional modifications
+    additional_modifications = []
+    for resspec, val in modifications:
+        additional_modifications.append((parse_residue_spec(resspec), val))
+
+    # check if any of the additional modifications are in the target modifications
+    default_targets = [spec[0] for spec in initial_target_mods]
+    additional_targets = [spec[0] for spec in additional_modifications]
+    to_remove = []
+    for target in additional_targets:
+        if target in default_targets:
+            to_remove.append(default_targets[default_targets == target])
+    # make sure the list is unique in case, eg. modify a terminal residue twice over
+    unique_removals = list({v['resid']: v for v in to_remove}.values())
+    # now filter the default modifications by the overwritten ones
+    final_target_mods = []
+    for spec in initial_target_mods:
+        if spec[0] not in unique_removals:
+            final_target_mods.append(spec)
+
+    final_target_mods.extend(additional_modifications)
+    # check whether the final modifications are the same as the original ones
+    if modifications and (not set(modifications[0]) == set([i[1] for i in final_target_mods])):
+        LOGGER.info("Default modifications overwritten. Check log for modifications applied.")
+
+    return final_target_mods
 
 class ApplyModifications(Processor):
     """
@@ -114,13 +145,8 @@ class ApplyModifications(Processor):
 
     """
     def __init__(self, meta_molecule, modifications=[]):
-        self.target_mods = []
-        for resspec, val in modifications:
-            self.target_mods.append((parse_residue_spec(resspec), val))
-        if len(self.target_mods) == 0:
-            self.target_mods = _patch_protein_termini(meta_molecule)
+        self.target_mods = modifications_finalising(meta_molecule, modifications)
 
     def run_molecule(self, meta_molecule):
-
         apply_mod(meta_molecule, self.target_mods)
         return meta_molecule

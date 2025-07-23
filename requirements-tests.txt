@@ -4,4 +4,4 @@ pytest-cov
 pylint
 codecov
 tqdm
-pysmiles
+cgsmiles

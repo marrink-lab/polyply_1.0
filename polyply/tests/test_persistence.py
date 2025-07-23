@@ -210,35 +210,35 @@ def topology():
     [PersistenceSpecs(model="WCM", lp=1.5, start=0, stop=21, mol_idxs=list(range(0, 10)))],
     63594,
     [0.6533],
-    [5.88, 4.57333333, 5.88, 7.84, 7.84, 9.14666667, 7.84, 3.26666667, 5.22666667, 6.53333333],
+    [3.92, 3.2666666666666666, 3.92, 5.88, 5.88, 7.84, 5.88, 1.96, 3.2666666666666666, 4.573333333333333],
    ),
    # single restrain branched
    (
     [PersistenceSpecs(model="WCM", lp=1.5, start=0, stop=21, mol_idxs=list(range(20, 24)))],
     63594,
     [0.6533],
-    [5.88, 4.57333333, 5.88, 7.84],
+    [3.92, 3.2666666666666666, 3.92, 5.88],
    ),
    # single restraint different random seed
    (
     [PersistenceSpecs(model="WCM", lp=1.5, start=0, stop=21, mol_idxs=list(range(0, 10)))],
     23893,
     [0.6533],
-    [6.53333333, 4.57333333, 9.14666667, 10.45333333, 6.53333333, 7.84, 7.84, 8.49333333, 7.84, 7.84],
+    [5.226666666666667, 3.2666666666666666, 7.84, 9.8, 4.573333333333333, 6.533333333333333, 5.88, 7.1866666666666665, 5.88, 6.533333333333333],
    ),
    # smaller range; note parser requires consecutive mol_idxs
    (
     [PersistenceSpecs(model="WCM", lp=1.5, start=0, stop=21, mol_idxs=list(range(0, 5)))],
     63594,
     [0.6533],
-    [5.88, 4.57333333, 5.88, 7.84, 7.84],
+    [3.92, 3.2666666666666666, 3.92, 5.88, 5.88]
    ),
    # test second group of molecules with mixed residues
    (
     [PersistenceSpecs(model="WCM", lp=1.5, start=0, stop=21, mol_idxs=list(range(10, 15)))],
     63594,
     [0.4995],
-    [5.4947619, 4.49571429, 5.4947619, 6.49380952, 6.49380952],
+    [3.9961904761904763, 2.9971428571428573, 3.496666666666667, 4.995238095238095, 4.995238095238095],
    ),
    # test two groups of the same molecule
    (
@@ -246,7 +246,7 @@ def topology():
      PersistenceSpecs(model="WCM", lp=1.5, start=0, stop=21, mol_idxs=list(range(5, 10))),],
     63594,
     [0.6533, 0.6533],
-    [5.88, 4.57333333, 5.88, 7.84, 7.84, 5.88, 4.57333333, 5.88, 7.84, 7.84],
+    [3.92, 3.2666666666666666, 3.92, 5.88, 5.88, 3.92, 3.2666666666666666, 3.92, 5.88, 5.88],
    ),
    # test three groups of the molecules two are the same one different
    (
@@ -255,8 +255,8 @@ def topology():
      PersistenceSpecs(model="WCM", lp=1.5, start=0, stop=21, mol_idxs=list(range(10, 15))),],
     63594,
     [0.6533, 0.6533, 0.4995],
-    [5.88, 4.573, 5.88, 7.84, 7.84, 9.1467, 8.4933, 9.146, 10.4533, 10.4533,
-     5.498, 4.4957, 5.4947,  6.4938, 6.4938]
+    [3.92, 3.2666666666666666, 3.92, 5.88, 5.88, 6.533333333333333, 4.573333333333333, 5.88, 7.84, 7.84,
+     3.9961904761904763, 2.9971428571428573, 3.496666666666667, 4.995238095238095, 4.995238095238095]
    )))
 def test_persistence(topology, specs, seed, avg_step, expected):
     topology.persistences = specs
@@ -310,7 +310,7 @@ def test_warning(caplog, topology):
     topology.persistences = specs
     nb_engine = NonBondEngine.from_topology(topology.molecules,
                                             topology,
-                                            box=np.array([9.0, 9., 9.]))
+                                            box=np.array([7.0, 7., 7.]))
     with caplog.at_level(logging.WARNING):
         sample_end_to_end_distances(topology, nb_engine, seed=seed)
         for record in caplog.records:
