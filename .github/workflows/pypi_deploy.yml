@@ -43,32 +43,34 @@ jobs:
   deploy:
     needs: test
     runs-on: ubuntu-latest
-
+    permissions:
+        id-token: write
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v4
+      with:
+         fetch-tags: true
+         fetch-depth: 0
     - name: Set up Python 3.13
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.13
-        
+        python-version: '3.12'
+        cache: pop
+        cache-dependency-path: |
+            **/setup.cfg
+            **/requirements-*.txt
+            **/pyproject.toml
+    - name: Install dependencies
+        run: |
+          pip install --upgrade setuptools pip
+          pip install --upgrade .
     - name: Install pypa/build
-      run: >-
-        python -m
-        pip install
-        build
-        --user
-        pip install pbr
-         
+      run: |
+         python3 -m pip install build pbr --user
     - name: Build a binary wheel and a source tarball
-      run: >-
-        python -m
-        build
-        --sdist
-        --wheel
-        --outdir dist/
-        
+      run: python3 -m build --sdist --wheel --outdir dist/
     - name: Publish package to PyPI
-      uses: pypa/gh-action-pypi-publish@master      
+      uses: pypa/gh-action-pypi-publish@release/v1      
       with:
+       repository-url: https://upload.pypi.org/legacy/
        user: __token__
        password: ${{ secrets.PYPI_API_TOKEN }}
