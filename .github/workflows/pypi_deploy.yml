@@ -60,7 +60,7 @@ jobs:
             **/requirements-*.txt
             **/pyproject.toml
     - name: Install dependencies
-        run: |
+      run: |
           pip install --upgrade setuptools pip
           pip install --upgrade .
     - name: Install pypa/build
