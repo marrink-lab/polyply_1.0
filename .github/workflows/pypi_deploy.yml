@@ -54,7 +54,7 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
-        cache: pop
+        cache: pip
         cache-dependency-path: |
             **/setup.cfg
             **/requirements-*.txt
