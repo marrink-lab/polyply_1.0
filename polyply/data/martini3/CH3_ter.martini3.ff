@@ -1,0 +1,19 @@
+[ macros ]
+vinyl_polymers "CH3ter|12BD"
+
+[ moleculetype ]
+; name nexcl.
+CH3ter         1
+;
+[ atoms ]
+1  TC2    1   CH3ter   CH3   1   0.000  36
+
+[ link ]
+resname $vinyl_polymers
+[ bonds ]
+VNL   +CH3    1     0.245 4000  {"comment": "VNL_CH3"}
+
+[ link ]
+resname $vinyl_polymers
+[ angles ]
+VNL +VNL  ++CH3    2  127  50    {"group": "vinly-backbone bonds", "comment": "VNL_VNL"}

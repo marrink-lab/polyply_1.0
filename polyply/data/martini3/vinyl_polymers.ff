@@ -1,0 +1,56 @@
+[ macros ]
+vinyl_polymers "12BD"
+vinyl_small "12BD"
+
+;;;;;;;;;; poly 1,2 butadiene
+
+[ moleculetype ]
+12BD 1
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge
+   1    TC3               1  12BD       VNL       1     0.0
+   2    SC4               1  12BD       SC1       2     0.0
+;
+[ bonds ]
+;  ai  aj   funct
+   1     2   1     0.2819569  8000 {"comment": "VNL_SC1"}; prev 0.286
+
+[ position_restraints ]
+1 1 500 500 500 {"ifdef": "POSRE_POLYM"}
+
+
+;;;;;;;;; Generic Backbone Links
+
+[ link ]
+resname $vinyl_polymers
+[ bonds ]
+VNL     +VNL    1     0.275 8000  {"group": "vinly-backbone bonds", "comment": "VNL_VNL"}
+
+[ link ]
+resname $vinyl_polymers
+[ dihedrals ]
+VNL  +VNL  ++VNL +++VNL  11 1.30929464 6.51130136 -4.64191250 10.24767684 -7.64602475 12.34323750  {"group": "vinly-backbone dihedrals", "comment": "VNL_VNL_VNL_VNL"}
+
+;;;;;;;;; Backbone Side Chain Links
+
+
+[ link ]
+resname "12BD"
+[ angles ]
+VNL  SC1  +VNL   2  45  50  {"group": "vinly-sidechain angles", "comment": "VNL_SC1_VNL", "version": "2"}
+
+[ link ]
+resname $vinyl_small
+[ atoms ]
+SC1 { }
+VNL { }
++VNL { }
++SC1 { }
+[ pairs ]
+SC1 +SC1 1 5.000000e-01    3.550000e+00
+[ edges ]
+SC1 VNL
+VNL +VNL
++VNL +SC1
+
