@@ -3,9 +3,9 @@ Martini3
 polyply
 
 [ macros ]
-vinyl_polymers "STYR|2VP|4VP|MAC|AAMD|PP|12BD|AAC|AAI|ALA|ALI|HEA|HPA|nBA|EA1|PiB"
+vinyl_polymers "STYR|2VP|4VP|MAC|AAMD|PP|12BD|AAC|AAI|ALL|ALI|HEA|HPA|nBA|EA1|PiB"
 vinyl_small "MAC|HEA|HPA|nBA|12BD"
-vinyl_tiny "STYR|2VP|4VP|AAMD|PP|AAC|AAI|ALA|ALI|PiB"
+vinyl_tiny "STYR|2VP|4VP|AAMD|PP|AAC|AAI|ALL|ALI|PiB"
 vinyl_reg "EA1"
 
 ;;;;;;;;;; poly methyl acrylate
@@ -184,12 +184,12 @@ These are preliminary parameters. Make sure to validate them before use.
 ;;;;;;;;;; poly allyl amine
 
 [ moleculetype ]
-ALA 1
+ALL 1
 ;
 [ atoms ]
 ;  nr    type       resnr  residu    atom    cgnr        charge   
-   1    TC3             1  ALA        VNL       1     0.0   
-   2    TN6d            1  ALA        SC1       2     0.0   
+   1    TC3             1  ALL        VNL       1     0.0   
+   2    TN6d            1  ALL        SC1       2     0.0   
 ;
 [ bonds ]
 ;  ai  aj   funct
@@ -455,7 +455,7 @@ resname "AAI"
 VNL  SC1  +VNL   2  80  200  {"group": "vinly-sidechain angles", "comment": "VNL_SC1_VNL", "version": "2"}
 
 [ link ]
-resname "ALA"
+resname "ALL"
 [ angles ]
 VNL  SC1  +VNL   2  65  100  {"group": "vinly-sidechain angles", "comment": "VNL_SC1_VNL", "version": "2"}
 
