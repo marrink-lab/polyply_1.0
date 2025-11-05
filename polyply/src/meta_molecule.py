@@ -17,7 +17,7 @@ from vermouth.graph_utils import make_residue_graph
 from vermouth.log_helpers import StyleAdapter, get_logger
 from vermouth.gmx.itp_read import read_itp
 from .graph_utils import find_nodes_with_attributes
-from .simple_seq_parsers import parse_txt, parse_ig, parse_fasta, parse_json
+from .simple_seq_parsers import parse_txt, parse_ig, parse_fasta, parse_json, parse_oxdna
 
 Monomer = namedtuple('Monomer', 'resname, n_blocks')
 LOGGER = StyleAdapter(get_logger(__name__))
@@ -92,7 +92,8 @@ class MetaMolecule(nx.Graph):
     parsers = { "txt": parse_txt,
                "fasta": parse_fasta,
                "ig": parse_ig,
-               "json": parse_json,}
+               "json": parse_json,
+               "top": parse_oxdna,}
 
     def __init__(self, *args, **kwargs):
         self.force_field = kwargs.pop('force_field', None)

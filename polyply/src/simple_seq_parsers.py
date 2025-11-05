@@ -343,3 +343,129 @@ def parse_json(filepath):
     seq_graph.add_nodes_from(nodes)
     seq_graph.add_edges_from(init_json_graph.edges(data=True))
     return seq_graph
+
+def parse_oxdna(filepath):
+    """
+    Read the modern oxDNA topology file.
+
+    The topolgy file lists nucleotides in 5' -> 3' order and supports
+    multiple strands with types (DNA|RNA|peptide).
+    All strands are combined into a single graph with separate components.
+
+    Format specification:
+    - First line: N Ns 5->3 (N=total nucleotides/residues, Ns=number of strands)
+    - Following Ns lines: sequence id=<int> type=DNA|RNA|peptide circular=true|false
+
+    Example:
+    153 3 5->3
+    LRCG... id=-1 type=peptide circular=false
+    CGCGAATTCGCG id=2 type=DNA circular=false
+
+    Parameters
+    ----------
+    filepath: str or path
+        path to oxDNA topology file
+
+    Returns
+    -------
+    `:class:nx.Graph`
+        A plain graph of the molecular sequence with
+        node attributes resname and resid
+
+    Raises
+    ------
+    FileFormatError
+        If the file format is doesn't match expected structure
+    """
+    with open(filepath) as file_:
+        lines = [line.strip() for line in file_.readlines() if line.strip()]
+
+    if not lines:
+        raise FileFormatError("Empty oxDNA topology file")
+
+    # Parse header line
+    header_parts = lines[0].split()
+    if len(header_parts) < 3 or "5->3" not in header_parts:
+        raise FileFormatError("Invalid header. Expected: N Ns 5->3")
+
+    n_residues = int(header_parts[0])
+    n_strands = int(header_parts[1])
+
+    if len(lines) - 1 != n_strands:
+        raise FileFormatError(f"Expected {n_strands} strands, found {len(lines) - 1}")
+
+    # Create combined graph
+    seq_graph = nx.Graph()
+    node_offset = 0
+    total_residues = 0
+
+    # Parse each strand
+    for ndx, line in enumerate(lines[1:]):
+        parts = line.split()
+        if len(parts) != 4:
+            raise FileFormatError(f"Invalid strand on line {ndx + 1}: {line}")
+
+        sequence = parts[0]
+        total_residues += len(sequence)
+
+        # Parse parameters (assumes format: id=X type=Y circular=Z)
+        params = {}
+        for param in parts[1:]:
+            if '=' not in param:
+                continue
+            key, value = param.split('=', 1)
+            params[key.lower()] = value
+
+        # Extract required parameters
+        if 'id' not in params or 'type' not in params or 'circular' not in params:
+            raise FileFormatError(f"Missing required parameters (id, type, circular) in: {line}")
+
+        strand_id = int(params['id'])
+        strand_type = params['type'].upper()
+        is_circular = params['circular'].lower() == 'true'
+
+        # Determine if this is DNA, RNA, or amino acids
+        DNA = (strand_type == "DNA")
+        RNA = (strand_type == "RNA")
+        AA = (strand_type == "PEPTIDE")
+
+        if not (DNA or RNA or AA):
+            raise FileFormatError(f"Invalid type '{strand_type}' on line {ndx + 1}. Must be DNA, RNA, or peptide")
+
+        # Use _parse_plain to convert sequence to graph
+        strand_graph = _parse_plain([sequence], DNA=DNA, RNA=RNA, AA=AA)
+
+        # Add nodes to combined graph with offset
+        for node in strand_graph.nodes:
+            new_node = node + node_offset
+            seq_graph.add_node(new_node,
+                                   resname=strand_graph.nodes[node]['resname'],
+                                   resid=strand_graph.nodes[node]['resid'] + node_offset,
+                                   strand_id=strand_id,
+                                   strand_type=strand_type)
+
+        # Add edges to combined graph with offset
+        for edge in strand_graph.edges:
+            new_edge = (edge[0] + node_offset, edge[1] + node_offset)
+            edge_attrs = strand_graph.edges[edge]
+            seq_graph.add_edge(*new_edge, **edge_attrs)
+
+        # Handle circular strands
+        if is_circular:
+            first_node = node_offset
+            last_node = node_offset + len(strand_graph.nodes) - 1
+            seq_graph.add_edge(first_node, last_node)
+            seq_graph.edges[(first_node, last_node)]["linktype"] = "circle"
+            # Remove terminal modifications for circular strands (DNA/RNA only)
+            if DNA or RNA:
+                seq_graph.nodes[first_node]["resname"] = seq_graph.nodes[first_node]["resname"][:-1]
+                seq_graph.nodes[last_node]["resname"] = seq_graph.nodes[last_node]["resname"][:-1]
+
+        # Update offset for next strand
+        node_offset += len(strand_graph.nodes)
+
+    # Validate total residue count
+    if total_residues != n_residues:
+        raise FileFormatError(f"Residue count mismatch: header={n_residues}, found={total_residues}")
+
+    return seq_graph

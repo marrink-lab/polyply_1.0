@@ -1,8 +1,12 @@
 import numpy as np
-
 from vermouth.molecule import Molecule
+from vermouth.log_helpers import StyleAdapter, get_logger
 
+LOGGER = StyleAdapter(get_logger(__name__))
 OXDNA_TO_NM = 0.8518
+
+class FileFormatError(Exception):
+    """Raised when a parser fails due to invalid file format."""
 
 def read_oxdna(file_name, exclude=(), strand_lengths=None):
     """
@@ -40,9 +44,11 @@ def read_oxdna(file_name, exclude=(), strand_lengths=None):
         next(oxdna)  # Skip energy line
 
         # Parse nucleotide data
-        for line in oxdna:
+        for ndx, line in enumerate(oxdna):
             values = line.strip().split()
             if len(values) < 9:  # We need at least position and orientation
+                msg = f"OXDNA input file is missing information on line {ndx}."
+                FileFormatError(msg)
                 continue
 
             properties = {}
@@ -68,39 +74,10 @@ def read_oxdna(file_name, exclude=(), strand_lengths=None):
             orientation_frame = np.column_stack([base_vector, major_groove_vector, base_normal_vector])
 
             properties['orientation'] = orientation_frame
+            properties['resid'] = ndx + 1
 
             # Add to nucleotides list
-            nucleotides.append(properties)
-
-    # If strand_lengths is not provided, try to guess based on the number of nucleotides
-    if strand_lengths is None:
-        # If the number of nucleotides is even, assume it's a duplex with equal strand lengths
-        if len(nucleotides) % 2 == 0:
-            strand_lengths = [len(nucleotides) // 2, len(nucleotides) // 2]
-        else:
-            raise IOError("We couldn't infer the duplex strands in the system.")
-
-    # Process nucleotides based on strand_lengths and convert 3' to 5' to 5' to 3'
-    processed_nucleotides = []
-
-    # Process each strand separately
-    start_idx = 0
-    for length in strand_lengths:
-        end_idx = start_idx + length
-        strand = nucleotides[start_idx:end_idx]
-
-        strand = list(reversed(strand))
-
-        processed_nucleotides.extend(strand)
-        start_idx = end_idx
-
-    # Add nucleotides to the molecule
-    for idx, properties in enumerate(processed_nucleotides):
-        # Set resid
-        properties['resid'] = idx + 1
-
-        # Add node to molecule
-        molecule.add_node(idx, **properties)
+            molecule.add_node(ndx, **properties)
 
     # Set box
     molecule.box = box
