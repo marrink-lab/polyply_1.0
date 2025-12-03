@@ -268,7 +268,7 @@ class BuildDirector(SectionLineParser):
                     new_mol = MetaMolecule(graph_copy,
                                            force_field=force_field,
                                            mol_name=molecule.mol_name)
-                    new_mol.molecule = graph.molecule
+                    new_mol.molecule = graph.molecule.copy()
                     self.molecules[mol_idx] = new_mol
                 else:
                     all_atom, cgsmiles_str = self.relabel[molecule.mol_name]
