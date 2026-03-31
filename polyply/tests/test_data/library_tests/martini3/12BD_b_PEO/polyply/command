@@ -1,0 +1,1 @@
+polyply gen_params -lib martini3 -seq OHter:1 EO:8 12BD:11 SBU:1 -o 12BD_b_PEO.itp -name PEO8PBD11
