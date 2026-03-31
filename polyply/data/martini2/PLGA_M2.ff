@@ -93,7 +93,7 @@ BB +BB
 
 ;--------------------------------------------------
 ; LAD–GA–LAL–GA
-; From paper: -70 (2.21)
+; From paper: -70 (2.2)
 ;--------------------------------------------------
 [ link ]
 [ atoms ]
@@ -102,11 +102,13 @@ BB   { "resname": "GA" }
 +BB  { "resname": "LAL" }
 ++BB { "resname": "GA" }
 [ dihedrals ]
--BB BB +BB ++BB  1  -70.0   2.21   1 {"group": "backbone"}
+-BB BB +BB ++BB  1  -70.0   2.2   1 {"group": "backbone"}
 [ edges ]
 -BB BB
 BB +BB
 +BB ++BB
+
+
 
 ;--------------------------------------------------
 ; GA-LAL-GA-LAD
@@ -128,7 +130,7 @@ BB +BB
 
 ;--------------------------------------------------
 ; LAL–GA–LAD–GA
-; From paper: 70 (2.21)
+; From paper: 70 (2.2)
 ;--------------------------------------------------
 [ link ]
 [ atoms ]
@@ -137,7 +139,7 @@ BB   { "resname": "GA" }
 +BB  { "resname": "LAD" }
 ++BB { "resname": "GA" }
 [ dihedrals ]
--BB BB +BB ++BB  1   70.0   2.21   1 {"group": "backbone"}
+-BB BB +BB ++BB  1   70.0   2.2   1 {"group": "backbone"}
 [ edges ]
 -BB BB
 BB +BB
@@ -146,7 +148,7 @@ BB +BB
 
 ;--------------------------------------------------
 ; GA–LAD–GA–LAL
-; From paper: -130 (0.52), 180 (0.51, 0.23) [and implied 70 (2.21) not listed here]
+; From paper: -130 (0.5), 180 (0.5, 0.2) [and implied 70 (2.2) not listed here]
 ;--------------------------------------------------
 [ link ]
 [ atoms ]
@@ -155,7 +157,7 @@ BB   { "resname": "LAD" }
 +BB  { "resname": "GA" }
 ++BB { "resname": "LAL" }
 [ dihedrals ]
--BB BB +BB ++BB  1  -130.0  0.52   1 {"group": "backbone"}
+-BB BB +BB ++BB  1  -130.0  0.5   1 {"group": "backbone"}
 [ edges ]
 -BB BB
 BB +BB
@@ -175,7 +177,7 @@ BB   { "resname": "GA" }
 +BB  { "resname": "LA" }
 ++BB { "resname": "GA" }
 [ dihedrals ]
--BB BB +BB ++BB  1  -70.0   2.21   1 {"group": "backbone"}
+-BB BB +BB ++BB  1  -70.0   2.2   1 {"group": "backbone"}
 [ edges ]
 -BB BB
 BB +BB
@@ -189,7 +191,7 @@ BB   { "resname": "LA" }
 +BB  { "resname": "GA" }
 ++BB { "resname": "LA" }
 [ dihedrals ]
--BB BB +BB ++BB  1   70.0   2.21   1 {"group": "backbone"}
+-BB BB +BB ++BB  1   70.0   2.2   1 {"group": "backbone"}
 [ edges ]
 -BB BB
 BB +BB
@@ -214,6 +216,8 @@ BB  { "resname": "LA|LAL|LAD" }
 BB +BB 1 0.36450 25000 {"group": "backbone_fallback"}
 [ edges ]
 BB +BB
+[ warning ]
+This force field is derived from Pannuzzo et al. Biomacromolecules 2022. Some parameters are not optimized and are fallback values. Fallback parameters are labelled in the .itp files. Use with caution and verify results carefully.
 
 [ link ]
 [ atoms ]
@@ -223,6 +227,8 @@ BB  { "resname": "GA" }
 BB +BB 1 0.36450 25000 {"group": "backbone_fallback"}
 [ edges ]
 BB +BB
+[ warning ]
+This force field is derived from Pannuzzo et al. Biomacromolecules 2022. Some parameters are not optimized and are fallback values. Fallback parameters are labelled in the .itp files. Use with caution and verify results carefully.
 
 
 ;----------------------------------
@@ -238,6 +244,8 @@ BB  { "resname": "LA|LAL|LAD" }
 [ edges ]
 -BB BB
 BB +BB
+[ warning ]
+This force field is derived from Pannuzzo et al. Biomacromolecules 2022. Some parameters are not optimized and are fallback values. Fallback parameters are labelled in the .itp files. Use with caution and verify results carefully.
 
 [ link ]
 [ atoms ]
@@ -249,6 +257,8 @@ BB  { "resname": "GA" }
 [ edges ]
 -BB BB
 BB +BB
+[ warning ]
+This force field is derived from Pannuzzo et al. Biomacromolecules 2022. Some parameters are not optimized and are fallback values. Fallback parameters are labelled in the .itp files. Use with caution and verify results carefully.
 
 
 ;----------------------------------
@@ -267,6 +277,8 @@ BB   { "resname": "LA|LAL|LAD" }
 -BB BB
 BB +BB
 +BB ++BB
+[ warning ]
+This force field is derived from Pannuzzo et al. Biomacromolecules 2022. Some parameters are not optimized and are fallback values. Fallback parameters are labelled in the .itp files. Use with caution and verify results carefully.
 
 [ link ]
 [ atoms ]
@@ -280,3 +292,8 @@ BB   { "resname": "GA" }
 -BB BB
 BB +BB
 +BB ++BB
+[ warning ]
+This force field is derived from Pannuzzo et al. Biomacromolecules 2022. Some parameters are not optimized and are fallback values. Fallback parameters are labelled in the .itp files. Use with caution and verify results carefully.
+
+
+
