@@ -18,6 +18,7 @@ import vermouth
 from vermouth.parser_utils import SectionLineParser
 from vermouth.log_helpers import StyleAdapter, get_logger
 from .generate_templates import map_from_CoG, compute_volume
+from .meta_molecule import MetaMolecule
 
 LOGGER = StyleAdapter(get_logger(__name__))
 
@@ -256,11 +257,23 @@ class BuildDirector(SectionLineParser):
         Tag each molecule node with the chirality and build options
         if that molecule is mentioned in the build file by name.
         """
+        relabled_mols = {}
+        force_field = self.molecules[0].force_field
         for mol_idx, molecule in enumerate(self.molecules):
             # first we need to relabel molecules
             if molecule.mol_name in self.relabel:
-                all_atom, cgsmiles_str = self.relabel[molecule.mol_name]
-                molecule.relabel_from_cgsmiles_str(cgsmiles_str, all_atom=all_atom, topology=self.topology)
+                if molecule.mol_name in relabled_mols:
+                    graph = relabled_mols[molecule.mol_name]
+                    graph_copy = graph.copy(as_view=False)
+                    new_mol = MetaMolecule(graph_copy,
+                                           force_field=force_field,
+                                           mol_name=molecule.mol_name)
+                    new_mol.molecule = graph.molecule.copy()
+                    self.molecules[mol_idx] = new_mol
+                else:
+                    all_atom, cgsmiles_str = self.relabel[molecule.mol_name]
+                    molecule.relabel_from_cgsmiles_str(cgsmiles_str, all_atom=all_atom, topology=self.topology)
+                    relabled_mols[molecule.mol_name] = molecule
 
             if (molecule.mol_name, mol_idx) in self.build_options:
                 for option in self.build_options[(molecule.mol_name, mol_idx)]:
