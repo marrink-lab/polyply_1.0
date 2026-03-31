@@ -12,7 +12,7 @@
 Polyply is a python suite designed to facilitate the generation of input files and system coordinates for simulating
 (bio)macromolecules such as synthetic polymers or polysaccharides. Input files can be generated either from user
 specified building blocks or by using the polymers available in the library. The library currently includes polymer
-definitions for the GROMOS (2016H66 & 54A6), OPLS, Parmbsc1, and Martini (2 & 3) force-fields. Coordinates are generated
+definitions for the GROMOS (2016H66 & 53A6), OPLS, Parmbsc1, and Martini (2 & 3) force-fields. Coordinates are generated
 by a multiscale random-walk protocol that is able to generate condensed phase systems at target density, as well as
 more heterogeneous systems such as aqueous two phase systems. In addition, polyply allows to tailor initial chain
 conformations by providing a build file. For example, the persistence length can be used to control the initial chain
