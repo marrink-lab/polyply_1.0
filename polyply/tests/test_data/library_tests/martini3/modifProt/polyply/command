@@ -1,0 +1,1 @@
+polyply gen_params -f ./molecule_0.itp ./custom_links.ff -lib martini3 -o modifProt.itp -seqf ./polymol.json -name modifProt
