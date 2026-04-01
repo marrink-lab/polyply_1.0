@@ -1,0 +1,299 @@
+;--------------------------------------------------
+; PLGA vermouth force field fragment for polyply
+; Parameters from Pannuzzo et al. Biomacromolecules 2022
+; For use with MARTINI 2.2 / Martini2 library in polyply.
+;--------------------------------------------------
+
+[ citations ]
+Martini2
+M2_PLGA
+
+;--------------------------------------------------
+; Residues (single Na bead each)
+;--------------------------------------------------
+
+[ moleculetype ]
+LA 1
+[ atoms ]
+1 Na 1 LA BB 1 0.0 72.0
+
+[ moleculetype ]
+GA 1
+[ atoms ]
+1 Na 1 GA BB 1 0.0 72.0
+
+[ moleculetype ]
+LAL 1 ; L-Lactic acid
+[ atoms ]
+1 Na 1 LAL BB 1 0.0 72.0
+
+[ moleculetype ]
+LAD 1 ; D-Lactic acid
+[ atoms ]
+1 Na 1 LAD BB 1 0.0 72.0
+
+
+;--------------------------------------------------
+; SPECIFIC BACKBONE BONDS
+;--------------------------------------------------
+
+; LA/LAL/LAD -> GA  (X–Y)
+[ link ]
+[ atoms ]
+BB  { "resname": "LA|LAL|LAD" }
++BB { "resname": "GA" }
+[ bonds ]
+BB +BB 1 0.37700 25000 {"group": "backbone"}
+[ edges ]
+BB +BB
+
+; GA -> LA/LAL/LAD  (Y–X)
+[ link ]
+[ atoms ]
+BB  { "resname": "GA" }
++BB { "resname": "LA|LAL|LAD" }
+[ bonds ]
+BB +BB 1 0.35200 25000 {"group": "backbone"}
+[ edges ]
+BB +BB
+
+
+;--------------------------------------------------
+; SPECIFIC BACKBONE ANGLES
+;--------------------------------------------------
+
+; X–Y–X  (LA-family–GA–LA-family)
+[ link ]
+[ atoms ]
+-BB { "resname": "LA|LAL|LAD" }
+BB  { "resname": "GA" }
++BB { "resname": "LA|LAL|LAD" }
+[ angles ]
+-BB BB +BB 2 133.50000 30.0 {"group": "backbone"}
+[ edges ]
+-BB BB
+BB +BB
+
+; Y–X–Y  (GA–LA-family–GA)
+[ link ]
+[ atoms ]
+-BB { "resname": "GA" }
+BB  { "resname": "LA|LAL|LAD" }
++BB { "resname": "GA" }
+[ angles ]
+-BB BB +BB 2 109.00000 50.0 {"group": "backbone"}
+[ edges ]
+-BB BB
+BB +BB
+
+
+;--------------------------------------------------
+; SPECIFIC BACKBONE DIHEDRALS
+;--------------------------------------------------
+
+;--------------------------------------------------
+; LAD–GA–LAL–GA
+; From paper: -70 (2.2)
+;--------------------------------------------------
+[ link ]
+[ atoms ]
+-BB  { "resname": "LAD" }
+BB   { "resname": "GA" }
++BB  { "resname": "LAL" }
+++BB { "resname": "GA" }
+[ dihedrals ]
+-BB BB +BB ++BB  1  -70.0   2.2   1 {"group": "backbone"}
+[ edges ]
+-BB BB
+BB +BB
++BB ++BB
+
+
+
+;--------------------------------------------------
+; GA-LAL-GA-LAD
+; From paper: 130.0 (0.5)
+;--------------------------------------------------
+
+[ link ]
+[ atoms ]
+-BB  { "resname": "GA" }
+BB   { "resname": "LAL" }
++BB  { "resname": "GA" }
+++BB { "resname": "LAD" }
+[ dihedrals ]
+-BB BB +BB ++BB  1  130.0   0.5   1 {"group": "backbone"}
+[ edges ]
+-BB BB
+BB +BB
++BB ++BB
+
+;--------------------------------------------------
+; LAL–GA–LAD–GA
+; From paper: 70 (2.2)
+;--------------------------------------------------
+[ link ]
+[ atoms ]
+-BB  { "resname": "LAL" }
+BB   { "resname": "GA" }
++BB  { "resname": "LAD" }
+++BB { "resname": "GA" }
+[ dihedrals ]
+-BB BB +BB ++BB  1   70.0   2.2   1 {"group": "backbone"}
+[ edges ]
+-BB BB
+BB +BB
++BB ++BB
+
+
+;--------------------------------------------------
+; GA–LAD–GA–LAL
+; From paper: -130 (0.5), 180 (0.5, 0.2) [and implied 70 (2.2) not listed here]
+;--------------------------------------------------
+[ link ]
+[ atoms ]
+-BB  { "resname": "GA" }
+BB   { "resname": "LAD" }
++BB  { "resname": "GA" }
+++BB { "resname": "LAL" }
+[ dihedrals ]
+-BB BB +BB ++BB  1  -130.0  0.5   1 {"group": "backbone"}
+[ edges ]
+-BB BB
+BB +BB
++BB ++BB
+
+
+;--------------------------------------------------
+; Keep generic alternating dihedrals for LA/GA when LA is not
+; split into LAL/LAD (e.g., sequences using "LA" only which will be recognised by polyply).
+;--------------------------------------------------
+
+; LA-family–GA–LA-family–GA (generic)
+[ link ]
+[ atoms ]
+-BB  { "resname": "LA" }
+BB   { "resname": "GA" }
++BB  { "resname": "LA" }
+++BB { "resname": "GA" }
+[ dihedrals ]
+-BB BB +BB ++BB  1  -70.0   2.2   1 {"group": "backbone"}
+[ edges ]
+-BB BB
+BB +BB
++BB ++BB
+
+; GA–LA-family–GA–LA-family (generic)
+[ link ]
+[ atoms ]
+-BB  { "resname": "GA" }
+BB   { "resname": "LA" }
++BB  { "resname": "GA" }
+++BB { "resname": "LA" }
+[ dihedrals ]
+-BB BB +BB ++BB  1   70.0   2.2   1 {"group": "backbone"}
+[ edges ]
+-BB BB
+BB +BB
++BB ++BB
+
+
+;--------------------------------------------------
+; FALLBACK INTERACTIONS
+; (ONLY identical neighbors – will NOT override X–GA)
+; Not ideal but no other parameters provided in paper. A point for improvement
+; Generally taken average of bond lengths/120deg for angles and 180deg for dihedral
+;--------------------------------------------------
+
+;----------------------------------
+; Fallback bonds (LA-family–LA-family, GA–GA)
+
+[ link ]
+[ atoms ]
+BB  { "resname": "LA|LAL|LAD" }
++BB { "resname": "LA|LAL|LAD" }
+[ bonds ]
+BB +BB 1 0.36450 25000 {"group": "backbone_fallback"}
+[ edges ]
+BB +BB
+[ warning ]
+This force field is derived from Pannuzzo et al. Biomacromolecules 2022. Some parameters are not optimized and are fallback values. Fallback parameters are labelled in the .itp files. Use with caution and verify results carefully.
+
+[ link ]
+[ atoms ]
+BB  { "resname": "GA" }
++BB { "resname": "GA" }
+[ bonds ]
+BB +BB 1 0.36450 25000 {"group": "backbone_fallback"}
+[ edges ]
+BB +BB
+[ warning ]
+This force field is derived from Pannuzzo et al. Biomacromolecules 2022. Some parameters are not optimized and are fallback values. Fallback parameters are labelled in the .itp files. Use with caution and verify results carefully.
+
+
+;----------------------------------
+; Fallback angles (LA-family–LA-family–LA-family, GA–GA–GA)
+
+[ link ]
+[ atoms ]
+-BB { "resname": "LA|LAL|LAD" }
+BB  { "resname": "LA|LAL|LAD" }
++BB { "resname": "LA|LAL|LAD" }
+[ angles ]
+-BB BB +BB 2 120.00000 25.0 {"group": "backbone_fallback"}
+[ edges ]
+-BB BB
+BB +BB
+[ warning ]
+This force field is derived from Pannuzzo et al. Biomacromolecules 2022. Some parameters are not optimized and are fallback values. Fallback parameters are labelled in the .itp files. Use with caution and verify results carefully.
+
+[ link ]
+[ atoms ]
+-BB { "resname": "GA" }
+BB  { "resname": "GA" }
++BB { "resname": "GA" }
+[ angles ]
+-BB BB +BB 2 120.00000 25.0 {"group": "backbone_fallback"}
+[ edges ]
+-BB BB
+BB +BB
+[ warning ]
+This force field is derived from Pannuzzo et al. Biomacromolecules 2022. Some parameters are not optimized and are fallback values. Fallback parameters are labelled in the .itp files. Use with caution and verify results carefully.
+
+
+;----------------------------------
+; Fallback dihedral (identical residues only - defaults to 180)
+
+
+[ link ]
+[ atoms ]
+-BB  { "resname": "LA|LAL|LAD" }
+BB   { "resname": "LA|LAL|LAD" }
++BB  { "resname": "LA|LAL|LAD" }
+++BB { "resname": "LA|LAL|LAD" }
+[ dihedrals ]
+-BB BB +BB ++BB  1  180.0  1.0  1 {"group": "backbone_fallback"}
+[ edges ]
+-BB BB
+BB +BB
++BB ++BB
+[ warning ]
+This force field is derived from Pannuzzo et al. Biomacromolecules 2022. Some parameters are not optimized and are fallback values. Fallback parameters are labelled in the .itp files. Use with caution and verify results carefully.
+
+[ link ]
+[ atoms ]
+-BB  { "resname": "GA" }
+BB   { "resname": "GA" }
++BB  { "resname": "GA" }
+++BB { "resname": "GA" }
+[ dihedrals ]
+-BB BB +BB ++BB  1  180.0  1.0  1 {"group": "backbone_fallback"}
+[ edges ]
+-BB BB
+BB +BB
++BB ++BB
+[ warning ]
+This force field is derived from Pannuzzo et al. Biomacromolecules 2022. Some parameters are not optimized and are fallback values. Fallback parameters are labelled in the .itp files. Use with caution and verify results carefully.
+
+
+
