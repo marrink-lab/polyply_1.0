@@ -33,3 +33,4 @@
 |Aminoacids                     |3 letter code            |                                                                       | [martini3IDP](polyply/data/martini3/aminoacids.ff)    |
 |                               |                         |                                                                       | [martini3-go](polyply/data/martini3-go/aminoacids.ff) |
 |Polydimethylsiloxane           |PDMS                     |                                                                       | [martini3](polyply/data/martini3/PDMS.martini3.ff)    |
+|Polylactide-co-glycolide       |PLGA                     |                                                                       | [martini2](polyply/data/martini2/PLGA_M2.ff)          |
