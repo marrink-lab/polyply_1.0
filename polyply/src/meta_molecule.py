@@ -129,6 +129,34 @@ class MetaMolecule(nx.Graph):
         kwargs["resid"] = self.max_resid
         super().add_node(*args, **kwargs)
 
+    def merge_meta_mol(self, other, connects=[]):
+        """
+        Merge the other meta-molecule with the current
+        one and add connecting edges. The connecting
+        edges are defined as tuples of nodes from the
+        target meta_mol and the other meta_molecule.
+        Residue indices are continousely incremented as
+        are the node indices. The 'molecule' attribute
+        is not copied.
+
+        Parameters
+        ----------
+        other: :class:poyply.MetaMolecule
+        connects: list[tuple(int, int)]
+            list of pairs of nodes referring to the
+            nodes in the current and other meta molecule
+        """
+        mapping = {}
+        max_node = max(self.nodes) + 1
+        for node, node_data in other.nodes(data=True):
+            self.add_node(max_node, **node_data)
+            mapping[node] = max_node
+            max_node+=1
+        new_edges = [(mapping[e1], mapping[e2]) for e1, e2 in other.edges]
+        self.add_edges_from(new_edges)
+        connect_edges = [(e1 ,mapping[e2]) for e1, e2 in connects]
+        self.add_edges_from(connect_edges)
+
     def add_monomer(self, current, resname, connections):
         """
         This method adds a single node and an unlimeted number
@@ -421,6 +449,7 @@ class MetaMolecule(nx.Graph):
 
         graph = MetaMolecule._block_graph_to_res_graph(force_field.blocks[mol_name])
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
+        nx.set_node_attributes(meta_mol, mol_name, "from_itp")
         meta_mol.molecule = force_field.blocks[mol_name].to_molecule()
         return meta_mol
 
