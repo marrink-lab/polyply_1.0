@@ -1,0 +1,187 @@
+;=====================================================
+;                   GLN LINK
+;=====================================================
+[ link ]
+[ atoms ]
+BB {"resname": "GLN"}
+SC1 {"resname": "GLN", "replace": {"atype": "P2"}}
+>EC {"resname": "EO"}
+[ bonds ]
+BB  SC1 1 0.392 1738.173 {"comment": "BB_SC1_modf"}
+SC1 >EC 1 0.37  1946.469 {"comment": "GLN_EC"}
+[ angles ]
+BB SC1 >EC 1 134.443 9.423 {"comment": "GLNB_GLNS_EC"}
+
+[ link ]
+[ atoms ]
+BB {"resname": "GLN"}
+SC1 {"resname": "GLN"}
+>EC {"resname": "EO"}
+>>EC {"resname": "EO"}
+[ angles ]
+SC1 >EC >>EC 1 126.62 15.373 {"comment": "GLNS_EC_EC"}
+[ dihedrals ]
+BB SC1 >EC >>EC 9 -2.085 -2.129 1 {"comment": "GLNB_GLNS_EC_EC"}
+
+;=====================================================
+;                   NTER LINK
+;=====================================================
+[ link ] 
+[ atoms ]
+BB {"resname": "GLY", "replace": {"atype": "P2"}}
+>EC {"resname": "EO", "replace": {"atype": "N3r"}}
+>>EC {"resname": "EO"}
+>>>EC {"resname": "EO"}
+[ bonds ]
+BB   >EC  1 0.389 1936.991 {"comment": "NTER_BB_EC"}
+>EC  >>EC 1 0.319 1356.705 {"comment": "EC_EC_modf"}
+[ angles ]
+BB >EC >>EC 1 121.5 11.72 {"comment": "BB_EC_EC"}
+>EC >>EC >>>EC 1 {"comment": "EC_EC_EC_modf"}
+[ dihedrals ]
+BB >EC >>EC >>>EC 9 1.612 -2.162 1 {"comment": "BB_EC_EC_EC"}
+BB >EC >>EC >>>EC 9 1.612 -2.162 1 {"comment": "BB_EC_EC_EC_modf"}
+
+;=====================================================
+;                   LYS LINK
+;=====================================================
+
+[ link ] 
+[ atoms ]
+BB {"resname": "LYS"}
+SC1 {"resname": "LYS"}
+SC2 {"resname": "LYS", "replace": {"atype": "P2"}}
+>EC {"resname": "EO"}
+>>EC {"resname": "EO"}
+>>>EC {"resname": "EO"}
+[ bonds ]
+SC2 SC2 1 0.376 3033.998 {"comment": "SC1_SC2_updated"}
+SC2 >EC 1 0.322 2604.212 {"comment": "LYS_SC2_EC"}
+[ angles ]
+SC2 >EC >>EC 1 123.869 28.995 {"comment": "SC2_EC_EC"}
+SC1 SC2 >EC 1 127.802 24.946 {"comment": "SC1_SC2_EC"}
+[ dihedrals ]
+SC1 SC2 >EC >>EC 9 -6.42 -2.268 1 {"comment": "SC1_SC2_EC_EC"}
+SC2 >EC >>EC >>>EC 9 15.528 -2.072 1 {"comment": "SC1_EC_EC_EC"}
+
+;=====================================================
+;                   CYS LINK
+;=====================================================
+[ moleculetype ]
+CLP 1
+[ atoms ]
+1 SN5 1 CLP  A1 1  0
+2 SP1 1 CLP  A2 2  0
+3 SP2 1 CLP  A3 3  0
+[ bonds ]
+A1 A2 1 0.304 10000 {"comments": "CLP_A1_A2", "ifdef": "FLEXIBLE"} 
+A2 A3 1 0.362 2121.072 {"comments": "CLP_A2_A3"}
+[ constraints ]
+A1 A2 1 0.304 {"comments": "CLP_A1_A2", "ifndef": "FLEXIBLE"}
+[ angles ]
+A1 A2 A3 1 112.131 24.094 {"comments": "CLP_A1_A2_A3"}
+
+[ link ] 
+[ atoms ]
+BB  {"resname": "CYS"}
+SC1 {"resname": "CYS", "replace": {"atype": "SC6"}}
+>A1 {"resname": "CLP"}
+>A2 {"resname": "CLP"}
+>A3 {"resname": "CLP"}
+[ bonds ]
+BB SC1 1 0.319 7025.539 {"comment": "CLP_updated"}
+SC1 >A1 1 0.345 1531.936 {"comment": "SC1_A1"}
+SC1 >A2 1 1 0.452 10000 {"comment": "SC1_A2", "ifdef": "FLEXIBLE"}
+[ constraints ]
+SC1 >A1 1 0.452 10000 {"comment": "SC1_A2", "ifndef": "FLEXIBLE"}
+[ angles ]
+SC1 >A2 >A3 1 130.352 13.45 {"comment": "SC1_A2_A3_A4"}
+[ dihedrals ] 
+SC1 >A1 >A2 >A3 9 -153.202 -2.89 1 {"comment": "SC1_A2_A3_A4"}
+
+[ link ]
+resname "EO|CLP"
+[ bonds ]
+A3 >EC 1 {"comment": "A1_EC"}
+[ angles ]
+A2 A3 >EC 1 126.5 10.249 {"comment": "A2_A3_EC"}
+A3 >EC >>EC 1 124.085 14.118 {"comment": "A3_EC_EC"}
+[ dihedrals]
+A2 A3 >EC >>EC 9 -12.85 -2.197 1 {"comment": "A2_A3_EC_EC"}
+
+;=====================================================
+;                   PHE LINK
+;=====================================================
+[ moleculetype ]
+APA 1
+[ atoms ]
+1 TN1a 1 APA  R1 1  0
+2 TN6a 1 APA  R2 2  0
+3 TC5  1 APA  R3 3  0
+4 SP2  1 APA  A1 4  0
+[ bonds ]
+R1 R2 1 0.224 10000 {"comments": "APA_R1_R2", "ifdef": "FLEXIBLE"}
+R1 R3 1 0.211 10000 {"comments": "APA_R1_R3", "ifdef": "FLEXIBLE"}
+R2 R3 1 0.230 10000 {"comments": "APA_R2_R3", "ifdef": "FLEXIBLE"}
+R3 A1 1 0.290 3041.827 {"comments": "APA_R3_A1"}
+[ constraints ]
+R1 R2 1 0.224 {"comments": "APA_R1_R2", "ifndef": "FLEXIBLE"}
+R1 R3 1 0.211 {"comments": "APA_R1_R3", "ifndef": "FLEXIBLE"}
+R2 R3 1 0.230 {"comments": "APA_R2_R3", "ifndef": "FLEXIBLE"}
+;[ angles ]
+;A1 R3 R1 10 {"comments": "CLP_A1_A2_A3"}
+
+[ link ]
+[ atoms ]
+BB  {"resname": "PHE"}
+SC1 {"resname": "PHE", "replace": {"atype": "TC4"}}
+SC2 {"resname": "PHE", "replace": {"masss": 45}}
+SC3 {"resname": "PHE","replace": {"masss": 45}}
+>R1  {"resname": "APA","replace": {"masss": 45}}
+>R2  {"resname": "APA","replace": {"masss": 45}}
+>R3  {"resname": "APA","replace": {"masss": 45}}
+[ constraints ]
+SC1 SC2 1 0.323 {"comment": "ALP_SC1_SC2", "ifndef": "FLEXIBLE"}
+SC1 SC3 1 0.323 {"comment": "ALP_SC1_SC3", "ifndef": "FLEXIBLE"}
+SC2 SC3 1 0.337 {"comment": "ALP_SC2_SC3", "ifndef": "FLEXIBLE"}
+[ bonds ]
+SC1 SC2 1 0.323 10000 {"comment": "ALP_SC1_SC2", "ifdef": "FLEXIBLE"}
+SC1 SC3 1 0.323 10000 {"comment": "ALP_SC1_SC3", "ifdef": "FLEXIBLE"}
+SC2 SC3 1 0.337 10000 {"comment": "ALP_SC2_SC3", "ifdef": "FLEXIBLE"}
+SC2 >R1 1 0.27 25000 {"comment": "ALP_SC2_R1"}
+SC3 >R1 1 0.27 25000 {"comment": "ALP_SC2_R1"}
+[ angles ]
+SC2 >R1 >R2 1 134.992 90.714   {"comment": "SC2_R1_R2"}
+SC2 >R2 >R3 1 125.64 44.827    {"comment": "SC2_R2_R3"}
+SC3 >R1 >R2 1 135.168 90.562 {"comment": "SC3_R1_R2"}
+[ dihedrals ]
+SC2 SC3 >R1 >R3 9 175.806 -2.915 1 {"comment": "SC2_SC3_R1_R3"}
+[ impropers ]
+SC1 SC2 SC3 >R1 2 180 60 {"comment": "SC1_SC2_SC3_R1"}
+[ exclusions ]
+SC1 >R1 >R2 >R3
+SC2 >R1 >R2 >R3
+SC3 >R1 >R2 >R3
+
+[ link ]
+[ atoms ]
+R1 {"resname": "APA"} 
+R2 {"resname": "APA"}
+R3 {"resname": "APA"}
+A1 {"resname": "APA"}
+>EC {"resname": "EO"}
+>>EC {"resname": "EO"}
+>>>EC {"resname": "EO"}
+[ bonds ]
+A1 >EC 1 0.393 3206.77 {"comment": "A1_EC"}
+[ angles ]
+A1 >EC >>EC 1 122.271 30.709 {"comment": "A1_EC_EC"}
+R3 A1 >EC  1 123.154 40.565 {"comment": "R1_A1_EC"}
+[ dihedrals ]
+A1 >EC >>EC >>>EC 9  1.41000 -1.530 1 {"comment": "A1_EC_EC_EC"}
+A1 >EC >>EC >>>EC 9 -9.99500 -0.499 2 {"comment": "A1_EC_EC_EC"}
+A1 >EC >>EC >>>EC 9 -138.270 -0.219 3 {"comment": "A1_EC_EC_EC"}
+A1 >EC >>EC >>>EC 9 -158.251 -0.258 4 {"comment": "A1_EC_EC_EC"}
+A1 >EC >>EC >>>EC 9 -150.060 -0.111 5 {"comment": "A1_EC_EC_EC"}
+A1 >EC >>EC >>>EC 9  167.239 -0.104 6 {"comment": "A1_EC_EC_EC"}
+A1 >EC >>EC >>>EC 9  175.813 -0.048 7 {"comment": "A1_EC_EC_EC"}
