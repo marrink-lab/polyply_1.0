@@ -85,6 +85,7 @@ nav:
   - Home: index.md
   - Installation: installation.md
   - Quick Start: quick-start.md
+  - Polymer Library: reference/polymer-library.md
   - Tutorials:
       - Martini Polymers: tutorials/martini-polymers.md
       - GROMOS Polymer Melts: tutorials/gromos-polymer-melts.md
@@ -96,7 +97,6 @@ nav:
       - Build File: reference/build-file-syntax.md
       - gen_seq: reference/gen-seq-syntax.md
       - Writing .ff Input Files: reference/writing-ff-input-files.md
-      - Polymer Library: reference/polymer-library.md
   - Contributing:
       - Submit Polymer Parameters: contributing/submit-polymer-parameters.md
   - FAQs: faqs.md
