@@ -1,0 +1,102 @@
+site_name: Polyply
+site_description: >-
+  A Python suite for facilitating simulations of (bio-)macromolecules and
+  nanomaterials — generation of GROMACS input files and starting coordinates.
+site_author: The Polyply development team
+
+# The published URL. Update this once the deployment target is decided.
+# For GitHub Pages served from a project repo it is:
+#   https://<org-or-user>.github.io/<repo>/
+site_url: https://marrink-lab.github.io/polyply_1.0/
+
+# Source repository (used for the "edit" and repo links in the header).
+repo_url: https://github.com/marrink-lab/polyply_1.0
+repo_name: marrink-lab/polyply_1.0
+edit_uri: edit/master/docs/
+
+copyright: Copyright &copy; 2020 University of Groningen — Apache 2.0 License
+
+theme:
+  name: material
+  logo: assets/polyply_logo.png
+  favicon: assets/polyply_logo.png
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - toc.follow
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+  # Keeps old wiki URLs working after the migration.
+  - redirects:
+      redirect_maps:
+        "tutorials/martini-polymer-melts.md": "tutorials/martini-polymers.md"
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  # Render the $...$ / $$...$$ math used in some tutorials.
+  - pymdownx.arithmatex:
+      generic: true
+
+# Injects the repo-root LIBRARY.md into the Polymer Library page at build time
+# (single source of truth) and rewrites its links to absolute GitHub URLs.
+hooks:
+  - docs_hooks/include_library.py
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Quick Start: quick-start.md
+  - Tutorials:
+      - Martini Polymers: tutorials/martini-polymers.md
+      - GROMOS Polymer Melts: tutorials/gromos-polymer-melts.md
+      - PEGylated Lipid Bilayers: tutorials/pegylated-lipid-bilayers.md
+      - Single-Stranded DNA: tutorials/single-stranded-dna.md
+      - Martini 3 IDPs / Proteins: tutorials/martini3-idps-proteins.md
+      - PEGylated Proteins: tutorials/pegylated-proteins.md
+  - Syntax Reference:
+      - Build File: reference/build-file-syntax.md
+      - gen_seq: reference/gen-seq-syntax.md
+      - Writing .ff Input Files: reference/writing-ff-input-files.md
+      - Polymer Library: reference/polymer-library.md
+  - Contributing:
+      - Submit Polymer Parameters: contributing/submit-polymer-parameters.md
+  - FAQs: faqs.md
