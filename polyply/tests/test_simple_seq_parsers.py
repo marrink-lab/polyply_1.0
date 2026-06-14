@@ -155,3 +155,4 @@ def test_ig_warning(caplog):
             break
         else:
             assert False
+# temp: confirm pytest 9.1 reproduces the parametrize error (removed in next commit)
