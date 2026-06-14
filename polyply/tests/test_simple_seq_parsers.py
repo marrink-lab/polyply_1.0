@@ -90,7 +90,7 @@ def test_monomers_to_linear_nx_graph(example_meta_molecule):
     seq_graph = _monomers_to_linear_nx_graph(monomers)
     assert nx.is_isomorphic(seq_graph, example_meta_molecule, node_match=_node_match)
 
-@pytest.mark.parametrize('extension, ', (
+@pytest.mark.parametrize('extension', (
       "txt",
       "ig",
       "fasta"
@@ -119,7 +119,7 @@ def test_ig_termination_fail():
     with pytest.raises(FileFormatError):
         seq_graph = MetaMolecule.parsers["ig"](filepath)
 
-@pytest.mark.parametrize('extension, ', (
+@pytest.mark.parametrize('extension', (
       "ig",
       "fasta"
      ))
@@ -155,4 +155,3 @@ def test_ig_warning(caplog):
             break
         else:
             assert False
-# temp: confirm pytest 9.1 reproduces the parametrize error (removed in next commit)
