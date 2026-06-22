@@ -59,7 +59,10 @@ def _source_ref():
 
 
 def on_page_markdown(markdown, page, config, files):
-    # Inject LIBRARY.md into its placeholder -- only relevant on the library page.
+    # Special case for the library page only: it carries a {{ LIBRARY }} placeholder,
+    # which we replace with the contents of the repo-root LIBRARY.md (the single source
+    # of truth). No other page has this placeholder. The link rewriting below is the
+    # general case and still runs for this page too, right after the injection.
     if page.file.src_uri == TARGET_PAGE:
         library_md = Path(config["docs_dir"]).parent / "LIBRARY.md"
         markdown = markdown.replace(PLACEHOLDER, library_md.read_text(encoding="utf-8"))
