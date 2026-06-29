@@ -133,6 +133,11 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[],
         for node in meta_molecule.nodes:
             if 'graph' in meta_molecule.nodes[node]:
                 del meta_molecule.nodes[node]['graph']
+    else:
+        msg=("You must either provide a sequence definition as string, a sequence file, or"
+             "as a MetaMolecule object.")
+        raise IOError(msg)
+
     # Generate complementary DNA strand
     if dsdna:
         complement_dsDNA(meta_molecule)
