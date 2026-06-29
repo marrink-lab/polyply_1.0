@@ -154,7 +154,7 @@ class MetaMolecule(nx.Graph):
             max_node+=1
         new_edges = [(mapping[e1], mapping[e2]) for e1, e2 in other.edges]
         self.add_edges_from(new_edges)
-        connect_edges = [(e1 ,mapping[e2]) for e1, e2 in connects]
+        connect_edges = [(e1, mapping[e2]) for e1, e2 in connects]
         self.add_edges_from(connect_edges)
 
     def add_monomer(self, current, resname, connections):
