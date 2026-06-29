@@ -152,7 +152,7 @@ class MetaMolecule(nx.Graph):
             self.add_node(max_node, **node_data)
             mapping[node] = max_node
             max_node+=1
-        new_edges = [(mapping[e1], mapping[e2]) for e1, e2 in other.edges]
+        new_edges = [(mapping[e1], mapping[e2], edge_data) for e1, e2, edge_data in other.edges(data=True)]
         self.add_edges_from(new_edges)
         connect_edges = [(e1, mapping[e2]) for e1, e2 in connects]
         self.add_edges_from(connect_edges)

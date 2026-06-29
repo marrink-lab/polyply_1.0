@@ -135,11 +135,11 @@ R2 R3 1 0.230 {"comments": "APA_R2_R3", "ifndef": "FLEXIBLE"}
 [ atoms ]
 BB  {"resname": "PHE"}
 SC1 {"resname": "PHE", "replace": {"atype": "TC4"}}
-SC2 {"resname": "PHE", "replace": {"masss": 45}}
-SC3 {"resname": "PHE","replace": {"masss": 45}}
->R1  {"resname": "APA","replace": {"masss": 45}}
->R2  {"resname": "APA","replace": {"masss": 45}}
->R3  {"resname": "APA","replace": {"masss": 45}}
+SC2 {"resname": "PHE", "replace": {"mass": 45}}
+SC3 {"resname": "PHE","replace": {"mass": 45}}
+>R1  {"resname": "APA","replace": {"mass": 45}}
+>R2  {"resname": "APA","replace": {"mass": 45}}
+>R3  {"resname": "APA","replace": {"mass": 45}}
 [ constraints ]
 SC1 SC2 1 0.323 {"comment": "ALP_SC1_SC2", "ifndef": "FLEXIBLE"}
 SC1 SC3 1 0.323 {"comment": "ALP_SC1_SC3", "ifndef": "FLEXIBLE"}
