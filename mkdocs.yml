@@ -4,10 +4,10 @@ site_description: >-
   nanomaterials — generation of GROMACS input files and starting coordinates.
 site_author: The Polyply development team
 
-# The published URL. Update this once the deployment target is decided.
-# For GitHub Pages served from a project repo it is:
-#   https://<org-or-user>.github.io/<repo>/
-site_url: https://marrink-lab.github.io/polyply_1.0/
+# The published URL. Docs are served as GitHub Pages from the polyply-org fork
+# (project pages: https://<org>.github.io/<repo>/). The source of truth stays in
+# marrink-lab (see repo_url below), the fork is only the publishing vehicle.
+site_url: https://polyply.github.io/polyply_1.0/
 
 # Source repository (used for the "edit" and repo links in the header).
 repo_url: https://github.com/marrink-lab/polyply_1.0
