@@ -97,7 +97,7 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[],
         CGsmiles format. An abitrary amount of higher resolutions
         are permitted when using the CGsmiles string but only
         the final level is used for itp file generation.
-    seqf: :class:`pathlib.Path`
+    seq_file: :class:`pathlib.Path`
         file path to valid sequence file (.json/.fasta/.ig/.txt)
     meta_molecule: :class:polyply.src.MetaMolecule
         the meta graph which to use in itp generation
