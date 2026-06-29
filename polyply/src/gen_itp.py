@@ -99,7 +99,7 @@ def gen_params(name="polymer", outpath=Path("polymer.itp"), inpath=[],
         the final level is used for itp file generation.
     seqf: :class:`pathlib.Path`
         file path to valid sequence file (.json/.fasta/.ig/.txt)
-    meta_mol: :class:polyply.src.MetaMolecule
+    meta_molecule: :class:polyply.src.MetaMolecule
         the meta graph which to use in itp generation
     dsdna: bool
         find complementing DNA strand and write to itp
