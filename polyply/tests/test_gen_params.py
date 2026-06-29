@@ -120,7 +120,7 @@ def test_find_missing_links():
 
 def test_ioerror_sequence():
     with pytest.raises(IOError):
-        gen_params(lib="martini3")
+        gen_params(lib=["martini3"])
 
 @pytest.mark.parametrize('warn_type, ffobject',
                          (('INFO', 'link'),
