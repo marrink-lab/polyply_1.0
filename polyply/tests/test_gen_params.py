@@ -118,6 +118,10 @@ def test_find_missing_links():
         assert edge["idxA"] == ref[0]
         assert edge["idxB"] == ref[1]
 
+def test_ioerror_sequence():
+    with pytest.raises(IOError):
+        gen_params(lib="martini3")
+
 @pytest.mark.parametrize('warn_type, ffobject',
                          (('INFO', 'link'),
                           ('INFO', 'block'),
