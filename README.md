@@ -16,25 +16,26 @@ definitions for the GROMOS (2016H66 & 53A6), OPLS, Parmbsc1, and Martini (2 & 3)
 by a multiscale random-walk protocol that is able to generate condensed phase systems at target density, as well as
 more heterogeneous systems such as aqueous two phase systems. In addition, polyply allows to tailor initial chain
 conformations by providing a build file. For example, the persistence length can be used to control the initial chain
-dimensions. The [quick start](https://github.com/marrink-lab/polyply_1.0/wiki/Quick-Start) section in the wiki gives
-an overview of the most important commands. In addition, [tutorials][wiki] are provided for more in-depth information
+dimensions. The [quick start](https://polyply.github.io/polyply_1.0/quick-start/) section in the docs gives
+an overview of the most important commands. In addition, [tutorials][docs] are provided for more in-depth information
 on how to use the program. Tutorials include how to generate
-[Martini polymer systems](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-martini-polymer-melts) and
-[write input files](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-writing-.ff-input-files).
+[Martini polymer systems](https://polyply.github.io/polyply_1.0/tutorials/martini-polymers/) and
+[write input files](https://polyply.github.io/polyply_1.0/reference/writing-ff-input-files/).
 More details on the algorithm and verification can be found in the [publication](https://doi.org/10.1038/s41467-021-27627-4).
 
 Make sure to always verify the results and give appropriate credit to the developers of the
 force-field, molecule parameters and this program.
 
 ## Quick references
-[Installation Guide](https://github.com/marrink-lab/polyply_1.0/wiki/Installation)\
-[FAQs](https://github.com/marrink-lab/polyply_1.0/wiki/FAQs)\
+[**Full documentation**](https://polyply.github.io/polyply_1.0/)\
+[Installation Guide](https://polyply.github.io/polyply_1.0/installation/)\
+[FAQs](https://polyply.github.io/polyply_1.0/faqs/)\
 [Current Polyply Polymer Library](./LIBRARY.md)\
-[Submissions to Martini Polymer Library](https://github.com/marrink-lab/polyply_1.0/wiki/Submit-polymer-parameters)\
-[Tutorial: Martini Polymers](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-martini-polymer-melts)\
-[Tutorial: GROMOS Polymers](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-GROMOS-polymer-melts)\
-[Tutorial: PEGylated lipid bilayers](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-PEGylated-lipid-bilayers)\
-[Tutorial: Single-stranded DNA](https://github.com/marrink-lab/polyply_1.0/wiki/Tutorial:-Single-stranded-circular-DNA)
+[Submissions to Martini Polymer Library](https://polyply.github.io/polyply_1.0/contributing/submit-polymer-parameters/)\
+[Tutorial: Martini Polymers](https://polyply.github.io/polyply_1.0/tutorials/martini-polymers/)\
+[Tutorial: GROMOS Polymers](https://polyply.github.io/polyply_1.0/tutorials/gromos-polymer-melts/)\
+[Tutorial: PEGylated lipid bilayers](https://polyply.github.io/polyply_1.0/tutorials/pegylated-lipid-bilayers/)\
+[Tutorial: Single-stranded DNA](https://polyply.github.io/polyply_1.0/tutorials/single-stranded-dna/)
 ## News 
 - (Feb 8, 22') **Featured Research Article in Nature Communcations.** Our article on the polyply software suite is now featured on the [Editors' Highlights](https://www.nature.com/collections/hhfigaahch) for Structural biology, biochemistry and biophysics in Nature Communications. The Editors’ Highlights pages aims to showcase the 50 best papers recently published in an area. The development team is beyond happy to receive this honor.   
 - (May 23, 22') **Fighting Cancer with polyply.** Dane et al. used polyply to setup simulations of vesicles and lipid nanodiscs (LNDs) containing PEGylated lipids, which are used as nanocarriers for cancer therapeutics. They find that LNDs are more effective in delivery likely due to their higher flexibility.  Check it out in [Nature Materials](https://www.nature.com/articles/s41563-022-01251-z). 
@@ -44,7 +45,7 @@ force-field, molecule parameters and this program.
 ## Contributions & Support
 We are happy to accept submissions of polymer parameters to the polyply library. To submit parameters simply 
 open an [issue][bug reports]. More details on submitting parameters can be found 
-[here](https://github.com/marrink-lab/polyply_1.0/wiki/Submit-polymer-parameters). The code development of polyply is done 
+[here](https://polyply.github.io/polyply_1.0/contributing/submit-polymer-parameters/). The code development of polyply is done 
 on [github]. Contributions are welcome as [bug reports] and [pull requests] from everyone. We are also happy to discuss
 any of your projects or hear about how you used polyply in your research project. Let us know on the 
 [discussions board](https://github.com/marrink-lab/polyply_1.0/discussions) or by tweeting with #CG_MARTINI or #polyplyMD.
@@ -86,6 +87,6 @@ The full text of the license is available in the source repository.
 [github]: https://github.com/marrink-lab/polyply_1.0
 [bug reports]: https://github.com/marrink-lab/polyply_1.0/issues
 [pull requests]: https://github.com/marrink-lab/polyply_1.0/pulls
-[wiki]:https://github.com/marrink-lab/polyply_1.0/wiki
+[docs]: https://polyply.github.io/polyply_1.0/
 [pypi_polyply]: https://pypi.org/project/polyply/
 [pipdoc]: https://packaging.python.org/tutorials/installing-packages/#installing-packages
