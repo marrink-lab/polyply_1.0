@@ -1,5 +1,7 @@
 # Polyply Tutorial PEGylation
 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/polyply/PEGylation/main?labpath=tutorial_data%2FPEGylatedProteins.ipynb)
+
 ## Table of Contents
 
 - [0.0 Auxilliary Functions for Plotting](#00-auxilliary-functions-for-plotting)
