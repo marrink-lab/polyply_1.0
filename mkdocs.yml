@@ -89,6 +89,7 @@ nav:
   - Tutorials:
       - Martini Polymers: tutorials/martini-polymers.md
       - GROMOS Polymer Melts: tutorials/gromos-polymer-melts.md
+      - Generating a Force Field: tutorials/gen-ff.md
       - PEGylated Lipid Bilayers: tutorials/pegylated-lipid-bilayers.md
       - Single-Stranded DNA: tutorials/single-stranded-dna.md
       - Martini 3 IDPs / Proteins: tutorials/martini3-idps-proteins.md

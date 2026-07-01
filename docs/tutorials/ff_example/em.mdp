@@ -1,0 +1,56 @@
+;
+; ****  Gromacs run parameters for OPLS-AA simulations  ****
+;
+; **** Energy minimazation
+; 
+; References:
+; - S. Riniker, J. Chem. Inf. Model. 2018, DOI: 10.1021/acs.jcim.8b00042
+; - L.S. Dodda, et al., Nucleic Acids Res. 2017, DOI: 10.1093/nar/gkx312
+; - C. Caleman, et al., J. Chem. Theory. Comput. 2021, DOI: 10.1021/ct200731v 
+;
+
+; Integrator
+integrator               = steep             ; steepest descent E minimization
+nsteps                   = 5000
+emtol                    = 100               ; default 
+constraint_algorithm     = lincs             ; default
+constraints              = none
+lincs_order              = 4                 ; default
+
+; Output Control
+nstxout                  = 500000            ; pos out   ---  1000  ps
+nstvout                  = 500000            ; vel out   ---  1000  ps
+nstfout                  = 0                 ; force out ---  no
+nstlog                   = 10000             ; energies to log (20 ps)
+nstenergy                = 10000             ; energies to energy file
+energygrps               = System
+nstxtcout                = 10000             ; xtc, 10 ps
+compressed-x-precision   = 1000              ; default is 1000
+
+; Some specific settings
+pbc                      = xyz
+periodic_molecules       = no                ; default
+comm_mode                = Linear
+
+; Neighboring search and cutoff scheme
+cutoff-scheme            = Verlet
+nstlist                  = 10                ; default
+ns-type                  = grid
+rlist                    = 1.1               ; ignored with Verlet
+
+; Coulombic
+coulombtype              = PME
+rcoulomb                 = 1.1   
+fourierspacing           = 0.12              ; default
+
+; VDW
+vdwtype                  = cut-off
+rvdw                     = 1.1    
+DispCorr                 = EnerPres          ; long-range correction
+
+; Temperature Coupling
+tcoupl                   = no
+
+; Pressure Coupling
+Pcoupl                   = no 
+
