@@ -5,9 +5,9 @@
 - [0.0 Auxilliary Functions for Plotting](#00-auxilliary-functions-for-plotting)
 - [1.0 Generating Protein Simulation Parameters](#10-generating-protein-simulation-paramters)
 - [2.0 Generating PEGylated Protein Parameters](#20-generating-pegylated-protein-parameters)
-- [3 Structure generation and simulation of PEGylated Proteins](#3-structure-generation-and-simulation-of-pegylated-proteins)
-- [PASylation](#pasylation)
-- [PASylation coordinates](#pasylation-coordinates)
+- [3.0 Structure generation and simulation of PEGylated Proteins](#3-structure-generation-and-simulation-of-pegylated-proteins)
+- [4.0 PASylation](#pasylation)
+- [5.0 PASylation coordinates](#pasylation-coordinates)
 
 ## Introduction
 
@@ -20,6 +20,7 @@ Enhancement of proteins by conjugation polymers is an active area of research. H
 - cgsmiles (```pip install cgsmiles```)
 - GROMACS (conda install -c bioconda -c conda-forge gromacs)
 - gromacs-wrapper (```pip install pip install GromacsWrapper``` or ```conda install -c conda-forge gromacswrapper```)
+- Download the Martini [Force Field](https://github.com/marrink-lab/martini-forcefields/tree/main/martini_forcefields/regular/v3.0.0/gmx_files)
 
 # 0.0 Auxilliary Functions for Plotting 
 
@@ -46,7 +47,7 @@ cwd = os.getcwd()
 
 # 1.0 Generating Protein Simulation Paramters
 
-First we need to fix any structural issues with the protein coordinates and add the hydrogen atoms. The protein repair and analysis server will take care of it and produce the `3LZT_out.cif`, required to martinize the protein.
+Start by downloading a protein structure file (.cif) of Lysozyme from the [RCSB PDB](https://www.rcsb.org/structure/3LZT). First we need to fix any structural issues with the protein coordinates and add the hydrogen atoms. The protein repair and analysis server will take care of it and produce the `3LZT_out.cif`, required to martinize the protein.
 
 ```python
 import time
@@ -277,7 +278,7 @@ for stage in ["mini", "nvt", "prod"]:
     prev_stage = stage
 ```
 
-# PASylation
+# 4.0 PASylation
 
 PASylation is an alternative to PEG conjugation, where sequences of Proline, Alanine, and Cysteine that are disordered and lack secondary structure motifs are attached to the protein at the termini via recombinant methods. To add PASylations to a protein and simulate it in the Martini 3 framework, the steps are nearly identical to those for N-terminal PEGylation. However, we need to generate a random PAS sequence that does not include repeats. This sequence can be obtained using the CGsmiles MoleculeSampler utility.
 
@@ -295,7 +296,7 @@ import networkx as nx
 os.chdir(cwd)
 ```
 
-As input for the `MoleculeSampler` one needs to define the monomer structures of the three amino-acids of intrest (i.e. ALA, SER, PRO). This can be done either at all-atom or any other level of resolution (e.g. Martini). In the definitions below, the bonding operators `>` and `<` form the peptide bond and mean only different connectors can connect. 
+As input for the `MoleculeSampler` one needs to define the monomer structures of the three amino-acids of intrest (i.e. ALA, SER, PRO). This can be done either at all-atom or any other level of resolution (e.g. Martini). 
 
 ```python
 # step 1: define amino acids at Martini level and add two
@@ -401,7 +402,7 @@ gen_params(inpath=[Path("molecule.itp")],
            meta_molecule=protein)
 ```
 
-# PASylation coordinates
+# 5.0 PASylation coordinates
 
 The coordinates can be generated in exactly the same fashion as before: 1) write a valid topology file; 2) run `gen_coords` providing the system target density. 
 
