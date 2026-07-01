@@ -608,54 +608,54 @@ SC4 SC5
 resname $protein_resnames_non_pro
 [ bonds ]
 ; (Modified by Liguo)     ****Modify****
-BB +BB 1 0.360 8000 {"group": "Backbone bonds"}
+BB >BB 1 0.360 8000 {"group": "Backbone bonds"}
 
 
 [ link ]
 [ angles ]
 ; (Modified by Liguo)     ****Modify****
--BB BB +BB 10 137 25 {"group": "BBB angles"}
+-BB BB >BB 10 137 25 {"group": "BBB angles"}
 [ patterns ]
--BB BB {"cgsecstruct": "C", "resname": "PRO|HYP"} +BB 
--BB {"cgsecstruct": "C", "resname": "PRO|HYP"} BB +BB 
--BB  BB +BB {"cgsecstruct": "C", "resname": "PRO|HYP"}
+-BB BB {"cgsecstruct": "C", "resname": "PRO|HYP"} >BB 
+-BB {"cgsecstruct": "C", "resname": "PRO|HYP"} BB >BB 
+-BB  BB >BB {"cgsecstruct": "C", "resname": "PRO|HYP"}
 
 [ link ]
 resname $protein_resnames
 [ angles ]
 ; (Modified by Liguo)       ****Modify****
--BB BB +BB 10 137 25 {"group": "BBB angles"}
+-BB BB >BB 10 137 25 {"group": "BBB angles"}
 [ patterns ]
--BB BB {"cgsecstruct": "C", "resname": $protein_resnames_non_pro} +BB 
--BB {"cgsecstruct": "C", "resname": $protein_resnames_non_pro} BB +BB 
--BB  BB +BB {"cgsecstruct": "C", "resname": $protein_resnames_non_pro}
--BB {"cgsecstruct": null} BB {"cgsecstruct": null} +BB {"cgsecstruct": null}
+-BB BB {"cgsecstruct": "C", "resname": $protein_resnames_non_pro} >BB 
+-BB {"cgsecstruct": "C", "resname": $protein_resnames_non_pro} BB >BB 
+-BB  BB >BB {"cgsecstruct": "C", "resname": $protein_resnames_non_pro}
+-BB {"cgsecstruct": null} BB {"cgsecstruct": null} >BB {"cgsecstruct": null}
 
 
 ;; Pro specific bondlength
 [ link ]
 [ atoms ]
  BB {"resname": $protein_resnames_non_pro}
-+BB {"resname": "PRO"}
+>BB {"resname": "PRO"}
 [ bonds ]
 ; (Modified by Liguo)     ****Modify****
-BB +BB 1 0.360 10000 {"group": "Backbone bonds"}
+BB >BB 1 0.360 10000 {"group": "Backbone bonds"}
 
 [ link ]
 [ atoms ]
  BB {"resname": "PRO"}
-+BB {"resname": $protein_resnames_non_pro}
+>BB {"resname": $protein_resnames_non_pro}
 [ bonds ]
 ; (Modified by Liguo)     ****Modify****
-BB +BB 1 0.305 10000 {"group": "Backbone bonds"}
+BB >BB 1 0.305 10000 {"group": "Backbone bonds"}
 
 [ link ]
 [ atoms ]
  BB {"resname": "PRO"}
-+BB {"resname": "PRO"}
+>BB {"resname": "PRO"}
 [ bonds ]
 ; (Modified by Liguo)     ****Modify****
-BB +BB 1 0.321 10000 {"group": "Backbone bonds"}
+BB >BB 1 0.321 10000 {"group": "Backbone bonds"}
 
 
 ;; IDP SC-BB-BB-SC dihedral based on the observation of Chris

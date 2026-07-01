@@ -44,14 +44,14 @@ polyply gen_params -lib <library_name> -o <filename>.itp -name <name of polymer>
 
 To generate PEO of length 200 we simply need to provide the library name using `-lib`, a
 name for the itp file using `-o`, a name using `-name`, and the sequence of the polymer
-using `-seq`. In this case, the sequence is just 200 residues of PEO (i.e. `-seq PEO:200`).
+using `-seq`. In this case, the sequence is just 200 residues of EO (i.e. `-seq EO:200`).
 The full command would be:
 
 ```bash
-polyply gen_params -lib martini3 -o PEO200.itp -name PEO -seq PEO:200
+polyply gen_params -lib martini3 -o PEO200.itp -name PEO -seq EO:200
 ```
 
-This generates the required itp file. To do the same for PS simply change PEO to PS. If you
+This generates the required itp file. To do the same for PS simply change EO to STYR. If you
 need more complex linear polymer sequences, you can provide a text file with a list of
 residues and provide it using the `-seqf` option. Branched polymers are also possible to
 generate itp files for, but you have to provide a networkx `.json` describing the graph of
