@@ -208,7 +208,7 @@ _ = draw_molecule(protein,
 Finally, the parameters are generated using the `gen_params` utility. As input we need to define the `molecule.itp` file from the `martinize2` step and the martini3 library storing the PEGylation paramters. This call will write the `lysoPEG.itp` file that stores all simulation input paramters. 
 
 ```python
-gen_params(inpath=[Path("molecule.itp"), Path("PEGylation.martini3.ff")],
+gen_params(inpath=[Path("molecule.itp")],
            lib=["martini3"],
            meta_molecule=protein,
            name="lysoPEG",
