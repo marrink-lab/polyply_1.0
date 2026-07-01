@@ -440,6 +440,8 @@ class Topology(System):
         total = 0
         offset = 0
         for meta_mol in self.molecules:
+            # if we skip residues we need to take care to count how much we parsed
+            numer_of_read_positions = 0
             # the fragment graph nodes are not sorted so we sort them by index
             # as defined in the itp-file to capture cases, where the molecule
             # graph nodes are permuted with respect to the index
@@ -461,6 +463,7 @@ class Topology(System):
                     meta_mol.nodes[meta_node]["backmap"] = True
                     meta_mol.nodes[meta_node]["build"] = False
                     total += 1
+                    numer_of_read_positions += 1
                 # here we set molecule coordinates in that case we neither
                 # want to backmap nor build these nodes
                 else:
@@ -485,14 +488,12 @@ class Topology(System):
                                     "not supported.")
                             raise IOError(msg) from IndexError
                         total += 1
+                        numer_of_read_positions += 1
 
                     meta_mol.nodes[meta_node]["position"] = center_of_geometry(positions[pos_indices])
                     meta_mol.nodes[meta_node]["build"] = False
                     meta_mol.nodes[meta_node]["backmap"] = False
-            if resolution == 'meta_mol':
-                offset += len(meta_mol)
-            else:
-                offset += len(meta_mol.molecule)
+            offset += numer_of_read_positions
 
     def convert_to_vermouth_system(self):
         system = System()
