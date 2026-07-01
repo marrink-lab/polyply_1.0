@@ -327,12 +327,14 @@ masses = {"ALA": 89.094,"SER": 105.093, "PRO": 115.132}
 ```
 
 With this in mind, we can now sample a random polymer/protein given a target molecular weight (`target_weigth`). The result is a graph of a random homopolymer of ALA, SER, PRO at full atomic resolution. We can start by making a very short peptide targeting only 500 g/mol. 
+!!! note
+    The polymer_reactivities define how likely it is that a bonding descritor is chosen to "react". Setting them all to one gives equal likelihood.
 
 ```python
 # step 3: generate a random sequence with a target molecular
 # weight; note that the weight of the AAs needs to be defined 
 sampler = MoleculeSampler.from_fragment_string(amino_acids,
-                          polymer_reactivities={"ALA":1, "PRO":1, "SER":1},
+                          polymer_reactivities={"$AO":1, "$AN":1, "$PO":1, "$PN":1, "$SO":1, "$SN":1},
                           fragment_reactivities=reactivities,
                           fragment_masses=masses, all_atom=True)
 pas_graph = sampler.sample(target_weight=500)
