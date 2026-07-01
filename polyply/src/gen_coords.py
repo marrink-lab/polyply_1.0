@@ -200,14 +200,16 @@ def gen_coords(toppath,
     topology.preprocess()
     _check_molecules(topology.molecules)
 
+    if split:
+        LOGGER.info("splitting residues",  type="step")
+        LOGGER.warning("Splitting via this option is deprected. Use the "
+                       "build-file syntax relabel together with CGsmiles. ")
+        for molecule in topology.molecules:
+            molecule.split_residue(split)
+
     # load in build file
     LOGGER.info("reading build options",  type="step")
     load_build_files(topology, lib, build)
-
-    if split:
-        LOGGER.info("splitting residues",  type="step")
-        for molecule in topology.molecules:
-            molecule.split_residue(split)
 
     # read in coordinates if there are any
     if coordpath:
