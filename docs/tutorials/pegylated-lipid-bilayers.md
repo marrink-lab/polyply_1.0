@@ -50,14 +50,14 @@ polyply gen_params -f martini_v3.0.0_phospholipids_v1.itp -lib martini3 -o PEL.i
 
 Now that we have the itp file, we will learn how to generate the starting coordinates. This
 is done in two steps: (1) first use
-[insane](http://cgmartini.nl/index.php/tools2/proteins-and-bilayers) or
+[insane](https://github.com/Tsjerk/Insane) or
 [TS2CG](https://github.com/marrink-lab/TS2CG) to generate a lipid bilayer of your choice.
 Don't add water or ions yet! (2) Subsequently use the polyply coordinate generation tool to
 add the polymer. For the sake of this tutorial we generate a lipid bilayer of 100 POPC lipids
 in each leaflet. If you are using insane this can be done by running the following command:
 
 ```bash
-python2 insane.py -l POPC:95 -l POPE:5 -o bilayer.gro -dz 15.0 -x 8.0 -y 8.0
+insane -l POPC:95 -l POPE:5 -o bilayer.gro -dz 15.0 -x 8.0 -y 8.0
 ```
 
 Now that we have the bilayer, let's begin by generating coordinates for the mushroom state.
@@ -116,7 +116,7 @@ specify more complex building options. First, we need to increase the grafting d
 generate a new lipid bilayer:
 
 ```bash
-python2 insane.py -l POPC:75 -l POPE:25 -o bilayer_brush.gro -dz 33.0 -x 8.0 -y 8.0
+insane -l POPC:75 -l POPE:25 -o bilayer_brush.gro -dz 33.0 -x 8.0 -y 8.0
 ```
 
 Then we change the number of PEL molecules in the topology file to 25 for each leaflet. Your
