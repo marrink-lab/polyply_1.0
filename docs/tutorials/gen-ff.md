@@ -54,7 +54,7 @@ For example, the SMILES string below represents a 5-mer PS chain:
 CCC(c1ccccc1)CC(c1ccccc1)CC(c1ccccc1)CC(c1ccccc1)CC(c1ccccc1)C
 ```
 Note that the PS monomer is `CC(c1ccccc1)` and the string is terminated on both sides
-by two methyl gropus (`C`).
+by two methyl groups (`C`).
 
 
 ### Generating the force field
@@ -86,7 +86,7 @@ uv venv gen_ff --python 3.11
 source gen_ff/bin/activate 
 uv pip install git+https://github.com/gruenewald-lab/CGsmiles.git
 uv pip install scipy matplotlib shapely pytest
-git clone git@github.com:marrink-lab/polyply_1.0.git
+git clone https://github.com/marrink-lab/polyply_1.0.git
 cd polyply_1.0
 git checkout gen_ff_clean            # development branch
 uv pip install -e .
@@ -98,7 +98,7 @@ conda create -n gen_ff python=3.11
 conda activate gen_ff
 pip install git+https://github.com/gruenewald-lab/CGsmiles.git
 pip install scipy matplotlib shapely pytest
-git clone git@github.com:marrink-lab/polyply_1.0.git
+git clone https://github.com/marrink-lab/polyply_1.0.git
 cd polyply_1.0
 git checkout gen_ff_clean            # development branch
 pip install -e .
@@ -139,7 +139,7 @@ helper `itp_handling.py`, which must sit in a `src/` subfolder relative to it (a
 in the repository).
 
 ```bash
-./atomtype_reduction_oplsLigParGen.py -f <your_file>_LigParGen.itp
+python ./docs/tutorials/ff_example/atomtype_reduction_oplsLigParGen.py -f <your_file>_LigParGen.itp
 mv system_OK.top <your_file>_LigParGen_OK.itp
 ```
 

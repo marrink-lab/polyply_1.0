@@ -1,7 +1,7 @@
 ;
 ; ****  Gromacs run parameters for OPLS-AA simulations  ****
 ;
-; **** Energy minimazation
+; **** Energy minimization
 ; 
 ; References:
 ; - S. Riniker, J. Chem. Inf. Model. 2018, DOI: 10.1021/acs.jcim.8b00042

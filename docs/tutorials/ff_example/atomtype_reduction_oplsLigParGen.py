@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
 """
-atomtype_reduction.py
+atomtype_reduction_oplsLigParGen.py
 
 Use:
-./atomtype_reduction.py -f PEO_n4/system.top
+python atomtype_reduction_oplsLigParGen.py -f PEO_n4/system.top
 """
 
 
-import numpy as np
 import argparse
 import re
 import sys
