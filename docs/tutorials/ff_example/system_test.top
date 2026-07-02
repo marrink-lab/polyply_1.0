@@ -1,0 +1,13 @@
+; Include forcefield parameters
+#include "/absolute-path-to/share/gromacs/top/oplsaa.ff/forcefield.itp"
+
+; Include topologies
+#include "PS_n5_test.itp"
+
+[ system ]
+; Name
+Test
+
+[ molecules ]
+; Compound        #mols
+PS                  1
