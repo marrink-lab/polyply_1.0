@@ -27,7 +27,7 @@ and visualize structures [here](https://pubchem.ncbi.nlm.nih.gov/edit3/index.htm
 ## Prerequisites
 
 - A SMILES string or PDB file for your pentamer
-- [UV](https://docs.astral.sh/uv/#highlights) or Conda installed
+- A virtual-environment manager (e.g. [uv](https://docs.astral.sh/uv/#highlights) or conda)
 - Python 3.x
 
 ---
@@ -76,31 +76,27 @@ Lennard-Jones parameters (σ and ε).
 
 ## 2. Installation
 
-We need two environments: one for `gen_ff` (a development branch of polyply used
-to generate the `.ff` file) and one for the stable polyply release (used for all
-subsequent polyply steps such as `gen_params` and `gen_coords`).
+The whole tutorial runs in a **single environment** built from the `gen_ff_clean`
+development branch of polyply, which provides `gen_ff` alongside the standard
+`gen_params` and `gen_coords`.
 
-**With UV** (recommended):
-```bash
-uv venv gen_ff --python 3.11
-source gen_ff/bin/activate 
-uv pip install git+https://github.com/gruenewald-lab/CGsmiles.git
-uv pip install scipy matplotlib shapely pytest
-git clone https://github.com/marrink-lab/polyply_1.0.git
-cd polyply_1.0
-git checkout gen_ff_clean            # development branch
-uv pip install -e .
-```
+Create a virtual environment with your favourite environment manager (for example
+[uv](https://docs.astral.sh/uv/) or conda), then install polyply from the
+`gen_ff_clean` branch together with its dependencies:
 
-**With Conda**:
 ```bash
-conda create -n gen_ff python=3.11
-conda activate gen_ff
+# 1. Create and activate an environment (Python 3.11), e.g.
+#      uv:    uv venv gen_ff --python 3.11 && source gen_ff/bin/activate
+#      conda: conda create -n gen_ff python=3.11 && conda activate gen_ff
+
+# 2. Install CGsmiles and the other dependencies
 pip install git+https://github.com/gruenewald-lab/CGsmiles.git
 pip install scipy matplotlib shapely pytest
+
+# 3. Install polyply from the development branch
 git clone https://github.com/marrink-lab/polyply_1.0.git
 cd polyply_1.0
-git checkout gen_ff_clean            # development branch
+git checkout gen_ff_clean        # development branch (see warning above)
 pip install -e .
 ```
 
@@ -108,19 +104,6 @@ pip install -e .
 
     `gen_ff_clean` is a development branch — expect experimental features and
     potential breaking changes (see the warning at the top of this page).
-
-For the stable polyply environment (needed for validation and all downstream steps):
-```bash
-# UV
-uv venv polyply-stable --python 3.11
-source polyply-stable/bin/activate
-uv pip install polyply
-
-# Conda
-conda create -n polyply-stable python=3.11
-conda activate polyply-stable
-pip install polyply
-```
 
 ---
 
@@ -190,9 +173,8 @@ Key flags:
 
 ### Example 1: Polystyrene (PS)
 
-PS is a simple vinyl polymer with a styrene repeat unit. Its repeat unit is small
-enough that a full 5-mer fits within LigParGen's 200-atom limit.
-This makes it a clean, minimal case to get familiar with the workflow.
+PS is a good first case: its styrene repeat unit is small, so a full 5-mer fits
+within LigParGen's 200-atom limit (no trimming needed, as discussed above).
 
 **SMILES for LigParGen** (5-mer with methyl terminals):
 ```
@@ -244,7 +226,7 @@ files, both provided alongside this tutorial in `docs/tutorials/ff_example/`:
     sufficient here.
 
 ```bash
-source polyply-stable/bin/activate   # or: conda activate polyply-stable
+source gen_ff/bin/activate   # or: conda activate gen_ff
 
 polyply gen_params -f PS.ff -seq CH3:1 PS:5 CH3:1 -o PS_n5_test.itp -name PS
 polyply gen_coords -p system_test.top -o system_test.gro -name PS -box 5 5 5
