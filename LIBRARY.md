@@ -4,9 +4,9 @@
 |Polyethylene oxide             |PEO                      |[gromos2016H66](polyply/data/2016H66/polyether_blocks.ff)              | [martini2](polyply/data/martini2/PEO.martini.2.itp)   |
 |                               |                         |[oplsaaLigParGen](polyply/data/oplsaaLigParGen/PEO.oplsaa.LigParGen.ff)| [martini3](polyply/data/martini3/PEO.martini3.ff)     |
 |Polystyrene                    |PS                       |[gromos2016H66](polyply/data/2016H66/polyvinyl_blocks.ff)              | [martini2](polyply/data/martini2/PS.martini.2.itp)    |
-|                               |                         |                                                                       | [martini3](polyply/data/martini3/PS.martini3.ff)      |
+|                               |                         |                                                                       | [martini3 (STYR)](polyply/data/martini3/vinyl_polymers.ff#mol=STYR)      |
 |Polystyrene-b-poly(ethylene oxide)|PS-PEO                |                                                                       | [martini3](polyply/data/martini3/PS_PEO_link.ff)      |
-|Polymethyl acrylate            |PMA                      |[gromos2016H66](polyply/data/2016H66/polyvinyl_blocks.ff)              | [martini3](polyply/data/martini3/PMA.martini3.ff)     |
+|Polymethyl acrylate            |PMA                      |[gromos2016H66](polyply/data/2016H66/polyvinyl_blocks.ff)              | [martini3 (MAC)](polyply/data/martini3/vinyl_polymers.ff#mol=MAC)     |
 |Polymethyl methacrylate        |PMMA                     |[gromos2016H66](polyply/data/2016H66/polyvinyl_blocks.ff)              | [martini3](polyply/data/martini3/PMMA.martini3.ff)    |
 |Polyethylene                   |PE                       |[gromos2016H66](polyply/data/2016H66/polyvinyl_blocks.ff)              | [martini3](polyply/data/martini3/PE.martini3.ff)      |
 |                               |                         |                                                                       | [martini2](polyply/data/martini2/PE.martini.2.itp)    |
@@ -22,7 +22,7 @@
 |                               |                         |                                                                       | [martini3](polyply/data/martini3/PSS.martini3.ff)     |
 |Poly(para-phenylene ethynylene)|PPE                      |                                                                       | [martini3](polyply/data/martini3/PPE.martini3.ff)     |
 |Poly(TEMPO methacrylate)       |PTMA                     |[oplsaaLigParGen](polyply/data/oplsaaLigParGen/PTMA.oplsaa.LigParGen.ff)| [martini3](polyply/data/martini3/PTMA.martini3.ff)   |
-|                               |                         |                                                                       | [ibi_cgm3](polyply/data/ibi_cmg3/PTMA.cgm3.ibi.ff)    |
+|                               |                         |                                                                       | [ibi_cgm3](polyply/data/ibi_cgm3/PTMA.cgm3.ibi.ff)    |
 |                               |                         |                                                                       | [ibi_gbcg](polyply/data/ibi_gbcg/PTMA.gbno2.ibi.ff)   |
 |poly(N-(methacryloxyethyl) phthalimide)|PMAP             |[oplsaaLigParGen](polyply/data/oplsaaLigParGen/PMAP_and_PMAPcharged.oplsaa.LigParGen.ff)|                                      |
 |poly(2,3-epoxy-propylphthalimide)|PEPP                   |[oplsaaLigParGen](polyply/data/oplsaaLigParGen/PEPP_and_PEPPcharged.oplsaa.LigParGen.ff)|                                      |

@@ -29,8 +29,10 @@ from pathlib import Path
 TARGET_PAGE = "reference/polymer-library.md"
 PLACEHOLDER = "{{ LIBRARY }}"
 
-# Matches markdown links whose target is a path inside the polyply package data.
-_REL_LINK = re.compile(r"\]\((polyply/data/[^)]+)\)")
+# Matches markdown links whose target is a path inside the polyply package data,
+# with an optional "#mol=NAME" fragment used to deep-link to one moleculetype
+# inside a file that bundles several (e.g. vinyl_polymers.ff).
+_REL_LINK = re.compile(r"\]\((polyply/data/[^)#]+)(?:#mol=([^)]+))?\)")
 
 
 @lru_cache(maxsize=None)
@@ -58,6 +60,34 @@ def _source_ref():
         return "master"
 
 
+def _moleculetype_line(ff_path, name):
+    """1-based line of the ``[ moleculetype ]`` entry called *name*, or ``None``.
+
+    Anchors on the line carrying the molecule name (the first non-comment,
+    non-blank line after a ``[ moleculetype ]`` header) -- exactly what a reader
+    would search the file for. Used to turn ``vinyl_polymers.ff#mol=STYR`` into a
+    ``#L<line>`` deep link. Because the surrounding links are pinned to the build
+    revision, the resolved line number stays valid for that published page.
+    """
+    try:
+        lines = ff_path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return None
+    in_block = False
+    for lineno, raw in enumerate(lines, start=1):
+        stripped = raw.strip()
+        if stripped.lower().replace(" ", "") == "[moleculetype]":
+            in_block = True
+            continue
+        if in_block:
+            if not stripped or stripped.startswith(";"):
+                continue  # skip blanks/comments between the header and the name
+            in_block = False
+            if stripped.split()[0] == name:
+                return lineno
+    return None
+
+
 def on_page_markdown(markdown, page, config, files):
     # Special case for the library page only: it carries a {{ LIBRARY }} placeholder,
     # which we replace with the contents of the repo-root LIBRARY.md (the single source
@@ -72,5 +102,16 @@ def on_page_markdown(markdown, page, config, files):
     # site no matter which page it appears on (the library listing, a tutorial, ...).
     # Derive the blob base from repo_url so it tracks the source repo even when the
     # docs site itself is published elsewhere (e.g. a different org's GitHub Pages).
+    repo_root = Path(config["docs_dir"]).parent
     blob_base = f"{config['repo_url'].rstrip('/')}/blob/{_source_ref()}/"
-    return _REL_LINK.sub(lambda m: f"]({blob_base}{m.group(1)})", markdown)
+
+    def _rewrite(match):
+        path, mol = match.group(1), match.group(2)
+        anchor = ""
+        if mol:
+            lineno = _moleculetype_line(repo_root / path, mol)
+            if lineno:
+                anchor = f"#L{lineno}"
+        return f"]({blob_base}{path}{anchor})"
+
+    return _REL_LINK.sub(_rewrite, markdown)
