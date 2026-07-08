@@ -17,6 +17,11 @@ from numpy.linalg import norm
 from scipy.spatial.transform import Rotation
 from polyply import jit
 
+def _norm_matrix(matrix):
+    norm = np.sum(matrix * matrix)
+    return norm
+norm_matrix = jit(_norm_matrix)
+
 def _vector_angle_degrees(v1, v2):
     """
     Compute the angle between two vectors
