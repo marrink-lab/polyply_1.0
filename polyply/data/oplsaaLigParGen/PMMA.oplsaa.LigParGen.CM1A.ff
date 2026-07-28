@@ -1,0 +1,294 @@
+[ moleculetype ]
+PMMA                   3
+[ atoms ]
+    1 opls_135     1     PMMA     C01     1   -0.1678   12.0110
+    2 opls_135     1     PMMA     C02     2   -0.0163   12.0110
+    3 opls_135     1     PMMA     C03     3   -0.2534   12.0110
+    4 opls_145     1     PMMA     C04     4    0.4292   12.0110
+    5 opls_002     1     PMMA     O05     5   -0.4515   15.9990
+    6 opls_179     1     PMMA     O06     6   -0.3487   15.9990
+    7 opls_135     1     PMMA     C07     7   -0.0634   12.0110
+    8 opls_140     1     PMMA     H01     8    0.1232    1.0080
+    9 opls_140     1     PMMA     H02     9    0.1232    1.0080
+   10 opls_140     1     PMMA     H03    10    0.1029    1.0080
+   11 opls_140     1     PMMA     H04    11    0.1029    1.0080
+   12 opls_140     1     PMMA     H05    12    0.1029    1.0080
+   13 opls_140     1     PMMA     H06    13    0.1056    1.0080
+   14 opls_140     1     PMMA     H07    14    0.1056    1.0080
+   15 opls_140     1     PMMA     H08    15    0.1056    1.0080
+[ bonds ]
+    2     1     1    0.1529    224262.400
+    3     2     1    0.1529    224262.400
+    4     2     1    0.1522    265265.600
+    5     4     1    0.1229    476976.000
+    6     4     1    0.1327    179075.200
+    7     6     1    0.1410    267776.000
+    8     1     1    0.1090    284512.000
+    9     1     1    0.1090    284512.000
+   10     3     1    0.1090    284512.000
+   11     3     1    0.1090    284512.000
+   12     3     1    0.1090    284512.000
+   13     7     1    0.1090    284512.000
+   14     7     1    0.1090    284512.000
+   15     7     1    0.1090    284512.000
+[ angles ]
+    1     2     3     1    112.700   488.273
+    1     2     4     1    111.100   527.184
+    2     4     5     1    120.400   669.440
+    2     4     6     1    111.400   677.808
+    4     6     7     1    116.900   694.544
+    2     3    10     1    110.700   313.800
+    2     3    11     1    110.700   313.800
+    2     3    12     1    110.700   313.800
+    6     7    13     1    109.500   292.880
+    6     7    14     1    109.500   292.880
+    6     7    15     1    109.500   292.880
+   13     7    14     1    107.800   276.144
+    5     4     6     1    123.400   694.544
+    3     2     4     1    111.100   527.184
+   10     3    11     1    107.800   276.144
+   10     3    12     1    107.800   276.144
+    2     1     8     1    110.700   313.800
+   13     7    15     1    107.800   276.144
+   11     3    12     1    107.800   276.144
+    2     1     9     1    110.700   313.800
+   14     7    15     1    107.800   276.144
+    8     1     9     1    107.800   276.144
+[ dihedrals ]
+    6     4     2     5     4    180.000     43.932       2
+[ dihedrals ]
+    7     6     4     2     3     31.206     -9.768    -21.439     -0.000     -0.000      0.000
+    7     6     4     5     3     21.439      0.000    -21.439     -0.000     -0.000      0.000
+   10     3     2     4     3     -0.209     -0.628      0.000      0.837     -0.000      0.000
+    8     1     2     4     3     -0.209     -0.628      0.000      0.837     -0.000      0.000
+   12     3     2     4     3     -0.209     -0.628      0.000      0.837     -0.000      0.000
+    9     1     2     4     3     -0.209     -0.628      0.000      0.837     -0.000      0.000
+   11     3     2     4     3     -0.209     -0.628      0.000      0.837     -0.000      0.000
+   11     3     2     1     3      0.628      1.883      0.000     -2.510     -0.000      0.000
+   12     3     2     1     3      0.628      1.883      0.000     -2.510     -0.000      0.000
+    8     1     2     3     3      0.628      1.883      0.000     -2.510     -0.000      0.000
+    9     1     2     3     3      0.628      1.883      0.000     -2.510     -0.000      0.000
+   10     3     2     1     3      0.628      1.883      0.000     -2.510     -0.000      0.000
+   13     7     6     4     3      0.414      1.243      0.000     -1.657     -0.000      0.000
+   14     7     6     4     3      0.414      1.243      0.000     -1.657     -0.000      0.000
+   15     7     6     4     3      0.414      1.243      0.000     -1.657     -0.000      0.000
+    5     4     2     1     3      0.000      0.000      0.000     -0.000     -0.000      0.000
+    5     4     2     3     3      0.000      0.000      0.000     -0.000     -0.000      0.000
+    6     4     2     1     3     -1.157     -3.471      0.000      4.628     -0.000      0.000
+    6     4     2     3     3     -1.157     -3.471      0.000      4.628     -0.000      0.000
+[ pairs ]
+    1      5       1
+    1      6       1
+    3      5       1
+    3      6       1
+    2      7       1
+    5      7       1
+    3      8       1
+    1     10       1
+    4      8       1
+    3      9       1
+    1     11       1
+    4      9       1
+    1     12       1
+    4     10       1
+    4     11       1
+    4     12       1
+    4     13       1
+    4     14       1
+    4     15       1
+[ citation ]
+OPLSLigParGen1
+OPLSLigParGen2
+polyply
+[ moleculetype ]
+CH3a                   3
+[ atoms ]
+    1 opls_135     1     CH3a      C1     1   -0.2565   12.0110
+    2 opls_140     1     CH3a      H2     2    0.0855    1.0080
+    3 opls_140     1     CH3a      H3     3    0.0855    1.0080
+    4 opls_140     1     CH3a      H4     4    0.0855    1.0080
+[ bonds ]
+    2     1     1    0.1090    284512.000
+    3     1     1    0.1090    284512.000
+    4     1     1    0.1090    284512.000
+[ angles ]
+    2     1     3     1    107.800   276.144
+    3     1     4     1    107.800   276.144
+    2     1     4     1    107.800   276.144
+[ dihedrals ]
+[ dihedrals ]
+[ pairs ]
+[ moleculetype ]
+CH3b                   3
+[ atoms ]
+    1 opls_135     1     CH3b      C1     1   -0.2553   12.0110
+    2 opls_140     1     CH3b      H2     2    0.0851    1.0080
+    3 opls_140     1     CH3b      H3     3    0.0851    1.0080
+    4 opls_140     1     CH3b      H4     4    0.0851    1.0080
+[ bonds ]
+    2     1     1    0.1090    284512.000
+    3     1     1    0.1090    284512.000
+    4     1     1    0.1090    284512.000
+[ angles ]
+    2     1     3     1    107.800   276.144
+    3     1     4     1    107.800   276.144
+    2     1     4     1    107.800   276.144
+[ dihedrals ]
+[ dihedrals ]
+[ pairs ]
+[link]
+resname "PMMA"
+[ atoms ]
+[ bonds ]
+ +C01   C02     1    0.1529    224262.400   {"comment":"intermonomer"}
+[ angles ]
+  C01   C02  +C01     1    112.700   488.273   {"comment":"intermonomer"}
+  C02  +C01  +C02     1    112.700   488.273   {"comment":"intermonomer"}
+  C02  +C01  +H01     1    110.700   313.800   {"comment":"intermonomer"}
+  C02  +C01  +H02     1    110.700   313.800   {"comment":"intermonomer"}
+  C03   C02  +C01     1    112.700   488.273   {"comment":"intermonomer"}
+  C04   C02  +C01     1    111.100   527.184   {"comment":"intermonomer"}
+[ dihedrals ]
+[ dihedrals ]
+ +C04  +C02  +C01   C02     3     -4.960      6.286      1.310     -2.636     -0.000      0.000   {"comment":"intermonomer"}
+ +C01   C02   C04   O05     3      0.000      0.000      0.000     -0.000     -0.000      0.000   {"comment":"intermonomer"}
+ +C01   C02   C04   O06     3     -1.157     -3.471      0.000      4.628     -0.000      0.000   {"comment":"intermonomer"}
+ +C02  +C01   C02   C04     3     -4.960      6.286      1.310     -2.636     -0.000      0.000   {"comment":"intermonomer"}
+ +C02  +C01   C02   C03     3      2.301     -1.464      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+ +C02  +C01   C02   C01     3      2.301     -1.464      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+ +C03  +C02  +C01   C02     3      2.301     -1.464      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+ +H01  +C01   C02   C04     3     -0.209     -0.628      0.000      0.837     -0.000      0.000   {"comment":"intermonomer"}
+ +H02  +C01   C02   C04     3     -0.209     -0.628      0.000      0.837     -0.000      0.000   {"comment":"intermonomer"}
+  H02   C01   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H04   C03   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H01  +C01   C02   C03     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H03   C03   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H02  +C01   C02   C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H02  +C01   C02   C03     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H01   C01   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+ +H01  +C01   C02   C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+  H05   C03   C02  +C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"intermonomer"}
+[ pairs ]
+  C01   +C02       1   {"comment":"intermonomer"}
+  C03   +C02       1   {"comment":"intermonomer"}
+  C02   +C03       1   {"comment":"intermonomer"}
+  O05   +C01       1   {"comment":"intermonomer"}
+  C04   +C02       1   {"comment":"intermonomer"}
+  C02   +C04       1   {"comment":"intermonomer"}
+  O06   +C01       1   {"comment":"intermonomer"}
+ +C01    H01       1   {"comment":"intermonomer"}
+ +C01    H02       1   {"comment":"intermonomer"}
+  C01   +H01       1   {"comment":"intermonomer"}
+ +C01    H03       1   {"comment":"intermonomer"}
+  C01   +H02       1   {"comment":"intermonomer"}
+ +C01    H04       1   {"comment":"intermonomer"}
+  C03   +H01       1   {"comment":"intermonomer"}
+ +C01    H05       1   {"comment":"intermonomer"}
+  C04   +H01       1   {"comment":"intermonomer"}
+  C03   +H02       1   {"comment":"intermonomer"}
+  C04   +H02       1   {"comment":"intermonomer"}
+[link]
+; for bonded terms spanning three residues
+resname "PMMA"
+[dihedrals]
+++C01  +C02  +C01   C02     3      2.301     -1.464      0.837     -1.674     -0.000      0.000   {"comment":"intermonomer"}
+[pairs]
+  C02  ++C01       1   {"comment":"intermonomer"}
+[link]
+resname "CH3a|PMMA"
+[ atoms ]
+[ bonds ]
+ +C01    C1     1    0.1529    224262.400   {"comment":"alpha-C-link"}
+[ angles ]
+   C1  +C01  +C02     1    112.700   488.273   {"comment":"alpha-C-link"}
+ +C01    C1    H2     1    110.700   313.800   {"comment":"alpha-C-link"}
+ +C01    C1    H3     1    110.700   313.800   {"comment":"alpha-C-link"}
+ +C01    C1    H4     1    110.700   313.800   {"comment":"alpha-C-link"}
+   C1  +C01  +H01     1    110.700   313.800   {"comment":"alpha-C-link"}
+   C1  +C01  +H02     1    110.700   313.800   {"comment":"alpha-C-link"}
+[ dihedrals ]
+[ dihedrals ]
+ +C04  +C02  +C01    C1     3     -4.960      6.286      1.310     -2.636     -0.000      0.000   {"comment":"alpha-C-link"}
+ +C03  +C02  +C01    C1     3      2.301     -1.464      0.837     -1.674     -0.000      0.000   {"comment":"alpha-C-link"}
+   H4    C1  +C01  +C02     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+   H2    C1  +C01  +C02     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+   H3    C1  +C01  +C02     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+ +H01  +C01    C1    H2     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+ +H01  +C01    C1    H3     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+ +H02  +C01    C1    H4     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+ +H02  +C01    C1    H2     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+ +H02  +C01    C1    H3     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+ +H01  +C01    C1    H4     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"alpha-C-link"}
+[ pairs ]
+   C1   +C03       1   {"comment":"alpha-C-link"}
+   C1   +C04       1   {"comment":"alpha-C-link"}
+ +C02     H2       1   {"comment":"alpha-C-link"}
+ +C02     H3       1   {"comment":"alpha-C-link"}
+ +C02     H4       1   {"comment":"alpha-C-link"}
+   H2   +H01       1   {"comment":"alpha-C-link"}
+   H3   +H01       1   {"comment":"alpha-C-link"}
+   H2   +H02       1   {"comment":"alpha-C-link"}
+   H4   +H01       1   {"comment":"alpha-C-link"}
+   H3   +H02       1   {"comment":"alpha-C-link"}
+   H4   +H02       1   {"comment":"alpha-C-link"}
+[link]
+; for bonded terms spanning three residues
+resname "CH3a|PMMA"
+[dihedrals]
+++C01  +C02  +C01    C1     3      2.301     -1.464      0.837     -1.674     -0.000      0.000   {"comment":"alpha-C-link"}
+[pairs]
+   C1  ++C01       1   {"comment":"alpha-C-link"}
+[link]
+resname "PMMA|CH3b"
+[ atoms ]
+[ bonds ]
+   C1  -C02     1    0.1529    224262.400   {"comment":"beta-C-link"}
+[ angles ]
+ -C01  -C02    C1     1    112.700   488.273   {"comment":"beta-C-link"}
+ -C02    C1    H2     1    110.700   313.800   {"comment":"beta-C-link"}
+ -C02    C1    H3     1    110.700   313.800   {"comment":"beta-C-link"}
+ -C02    C1    H4     1    110.700   313.800   {"comment":"beta-C-link"}
+ -C03  -C02    C1     1    112.700   488.273   {"comment":"beta-C-link"}
+ -C04  -C02    C1     1    111.100   527.184   {"comment":"beta-C-link"}
+[ dihedrals ]
+[ dihedrals ]
+   C1  -C02  -C04  -O05     3      0.000      0.000      0.000     -0.000     -0.000      0.000   {"comment":"beta-C-link"}
+   C1  -C02  -C04  -O06     3     -1.157     -3.471      0.000      4.628     -0.000      0.000   {"comment":"beta-C-link"}
+   H2    C1  -C02  -C04     3     -0.209     -0.628      0.000      0.837     -0.000      0.000   {"comment":"beta-C-link"}
+   H3    C1  -C02  -C04     3     -0.209     -0.628      0.000      0.837     -0.000      0.000   {"comment":"beta-C-link"}
+   H4    C1  -C02  -C04     3     -0.209     -0.628      0.000      0.837     -0.000      0.000   {"comment":"beta-C-link"}
+ -H02  -C01  -C02    C1     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+ -H01  -C01  -C02    C1     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H4    C1  -C02  -C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H3    C1  -C02  -C03     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H2    C1  -C02  -C03     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+ -H03  -C03  -C02    C1     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+ -H05  -C03  -C02    C1     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H3    C1  -C02  -C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+ -H04  -C03  -C02    C1     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H4    C1  -C02  -C03     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+   H2    C1  -C02  -C01     3      0.628      1.883      0.000     -2.510     -0.000      0.000   {"comment":"beta-C-link"}
+[ pairs ]
+ -O05     C1       1   {"comment":"beta-C-link"}
+ -O06     C1       1   {"comment":"beta-C-link"}
+   C1   -H01       1   {"comment":"beta-C-link"}
+   C1   -H02       1   {"comment":"beta-C-link"}
+ -C01     H2       1   {"comment":"beta-C-link"}
+   C1   -H03       1   {"comment":"beta-C-link"}
+ -C01     H3       1   {"comment":"beta-C-link"}
+   C1   -H04       1   {"comment":"beta-C-link"}
+ -C03     H2       1   {"comment":"beta-C-link"}
+ -C01     H4       1   {"comment":"beta-C-link"}
+   C1   -H05       1   {"comment":"beta-C-link"}
+ -C04     H2       1   {"comment":"beta-C-link"}
+ -C03     H3       1   {"comment":"beta-C-link"}
+ -C04     H3       1   {"comment":"beta-C-link"}
+ -C03     H4       1   {"comment":"beta-C-link"}
+ -C04     H4       1   {"comment":"beta-C-link"}
+[link]
+; for bonded terms spanning three residues
+resname "PMMA|CH3b"
+[dihedrals]
+   C1  -C02  -C01 --C02     3      2.301     -1.464      0.837     -1.674     -0.000      0.000   {"comment":"beta-C-link"}
+[pairs]
+--C02     C1       1   {"comment":"beta-C-link"}
