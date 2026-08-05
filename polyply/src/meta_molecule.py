@@ -129,6 +129,34 @@ class MetaMolecule(nx.Graph):
         kwargs["resid"] = self.max_resid
         super().add_node(*args, **kwargs)
 
+    def merge_meta_mol(self, other, connects=[]):
+        """
+        Merge the other meta-molecule with the current
+        one and add connecting edges. The connecting
+        edges are defined as tuples of nodes from the
+        target meta_mol and the other meta_molecule.
+        Residue indices are continousely incremented as
+        are the node indices. The 'molecule' attribute
+        is not copied.
+
+        Parameters
+        ----------
+        other: :class:poyply.MetaMolecule
+        connects: list[tuple(int, int)]
+            list of pairs of nodes referring to the
+            nodes in the current and other meta molecule
+        """
+        mapping = {}
+        max_node = max(self.nodes) + 1
+        for node, node_data in other.nodes(data=True):
+            self.add_node(max_node, **node_data)
+            mapping[node] = max_node
+            max_node+=1
+        new_edges = [(mapping[e1], mapping[e2], edge_data) for e1, e2, edge_data in other.edges(data=True)]
+        self.add_edges_from(new_edges)
+        connect_edges = [(e1, mapping[e2]) for e1, e2 in connects]
+        self.add_edges_from(connect_edges)
+
     def add_monomer(self, current, resname, connections):
         """
         This method adds a single node and an unlimeted number
@@ -270,10 +298,29 @@ class MetaMolecule(nx.Graph):
                                               all_atom=all_atom)
         def _node_match(n1, n2):
             return n1[match_on] == n2[match_on]
+
         mapping = find_one_ismags_match(new_meta_mol.molecule, self.molecule, node_match=_node_match)
-        resname_mapping = {to_node: new_meta_mol.molecule.nodes[from_node]['resname'] for from_node, to_node in mapping.items()}
-        resid_mapping = {to_node: new_meta_mol.molecule.nodes[from_node]['resid'] for from_node, to_node in mapping.items()}
-        self.relabel_and_redo_res_graph(resname_mapping, resid_mapping)
+
+        # we need to do some bookkeeping for the resids
+        for idx, node in enumerate(new_meta_mol.nodes):
+            new_frag_graph = nx.relabel_nodes(new_meta_mol.nodes[node]["graph"], mapping, copy=True)
+            new_meta_mol.nodes[node]["graph"] = new_frag_graph
+            new_meta_mol.nodes[node]["resid"] = idx
+            resname = new_meta_mol.nodes[node]["resname"]
+            for atom in new_meta_mol.nodes[node]["graph"]:
+                old_resid = self.molecule.nodes[node]["resid"]
+                self.molecule.nodes[node]["old_resid"] = old_resid
+                self.molecule.nodes[atom]["resid"] = idx
+                self.molecule.nodes[atom]["resname"] = resname
+                self.molecule.nodes[atom]["build"] = True
+                self.molecule.nodes[atom]["backmap"] = True
+                old_atomname = self.molecule.nodes[atom]["atomname"]
+                self.molecule.nodes[atom]["old_atomname"] = old_atomname
+                self.molecule.nodes[atom]["atomname"] = new_frag_graph.nodes[atom]["atomname"]
+
+        self.clear()
+        self.add_nodes_from(new_meta_mol.nodes(data=True))
+        self.add_edges_from(new_meta_mol.edges)
 
     @property
     def search_tree(self):
@@ -402,6 +449,7 @@ class MetaMolecule(nx.Graph):
 
         graph = MetaMolecule._block_graph_to_res_graph(force_field.blocks[mol_name])
         meta_mol = cls(graph, force_field=force_field, mol_name=mol_name)
+        nx.set_node_attributes(meta_mol, mol_name, "from_itp")
         meta_mol.molecule = force_field.blocks[mol_name].to_molecule()
         return meta_mol
 

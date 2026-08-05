@@ -1,0 +1,22 @@
+[ moleculetype ]
+SBU 1
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge   
+   1    C2             1  SBU       CA       1     0.0   
+
+[ position_restraints ]
+1 1 500 500 500 {"ifdef": "POSRE_POLYM"}
+
+[ link ]
+resname "SBU|12BD"
+[ atoms ]
+VNL {"replace": {"atype": "SC2"} }
++CA { }
+[ bonds ]
+VNL +CA  1  0.45 4000 {"comment": "VNL_CA"}
+
+[ link ]
+resname "SBU|12BD"
+[ angles ]
+VNL +VNL ++CA  1 127 50 {"comment": "VNL_VNL_CA"}

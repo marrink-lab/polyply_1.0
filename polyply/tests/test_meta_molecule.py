@@ -399,3 +399,25 @@ def test_relabel_from_cgsmiles_str(cgs,
         for node_a, node_b in edges:
             assert mol.has_edge(node_a, node_b)
 
+
+@pytest.mark.parametrize('cgs1, cgs2, connects, cgsmerge', (
+("{[#EO]|2}", "{[#ALA]|2}", [(1,1)] ,"{[#EO]|2[#ALA]|2}"),
+("{[#A]1[#B][#C]1}", "{[#D][#E]}", [(1,0)], "{[#A]1[#B]2[#C]1.[#D]2[#E]}")
+))
+def test_merge_molecules(cgs1, cgs2, connects, cgsmerge):
+    ff = vermouth.forcefield.ForceField("test")
+    m_1 = MetaMolecule.from_cgsmiles_str(cgsmiles_str=cgs1,mol_name='test', force_field=ff)
+
+    m_2 = MetaMolecule.from_cgsmiles_str(cgsmiles_str=cgs2,mol_name='test', force_field=ff)
+
+    m_target = MetaMolecule.from_cgsmiles_str(cgsmiles_str=cgsmerge, mol_name='test', force_field=ff)
+    to_remove = []
+    for e1, e2, order in m_target.edges(data='order'):
+        if order == 0:
+            to_remove.append((e1,e2))
+    m_target.remove_edges_from(to_remove)
+    m_1.merge_meta_mol(m_2, connects=connects)
+    def node_match(n1, n2):
+        return n1["resname"] == n2["resname"]
+
+    assert nx.is_isomorphic(m_1, m_target, node_match=node_match)

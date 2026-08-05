@@ -478,6 +478,11 @@ class ApplyLinks(Processor):
             raw_matches = GM.subgraph_isomorphisms_iter()
             for match in raw_matches:
                 nodes = match.keys()
+                from_itp = set([meta_molecule.nodes[node].get("from_itp", None) for node in nodes])
+                # we want to skip links that would modify interctions between residues taken
+                # from the itp file
+                if len(from_itp) == 1 and from_itp != set([None]):
+                    continue
                 resids =[meta_molecule.nodes[node]["resid"] for node in nodes]
                 orders = [ res_link.nodes[match[node]]["order"] for node in nodes]
                 if _check_relative_order(resids, orders):

@@ -1,0 +1,14 @@
+[ link ]
+resname "12BD|EO"
+[ bonds ]
+EC  +VNL  1  0.31  5000
+
+[ link ]
+resname "12BD|EO"
+[ angles ]
+EC  +EC ++VNL  2 125 150 {"comment" : "EC_EC_VNL"}
+
+[ link ]
+resname "12BD|EO"
+[ angles ]
+EC  +VNL ++VNL  2 110 40 {"comment" : "EC_VNL_VNL"}

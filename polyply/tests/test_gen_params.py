@@ -26,50 +26,61 @@ from polyply import gen_params, TEST_DATA, MetaMolecule
 from polyply.src.graph_utils import find_missing_edges
 from polyply.src.logging import LOGGER
 
-@pytest.mark.parametrize('inpath, seq, seqf, name, ref_file', (
+@pytest.mark.parametrize('inpath, seq, seqf, name, ref_file, cgs_for_metamol', (
     ([TEST_DATA / "gen_params" / "input" / "PEO.martini.3.itp"],
      ["PEO:10"],
      None,
      "PEO",
-     TEST_DATA / "gen_params" / "ref" / "PEO_10.itp"),
-    ([TEST_DATA / "gen_params"/ "input"/"PS.martini.2.itp"],
-     None,
-     TEST_DATA / "gen_params" / "input" / "PS.json",
-     "PS",
-     TEST_DATA / "gen_params" / "ref" / "PS_10.itp"),
+     TEST_DATA / "gen_params" / "ref" / "PEO_10.itp",
+     None),
     ([TEST_DATA / "gen_params" / "input" / "P3HT.martini.2.itp"],
      ["P3HT:10"],
      None,
      "P3HT",
-     TEST_DATA / "gen_params" / "ref" / "P3HT_10.itp"),
+     TEST_DATA / "gen_params" / "ref" / "P3HT_10.itp",
+     None),
     ([TEST_DATA / "gen_params" / "input" / "PPI.ff"],
      None,
      TEST_DATA / "gen_params" / "input" / "PPI.json",
      "PPI",
-     TEST_DATA / "gen_params" / "ref" / "G3.itp"),
+     TEST_DATA / "gen_params" / "ref" / "G3.itp",
+     None),
     ([TEST_DATA / "gen_params" / "input" / "test.ff"],
      ["N1:1", "N2:1", "N1:1", "N2:1", "N3:1"],
      None,
      "test",
-     TEST_DATA / "gen_params" / "ref" / "test_rev.itp"),
+     TEST_DATA / "gen_params" / "ref" / "test_rev.itp",
+     None),
     # check if edge attributes are parsed and properly applied
     ([TEST_DATA / "gen_params" / "input" / "test_edge_attr.ff"],
      None,
      TEST_DATA / "gen_params" / "input" / "test_edge_attr.json",
      "test",
-     TEST_DATA / "gen_params" / "ref" / "test_edge_attr_ref.itp"),
+     TEST_DATA / "gen_params" / "ref" / "test_edge_attr_ref.itp",
+     None),
     # check if nodes can be removed
     ([TEST_DATA / "gen_params" / "input" / "removal.ff"],
      ["PEO:3"],
      None,
      "test",
-     TEST_DATA / "gen_params" / "ref" / "removal.itp")
-    ))
-def test_gen_params(tmp_path, inpath, seq, seqf, name, ref_file):
+     TEST_DATA / "gen_params" / "ref" / "removal.itp",
+     None),
+    ([TEST_DATA / "gen_params" / "input" / "PEO.martini.3.itp"],
+     None,
+     None,
+     "PEO",
+     TEST_DATA / "gen_params" / "ref" / "PEO_10.itp",
+     "{[#PEO]|10}"),
+))
+def test_gen_params(tmp_path, inpath, seq, seqf, name, ref_file, cgs_for_metamol):
     os.chdir(tmp_path)
-    gen_params(inpath=inpath, seq=seq, seq_file=seqf, name=name)
-
+    meta_mol = None
     force_field = vermouth.forcefield.ForceField(name='test_ff')
+    if cgs_for_metamol:
+        meta_mol = MetaMolecule.from_cgsmiles_str(force_field=force_field,
+                                                  cgsmiles_str=cgs_for_metamol,
+                                                  mol_name=name,)
+    gen_params(inpath=inpath, seq=seq, seq_file=seqf, name=name, meta_molecule=meta_mol)
 
     for path_name in [tmp_path / "polymer.itp", ref_file]:
         with open(path_name, 'r') as _file:
@@ -109,6 +120,10 @@ def test_find_missing_links():
         assert edge["resB"] == "P3HTref"
         assert edge["idxA"] == ref[0]
         assert edge["idxB"] == ref[1]
+
+def test_ioerror_sequence():
+    with pytest.raises(IOError):
+        gen_params(lib=["martini3"])
 
 @pytest.mark.parametrize('warn_type, ffobject',
                          (('INFO', 'link'),

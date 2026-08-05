@@ -1,8 +1,3 @@
-sphinx >= 1.8.0
-sphinxcontrib-apidoc
-pbr
-setuptools >= 30.3.0
-
-numpy
-networkx ~= 2.0
-scipy
+mkdocs >= 1.5
+mkdocs-material >= 9.5
+mkdocs-redirects >= 1.2

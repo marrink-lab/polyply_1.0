@@ -25,4 +25,7 @@ doc/build
 doc/source/api
 doc/source/.doctrees
 
+# MkDocs build output
+/site
+
 /polyply/data/martini3007/*

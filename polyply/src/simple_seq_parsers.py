@@ -13,6 +13,7 @@
 # limitations under the License.
 from collections import (namedtuple, OrderedDict)
 from functools import partial
+from packaging.version import Version
 import json
 import networkx as nx
 from networkx.readwrite import json_graph
@@ -335,6 +336,12 @@ def parse_json(filepath):
     with open(filepath) as file_:
         data = json.load(file_)
 
+    # the format of node_link_graph has changed in version 3.6
+    # instead of link the edges now need to have the keyword
+    # edges
+    old_edges = data.get("links", None)
+    if old_edges and Version(nx.__version__) > Version('3.5'):
+        data["edges"] = old_edges
     init_json_graph = nx.Graph(json_graph.node_link_graph(data))
     # the nodes in the inital graph are not ordered, when no resid
     # is given this can create issues. So we reorder the node based

@@ -202,8 +202,14 @@ def gen_coords(toppath,
 
     if split:
         LOGGER.info("splitting residues",  type="step")
+        LOGGER.warning("Splitting via this option is deprected. Use the "
+                       "build-file syntax relabel together with CGsmiles. ")
         for molecule in topology.molecules:
             molecule.split_residue(split)
+
+    # load in build file
+    LOGGER.info("reading build options",  type="step")
+    load_build_files(topology, lib, build)
 
     # read in coordinates if there are any
     if coordpath:
@@ -224,10 +230,6 @@ def gen_coords(toppath,
                    "there were not enough coordinates for all metamolecule "
                    "residues. Polyply will built the missing residues.")
             LOGGER.warning(msg)
-
-    # load in build file
-    LOGGER.info("reading build options",  type="step")
-    load_build_files(topology, lib, build)
 
     # collect all starting points for the molecules
     start_dict = find_starting_node_from_spec(topology, start)

@@ -3,7 +3,7 @@ Martini3
 polyply
 
 [ link ]
-resname "DPPE|POPE|DOPE|PEO"
+resname "DPPE|POPE|DOPE|EO"
 [ atoms ]
 NH3 {"replace": {"atype": "P5", "charge": 0.0}}
 [ bonds ]

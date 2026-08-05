@@ -105,6 +105,7 @@ def test_apply_mod(input_itp, molname, expected, caplog, text):
     polyply.src.ff_parser_sub.read_ff(ff_lines, ff)
 
     meta_mol = MetaMolecule.from_itp(ff, file_name, molname)
+    nx.set_node_attributes(meta_mol, False, 'from_itp')
 
     #apply the mods
     termini = _patch_protein_termini(meta_mol)
@@ -167,9 +168,9 @@ def test_from_itp(caplog, adding, expected):
 
     meta_mol = MetaMolecule.from_itp(ff, file_name, "pALA")
 
-    if adding:
+    if not adding:
         for node in meta_mol.nodes:
-            meta_mol.nodes[node]['from_itp'] = 'True'
+            meta_mol.nodes[node]['from_itp'] = False
 
     termini = _patch_protein_termini(meta_mol)
     apply_mod(meta_mol, termini)

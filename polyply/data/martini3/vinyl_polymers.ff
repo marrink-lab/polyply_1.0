@@ -1,0 +1,638 @@
+[ citations ]
+Martini3
+polyply
+
+[ macros ]
+vinyl_polymers "STYR|2VP|4VP|MAC|AAMD|PP|12BD|AAC|AAI|ALL|ALI|HEA|HPA|nBA|EA1|PiB"
+vinyl_small "MAC|HEA|HPA|nBA|12BD"
+vinyl_tiny "STYR|2VP|4VP|AAMD|PP|AAC|AAI|ALL|ALI|PiB"
+vinyl_reg "EA1"
+
+;;;;;;;;;; poly methyl acrylate
+
+[ moleculetype ]
+MAC 1
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge   
+   1    TC3             1  MAC        VNL       1     0.0   
+   2    SN4a            1  MAC        SC1       2     0.0   
+;
+[ bonds ]
+;  ai  aj   funct
+   1     2   1     0.355 8000 {"comment": "VNL_SC1"}
+
+[ position_restraints ]
+1 1 500 500 500 {"ifdef": "POSRE_POLYM"}
+
+[ warning ]
+These are preliminary parameters. Make sure to validate them before use.
+
+;;;;;;;;;; poly ethyl acrylate
+
+[ moleculetype ]
+EA1 1
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge   
+   1    TC3             1  EA1        VNL       1     0.0   
+   2    N4a             1  EA1        SC1       2     0.0   
+;
+[ bonds ]
+;  ai  aj   funct
+   1     2   1     0.41 8000 {"comment": "VNL_SC1"}
+
+[ position_restraints ]
+1 1 500 500 500 {"ifdef": "POSRE_POLYM"}
+
+[ warning ]
+These are preliminary parameters. Make sure to validate them before use.
+
+;;;;;;;;;; poly hydroxy ethyl acrylate
+
+[ moleculetype ]
+HEA 1
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge   
+   1    TC3             1  HEA        VNL       1     0.0   
+   2    SN4a            1  HEA        SC1       2     0.0   
+   3    TP2r            1  HEA        SC2       3     0.0   
+;
+[ bonds ]
+;  ai  aj   funct
+   1     2   1     0.355 8000 {"comment": "VNL_SC1"}
+   2     3   1     0.290 9500 {"comment": "SC1_SC2"}
+[ angles ]
+   1    2   3    10   128  50 {"comment": "VNL_SC1_SC2"}
+
+[ position_restraints ]
+1 1 500 500 500 {"ifdef": "POSRE_POLYM"}
+
+[ warning ]
+These are preliminary parameters. Make sure to validate them before use.
+
+;;;;;;;;;; poly hydroxy propyl acrylate
+
+[ moleculetype ]
+HPA 1
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge   
+   1    TC3             1  HPA        VNL       1     0.0   
+   2    SN4a            1  HPA        SC1       2     0.0   
+   3    SN6r            1  HPA        SC2       3     0.0   
+;
+[ bonds ]
+;  ai  aj   funct
+   1     2   1     0.355 8000 {"comment": "VNL_SC1"}
+   2     3   1     0.300 8500 {"comment": "SC1_SC2"}
+[ angles ]
+   1    2   3    10   125  50 {"comment": "VNL_SC1_SC2"}
+
+[ position_restraints ]
+1 1 500 500 500 {"ifdef": "POSRE_POLYM"}
+
+[ warning ]
+These are preliminary parameters. Make sure to validate them before use.
+
+;;;;;;;;;; poly butyl acrylate
+
+[ moleculetype ]
+nBA 1
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge   
+   1    TC3             1  nBA        VNL       1     0.0   
+   2    SN4a            1  nBA        SC1       2     0.0   
+   3    SC2             1  nBA        SC2       3     0.0   
+;
+[ bonds ]
+;  ai  aj   funct
+   1     2   1     0.355 8000 {"comment": "VNL_SC1"}
+   2     3   1     0.348 8000 {"comment": "SC1_SC2"}
+[ angles ]
+   1    2   3    10   133  50 {"comment": "VNL_SC1_SC2"}
+
+[ position_restraints ]
+1 1 500 500 500 {"ifdef": "POSRE_POLYM"}
+
+[ warning ]
+These are preliminary parameters. Make sure to validate them before use.
+
+;;;;;;;;;; poly n-isopropyl amide
+
+[ moleculetype ]
+NIPA 1
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge   
+   1    TC3             1  NIPA        VNL       1     0.0   
+   2    SP1             1  NIPA        SC1       2     0.0   
+   3    SC3             1  NIPA        SC2       3     0.0   
+;
+[ bonds ]
+;  ai  aj   funct
+   1     2   1     0.355 8000 {"comment": "VNL_SC1"}
+   2     3   1     0.348 8000 {"comment": "SC1_SC2"}
+[ angles ]
+   1    2   3    10   133  50 {"comment": "VNL_SC1_SC2"}
+
+[ position_restraints ]
+1 1 500 500 500 {"ifdef": "POSRE_POLYM"}
+
+[ warning ]
+These are preliminary parameters. Make sure to validate them before use.
+
+;;;;;;;;;; poly acrylic acid
+
+[ moleculetype ]
+AAC 1
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge   
+   1    TC3             1  AAC        VNL       1     0.0   
+   2    TP2a            1  AAC        SC1       1     0.0   
+;
+[ bonds ]
+;  ai  aj   funct
+   1     2   1     0.286 8000 {"comment": "VNL_SC1"}
+
+[ position_restraints ]
+1 1 500 500 500 {"ifdef": "POSRE_POLYM"}
+
+[ warning ]
+These are preliminary parameters. Make sure to validate them before use.
+
+;;;;;;;;;; poly acrylic acid charged
+
+[ moleculetype ]
+AAI 1
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge   
+   1    TC3             1    AAI       VNL       1     0.0   
+   2    TQ3n            1    AAI       SC1       2    -1.0   
+;
+[ constraints ]
+;  ai  aj   funct
+   1     2   1     0.242 {"comment": "VNL_SC1"}
+
+[ warning ]
+These are preliminary parameters. Make sure to validate them before use.
+
+;;;;;;;;;; poly allyl amine
+
+[ moleculetype ]
+ALL 1
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge   
+   1    TC3             1  ALL        VNL       1     0.0   
+   2    TN6d            1  ALL        SC1       2     0.0   
+;
+[ bonds ]
+;  ai  aj   funct
+   1     2   1     0.266 8000 {"comment": "VNL_SC1"}
+
+[ warning ]
+These are preliminary parameters. Make sure to validate them before use.
+
+;;;;;;;;;; poly allyl amine charged
+
+[ moleculetype ]
+ALI 1
+;
+[ atoms ]
+;  nr    type     resnr  residu    atom    cgnr      charge
+   1    TC3         1     ALI        VNL       1     0.0
+   2    TQ3p        1     ALI        SC1       2    +1.0
+;
+[ bonds ]
+;  ai  aj   funct
+   1     2   1     0.365 8000 {"comment": "VNL_SC1"}
+
+[ warning ]
+These are preliminary parameters. Make sure to validate them before use.
+
+;;;;;;;;;; poly acrylamide
+
+[ moleculetype ]
+AAMD 1
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge   
+   1    TC3               1  AAMD       VNL       1     0.0   
+   2    TP6a              1  AAMD       SC1       2     0.0   
+;
+[ bonds ]
+;  ai  aj   funct
+   1     2   1     0.274 8000 {"comment": "VNL_SC1"}
+
+[ position_restraints ]
+1 1 500 500 500 {"ifdef": "POSRE_POLYM"}
+
+[ warning ]
+These are preliminary parameters. Make sure to validate them before use.
+
+
+;;;;;;;; POLYSTYRENE
+[ moleculetype ]
+STYR 1
+
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge    mass 
+   1    TC3            1  STYR       VNL      1     0.0
+   2    TC5            1  STYR       SC1      2     0.0
+   3    TC5            1  STYR       SC2      3     0.0
+   4    TC5            1  STYR       SC3      4     0.0
+;
+[ bonds ]
+;  ai  aj   funct
+   1     2   1     0.27 8000
+
+[ constraints ]
+;  ai  aj  funct length
+   2     3    1     0.290 {"ifndef": "FLEXIBLE"}
+   3     4    1     0.290 {"ifndef": "FLEXIBLE"}
+   4     2    1     0.290 {"ifndef": "FLEXIBLE"}
+
+[ bonds ]
+;  ai  aj  funct length
+   2     3    1     0.290 10000 {"ifdef": "FLEXIBLE"}
+   3     4    1     0.290 10000 {"ifdef": "FLEXIBLE"}
+   4     2    1     0.290 10000 {"ifdef": "FLEXIBLE"}
+
+;
+[ angles ]
+;  ai  aj  ak  funct
+   1     2     3    10  136.000000  150.000000 {"comment": "BB_SC1_SC2", "ifndef": "TI", "version": "1"}
+   1     2     3    1   136.000000  150.000000 {"comment": "BB_SC1_SC2", "ifdef": "TI", "version": "2"}
+   1     2     4    1   82.000000  100.000000 {"comment": "BB_SC1_SC4"}
+
+[ position_restraints ]
+1 1 500 500 500 {"ifdef": "POSRE_POLYM"}
+
+;;;;;;;;; poly vinyl pyridine
+
+[ moleculetype ]
+2VP 1
+
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge    mass 
+   1    TC3           1  2VP       VNL      1     0.0   
+   2    TN6a          1  2VP       SC1      2     0.0   
+   3    TC5           1  2VP       SC2      3     0.0   
+   4    TC5           1  2VP       SC3      4     0.0   
+;
+[ bonds ]
+;  ai  aj   funct
+   1     2   1     0.26 8000 {"comment": "VNL_SC1"}
+
+[ constraints ]
+;  ai  aj  funct length
+   2     3    1     0.245 {"ifndef": "FLEXIBLE"}
+   4     2    1     0.250 {"ifndef": "FLEXIBLE"}
+   3     4    1     0.290 {"ifndef": "FLEXIBLE"}
+
+[ bonds ]
+;  ai  aj  funct length
+   2     3    1     0.245 10000 {"ifdef": "FLEXIBLE", "comment": "SC1_SC2"}
+   4     2    1     0.250 10000 {"ifdef": "FLEXIBLE", "comment": "SC3_SC1"}
+   3     4    1     0.290 10000 {"ifdef": "FLEXIBLE", "comment": "SC2_SC3"}
+
+;
+[ angles ]
+;  ai  aj  ak  funct
+   1     2     3    1     157.000000  130.000000 {"comment": "BB_SC1_SC2"}
+   1     2     4    10    100.000000   80.000000 {"comment": "BB_SC1_SC4"}
+ 
+[ position_restraints ]
+1 1 500 500 500 {"ifdef": "POSRE_POLYM"}
+
+[ warning ]
+These are preliminary parameters. Make sure to validate them before use.
+
+;;;;;;;;; poly vinyl pyridine
+
+[ moleculetype ]
+4VP 1
+
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge    mass 
+   1    TC3           1  4VP       VNL      1     0.0
+   2    TC5           1  4VP       SC1      2     0.0
+   3    TN6a          1  4VP       SC2      3     0.0
+   4    TC5           1  4VP       SC3      4     0.0
+;
+[ bonds ]
+;  ai  aj   funct
+   1     2   1     0.27 8000
+
+[ constraints ]
+;  ai  aj  funct length
+   2     3    1     0.220 {"ifndef": "FLEXIBLE"}
+   3     4    1     0.298 {"ifndef": "FLEXIBLE"}
+   4     2    1     0.290 {"ifndef": "FLEXIBLE"}
+
+[ bonds ]
+;  ai  aj  funct length
+   2     3    1     0.220 10000 {"ifdef": "FLEXIBLE", "comment": "SC1_SC2"}
+   3     4    1     0.298 10000 {"ifdef": "FLEXIBLE", "comment": "SC3_SC1"}
+   4     2    1     0.290 10000 {"ifdef": "FLEXIBLE", "comment": "SC2_SC3"}
+
+;
+[ angles ]
+;  ai  aj  ak  funct
+   1     2     3    1     144.000000  130.000000 {"comment": "BB_SC1_SC2"}
+   1     2     4    10    84.000000  80.000000 {"comment": "BB_SC1_SC4"}
+
+[ position_restraints ]
+1 1 500 500 500 {"ifdef": "POSRE_POLYM"}
+
+[ warning ]
+These are preliminary parameters. Make sure to validate them before use.
+
+;;;;;;;;;; poly 1,2 butadiene
+
+[ moleculetype ]
+12BD 1
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge
+   1    TC3               1  12BD       VNL       1     0.0
+   2    SC4              1  12BD       SC1       2     0.0
+;
+[ bonds ]
+;  ai  aj   funct
+   1     2   1     0.2819569  8000 {"comment": "VNL_SC1"}; prev 0.286
+
+[ position_restraints ]
+1 1 500 500 500 {"ifdef": "POSRE_POLYM"}
+
+[ citations ]
+2025EVreekerAdvMater
+
+[ moleculetype ]
+PP 1
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge   
+   1    TC3              1  PP       VNL       1     0.0   38
+   2    TC3              1  PP       SC1       1     0.0   38
+[ bonds ]
+1 2 1 0.27 1000 {"comment": "VNL_SC1"}
+
+[ warning ]
+These are preliminary parameters. Make sure to validate them before use.
+
+[ moleculetype ]
+PiB 1
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge   
+   1    TC3              1  PiB       VNL       1     0.0   38
+   2    TC3              1  PiB       SC1       1     0.0   38
+   3    TC3              1  PiB       SC2       1     0.0   38
+[ bonds ]
+1 2 1 0.27 1000 {"comment": "VNL_SC1"}
+1 3 1 0.27 1000 {"comment": "VNL_SC2"}
+[ angles ]
+1   2  3   1  120 20 {"comment": "SC1_VNL_SC1"}
+[ exclusions ]
+2 3
+
+[ warning ]
+These are preliminary parameters. Make sure to validate them before use.
+
+;;;;;;;;; Generic Backbone Links
+
+[ link ]
+resname $vinyl_polymers
+[ bonds ]
+VNL     +VNL    1     0.275 8000  {"group": "vinly-backbone bonds", "comment": "VNL_VNL"}
+
+[ link ]
+resname $vinyl_polymers
+[ dihedrals ]
+VNL  +VNL  ++VNL +++VNL  11 1.30929464 6.51130136 -4.64191250 10.24767684 -7.64602475 12.34323750  {"group": "vinly-backbone dihedrals", "comment": "VNL_VNL_VNL_VNL"}
+
+;;;;;;;;; Backbone Side Chain Links
+
+[ link ]
+resname "PP"
+[ angles ]
+VNL     +VNL   SC1  2 48 100   {"group": "vinly-backbone bonds", "comment": "VNL_VNL_SC1"}
+
+[ link ]
+resname "MAC"
+[ angles ]
+VNL  SC1  +VNL   2  48  100  {"group": "vinly-sidechain angles", "comment": "VNL_SC1_VNL", "version": "2"}
+
+[ link ]
+resname "EA1"
+[ angles ]
+VNL  SC1  +VNL   2  33.4  100  {"group": "vinly-sidechain angles", "comment": "VNL_SC1_VNL", "version": "2"}
+
+[ link ]
+resname "HPA|HEA|nBA"
+[ angles ]
+VNL  SC1  +VNL   10  43  100  {"group": "vinly-sidechain angles", "comment": "VNL_SC1_VNL", "version": "2"}
+
+[ link ]
+resname "12BD"
+[ angles ]
+VNL  SC1  +VNL   2  45  50  {"group": "vinly-sidechain angles", "comment": "VNL_SC1_VNL", "version": "2"}
+
+[ link ]
+resname "AAMD"
+[ angles ]
+VNL  SC1  +VNL   2  100  100  {"group": "vinly-sidechain angles", "comment": "VNL_SC1_VNL", "version": "2"}
+
+[ link ]
+resname "AAI"
+[ angles ]
+VNL  SC1  +VNL   2  80  200  {"group": "vinly-sidechain angles", "comment": "VNL_SC1_VNL", "version": "2"}
+
+[ link ]
+resname "ALL"
+[ angles ]
+VNL  SC1  +VNL   2  65  100  {"group": "vinly-sidechain angles", "comment": "VNL_SC1_VNL", "version": "2"}
+
+[ link ]
+resname "STYR"
+[ angles ]
+VNL  SC1  +VNL   10  50  100  {"group": "vinly-sidechain angles", "comment": "VNL_SC1_VNL", "version": "2"}
+
+[ link ]
+resname "2VP"
+[ angles ]
+VNL  SC1  +VNL   10  60  100  {"group": "vinly-sidechain angles", "comment": "VNL_SC1_VNL", "version": "2"}
+
+[ link ]
+resname "4VP"
+[ angles ]
+VNL  SC1  +VNL   10  60  50  {"group": "vinly-sidechain angles", "comment": "VNL_SC1_VNL", "version": "2"}
+
+[ link ]
+resname "STYR"
+[ dihedrals ]
+SC2 SC1 VNL +VNL 1 0.2792582790343363 21.06707506310341 1 {"comment":"SC2_SC1_VNL_VNL", "version": 1 }
+SC2 SC1 VNL +VNL 1 5.017099801204813 13.632796869870024 2 {"comment":"SC2_SC1_VNL_VNL", "version": 2 }
+SC3 SC1 VNL +VNL 1 3.6912732822074803 0.8132548393984607 1 {"comment":"SC3_SC1_VNL_VNL", "version": 1 }
+SC3 SC1 VNL +VNL 1 -0.7077596841325047 17.023667211059085 2 {"comment":"SC3_SC1_VNL_VNL", "version": 2 }
+
+[ link ]
+resname "2VP"
+[ dihedrals ]
+SC2 SC1 VNL +VNL 1 0.2792582790343363 10.06707506310341 1 {"comment":"SC2_SC1_VNL_VNL", "version": 1, "ifdef": "analysis"}
+SC2 SC1 VNL +VNL 1 5.017099801204813 5.632796869870024 4 {"comment":"SC2_SC1_VNL_VNL", "version": 2 , "ifdef": "analysis"}
+SC3 SC1 VNL +VNL 1 3.6912732822074803 0.8132548393984607 1 {"comment":"SC3_SC1_VNL_VNL", "version": 1 }
+SC3 SC1 VNL +VNL 1 -0.7077596841325047 5.023667211059085 2 {"comment":"SC3_SC1_VNL_VNL", "version": 2 }
+
+[ link ]
+resname "4VP"
+[ dihedrals ]
+SC2 SC1 VNL +VNL 1 0.2792582790343363 10.06707506310341 1 {"comment":"SC2_SC1_VNL_VNL", "version": 1}
+SC2 SC1 VNL +VNL 1 5.017099801204813 5.632796869870024 4 {"comment":"SC2_SC1_VNL_VNL", "version": 2 }
+SC3 SC1 VNL +VNL 1 3.6912732822074803 0.8132548393984607 1 {"comment":"SC3_SC1_VNL_VNL", "version": 1 }
+SC3 SC1 VNL +VNL 1 -0.7077596841325047 5.023667211059085 2 {"comment":"SC3_SC1_VNL_VNL", "version": 2 }
+
+
+[ link ]
+resname "HPA|HEA"
+[ dihedrals ]
+SC2 SC1 VNL +VNL  1 10 0.25 1 {"group": "vinyl side chain backbone", "comment": "SC2_SC1_VNL_VNL", "version": "1"}
+SC2 SC1 VNL +VNL  1 10 1.0 2 {"group": "vinyl side chain backbone", "comment": "SC2_SC1_VNL_VNL", "version": "2"}
+
+[ link ]
+resname "nBA"
+[ dihedrals ]
+SC2 SC1 VNL +VNL  1 8 1.05 1 {"group": "vinyl side chain backbone", "comment": "SC2_SC1_VNL_VNL", "version": "1"}
+SC2 SC1 VNL +VNL  1 8 1.0 2 {"group": "vinyl side chain backbone", "comment": "SC2_SC1_VNL_VNL", "version": "2"}
+
+
+;;;;;; 1-4 pairs
+
+[ link ]
+resname $vinyl_tiny
+[ atoms ]
+SC1 { }
+VNL { }
++VNL { }
++SC1 { }
+[ pairs ]
+SC1 +SC1 1 4.600000e-01 2.5e+00
+[ edges ]
+SC1 VNL
+VNL +VNL
++VNL +SC1
+
+[ link ]
+resname $vinyl_small
+[ atoms ]
+SC1 { }
+VNL { }
++VNL { }
++SC1 { }
+[ pairs ]
+SC1 +SC1 1 5.000000e-01    3.550000e+00
+[ edges ]
+SC1 VNL
+VNL +VNL
++VNL +SC1
+
+[ link ]
+resname $vinyl_reg
+[ atoms ]
+SC1 { }
+VNL { }
++VNL { }
++SC1 { }
+[ pairs ]
+SC1 +SC1 1 5.200000e-01    3.550000e+00
+[ edges ]
+SC1 VNL
+VNL +VNL
++VNL +SC1
+
+[ link ]
+[ atoms ]
+SC1 {"resname": $vinyl_tiny }
+VNL {"resname": $vinyl_tiny }
++VNL {"resname": $vinyl_small }
++SC1 {"resname": $vinyl_small }
+[ pairs ]
+SC1 +SC1 1 4.800000e-01 3.0e+00
+[ edges ]
+SC1 VNL
+VNL +VNL
++VNL +SC1
+
+[ link ]
+[ atoms ]
+SC1 {"resname": $vinyl_small }
+VNL {"resname": $vinyl_small }
++VNL {"resname": $vinyl_tiny }
++SC1 {"resname": $vinyl_tiny }
+[ pairs ]
+SC1 +SC1 1 4.800000e-01 3.0e+00
+[ edges ]
+SC1 VNL
+VNL +VNL
++VNL +SC1
+
+[ link ]
+[ atoms ]
+SC1 {"resname": $vinyl_reg }
+VNL {"resname": $vinyl_reg }
++VNL {"resname": $vinyl_tiny }
++SC1 {"resname": $vinyl_tiny }
+[ pairs ]
+SC1 +SC1 1 5.000000e-01 3.0e+00
+[ edges ]
+SC1 VNL
+VNL +VNL
++VNL +SC1
+
+[ link ]
+[ atoms ]
+SC1 {"resname": $vinyl_tiny }
+VNL {"resname": $vinyl_tiny }
++VNL {"resname": $vinyl_reg }
++SC1 {"resname": $vinyl_reg }
+[ pairs ]
+SC1 +SC1 1 5.000000e-01 3.0e+00
+[ edges ]
+SC1 VNL
+VNL +VNL
++VNL +SC1
+
+
+[ link ]
+[ atoms ]
+SC1 {"resname": $vinyl_small }
+VNL {"resname": $vinyl_small }
++VNL {"resname": $vinyl_reg }
++SC1 {"resname": $vinyl_reg }
+[ pairs ]
+SC1 +SC1 1 5.100000e-01 3.55e+00
+[ edges ]
+SC1 VNL
+VNL +VNL
++VNL +SC1
+
+
+
+[ link ]
+[ atoms ]
+SC1 {"resname": $vinyl_reg}
+VNL {"resname": $vinyl_reg }
++VNL {"resname": $vinyl_small }
++SC1 {"resname": $vinyl_small }
+[ pairs ]
+SC1 +SC1 1 5.100000e-01 3.55e+00
+[ edges ]
+SC1 VNL
+VNL +VNL
++VNL +SC1
