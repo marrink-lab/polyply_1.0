@@ -1,0 +1,1 @@
+polyply gen_params -lib ol21 -seq RA5:1 RA:4 RA3:1 -name RNA -o RNA.itp
