@@ -63,17 +63,57 @@ resname $PEO_VINYL_RES
 [ atoms ]
 VC1 { }
 VC2 { }
-SC3 { }
+SC1 { }
 +EC1 { }
 +O1 { }
 +EC2 { }
 [ angles ]
-SC3 VC1 +EC1 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
+SC1 VC2 +EC1 2 ga_15 {"comment":"CHn-CHn-C,CHn,OA,OE,NR,NT,NL", "group":"link"}
 [ pairs ]
-SC3 +O1 1 { "group": "link" }
+SC1 +O1 1 { "group": "link" }
 [ edges ]
 VC1 VC2
-VC2 SC3
+VC2 SC1
+VC2 +EC1
++EC1 +O1
++EC1 +EC2
+;
+[ link ]
+; side chain substiuent vinyl -> ether
+resname $PEO_VINYL_RES
+[ atoms ]
+VC1 { }
+VC2 { }
+SC1 { }
+SC2 { }
++EC1 { }
++O1 { }
++EC2 { }
+[ pairs ]
+SC2 +EC1 1 { "group": "link" }
+[ edges ]
+VC1 VC2
+VC2 SC1
+SC1 SC2
+VC2 +EC1
++EC1 +O1
++EC1 +EC2
+;
+[ link ]
+; side chain substiuent vinyl PMMA like -> ether
+resname $PEO_VINYL_RES
+[ atoms ]
+VC1 { }
+VC2 { }
+SB1 { }
++EC1 { }
++O1 { }
++EC2 { }
+[ pairs ]
+SB1 +O1 1 { "group": "link" }
+[ edges ]
+VC1 VC2
+VC2 SB1
 VC2 +EC1
 +EC1 +O1
 +EC1 +EC2
@@ -87,16 +127,35 @@ O1 { }
 EC2 { }
 +VC1 { }
 +VC2 { }
-+SC3 { }
++SC1 { }
 [ pairs ]
-EC2 +SC3 1 { "group": "link" }
+EC2 +SC1 1 { "group": "link" }
 [ edges ]
 EC1 O1
 O1 EC2
 EC2 +VC1
 +VC1 +VC2
-+VC2 +SC3
-
++VC2 +SC1
+;
+[ link ]
+; side PMMA like chain substiuent ether -> vinyl
+resname $PEO_VINYL_RES
+[ atoms ]
+EC1 { }
+O1 { }
+EC2 { }
++VC1 { }
++VC2 { }
++SB1 { }
+[ pairs ]
+O1 +SB1 1 { "group": "link" }
+[ edges ]
+EC1 O1
+O1 EC2
+EC2 +VC1
++VC1 +VC2
++VC2 +SB1
+;
 [ link ]
 resname $PEO_VINYL_RES
 ; vinyl -> vinyl -> ether
