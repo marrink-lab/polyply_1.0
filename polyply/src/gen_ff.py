@@ -43,6 +43,14 @@ def _clean_opls_atomtypes(topology):
         mol.relabel_and_redo_res_graph(mapping={})
     return topology
 
+def _make_edges_from_vs(molecule):
+    for inter_type, inters in molecule.interactions.items():
+        if "virtual" in inter_type:
+            for inter in inters:
+                ref = inter.atoms[0]
+                for anchor in inter.atoms[1:]:
+                    molecule.add_edge(ref, anchor)
+
 def _read_itp_file(itppath):
     """
     small wrapper for reading itps
@@ -54,6 +62,8 @@ def _read_itp_file(itppath):
     block = next(iter(force_field.blocks.values()))
     mol = block.to_molecule()
     mol.make_edges_from_interaction_type(type_="bonds")
+    # make edges from VS
+    _make_edges_from_vs(mol)
     return mol
 
 def gen_ff(itppath, smile_str, outpath, inpath=[], res_charges=None):
@@ -105,7 +115,7 @@ def gen_ff(itppath, smile_str, outpath, inpath=[], res_charges=None):
         nx.set_node_attributes(new_block, 1, "resid")
         new_block.nrexcl = target_mol.nrexcl
         force_field.blocks[name] = new_block
-        set_charges(new_block, res_graph, name)
+        #set_charges(new_block, res_graph, name)
         balance_charges(new_block,
                         topology=top,
                         charge=float(crg_dict[name]))

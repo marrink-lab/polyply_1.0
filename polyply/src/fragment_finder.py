@@ -15,6 +15,21 @@ import networkx as nx
 from vermouth.graph_utils import make_residue_graph
 from polyply.src.graph_utils import find_one_ismags_match
 
+def remove_special_nodes(graph, elements=["virtual", "H"]):
+    """
+    Returns a subgraph of a molecule sans atoms that are
+    specified in the `elements` list and annotates the
+    number of removed atoms on each remaining node.
+    """
+    not_hnodes = [node for node in graph.nodes if graph.nodes[node]["element"] not in elements]
+    not_h_graph = graph.subgraph(not_hnodes)
+    for node in not_hnodes:
+        for element in elements:
+            count = sum(1 for neighbor in nx.neighbors(graph, node) if graph.nodes[neighbor]["element"] == element)
+            tag = f"{element}count"
+            not_h_graph.nodes[node][tag] = count
+    return not_h_graph
+
 class FragmentFinder():
     """
     This class enables finding and labelling of fragments
@@ -86,6 +101,9 @@ class FragmentFinder():
             residue graph of the molecule
         """
         self.molecule = molecule
+        # we need to make a copy and remove the hydrogen atoms
+        # and virtual sides
+        #self.molecule = molecule.copy()
         self.match_keys = ['element'] #, 'mass', 'degree'] #, 'charge']
         self.masses_to_element = {16: "O",
                                   14: "N",
@@ -102,10 +120,15 @@ class FragmentFinder():
 
             # set the element attribute for each atom in the
             # molecule
+            vs_nodes = []
             for node in self.molecule.nodes:
+                # we also need to filter out virtual-sides
                 mass = round(self.molecule.nodes[node]["mass"])
-                self.molecule.nodes[node]["element"] = self.masses_to_element[mass]
-                self.molecule.nodes[node]["degree"] = self.molecule.degree(node)
+                if mass == 0:
+                    self.molecule.nodes[node]["element"] = "virtual"
+                else:
+                    self.molecule.nodes[node]["element"] = self.masses_to_element[mass]
+                    self.molecule.nodes[node]["degree"] = self.molecule.degree(node)
 
     def _node_match(self, node1, node2):
         """
@@ -137,27 +160,64 @@ class FragmentFinder():
         ----------
         fragment_graphs: list[nx.Graph]
         """
+        # return the subgraph on which to match
+        # that is sans hatoms and virtual nodes
+        match_target = remove_special_nodes(self.molecule)
+
+        match_reference = remove_special_nodes(reference_graph)
+
         # find one correspondance
-        mapping = find_one_ismags_match(self.molecule,
-                                        reference_graph,
+        mapping = find_one_ismags_match(match_target,
+                                        match_reference,
                                         node_match=self._node_match)
+
         # now assign the attributes from the reference graph to
         # the target molecule
         for target, ref in mapping.items():
             for attr in ['resname', 'resid', 'atomname']:
                 self.molecule.nodes[target][attr] = reference_graph.nodes[ref][attr]
 
+        # we are now left with some nodes that were not covered in the
+        # mapping (e.g. hydrogen atoms or virtual atoms)
+        _names = {}
+        _counter = {}
+        for node in self.molecule.nodes:
+            node_name = self.molecule.nodes[node]["atomname"]
+            if not self.molecule.nodes[node].get('resid', False):
+                element = self.molecule.nodes[node].get('element', None)
+                #assert element in special_elements
+                anchors = [ anchor for anchor in self.molecule.neighbors(node) if self.molecule.nodes[anchor].get('resid', False)]
+                anchors_names = tuple(self.molecule.nodes[node]["atomname"] for node in anchors)
+                print(anchors_names)
+                resids = [self.molecule.nodes[anchor]["resid"] for anchor in anchors]
+                assert len(set(resids)) == 1
+                self.molecule.nodes[node]["resid"] = resids[0]
+                self.molecule.nodes[node]["resname"] = self.molecule.nodes[anchors[0]]["resname"]
+                if anchors_names in _names:
+                    atomname = _names[anchors_names]
+                else:
+                   atomname = self.molecule.nodes[node]["element"][0] + f"{len(_names)}"
+                   _names[anchors_names] = atomname
+                idx = _counter.get((anchors_names, resids[0]), 0)
+                _counter[(anchors_names, resids[0])] = idx + 1
+                atomname = atomname + f"{idx}"
+                self.molecule.nodes[node]["atomname"] = atomname #@ self.molecule.nodes[].get("atomname")
+                print(node, atomname, resids)
         # now we make the residue graph and extract
         self.make_res_graph()
 
         # finally we simply collect one graph per restype
-        # which are the most centrail (i.e. avoid ends)
+        # which are the most central (i.e. avoid ends)
         unique_fragments = {}
         frag_centrality = {}
         centrality = nx.betweenness_centrality(self.res_graph)
         for res in self.res_graph:
             resname = self.res_graph.nodes[res]['resname']
+            print(self.res_graph.nodes[res]['graph'].nodes(data="atomname"))
             if resname not in unique_fragments or frag_centrality[resname] < centrality[res]:
                 unique_fragments[resname] = self.res_graph.nodes[res]['graph']
                 frag_centrality[resname] = centrality[res]
+        print("---->")
+        for resname, frag in unique_fragments.items():
+            print(resname, frag.nodes(data='atomname'))
         return unique_fragments, self.res_graph
