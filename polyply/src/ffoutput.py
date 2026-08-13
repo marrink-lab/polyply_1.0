@@ -102,7 +102,9 @@ class ForceFieldDirectiveWriter():
                     atom_string = " ".join(atoms) + " -- "
                     param_string = " ".join(interaction.parameters)
 
-                meta_string = json.dumps(interaction.meta)
+                meta_string = ""
+                if interaction.meta:
+                    meta_string = json.dumps(interaction.meta)
                 line = atom_string + " " + param_string + " " + meta_string + "\n"
                 self.stream.write(line)
 
