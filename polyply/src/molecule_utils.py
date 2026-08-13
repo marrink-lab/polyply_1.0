@@ -176,12 +176,14 @@ def extract_links(molecule):
                 #new_atoms = interaction.atoms
                 # to account for the fact when multiple interactions with the same
                 # atom patterns need to be written to ff
-                new_meta.update({"version": idx})
-                new_meta.update({"comment": "link"})
+                if "virtual" not in inter_type and "excl" not in inter_type:
+                    new_meta.update({"version": idx})
+                    new_meta.update({"comment": "link"})
                 had_parameters.append(interaction.parameters)
                 # map atoms to proper atomnames ..
                 link.interactions[inter_type].append(interaction)
         links.append(link)
+
     return links
 
 
@@ -284,7 +286,6 @@ def find_termini_mods(meta_molecule, molecule, force_field):
             for attr in ['atype', 'mass']:
                 if target_attrs[attr] != ref_attrs[attr]:
                     replace_dict[node][attr] = target_attrs[attr]
-                    print(target_attrs['atomname'], target_attrs[attr], ref_attrs[attr])
         # a little dangerous but mostly ok; if there are no changes to
         # the atoms we can continue
         if len(replace_dict) == 0:
