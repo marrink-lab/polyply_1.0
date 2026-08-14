@@ -132,7 +132,7 @@ def extract_links(molecule):
             # compute the resid offset to be used for the atom prefixes
             min_resid = min(resids)
             diff = resids - min_resid
-            pattern = tuple(set(list(zip(diff, resnames))))
+            pattern = tuple(sorted(tuple(set(list(zip(diff, resnames))))))
 
             # in this case all interactions are in a block and we skip
             if np.sum(diff) == 0:
@@ -183,6 +183,9 @@ def extract_links(molecule):
                 # map atoms to proper atomnames ..
                 link.interactions[inter_type].append(interaction)
         links.append(link)
+
+    for link in links:
+        print(link.interactions.keys())
 
     return links
 
@@ -282,10 +285,12 @@ def find_termini_mods(meta_molecule, molecule, force_field):
         replace_dict = defaultdict(dict)
         for node in target_block.nodes:
             target_attrs = target_block.nodes[node]
+            print(ref_block.nodes)
             ref_attrs = ref_block.nodes[target_attrs['atomname']]
             for attr in ['atype', 'mass']:
                 if target_attrs[attr] != ref_attrs[attr]:
                     replace_dict[node][attr] = target_attrs[attr]
+                    print(target_attrs['atomname'], target_attrs[attr], ref_attrs[attr])
         # a little dangerous but mostly ok; if there are no changes to
         # the atoms we can continue
         if len(replace_dict) == 0:

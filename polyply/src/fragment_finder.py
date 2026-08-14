@@ -177,6 +177,19 @@ class FragmentFinder():
             for attr in ['resname', 'resid', 'atomname']:
                 self.molecule.nodes[target][attr] = reference_graph.nodes[ref][attr]
 
+        # potentially hydrogen atoms may be their own residues
+        # we deal with those first
+        rev_mapping = {value: key for key, value in mapping.items()}
+        ref_resnames = nx.get_node_attributes(reference_graph, "resname")
+        for node, resname in ref_resnames.items():
+            if "ter" in resname and reference_graph.nodes[node]["element"] == "H":
+                anchor = list(reference_graph.neighbors(node))[0]
+                for target in self.molecule.neighbors(rev_mapping[anchor]):
+                    if self.molecule.nodes[target]["element"] == "H":
+                        break
+                for attr in ['resname', 'resid', 'atomname']:
+                    self.molecule.nodes[target][attr] = reference_graph.nodes[node][attr]
+
         # we are now left with some nodes that were not covered in the
         # mapping (e.g. hydrogen atoms or virtual atoms)
         _names = {}
@@ -185,10 +198,8 @@ class FragmentFinder():
             node_name = self.molecule.nodes[node]["atomname"]
             if not self.molecule.nodes[node].get('resid', False):
                 element = self.molecule.nodes[node].get('element', None)
-                #assert element in special_elements
                 anchors = [ anchor for anchor in self.molecule.neighbors(node) if self.molecule.nodes[anchor].get('resid', False)]
                 anchors_names = tuple(self.molecule.nodes[node]["atomname"] for node in anchors)
-                print(anchors_names)
                 resids = [self.molecule.nodes[anchor]["resid"] for anchor in anchors]
                 assert len(set(resids)) == 1
                 self.molecule.nodes[node]["resid"] = resids[0]
@@ -201,8 +212,8 @@ class FragmentFinder():
                 idx = _counter.get((anchors_names, resids[0]), 0)
                 _counter[(anchors_names, resids[0])] = idx + 1
                 atomname = atomname + f"{idx}"
-                self.molecule.nodes[node]["atomname"] = atomname #@ self.molecule.nodes[].get("atomname")
-                print(node, atomname, resids)
+                self.molecule.nodes[node]["atomname"] = atomname
+
         # now we make the residue graph and extract
         self.make_res_graph()
 
@@ -213,11 +224,7 @@ class FragmentFinder():
         centrality = nx.betweenness_centrality(self.res_graph)
         for res in self.res_graph:
             resname = self.res_graph.nodes[res]['resname']
-            print(self.res_graph.nodes[res]['graph'].nodes(data="atomname"))
             if resname not in unique_fragments or frag_centrality[resname] < centrality[res]:
                 unique_fragments[resname] = self.res_graph.nodes[res]['graph']
                 frag_centrality[resname] = centrality[res]
-        print("---->")
-        for resname, frag in unique_fragments.items():
-            print(resname, frag.nodes(data='atomname'))
         return unique_fragments, self.res_graph
