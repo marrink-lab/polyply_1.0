@@ -106,6 +106,9 @@ def _get_bonds(block, topology=None):
                             params = topology.types['bonds'][batoms][0][0][1]
                         elif batoms[::-1] in topology.types['bonds']:
                             params = topology.types['bonds'][batoms[::-1]][0][0][1]
+                        else:
+                            msg = f"Cannot find bond length for atom types {batoms} in topology."
+                            raise ValueError(msg)
                         bonds[(nodes_to_count[idx], nodes_to_count[jdx])] = float(params)
                     else:
                         msg = ("Cannot find bond lengths. If your force field uses bondtypes lile"

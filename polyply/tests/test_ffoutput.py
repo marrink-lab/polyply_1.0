@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from io import StringIO
 from pathlib import Path
 import pytest
 import vermouth
@@ -85,6 +86,7 @@ def equal_ffs(ff1, ff2):
      'oplsaaLigParGen',
  #    'martini2',
      'parmbsc1',
+     'martini3',
 ])
 def test_ffoutput(tmp_path, libname):
     """
@@ -102,3 +104,32 @@ def test_ffoutput(tmp_path, libname):
             # read the smae forcefield file
             force_field_target = _read_force_field(tmp_file)
             assert equal_ffs(force_field, force_field_target)
+
+
+def test_ffoutput_write_block_edges_false():
+    """
+    With write_block_edges=False, a block's [ edges ] directive must be
+    omitted, but a link's own edges must still be written unconditionally.
+    """
+    force_field = vermouth.forcefield.ForceField("test")
+    block = vermouth.molecule.Block(force_field=force_field)
+    block.add_nodes_from([("BB", {"atype": "P1", "resid": 1, "resname": "A",
+                                  "atomname": "BB", "charge_group": 1, "charge": 0.0}),
+                          ("SC1", {"atype": "P2", "resid": 1, "resname": "A",
+                                   "atomname": "SC1", "charge_group": 1, "charge": 0.0})])
+    block.add_edge("BB", "SC1")
+    block.nrexcl = 1
+    force_field.blocks["A"] = block
+
+    link = vermouth.molecule.Link()
+    link.add_edge("BB", "+BB")
+    force_field.links.append(link)
+
+    stream = StringIO()
+    ForceFieldDirectiveWriter(forcefield=force_field, stream=stream,
+                              write_block_edges=False).write()
+    text = stream.getvalue()
+
+    moleculetype_section, link_section = text.split("[ link ]")
+    assert "[ edges ]" not in moleculetype_section
+    assert "[ edges ]" in link_section

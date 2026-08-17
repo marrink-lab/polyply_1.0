@@ -42,13 +42,16 @@ class ForceFieldDirectiveWriter():
 
         stream: ``
             the stream to which to write; must have a write method
+
+        write_block_edges: bool
+            whether to write the `[ edges ]` directive for blocks
         """
         self.forcefield = forcefield
         self.stream = stream
         # these attributes have a specific order in the moleculetype section
         self.normal_order_block_atoms = ["atype", "resid", "resname",
                                          "atomname", "charge_group", "charge", "mass"]
-        self.write_block_edges = True
+        self.write_block_edges = write_block_edges
 
     def write(self):
         """
@@ -65,13 +68,9 @@ class ForceFieldDirectiveWriter():
                 self.write_edges(block.edges)
 
         for link in self.forcefield.links:
-            if link.patterns:
-                nometa = True
-            else:
-                nometa = False
             self.max_idx = max(len(node) for node in link.nodes)
             self.write_link_header()
-            self.write_atoms_link(link.nodes(data=True), nometa)
+            self.write_atoms_link(link.nodes(data=True))
             self.write_interaction_dict(link.interactions)
             self.write_edges(link.edges)
             if link.non_edges:
@@ -175,7 +174,7 @@ class ForceFieldDirectiveWriter():
 
             self.stream.write(template.format(idx=idx, max_length=max_length, **write_attrs))
 
-    def write_atoms_link(self, nodes, nometa=False):
+    def write_atoms_link(self, nodes):
         """
         Writes the nodes/atoms of the link atomtype directive to `self.stream`.
         All attributes are written as json style dicts.
@@ -191,10 +190,7 @@ class ForceFieldDirectiveWriter():
             attributes = {key: value for key, value in attributes.items() if key != "order"}
             attributes = _choice_to_str(attributes)
             attr_line = " " + json.dumps(attributes)
-            if nometa:
-                line = str(node_key) + " { }\n"
-            else:
-                line = str(node_key) + attr_line + "\n"
+            line = str(node_key) + attr_line + "\n"
             self.stream.write(line)
 
     def write_link_header(self):
