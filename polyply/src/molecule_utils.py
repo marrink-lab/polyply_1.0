@@ -289,9 +289,14 @@ def find_termini_mods(meta_molecule, molecule, force_field):
         if len(replace_dict) == 0:
             continue
 
-        # bonded interactions could be different too so we need to check them
+        # bonded interactions could be different too so we need to check them;
+        # this includes interactions entirely within the neighbor residue,
+        # ones entirely within the terminal residue itself, and the bond(s)
+        # that directly connect the two residues
+        junction_atoms = list(target_block.nodes) + list(meta_molecule.nodes[meta_node]['graph'].nodes)
+        junction_block = molecule.subgraph(junction_atoms)
         overwrite_inters = defaultdict(list)
-        for inter_type, inters in target_block.interactions.items():
+        for inter_type, inters in junction_block.interactions.items():
             versions = {}
             for target_inter in inters:
                 mol_atoms_to_link_atoms, edges, resnames = _extract_edges_from_shortest_path(target_inter.atoms,
@@ -330,5 +335,19 @@ def find_termini_mods(meta_molecule, molecule, force_field):
         edges = find_connecting_edges(meta_molecule, molecule, [meta_node, neigh_node])
         for ndx, jdx in edges:
             link.add_edge(mol_to_link[ndx], mol_to_link[jdx])
+
+        # without further constraints this link would also match at any
+        # interior residue that happens to look like the terminal one
+        # locally, because subgraph isomorphism does not care about extra
+        # edges beyond those required by the link. A non-edge on the atom
+        # that connects to the neighbor rules those out, by requiring that
+        # it has no further neighbor on the side facing away from the
+        # neighbor, i.e. that it is a genuine chain end
+        outward_order = 1 if resids[1] > resids[0] else -1
+        for ndx, jdx in edges:
+            anchor = mol_to_link[ndx]
+            non_edge_attrs = {'atomname': molecule.nodes[ndx]['atomname'],
+                              'order': outward_order}
+            link.non_edges.append([anchor, non_edge_attrs])
 
     return force_field

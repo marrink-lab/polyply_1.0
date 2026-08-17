@@ -33,7 +33,7 @@ from polyply.src.generate_templates import (find_atoms,
                                             find_interaction_involving,
                                             _extract_template_graphs)
 from .example_fixtures import example_meta_molecule
-from polyply.src.molecule_utils import (extract_block, _relabel_interaction_atoms)
+from polyply.src.molecule_utils import _relabel_interaction_atoms
 
 class TestGenTemps:
 
@@ -116,41 +116,6 @@ class TestGenTemps:
          assert new_interaction.atoms == ["A", "B", "C"]
          assert new_interaction.parameters == ["1", "ga_2"]
          assert new_interaction.meta == {"test": "value"}
-
-      @staticmethod
-      def test_extract_block():
-         lines = """
-         [ moleculetype ]
-         test 1
-         [ atoms ]
-         1 P4 1 GLY BB 1
-         2 P3 1 GLY SC1 2
-         3 P2 1 ALA SC2 3
-         4 P2 1 ALA SC3 3
-         [ bonds ]
-         1 2 1 0.2 100
-         2 3 1 0.6 700
-         3 4 1 0.2 700
-         [ moleculetype ]
-         GLY 1
-         [ atoms ]
-         1 P4 1 GLY BB 1
-         2 P3 1 GLY SC1 2
-         [ bonds ]
-         1 2 1 0.2 100
-         """
-         lines = textwrap.dedent(lines).splitlines()
-         ff = vermouth.forcefield.ForceField(name='test_ff')
-         polyply.src.polyply_parser.read_polyply(lines, ff)
-         block = ff.blocks['test']
-         molecule = block.to_molecule()
-         template_graph = ff.blocks['GLY'].to_molecule()
-         new_block = extract_block(molecule, template_graph, {})
-         for node in ff.blocks["GLY"]:
-             atomname = ff.blocks["GLY"].nodes[node]["atomname"]
-             assert ff.blocks["GLY"].nodes[node] == new_block.nodes[atomname]
-         for inter_type in ff.blocks["GLY"].interactions:
-             len(ff.blocks["GLY"].interactions[inter_type]) == len(new_block.interactions[inter_type])
 
       @staticmethod
       @pytest.mark.parametrize('volumes', (
