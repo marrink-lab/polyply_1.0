@@ -163,9 +163,7 @@ class FragmentFinder():
         # return the subgraph on which to match
         # that is sans hatoms and virtual nodes
         match_target = remove_special_nodes(self.molecule)
-
         match_reference = remove_special_nodes(reference_graph)
-
         # find one correspondance
         mapping = find_one_ismags_match(match_target,
                                         match_reference,
@@ -174,6 +172,8 @@ class FragmentFinder():
         # now assign the attributes from the reference graph to
         # the target molecule
         for target, ref in mapping.items():
+            for neigh in self.molecule.neighbors(target):
+                if self.molecule.nodes[neigh]["element"] != "H":
             for attr in ['resname', 'resid', 'atomname']:
                 self.molecule.nodes[target][attr] = reference_graph.nodes[ref][attr]
 
@@ -187,9 +187,10 @@ class FragmentFinder():
                 for target in self.molecule.neighbors(rev_mapping[anchor]):
                     if self.molecule.nodes[target]["element"] == "H":
                         break
+                else:
+                    raise IOError
                 for attr in ['resname', 'resid', 'atomname']:
                     self.molecule.nodes[target][attr] = reference_graph.nodes[node][attr]
-
         # we are now left with some nodes that were not covered in the
         # mapping (e.g. hydrogen atoms or virtual atoms)
         _names = {}
@@ -216,7 +217,6 @@ class FragmentFinder():
 
         # now we make the residue graph and extract
         self.make_res_graph()
-
         # finally we simply collect one graph per restype
         # which are the most central (i.e. avoid ends)
         unique_fragments = {}
