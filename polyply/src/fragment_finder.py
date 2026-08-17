@@ -172,8 +172,6 @@ class FragmentFinder():
         # now assign the attributes from the reference graph to
         # the target molecule
         for target, ref in mapping.items():
-            for neigh in self.molecule.neighbors(target):
-                if self.molecule.nodes[neigh]["element"] != "H":
             for attr in ['resname', 'resid', 'atomname']:
                 self.molecule.nodes[target][attr] = reference_graph.nodes[ref][attr]
 
