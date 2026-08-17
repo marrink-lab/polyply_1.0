@@ -115,7 +115,7 @@ def gen_ff(itppath, smile_str, outpath, inpath=[], res_charges=None):
         nx.set_node_attributes(new_block, 1, "resid")
         new_block.nrexcl = target_mol.nrexcl
         force_field.blocks[name] = new_block
-        #set_charges(new_block, res_graph, name)
+        set_charges(new_block, res_graph, name)
         balance_charges(new_block,
                         topology=top,
                         charge=float(crg_dict[name]))
