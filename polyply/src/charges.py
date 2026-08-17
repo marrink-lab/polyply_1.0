@@ -144,7 +144,6 @@ def balance_charges(block, charge=0, tol=10**-8, decimals=8, topology=None):
     charges = np.array(list(nx.get_node_attributes(block, 'charge').values()))
     if np.isclose(charges.sum(), 0, atol=tol):
         return block
-
     # we need to equalize the charge
     bonds = _get_bonds(block, topology)
     ref_dipoles = bond_dipoles(bonds, charges)
