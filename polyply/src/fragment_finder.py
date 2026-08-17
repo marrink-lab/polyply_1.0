@@ -32,38 +32,43 @@ def remove_special_nodes(graph, elements=["virtual", "H"]):
 
 class FragmentFinder():
     """
-    This class enables finding and labelling of fragments
-    in the all-atom description of molecules. Fragments are
-    small networkx graphs. It makes a number of implicit
-    assumptions:
+    Label the atoms of an all-atom target molecule (resid, resname,
+    atomname) by aligning it with an already-labelled all-atom
+    reference molecule graph.
+
+    The target molecule and the reference graph are aligned using a
+    graph isomorphism match (see `_match_reference_to_molecule`). For
+    performance, this match is computed on reduced copies of both
+    graphs from which hydrogen and virtual-site atoms have been
+    removed (`remove_special_nodes`), matching only on the atom
+    properties listed in `self.match_keys` (by default just
+    `element`). The resulting mapping is used to copy resid, resname,
+    and atomname from the reference graph onto the matched nodes of
+    the target molecule (`_label_matched_atoms`).
+
+    Because hydrogen and virtual-site atoms are excluded from the
+    match, they are not labelled by the isomorphism itself. Since
+    every such atom must belong to exactly one residue, they are
+    labelled afterwards by inspecting the anchor atom(s) they are
+    bonded to or constructed from: a hydrogen or virtual atom is
+    assigned the resid and resname of its already-labelled neighbor(s)
+    (`_label_unmatched_atoms`). Terminal hydrogen atoms that form
+    their own residue in the reference graph (e.g. a capping -H) have
+    no direct counterpart among the matched atoms, so they are
+    resolved separately beforehand via their anchor atom
+    (`_label_hydrogen_termini`).
+
+    Finally, a residue graph is built from the fully labelled target
+    molecule, and for each resname the most central residue instance
+    (highest betweenness centrality, so as to avoid picking terminal
+    residues) is kept as the representative fragment
+    (`_select_unique_fragments`).
+
+    This class makes a number of implicit assumptions:
 
     - the molecule is connected and acyclic
     - the residue graph of the molecule is linear
     - the nodes by index increase with increasing resid order
-    - the graphs provided as fragment graphs follow the sequence
-      of residues. For example, given a polymer A5-B2-C3-A3
-      residue sequence, fragments should be provided as a list
-      A,B,C,A. The length of the block does not matter.
-
-    The algorithm loops over the fragments and finds a match
-    between a fragment and the molecule graph using a subgraph
-    isomorphism based on the element attribute. This match is
-    then used to set the degree attribute on the fragment. Next
-    all other subgraph isomorphisms are found under the condition
-    that each found match must connected to the previous residue.
-    Nodes are labelled with a resid and resname. This part is done
-    by the `self.label_fragment_from_graph` class method.
-
-    Subsequently, the algorithm proceeds to merge all left-over
-    atoms to the residue they are connected with assining a resid
-    and resname from that residue. This procedure is done by
-    `self.label_unmatched_atoms`.
-
-    Finally, the code goes over all residues and assigns a prefix to
-    all terminal residues. In addition residues with the same resname
-    are compared to each other using a subgraph isomorphism and if
-    they are not isomorphic as result of assigning left-over atoms,
-    the resname is appended by a number.
     """
 
     def __init__(self, molecule):
@@ -75,27 +80,16 @@ class FragmentFinder():
         Parameters
         ----------
         molecule: :class:`vermouth.molecule.Molecule`
-        prefix: str
-            the prefix used to label termini
+            the molecule to match against
 
         Attributes
         ----------
-        max_by_resid: dict[int][int]
-            number of atoms by resid
-        ter_prefix: str
-            the terminal prefix
-        resid: int
-            highest resid
-        assigned_atoms: list[`abc.hashable`]
-            atoms assinged to residues
         molecule: :class:`vermouth.molecule.Molecule`
             the molecule to match against
-        known_atom: `abc.hashable`
-            any atom that has been matched to a fragment
         match_keys: `list[str]`
             molecule properties to use in matching the fragment
             graphs in the second stage.
-        masses_to_elements: dict[int][str]
+        masses_to_element: dict[int][str]
             matches masses to elements
         res_graph: :class:`vermouth.molecule.Molecule`
             residue graph of the molecule
@@ -152,31 +146,63 @@ class FragmentFinder():
     def make_res_graph(self):
         self.res_graph = make_residue_graph(self.molecule)
 
-    def extract_unique_fragments(self, reference_graph):
+    def _match_reference_to_molecule(self, reference_graph):
         """
-        Call the label_fragment method for multiple fragments.
+        Find a subgraph isomorphism between the target molecule and
+        the reference graph. Hydrogen and virtual-site atoms are
+        excluded from both graphs before matching, since they are
+        not needed to uniquely determine the mapping and excluding
+        them is cheaper.
 
         Parameters
         ----------
-        fragment_graphs: list[nx.Graph]
+        reference_graph: :class:`networkx.Graph`
+
+        Returns
+        -------
+        dict
+            mapping of target molecule nodes to reference_graph nodes
         """
-        # return the subgraph on which to match
-        # that is sans hatoms and virtual nodes
         match_target = remove_special_nodes(self.molecule)
         match_reference = remove_special_nodes(reference_graph)
-        # find one correspondance
-        mapping = find_one_ismags_match(match_target,
-                                        match_reference,
-                                        node_match=self._node_match)
+        return find_one_ismags_match(match_target,
+                                      match_reference,
+                                      node_match=self._node_match)
 
-        # now assign the attributes from the reference graph to
-        # the target molecule
+    def _label_matched_atoms(self, mapping, reference_graph):
+        """
+        Copy resname, resid, and atomname from the reference graph
+        onto every target molecule node covered by `mapping`.
+
+        Parameters
+        ----------
+        mapping: dict
+            target molecule nodes mapped to reference_graph nodes,
+            as returned by `_match_reference_to_molecule`.
+        reference_graph: :class:`networkx.Graph`
+        """
         for target, ref in mapping.items():
             for attr in ['resname', 'resid', 'atomname']:
                 self.molecule.nodes[target][attr] = reference_graph.nodes[ref][attr]
 
-        # potentially hydrogen atoms may be their own residues
-        # we deal with those first
+    def _label_hydrogen_termini(self, mapping, reference_graph):
+        """
+        Label terminal hydrogen atoms that form their own residue in
+        the reference graph (e.g. a capping -H). Such atoms have no
+        counterpart in `mapping`, because hydrogens are excluded from
+        the isomorphism match. Instead, for each hydrogen terminal
+        residue in the reference graph, the corresponding anchor atom
+        is looked up in the target molecule and the one still
+        unlabelled hydrogen neighbor is assigned the terminal's
+        resname, resid, and atomname.
+
+        Parameters
+        ----------
+        mapping: dict
+            target molecule nodes mapped to reference_graph nodes,
+            as returned by `_match_reference_to_molecule`.
+        reference_graph: :class:`networkx.Graph`
+        """
         rev_mapping = {value: key for key, value in mapping.items()}
         ref_resnames = nx.get_node_attributes(reference_graph, "resname")
         for node, resname in ref_resnames.items():
@@ -189,34 +215,52 @@ class FragmentFinder():
                     raise IOError
                 for attr in ['resname', 'resid', 'atomname']:
                     self.molecule.nodes[target][attr] = reference_graph.nodes[node][attr]
-        # we are now left with some nodes that were not covered in the
-        # mapping (e.g. hydrogen atoms or virtual atoms)
+
+    def _label_unmatched_atoms(self):
+        """
+        Label all remaining target molecule nodes that were excluded
+        from the isomorphism match and not already handled by
+        `_label_hydrogen_termini` (i.e. hydrogen atoms and virtual
+        sites). Every such atom must belong to exactly one residue,
+        so it is assigned the resid and resname of its already
+        labelled neighbor(s) (its anchor atoms). Atoms sharing the
+        same set of anchor atomnames get systematically generated,
+        unique atomnames.
+        """
         _names = {}
         _counter = {}
         for node in self.molecule.nodes:
-            node_name = self.molecule.nodes[node]["atomname"]
-            if not self.molecule.nodes[node].get('resid', False):
-                element = self.molecule.nodes[node].get('element', None)
-                anchors = [ anchor for anchor in self.molecule.neighbors(node) if self.molecule.nodes[anchor].get('resid', False)]
-                anchors_names = tuple(self.molecule.nodes[node]["atomname"] for node in anchors)
-                resids = [self.molecule.nodes[anchor]["resid"] for anchor in anchors]
-                assert len(set(resids)) == 1
-                self.molecule.nodes[node]["resid"] = resids[0]
-                self.molecule.nodes[node]["resname"] = self.molecule.nodes[anchors[0]]["resname"]
-                if anchors_names in _names:
-                    atomname = _names[anchors_names]
-                else:
-                   atomname = self.molecule.nodes[node]["element"][0] + f"{len(_names)}"
-                   _names[anchors_names] = atomname
-                idx = _counter.get((anchors_names, resids[0]), 0)
-                _counter[(anchors_names, resids[0])] = idx + 1
-                atomname = atomname + f"{idx}"
-                self.molecule.nodes[node]["atomname"] = atomname
+            if self.molecule.nodes[node].get('resid', False):
+                continue
+            element = self.molecule.nodes[node].get('element', None)
+            anchors = [anchor for anchor in self.molecule.neighbors(node)
+                       if self.molecule.nodes[anchor].get('resid', False)]
+            anchors_names = tuple(self.molecule.nodes[anchor]["atomname"] for anchor in anchors)
+            resids = [self.molecule.nodes[anchor]["resid"] for anchor in anchors]
+            assert len(set(resids)) == 1
+            self.molecule.nodes[node]["resid"] = resids[0]
+            self.molecule.nodes[node]["resname"] = self.molecule.nodes[anchors[0]]["resname"]
+            if anchors_names in _names:
+                atomname = _names[anchors_names]
+            else:
+                atomname = element[0] + f"{len(_names)}"
+                _names[anchors_names] = atomname
+            idx = _counter.get((anchors_names, resids[0]), 0)
+            _counter[(anchors_names, resids[0])] = idx + 1
+            self.molecule.nodes[node]["atomname"] = atomname + f"{idx}"
 
-        # now we make the residue graph and extract
-        self.make_res_graph()
-        # finally we simply collect one graph per restype
-        # which are the most central (i.e. avoid ends)
+    def _select_unique_fragments(self):
+        """
+        Collect one representative residue graph per resname from
+        `self.res_graph`, preferring the most central residue
+        instance (highest betweenness centrality) so as to avoid
+        picking terminal residues.
+
+        Returns
+        -------
+        dict[str, nx.Graph]
+            resname mapped to a representative fragment graph
+        """
         unique_fragments = {}
         frag_centrality = {}
         centrality = nx.betweenness_centrality(self.res_graph)
@@ -225,4 +269,33 @@ class FragmentFinder():
             if resname not in unique_fragments or frag_centrality[resname] < centrality[res]:
                 unique_fragments[resname] = self.res_graph.nodes[res]['graph']
                 frag_centrality[resname] = centrality[res]
+        return unique_fragments
+
+    def extract_unique_fragments(self, reference_graph):
+        """
+        Label the target molecule according to `reference_graph` and
+        extract one representative fragment graph per residue type.
+
+        Parameters
+        ----------
+        reference_graph: :class:`networkx.Graph`
+            an all-atom reference graph already annotated with
+            resname, resid, and atomname on every node.
+
+        Returns
+        -------
+        dict[str, nx.Graph], :class:`networkx.Graph`
+            resname mapped to a representative fragment graph, and
+            the full residue graph of the labelled target molecule
+        """
+        mapping = self._match_reference_to_molecule(reference_graph)
+        self._label_matched_atoms(mapping, reference_graph)
+        # potentially hydrogen atoms may be their own residues;
+        # we deal with those first before the generic anchor-based
+        # labelling of unmatched atoms
+        self._label_hydrogen_termini(mapping, reference_graph)
+        self._label_unmatched_atoms()
+
+        self.make_res_graph()
+        unique_fragments = self._select_unique_fragments()
         return unique_fragments, self.res_graph
