@@ -96,7 +96,7 @@ def test_extract_block(lines, expected_bonds):
                Interaction(atoms=(4, 5), parameters=['1', '0.35', '500'], meta={}),]},
      {'bonds': [Interaction(atoms=['BB1', '+BB'],
                             parameters=['1', '0.30', '500'],
-                            meta={'version': 0, 'comment': 'link'}),
+                            meta={'version': 1, 'comment': 'link'}),
                ]},
     ),
     # double version dihedral spanning two residues
@@ -112,10 +112,10 @@ def test_extract_block(lines, expected_bonds):
      },
      {'dihedrals': [Interaction(atoms=['BB', 'BB1', '+BB', '+BB1'],
                                 parameters=['9', '120', '4', '1'],
-                                meta={'version': 0, 'comment': 'link'}),
+                                meta={'version': 1, 'comment': 'link'}),
                     Interaction(atoms=['BB', 'BB1', '+BB', '+BB1'],
                                 parameters=['9', '120', '4', '2'],
-                                meta={'version': 1, 'comment': 'link'}),]
+                                meta={'version': 2, 'comment': 'link'}),]
      },
     ),
     # four stacked GROMACS type 9 dihedrals on the same four atoms but
@@ -136,16 +136,16 @@ def test_extract_block(lines, expected_bonds):
      },
      {'dihedrals': [Interaction(atoms=['BB', 'BB1', '+BB', '+BB1'],
                                 parameters=['9', '180.00', '1.96', '1'],
-                                meta={'version': 0, 'comment': 'link'}),
-                    Interaction(atoms=['BB', 'BB1', '+BB', '+BB1'],
-                                parameters=['9', '0', '0.18', '2'],
                                 meta={'version': 1, 'comment': 'link'}),
                     Interaction(atoms=['BB', 'BB1', '+BB', '+BB1'],
-                                parameters=['9', '0', '0.33', '3'],
+                                parameters=['9', '0', '0.18', '2'],
                                 meta={'version': 2, 'comment': 'link'}),
                     Interaction(atoms=['BB', 'BB1', '+BB', '+BB1'],
+                                parameters=['9', '0', '0.33', '3'],
+                                meta={'version': 3, 'comment': 'link'}),
+                    Interaction(atoms=['BB', 'BB1', '+BB', '+BB1'],
                                 parameters=['9', '0', '0.12', '4'],
-                                meta={'version': 3, 'comment': 'link'}),]
+                                meta={'version': 4, 'comment': 'link'}),]
      },
     ),
     # 1-5 pairs spanning 3 residues
@@ -154,7 +154,7 @@ def test_extract_block(lines, expected_bonds):
                             meta={})]},
     {'pairs': [Interaction(atoms=['BB1', '++BB'],
                            parameters=[1],
-                           meta={'version': 0, 'comment': 'link'})]
+                           meta={'version': 1, 'comment': 'link'})]
     }),
     # redundant pair
     ({'pairs': [Interaction(atoms=(1, 5),
@@ -166,7 +166,7 @@ def test_extract_block(lines, expected_bonds):
                ],},
     {'pairs': [Interaction(atoms=['BB1', '+BB1'],
                            parameters=[1],
-                           meta={'version': 0, 'comment': 'link'})]
+                           meta={'version': 1, 'comment': 'link'})]
     }),
     # the exact same bond is listed twice (e.g. picked up from two
     # separate interactions in the source topology); the duplicate
@@ -180,7 +180,7 @@ def test_extract_block(lines, expected_bonds):
                ],},
     {'bonds': [Interaction(atoms=['BB1', '+BB'],
                            parameters=['1', '0.30', '500'],
-                           meta={'version': 0, 'comment': 'link'})]
+                           meta={'version': 1, 'comment': 'link'})]
     }),
     # exclusions (like virtual sites) are not numbered with a version
     # or tagged with a comment, unlike regular bonded interactions

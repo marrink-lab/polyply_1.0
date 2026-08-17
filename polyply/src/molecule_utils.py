@@ -176,7 +176,12 @@ def extract_links(molecule):
                 # to account for the fact when multiple interactions with the same
                 # atom patterns need to be written to ff
                 if "virtual" not in inter_type and "excl" not in inter_type:
-                    new_meta.update({"version": idx})
+                    # versions are 1-based: apply_links.py treats a missing
+                    # 'version' as 1 (i.e. matching/overwriting the base
+                    # block interaction), so the first entry here must be
+                    # tagged 1, not 0, or it ends up as an extra interaction
+                    # alongside the block's instead of replacing it
+                    new_meta.update({"version": idx + 1})
                     new_meta.update({"comment": "link"})
                 had_parameters.append(interaction.parameters)
                 # map atoms to proper atomnames ..
@@ -258,6 +263,29 @@ def extract_block(molecule, template_graph, defines):
 
     return block
 
+def _interaction_already_specified(candidate, inter_type, links):
+    """
+    Check if some link in `links` already has an interaction of `inter_type`
+    with the same atoms and parameters as `candidate` (version/comment
+    metadata is link-specific bookkeeping and is ignored for this check).
+
+    Parameters
+    ----------
+    candidate: :class:`vermouth.molecule.Interaction`
+    inter_type: str
+    links: list[:class:`vermouth.molecule.Link`]
+
+    Returns
+    -------
+    bool
+    """
+    candidate = candidate._replace(meta={})
+    for link in links:
+        for existing in link.interactions.get(inter_type, []):
+            if _interaction_equal(candidate, existing._replace(meta={}), inter_type):
+                return True
+    return False
+
 def find_termini_mods(meta_molecule, molecule, force_field):
     """
     Terminii are a bit special in the sense that they are often
@@ -303,6 +331,17 @@ def find_termini_mods(meta_molecule, molecule, force_field):
                                                                                              molecule,
                                                                                              min(resids))
                 link_atoms =  [mol_atoms_to_link_atoms[atom] for atom in target_inter.atoms]
+                # some of these interactions (e.g. the bond/angles/pairs that
+                # span the junction itself) may already be specified, with
+                # the same atoms and parameters, by a generic link that
+                # extract_links produced earlier for this same pattern
+                # elsewhere in the molecule (that link is not specific to
+                # termini, so it also matches here); re-adding them in this
+                # termini-specific link would just duplicate them once both
+                # links are applied, so skip them here
+                candidate = Interaction(atoms=link_atoms, parameters=target_inter.parameters, meta={})
+                if _interaction_already_specified(candidate, inter_type, force_field.links):
+                    continue
                 if tuple(link_atoms) in versions:
                     n = versions[tuple(link_atoms)] + 1
                     meta = {"version": n}
