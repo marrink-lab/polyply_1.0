@@ -22,7 +22,7 @@ from vermouth.forcefield import ForceField
 from vermouth.gmx.itp_read import read_itp
 import polyply
 from polyply import gen_ff, gen_params
-from polyply.src.graph_utils import find_one_ismags_match
+from polyply.src.graph_utils import find_one_graph_match
 from .test_ffoutput import (_read_force_field, equal_ffs)
 from .test_lib_files import _interaction_equal
 
@@ -44,7 +44,7 @@ def itp_equal(ref_mol, new_mol):
     Leightweight itp comparison.
     """
     # new_node: ref_node
-    match = find_one_ismags_match(new_mol, ref_mol, _mass_match)
+    match = find_one_graph_match(new_mol, ref_mol, _mass_match)
     for node in new_mol.nodes:
         # check if important attributes are the same
         #assert new_mol.nodes[node]['atype'] == ref_mol.nodes[match[node]]['atype']

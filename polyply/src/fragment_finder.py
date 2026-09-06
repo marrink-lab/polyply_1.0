@@ -13,7 +13,7 @@
 # limitations under the License.
 import networkx as nx
 from vermouth.graph_utils import make_residue_graph
-from polyply.src.graph_utils import find_one_ismags_match
+from polyply.src.graph_utils import find_one_graph_match
 
 def remove_special_nodes(graph, elements=["virtual", "H"]):
     """
@@ -165,9 +165,9 @@ class FragmentFinder():
         """
         match_target = remove_special_nodes(self.molecule)
         match_reference = remove_special_nodes(reference_graph)
-        return find_one_ismags_match(match_target,
-                                      match_reference,
-                                      node_match=self._node_match)
+        return find_one_graph_match(match_target,
+                                    match_reference,
+                                    node_match=self._node_match)
 
     def _label_matched_atoms(self, mapping, reference_graph):
         """
