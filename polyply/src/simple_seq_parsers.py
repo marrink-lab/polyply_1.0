@@ -361,7 +361,7 @@ def parse_simple_seq_string(sequence):
     Parameters
     -----------
     sequence: list[str]
-            string of residues format name:number
+        string of residues format name:number
 
     Returns:
     ----------
