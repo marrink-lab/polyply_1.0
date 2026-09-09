@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from collections import defaultdict
 import networkx as nx
 from vermouth.graph_utils import make_residue_graph
 from polyply.src.graph_utils import find_one_graph_match
@@ -249,6 +250,55 @@ class FragmentFinder():
             _counter[(anchors_names, resids[0])] = idx + 1
             self.molecule.nodes[node]["atomname"] = atomname + f"{idx}"
 
+    def _check_fragment_consistency(self):
+        """
+        Verify that all residues sharing a resname consist of the same atoms.
+
+        Only one block per resname is written to the force field (see
+        `_select_unique_fragments`), so a resname whose instances differ in
+        composition cannot be represented. That happens when a bonding
+        operator of a fragment is used in some places but left open in
+        others, because an open operator is capped with a hydrogen. The
+        resulting force field would be silently wrong, so we refuse it here
+        rather than let it fail later when the parameters are applied.
+
+        Raises
+        ------
+        IOError
+            if any resname occurs with more than one set of atomnames
+        """
+        compositions = defaultdict(lambda: defaultdict(list))
+        for res in self.res_graph:
+            attrs = self.res_graph.nodes[res]
+            graph = attrs['graph']
+            signature = tuple(sorted(graph.nodes[node]['atomname'] for node in graph))
+            compositions[attrs['resname']][signature].append(attrs['resid'])
+
+        problems = []
+        for resname, variants in sorted(compositions.items()):
+            if len(variants) == 1:
+                continue
+            common = set.intersection(*(set(sig) for sig in variants))
+            problems.append(f"Residue '{resname}' occurs with {len(variants)} "
+                            "different sets of atoms:")
+            for signature, resids in sorted(variants.items(), key=lambda item: len(item[0])):
+                extra = sorted(set(signature) - common)
+                shown = ', '.join(str(resid) for resid in sorted(resids)[:5])
+                if len(resids) > 5:
+                    shown += ', ...'
+                problems.append(f"  {len(signature)} atoms (resid {shown})"
+                                + (f"; extra atoms: {' '.join(extra)}" if extra else ""))
+        if problems:
+            raise IOError(
+                "\n".join(problems)
+                + "\nIn your CGsmiles string you describe two residues that are not equivalent with "
+                  "the same residue name. However, only one block per residue name is written to the "
+                  " force field, so these cannot all be described. Usually a bonding operator of the "
+                  " residue is used in some places and left open in others, where it is capped with "
+                  " a hydrogen. Make that cap explicit in the CGsmiles string by adding a terminal "
+                  "residue (e.g. #Hter=[>1][<1][H]) everywhere the operator is unused. Note that the "
+                  "name of such a residue must contain 'ter'.")
+
     def _select_unique_fragments(self):
         """
         Collect one representative residue graph per resname from
@@ -297,5 +347,6 @@ class FragmentFinder():
         self._label_unmatched_atoms()
 
         self.make_res_graph()
+        self._check_fragment_consistency()
         unique_fragments = self._select_unique_fragments()
         return unique_fragments, self.res_graph

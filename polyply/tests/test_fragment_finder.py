@@ -69,11 +69,15 @@ def _scramble_nodes(graph):
       ["CH3", "PEO", "OH"],
      ),
      # simple branch expansion
-    ("{[#PMA]([#PEO][#PEO][#OH])|3}.{#PEO=[$]COC[$],#PMA=[>]CC[<]C(=O)OC[$],#OH=[$]O}",
-    ["PMA", "PEO", "OH"]),
+    # branched sidechains; the chain ends are capped explicitly so that every
+    # PMA consists of the same atoms
+    ("{[#Hter][#PMA]([#PEO][#PEO][#OH])|3[#Hter]}."
+     "{#PEO=[$]COC[$],#PMA=[>]CC[<]C(=O)OC[$],#OH=[$]O,#Hter=[>][<][H]}",
+    ["PMA", "PEO", "OH", "Hter"]),
     # something with sulphur
-    ("{[#P3HT]|3}.{#P3HT=CCCCCCC1=C[$]SC[$]=C1}",
-    ["P3HT"])
+    # conjugated ring monomer, again with explicitly capped chain ends
+    ("{[#Hter][#P3HT]|3[#Hter]}.{#P3HT=CCCCCCC1=C[$]SC[$]=C1,#Hter=[$][H]}",
+    ["P3HT", "Hter"])
     ])
 def test_extract_fragments(big_smile, resnames):
     ff = ForceField("new")
@@ -113,3 +117,35 @@ def test_extract_fragments(big_smile, resnames):
 #        assert nx.is_isomorphic(fragments[resname],
 #                                ref_fragments.blocks[resname],
 #                                node_match=_frag_node_match)
+
+@pytest.mark.parametrize(
+    "cgsmiles_str, resname, n_versions",
+    [
+     # the chain ends are not capped, so the terminal PMA residues carry an
+     # extra hydrogen on the bonding operator that is left open there
+     ("{[#PMA]([#PEO][#PEO][#OH])|3}.{#PEO=[$]COC[$],#PMA=[>]CC[<]C(=O)OC[$],#OH=[$]O}",
+      "PMA", 3),
+     # same for a simple linear polymer without terminal residues
+     ("{[#P3HT]|3}.{#P3HT=CCCCCCC1=C[$]SC[$]=C1}",
+      "P3HT", 2),
+    ])
+def test_inconsistent_fragments_raise(cgsmiles_str, resname, n_versions):
+    """
+    Residues of the same name must consist of the same atoms; only one block
+    per resname is written, so anything else would silently produce a wrong
+    force field.
+    """
+    ff = ForceField("new")
+    meta = polyply.MetaMolecule.from_cgsmiles_str(force_field=ff,
+                                                  cgsmiles_str=cgsmiles_str,
+                                                  mol_name='ref',
+                                                  seq_only=False,
+                                                  all_atom=True)
+    target_molecule = _scramble_nodes(meta.molecule)
+    frag_finder = polyply.src.fragment_finder.FragmentFinder(target_molecule)
+    with pytest.raises(IOError) as error:
+        frag_finder.extract_unique_fragments(meta.molecule)
+    msg = str(error.value)
+    assert f"Residue '{resname}' occurs with {n_versions} different sets of atoms" in msg
+    # the message has to say what to do about it
+    assert "terminal residue" in msg
