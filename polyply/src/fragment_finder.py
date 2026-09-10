@@ -15,7 +15,6 @@ from collections import defaultdict
 import networkx as nx
 from vermouth.graph_utils import make_residue_graph
 from polyply.src.graph_utils import find_one_graph_match
-from .check_residue_equivalence import group_residues_by_hash
 
 def remove_special_nodes(graph, elements=["virtual", "H"]):
     """
