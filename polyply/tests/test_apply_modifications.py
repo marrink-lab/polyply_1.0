@@ -81,12 +81,13 @@ def test_mods_in_ff(caplog, ff_files, expected):
     'pALA',
     False,
     None),
+    # a protein modification does not match a PEO residue, because the
+    # residue has none of the atoms the modification describes
     ('PEO.itp',
      'PEO',
     True,
-     ("The resname of your target residue"
-      " is not recognised as a protein resname."
-      " Will not attempt to modify."))
+     ("Cannot apply N-ter to PEO1, because"
+      " the residue has no atoms BB."))
 ))
 def test_apply_mod(input_itp, molname, expected, caplog, text):
     """
@@ -239,3 +240,68 @@ def test_multiple_modifications(extras, expected):
     to_apply = modifications_finalising(meta_mol, extras)
 
     assert to_apply == expected
+
+
+def test_apply_mod_adds_atoms():
+    """
+    A modification that describes atoms which are not part of the block
+    must add those atoms, their edges, and the interactions to the
+    molecule, also for a residue that is not a protein residue.
+    """
+    ff = vermouth.forcefield.ForceField(name='test')
+    meta_mol = MetaMolecule.from_itp(ff, TEST_DATA / "itp" / "PEO.itp", "PEO")
+    nx.set_node_attributes(meta_mol, False, 'from_itp')
+    molecule = meta_mol.molecule
+
+    # hang an extra bead off the EO bead of the first residue and change
+    # the atomtype of that bead at the same time
+    modification = vermouth.molecule.Modification(name="EO-OH")
+    modification.add_node("EO", **{'atomname': 'EO', 'PTM_atom': False,
+                                   'replace': {'atype': 'P4'}})
+    modification.add_node("OH", **{'atomname': 'OH', 'PTM_atom': True,
+                                   'atype': 'P1', 'charge': -0.3, 'mass': 17.0})
+    modification.add_edge("EO", "OH")
+    modification.interactions['bonds'].append(Interaction(atoms=["EO", "OH"],
+                                                          parameters=['1', '0.30', '7000'],
+                                                          meta={}))
+    ff.modifications["EO-OH"] = modification
+
+    apply_mod(meta_mol, [({'resid': 1, 'resname': 'PEO'}, "EO-OH")])
+
+    # the new atom is added at the end of the molecule and inherits the
+    # resid, resname, and charge group of the residue it belongs to
+    assert len(molecule.nodes) == 4
+    new_node = 3
+    assert molecule.nodes[new_node]['atomname'] == 'OH'
+    assert molecule.nodes[new_node]['atype'] == 'P1'
+    assert molecule.nodes[new_node]['resid'] == 1
+    assert molecule.nodes[new_node]['resname'] == 'PEO'
+    assert molecule.nodes[new_node]['charge_group'] == molecule.nodes[0]['charge_group']
+    # the attributes of the atoms described by the block are replaced
+    assert molecule.nodes[0]['atype'] == 'P4'
+    # the edge and interaction are added using the new atom
+    assert molecule.has_edge(0, new_node)
+    assert Interaction(atoms=(0, new_node), parameters=['1', '0.30', '7000'],
+                       meta={}) in molecule.interactions['bonds']
+    # the graph of the residue is kept in sync with the molecule
+    residue = meta_mol.nodes[0]['graph']
+    assert new_node in residue
+    assert residue.has_edge(0, new_node)
+    # the molecule is sorted such that the residues stay contiguous; the
+    # node keys themselves are not changed
+    assert list(molecule.nodes) == [0, new_node, 1, 2]
+    assert [molecule.nodes[node]['resid'] for node in molecule.nodes] == [1, 1, 2, 3]
+
+
+def test_apply_mod_undefined_modification():
+    """
+    Asking for a modification that the force-field does not define is an
+    error, because the user explicitly asked for it.
+    """
+    ff = vermouth.forcefield.ForceField(name='test')
+    meta_mol = MetaMolecule.from_itp(ff, TEST_DATA / "itp" / "PEO.itp", "PEO")
+    nx.set_node_attributes(meta_mol, False, 'from_itp')
+    ff.modifications["some-mod"] = vermouth.molecule.Modification(name="some-mod")
+
+    with pytest.raises(IOError):
+        apply_mod(meta_mol, [({'resid': 1, 'resname': 'PEO'}, "does-not-exist")])

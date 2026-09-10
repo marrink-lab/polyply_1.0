@@ -16,10 +16,9 @@ from vermouth.forcefield import ForceField
 from vermouth.gmx.itp_read import read_itp
 from polyply.src.meta_molecule import MetaMolecule
 from polyply.src.topology import Topology
-from polyply.src.molecule_utils import extract_block, extract_links, find_termini_mods
+from polyply.src.molecule_utils import extract_block, extract_links, find_termini_mods, handle_ptms
 from polyply.src.fragment_finder import FragmentFinder
 from polyply.src.ffoutput import ForceFieldDirectiveWriter
-from polyply.src.charges import balance_charges, set_charges
 from .load_library import load_ff_library
 
 def is_opls(topology):
@@ -106,24 +105,16 @@ def gen_ff(itppath, smile_str, outpath, inpath=[], res_charges=None):
     # identify and extract all unique fragments
     unique_fragments, res_graph = FragmentFinder(target_mol).extract_unique_fragments(meta_mol.molecule)
 
-    # extract the blocks with parameters
-    for name, fragment in unique_fragments.items():
-        # don't overwrite existing blocks
-        if name in force_field.blocks:
-            continue
-        new_block = extract_block(target_mol, fragment, defines={})
-        nx.set_node_attributes(new_block, 1, "resid")
-        new_block.nrexcl = target_mol.nrexcl
-        force_field.blocks[name] = new_block
-        set_charges(new_block, res_graph, name)
-        balance_charges(new_block,
-                        topology=top,
-                        charge=float(crg_dict[name]))
+    # group fragments by resname and assign ptm modifications if
+    # they are not subgraph isomorphic
+    modification_names = handle_ptms(top, unique_fragments, res_graph,
+                                     target_mol, force_field, crg_dict)
 
     # extract the regular links
     force_field.links += extract_links(target_mol)
-    # extract links that span the terminii
-    find_termini_mods(res_graph, target_mol, force_field)
+    # extract links that span the terminii; they also annotate the
+    # terminal residues with the modifications generated above
+    find_termini_mods(res_graph, target_mol, force_field, modification_names)
 
     with open(outpath, "w") as filehandle:
         ForceFieldDirectiveWriter(forcefield=force_field, stream=filehandle).write()

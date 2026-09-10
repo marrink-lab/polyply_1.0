@@ -67,9 +67,8 @@ def _parse_edges_new(tokens, context, context_type, negate):
 
     error_message = 'Atom with name {} not found for {} {}'
     for prefixed_atom in prefixed_atoms:
-        atomname = prefixed_atom[0]
-        if atomname not in context and context_type == 'modification':
-            raise KeyError(error_message.format(atomname, context_type,
+        if prefixed_atom not in context and context_type == 'modification':
+            raise KeyError(error_message.format(prefixed_atom, context_type,
                                                 context.name))
     context.add_edge(prefixed_atoms[0], prefixed_atoms[1], **edge_attributes)
 

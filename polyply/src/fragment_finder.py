@@ -15,6 +15,7 @@ from collections import defaultdict
 import networkx as nx
 from vermouth.graph_utils import make_residue_graph
 from polyply.src.graph_utils import find_one_graph_match
+from .check_residue_equivalence import group_residues_by_hash
 
 def remove_special_nodes(graph, elements=["virtual", "H"]):
     """
@@ -315,10 +316,13 @@ class FragmentFinder():
         frag_centrality = {}
         centrality = nx.betweenness_centrality(self.res_graph)
         for res in self.res_graph:
+            graph = self.res_graph.nodes[res]['graph']
+            # make a unique hash
+            graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='element')
             resname = self.res_graph.nodes[res]['resname']
-            if resname not in unique_fragments or frag_centrality[resname] < centrality[res]:
-                unique_fragments[resname] = self.res_graph.nodes[res]['graph']
-                frag_centrality[resname] = centrality[res]
+            if graph_hash not in unique_fragments or frag_centrality[graph_hash] < centrality[res]:
+                unique_fragments[graph_hash] = self.res_graph.nodes[res]['graph']
+                frag_centrality[graph_hash] = centrality[res]
         return unique_fragments
 
     def extract_unique_fragments(self, reference_graph):

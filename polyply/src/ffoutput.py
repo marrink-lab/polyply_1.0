@@ -78,6 +78,15 @@ class ForceFieldDirectiveWriter():
             if link.patterns:
                 self.write_patterns(link.patterns)
 
+        for name, modification in self.forcefield.modifications.items():
+            self.max_idx = max(len(node) for node in modification.nodes)
+            self.write_modification_header(name)
+            # modification atoms are written in the same json style as
+            # the link atoms, because both describe how atoms are matched
+            self.write_atoms_link(modification.nodes(data=True))
+            self.write_interaction_dict(modification.interactions)
+            self.write_edges(modification.edges)
+
     def write_interaction_dict(self, inter_dict):
         """
         Writes interactions to `self.stream`, with a new
@@ -90,6 +99,10 @@ class ForceFieldDirectiveWriter():
             the interaction dict to write
         """
         for inter_type in inter_dict:
+            # reading a ff-file can leave empty interaction types behind,
+            # which would result in a directive without any interaction
+            if not inter_dict[inter_type]:
+                continue
             self.stream.write(f"[ {inter_type} ]\n")
             for interaction in inter_dict[inter_type]:
                 atoms = ['{atom:>{imax}}'.format(atom=atom,
@@ -204,6 +217,19 @@ class ForceFieldDirectiveWriter():
         resnames: `abc.itertable[str]`
         """
         self.stream.write("[ link ]\n")
+
+    def write_modification_header(self, name):
+        """
+        Write the modification directive header, which is
+        followed by the name of the modification.
+
+        Parameters
+        ----------
+        name: str
+            the name of the modification
+        """
+        self.stream.write("[ modification ]\n")
+        self.stream.write(f"{name}\n")
 
     def write_patterns(self, patterns):
         """
