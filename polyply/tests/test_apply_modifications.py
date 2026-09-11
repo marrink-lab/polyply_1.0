@@ -25,6 +25,7 @@ from polyply.src.apply_modifications import (_patch_protein_termini, apply_mod,
                                              ApplyModifications, modifications_finalising,
                                              _find_modifications, modification_anchors)
 from polyply import TEST_DATA
+import polyply.src.fragment_finder
 from collections import defaultdict
 from polyply.src.molecule_utils import handle_ptms, extract_links, find_termini_mods
 from polyply.src.ffoutput import ForceFieldDirectiveWriter
@@ -360,6 +361,15 @@ def _build_capped_chain():
         molecule.interactions['bonds'].append(Interaction(atoms=(idx, jdx),
                                                           parameters=['1', '0.35', '7000'],
                                                           meta={}))
+
+    # dihedrals that reach from the cap into the neighboring residue; they
+    # are described neither by the block nor by a link, because the cap is
+    # only added by the modification
+    for resid, neighbour in ((1, 2), (2, 3), (5, 3)):
+        molecule.interactions['dihedrals'].append(
+            Interaction(atoms=(nodes_of[resid]['HSC'], nodes_of[resid]['SC'],
+                               nodes_of[resid]['BB'], nodes_of[neighbour]['BB']),
+                        parameters=['1', '180.00', '10', '2'], meta={}))
     return force_field, molecule
 
 
@@ -446,14 +456,11 @@ def test_capped_residues_end_to_end(tmp_path):
     force_field, molecule = _build_capped_chain()
     res_graph = MetaMolecule._block_graph_to_res_graph(molecule)
 
-    # one representative residue graph per resname and graph hash, as
-    # the fragment finder generates them
-    unique_fragments = {}
-    for res in res_graph:
-        attrs = res_graph.nodes[res]
-        ghash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(attrs['graph'],
-                                                                        node_attr='element')
-        unique_fragments[(attrs['resname'], ghash)] = attrs['graph']
+    # one representative residue graph per resname and graph hash, picked
+    # the way the fragment finder picks them
+    frag_finder = polyply.src.fragment_finder.FragmentFinder(None)
+    frag_finder.res_graph = res_graph
+    unique_fragments = frag_finder._select_unique_fragments()
     assert len(unique_fragments) == 3
 
     modification_names = handle_ptms(None, unique_fragments, res_graph, molecule,
@@ -485,6 +492,17 @@ def test_capped_residues_end_to_end(tmp_path):
     assert atoms[5] == ['BB', 'SC', 'HSC']
     # the caps are bonded to the side chain they belong to
     names = nx.get_node_attributes(new_molecule, 'atomname')
+    resids = nx.get_node_attributes(new_molecule, 'resid')
     for node, atomname in names.items():
         if atomname == 'HSC':
             assert [names[neigh] for neigh in new_molecule.neighbors(node)] == ['SC']
+
+    # the dihedral of the modification reaches into the neighboring residue;
+    # it is applied where that neighbor is where the modification says it is,
+    # which is not the case for residue 5, whose neighbor is residue 3
+    dihedrals = new_molecule.interactions['dihedrals']
+    assert len(dihedrals) == 2
+    for interaction in dihedrals:
+        assert [names[atom] for atom in interaction.atoms] in (['HSC', 'SC', 'BB', 'BB'],
+                                                               ['BB', 'BB', 'SC', 'HSC'])
+        assert len({resids[atom] for atom in interaction.atoms}) == 2

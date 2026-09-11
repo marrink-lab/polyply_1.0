@@ -74,6 +74,8 @@ def _add_ptm_atoms(molecule, residue, modification, mod_to_mol, resid, resname):
     # modification is attached to
     charge_group = None
     for mol_node in mod_to_mol.values():
+        if molecule.nodes[mol_node]['resid'] != resid:
+            continue
         charge_group = molecule.nodes[mol_node].get('charge_group', None)
         if charge_group is not None:
             break
@@ -93,6 +95,72 @@ def _add_ptm_atoms(molecule, residue, modification, mod_to_mol, resid, resname):
         mod_to_mol[mod_node] = new_node
         new_nodes.append(new_node)
     return new_nodes
+
+def _atoms_by_resid(meta_molecule, resid):
+    """
+    Collect the atoms of the residue with `resid` by atomname. An empty
+    dict is returned if the molecule has no such residue.
+
+    Parameters
+    ----------
+    meta_molecule: :class:`polyply.src.meta_molecule.MetaMolecule`
+    resid: int
+
+    Returns
+    -------
+    dict[str, abc.hashable]
+    """
+    for _, attrs in meta_molecule.nodes(data=True):
+        if attrs['resid'] == resid:
+            return {meta_molecule.molecule.nodes[node]['atomname']: node
+                    for node in attrs['graph']}
+    return {}
+
+def _match_modification_atoms(meta_molecule, modification, resid):
+    """
+    Establish a correspondence between the atoms of `modification` that
+    are described by a block and the atoms of the molecule. Atoms with
+    an order are matched against the residue that many residues away,
+    the same way the atoms of a link are matched.
+
+    Parameters
+    ----------
+    meta_molecule: :class:`polyply.src.meta_molecule.MetaMolecule`
+    modification: :class:`vermouth.molecule.Modification`
+    resid: int
+        resid of the residue the modification is applied to
+
+    Returns
+    -------
+    dict, list, list
+        the correspondence of modification atoms to molecule atoms, the
+        atoms of the residue itself that are not found, and the atoms of
+        other residues that are not found
+    """
+    atoms_of_resid = {}
+    mod_to_mol = {}
+    missing = []
+    unresolved = []
+    for mod_node, mod_attrs in modification.nodes(data=True):
+        if mod_attrs.get('PTM_atom', False):
+            continue
+        order = mod_attrs.get('order', 0)
+        atomname = mod_attrs.get('atomname', mod_node)
+        # orders that are not a number (e.g. '>' or '*') mean any residue
+        # that satisfies the order; only links can match those
+        if not isinstance(order, int):
+            unresolved.append(mod_node)
+            continue
+        if resid + order not in atoms_of_resid:
+            atoms_of_resid[resid + order] = _atoms_by_resid(meta_molecule, resid + order)
+        atoms = atoms_of_resid[resid + order]
+        if atomname in atoms:
+            mod_to_mol[mod_node] = atoms[atomname]
+        elif order:
+            unresolved.append(mod_node)
+        else:
+            missing.append(atomname)
+    return mod_to_mol, missing, unresolved
 
 def apply_mod(meta_molecule, modifications):
     """
@@ -142,24 +210,25 @@ def apply_mod(meta_molecule, modifications):
             continue
 
         # the atoms of the modification that are already described by the
-        # block are matched to the residue by atomname
+        # block are matched to the residue by atomname; those with an order
+        # are matched against a neighboring residue
         residue = target_residue['graph']
-        res_atoms = {molecule.nodes[node]['atomname']: node for node in residue.nodes}
-        mod_to_mol = {}
-        missing = []
-        for mod_node, mod_attrs in modification.nodes(data=True):
-            if mod_attrs.get('PTM_atom', False):
-                continue
-            atomname = mod_attrs.get('atomname', mod_node)
-            if atomname in res_atoms:
-                mod_to_mol[mod_node] = res_atoms[atomname]
-            else:
-                missing.append(atomname)
-
+        mod_to_mol, missing, unresolved = _match_modification_atoms(meta_molecule,
+                                                                   modification,
+                                                                   target_resid)
         if missing:
             LOGGER.info(f"Cannot apply {desired_mod} to {target['resname']}{target_resid}, "
                         f"because the residue has no atoms {' '.join(missing)}.")
             continue
+
+        if unresolved:
+            # the residue is in a different environment than the residue the
+            # modification was generated from, so only the interactions that
+            # reach into the neighboring residue are lost
+            LOGGER.warning("The atoms {} of modification {} are not found next to {}{}. "
+                           "The interactions involving them are not applied.",
+                           " ".join(sorted(unresolved)), desired_mod,
+                           target['resname'], target_resid)
 
         # the modification can overwrite attributes of the atoms that are
         # described by the block
@@ -174,6 +243,8 @@ def apply_mod(meta_molecule, modifications):
                                       target_residue['resname'])
 
         for mod_node, other_mod_node in modification.edges:
+            if mod_node not in mod_to_mol or other_mod_node not in mod_to_mol:
+                continue
             mol_node = mod_to_mol[mod_node]
             other_mol_node = mod_to_mol[other_mod_node]
             molecule.add_edge(mol_node, other_mol_node)
@@ -182,6 +253,8 @@ def apply_mod(meta_molecule, modifications):
 
         for inter_type, interactions in modification.interactions.items():
             for interaction in interactions:
+                if not all(atom in mod_to_mol for atom in interaction.atoms):
+                    continue
                 molecule.add_or_replace_interaction(inter_type,
                                                     [mod_to_mol[atom] for atom in interaction.atoms],
                                                     interaction.parameters,
@@ -242,7 +315,7 @@ def modification_anchors(modification):
     """
     anchors = set()
     for node, attrs in modification.nodes(data=True):
-        if attrs.get('PTM_atom', False):
+        if attrs.get('PTM_atom', False) or attrs.get('order', 0):
             continue
         if any(modification.nodes[neigh].get('PTM_atom', False)
                for neigh in modification.neighbors(node)):
@@ -274,8 +347,10 @@ def _modifications_by_resname(force_field, resname):
     """
     modifications = []
     for modification in force_field.modifications.values():
+        # atoms with an order are part of a neighboring residue; they do
+        # not say anything about the residue the modification describes
         resnames = {attrs.get('resname') for _, attrs in modification.nodes(data=True)
-                    if not attrs.get('PTM_atom', False)}
+                    if not attrs.get('PTM_atom', False) and not attrs.get('order', 0)}
         if resnames == {resname}:
             modifications.append(modification)
     return modifications

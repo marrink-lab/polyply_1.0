@@ -571,7 +571,8 @@ def _element_match(node1, node2):
     """
     return node1.get('element') == node2.get('element')
 
-def _make_ptm_modification(graph, base_graph, graph_match, missing_atoms, name, tol=10**-6):
+def _make_ptm_modification(graph, base_graph, graph_match, missing_atoms, name,
+                           molecule=None, tol=10**-6):
     """
     Generate a modification describing how the residue `graph` differs
     from the minimal residue `base_graph`.
@@ -592,9 +593,11 @@ def _make_ptm_modification(graph, base_graph, graph_match, missing_atoms, name, 
     In addition all interactions that involve at least one of the
     missing atoms are recorded, because those are described neither by
     the block nor by any link. Any atom taking part in such an
-    interaction becomes part of the modification. Interactions that
-    only involve atoms of the minimal residue are not recorded, even if
-    their parameters differ from those of the block.
+    interaction becomes part of the modification. An interaction can
+    reach into a neighboring residue; those atoms are recorded with the
+    vermouth offset prefix, the same way link atoms are. Interactions
+    that only involve atoms of the minimal residue are not recorded,
+    even if their parameters differ from those of the block.
 
     Note that vermouth expects a modification to be connected. If the
     missing and differing atoms describe more than one modification
@@ -614,6 +617,10 @@ def _make_ptm_modification(graph, base_graph, graph_match, missing_atoms, name, 
         those nodes of `graph` that are not part of the minimal residue
     name: str
         name of the modification
+    molecule: :class:`vermouth.molecule.Molecule`
+        the molecule the residue is part of; if it is given the
+        interactions are taken from the molecule, so that those
+        reaching into a neighboring residue are recorded as well
     tol: float
         tolerance used when comparing float attributes
 
@@ -631,6 +638,7 @@ def _make_ptm_modification(graph, base_graph, graph_match, missing_atoms, name, 
     modification = vermouth.molecule.Modification(name=name)
     # modifications, like blocks and links, are labelled by atomname
     mol_to_mod = {}
+    resid = graph.nodes[next(iter(graph.nodes))].get('resid')
 
     # the atoms that are only described by the modification
     for node in missing_atoms:
@@ -657,6 +665,20 @@ def _make_ptm_modification(graph, base_graph, graph_match, missing_atoms, name, 
         mol_to_mod[node] = attrs['atomname']
         modification.add_node(attrs['atomname'], **attrs)
 
+    def _add_foreign_atom(node):
+        """
+        Add the atom `node`, which is part of another residue than the
+        one the modification describes, using the vermouth offset
+        prefix to label it.
+        """
+        diff = molecule.nodes[node]['resid'] - resid
+        attrs = {attr: value for attr, value in molecule.nodes[node].items()
+                 if attr in MOD_MATCH_ATTRS}
+        prefixed = diffs_to_prefix([attrs['atomname']], [diff])[0]
+        attrs.update({'order': diff, 'PTM_atom': False})
+        mol_to_mod[node] = prefixed
+        modification.add_node(prefixed, **attrs)
+
     # the atoms that are already described by the block; they are only
     # part of the modification if they anchor a missing atom or if any
     # of their attributes differs from the minimal residue
@@ -672,16 +694,21 @@ def _make_ptm_modification(graph, base_graph, graph_match, missing_atoms, name, 
     # described neither by the block nor by any link, because the block
     # only has the interactions of the minimal residue and links only
     # cover interactions spanning more than one residue
-    for inter_type, interactions in graph.interactions.items():
+    source = graph if molecule is None else molecule
+    for inter_type, interactions in source.interactions.items():
         versions = {}
         for interaction in interactions:
             if missing_atoms.isdisjoint(interaction.atoms):
                 continue
             # an interaction can reach beyond the anchors, so it may
-            # involve atoms that are not part of the modification yet
+            # involve atoms that are not part of the modification yet;
+            # those can even be part of a neighboring residue
             for atom in interaction.atoms:
                 if atom not in mol_to_mod:
-                    _add_block_atom(atom)
+                    if atom in graph_match:
+                        _add_block_atom(atom)
+                    else:
+                        _add_foreign_atom(atom)
             new_inter = _relabel_interaction_atoms(interaction, mol_to_mod)
             # multiple interactions of the same type between the same
             # atoms are distinguished by the version meta attribute
@@ -692,12 +719,12 @@ def _make_ptm_modification(graph, base_graph, graph_match, missing_atoms, name, 
                 meta['version'] = count
             modification.interactions[inter_type].append(new_inter._replace(meta=meta))
 
-    for node, neigh_node in graph.subgraph(mol_to_mod.keys()).edges:
+    for node, neigh_node in source.subgraph(mol_to_mod.keys()).edges:
         modification.add_edge(mol_to_mod[node], mol_to_mod[neigh_node])
 
     return modification
 
-def find_minimal_residue(graph_group, hash_group):
+def find_minimal_residue(graph_group, hash_group, molecule=None):
     """
     Given a group of residue graphs that share the same resname, find
     the smallest of them and describe all others as modifications of
@@ -717,6 +744,9 @@ def find_minimal_residue(graph_group, hash_group):
         have the atomname and element attribute
     hash_group: abc.iterable[str]
         the graph hash of each graph in `graph_group` in the same order
+    molecule: :class:`vermouth.molecule.Molecule`
+        the molecule the residues are part of; it is needed to record
+        the interactions that reach into a neighboring residue
 
     Returns
     -------
@@ -756,7 +786,8 @@ def find_minimal_residue(graph_group, hash_group):
                                                      base_graph,
                                                      graph_match,
                                                      missing_atoms,
-                                                     name)
+                                                     name,
+                                                     molecule=molecule)
 
     return base_graph, modifications
 
@@ -807,7 +838,8 @@ def handle_ptms(topology,
         # resname for multiple residues
         if len(set(hash_groups[resname])) != 1:
             fragment, modifications = find_minimal_residue(graph_groups[resname],
-                                                           hash_groups[resname])
+                                                           hash_groups[resname],
+                                                           molecule=target_mol)
             for ghash, modification in modifications.items():
                 force_field.modifications[modification.name] = modification
                 modification_names[(resname, ghash)] = modification.name
