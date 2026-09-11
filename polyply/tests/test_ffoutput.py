@@ -17,6 +17,7 @@ from pathlib import Path
 import pytest
 import vermouth
 from vermouth.ffinput import read_ff
+from vermouth.molecule import Interaction
 import polyply
 from polyply.src.ffoutput import ForceFieldDirectiveWriter
 
@@ -133,3 +134,42 @@ def test_ffoutput_write_block_edges_false():
     moleculetype_section, link_section = text.split("[ link ]")
     assert "[ edges ]" not in moleculetype_section
     assert "[ edges ]" in link_section
+
+
+def test_ffoutput_modifications():
+    """
+    A modification must be written such that it can be read back with
+    all its PTM atoms, replace statements, edges, and interactions.
+    """
+    force_field = vermouth.forcefield.ForceField("test")
+    modification = vermouth.molecule.Modification(name="SER-phos")
+    modification.add_node("OG", **{"atomname": "OG", "element": "O",
+                                   "resname": "SER", "PTM_atom": False,
+                                   "replace": {"charge": -0.55}})
+    modification.add_node("P", **{"atomname": "P", "element": "P",
+                                  "atype": "opls_4", "charge": 1.2,
+                                  "mass": 30.974, "PTM_atom": True})
+    modification.add_edge("OG", "P")
+    modification.interactions["bonds"].append(Interaction(atoms=["OG", "P"],
+                                                          parameters=["1", "0.16", "900"],
+                                                          meta={}))
+    force_field.modifications["SER-phos"] = modification
+
+    stream = StringIO()
+    ForceFieldDirectiveWriter(forcefield=force_field, stream=stream).write()
+
+    new_force_field = vermouth.forcefield.ForceField("test")
+    read_ff(stream.getvalue().splitlines(keepends=True), new_force_field)
+
+    assert list(new_force_field.modifications) == ["SER-phos"]
+    new_modification = new_force_field.modifications["SER-phos"]
+    # the parser sets the order attribute of every atom, which the writer
+    # skips again, so it is not part of the comparison
+    for name, attrs in modification.nodes(data=True):
+        new_attrs = {attr: value for attr, value in new_modification.nodes[name].items()
+                     if attr != "order"}
+        assert new_attrs == attrs
+    assert set(map(frozenset, new_modification.edges)) == set(map(frozenset, modification.edges))
+    assert new_modification.interactions["bonds"] == modification.interactions["bonds"]
+    # the resname tells which block the modification belongs to
+    assert new_modification.nodes["OG"]["resname"] == "SER"
