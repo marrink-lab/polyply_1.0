@@ -98,6 +98,14 @@ def _extract_edges_from_shortest_path(atoms, block, min_resid):
     return final_atoms, edges, resnames
 
 
+#: interaction types whose atoms are not bonded to each other. The atoms of
+#: a bond, angle or dihedral are connected by bonds, so a link containing
+#: them describes how the residues are connected. These interactions do
+#: not, so the link has to state the edges that connect their atoms; without
+#: them the link matches any residues that are the right distance apart in
+#: resid, even if they are not bonded at all
+NON_BONDED_INTER_TYPES = ('pairs', 'pairs_nb', 'exclusions')
+
 def extract_links(molecule, force_field=None):
     """
     Given a molecule that has the resid and resname attributes
@@ -128,6 +136,7 @@ def extract_links(molecule, force_field=None):
     # because the same pattern may apply to residues with different name
     resnames_for_patterns = defaultdict(dict)
     link_atoms_for_patterns = defaultdict(list)
+    link_edges_for_patterns = defaultdict(list)
     # as additional safe-gaurd against false links we also collect the edges
     # that span the interaction by finding the shortest simple path between
     # all atoms in patterns. Note that the atoms in patterns not always have
@@ -163,6 +172,20 @@ def extract_links(molecule, force_field=None):
                                      parameters=interaction.parameters,
                                      meta={})
 
+            # the atoms of these interactions are not bonded to each other,
+            # so the edges connecting them have to be part of the link. The
+            # residues those edges pass through are part of the pattern as
+            # well; the same pair of residues can be connected by different
+            # residues, and those are different links
+            if inter_type in NON_BONDED_INTER_TYPES:
+                path_resids = np.array([molecule.nodes[atom]["resid"]
+                                        for atom in mol_atoms_to_link_atoms])
+                path_resnames = [molecule.nodes[atom]["resname"]
+                                 for atom in mol_atoms_to_link_atoms]
+                pattern = tuple(sorted(set(zip(path_resids - min_resid, path_resnames))))
+                link_edges_for_patterns[pattern] += edges
+                link_atoms_for_patterns[pattern] += mol_atoms_to_link_atoms.values()
+
             # here we deal with filtering redundancy
             if pattern in patterns and inter_type in patterns[pattern]:
                 for other_inter in patterns[pattern].get(inter_type, []):
@@ -180,6 +203,7 @@ def extract_links(molecule, force_field=None):
     for pattern in patterns:
         link = vermouth.molecule.Link()
         link.add_nodes_from(set(link_atoms_for_patterns[pattern]))
+        link.add_edges_from(link_edges_for_patterns[pattern])
         resnames = resnames_for_patterns[pattern]
         nx.set_node_attributes(link, resnames, "resname")
 
