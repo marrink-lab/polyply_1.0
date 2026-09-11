@@ -109,16 +109,15 @@ def test_extract_fragments(big_smile, resnames):
                 return False
         return True
 
-    # the fragments are keyed by the hash of the residue graph, because the
-    # same resname can come in more than one version; in the cases here
-    # every resname has exactly one version
+    # the fragments are keyed by resname and the hash of the residue graph,
+    # because the same resname can come in more than one version; in the
+    # cases here every resname has exactly one version
     fragment_resnames = []
-    for ghash, fragment in fragments.items():
+    for (resname, ghash), fragment in fragments.items():
         assert ghash == nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(fragment,
                                                                                 node_attr='element')
-        fragment_resname = set(nx.get_node_attributes(fragment, 'resname').values())
-        assert len(fragment_resname) == 1
-        fragment_resnames += list(fragment_resname)
+        assert set(nx.get_node_attributes(fragment, 'resname').values()) == {resname}
+        fragment_resnames.append(resname)
     assert sorted(fragment_resnames) == sorted(resnames)
     print(meta.nodes(data=True))
     print(res_graph.nodes(data=True))

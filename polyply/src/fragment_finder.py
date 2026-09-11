@@ -308,8 +308,11 @@ class FragmentFinder():
 
         Returns
         -------
-        dict[str, nx.Graph]
-            resname mapped to a representative fragment graph
+        dict[tuple(str, str), nx.Graph]
+            resname and graph hash mapped to a representative fragment
+            graph. The resname is part of the key, because the hash only
+            describes the graph, so two residues with a different name
+            can have the same hash
         """
         unique_fragments = {}
         frag_centrality = {}
@@ -318,10 +321,10 @@ class FragmentFinder():
             graph = self.res_graph.nodes[res]['graph']
             # make a unique hash
             graph_hash = nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph, node_attr='element')
-            resname = self.res_graph.nodes[res]['resname']
-            if graph_hash not in unique_fragments or frag_centrality[graph_hash] < centrality[res]:
-                unique_fragments[graph_hash] = self.res_graph.nodes[res]['graph']
-                frag_centrality[graph_hash] = centrality[res]
+            key = (self.res_graph.nodes[res]['resname'], graph_hash)
+            if key not in unique_fragments or frag_centrality[key] < centrality[res]:
+                unique_fragments[key] = self.res_graph.nodes[res]['graph']
+                frag_centrality[key] = centrality[res]
         return unique_fragments
 
     def extract_unique_fragments(self, reference_graph):
@@ -337,9 +340,10 @@ class FragmentFinder():
 
         Returns
         -------
-        dict[str, nx.Graph], :class:`networkx.Graph`
-            resname mapped to a representative fragment graph, and
-            the full residue graph of the labelled target molecule
+        dict[tuple(str, str), nx.Graph], :class:`networkx.Graph`
+            resname and graph hash mapped to a representative fragment
+            graph, and the full residue graph of the labelled target
+            molecule
         """
         mapping = self._match_reference_to_molecule(reference_graph)
         self._label_matched_atoms(mapping, reference_graph)

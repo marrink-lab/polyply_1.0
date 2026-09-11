@@ -439,7 +439,7 @@ def _make_variant_force_field():
     modification_names = {}
     for ghash, modification in modifications.items():
         force_field.modifications[modification.name] = modification
-        modification_names[ghash] = modification.name
+        modification_names[('B', ghash)] = modification.name
 
     block = extract_block(molecule, fragment, defines={})
     nx.set_node_attributes(block, 1, "resid")
@@ -459,7 +459,7 @@ def test_find_termini_mods_annotates_modifications():
     """
     force_field, modification_names, hashes = _make_variant_force_field()
 
-    assert set(modification_names) == {hashes[1], hashes[4]}
+    assert set(modification_names) == {('B', hashes[1]), ('B', hashes[4])}
     annotated = {}
     for link in force_field.links:
         for node, attrs in link.nodes(data=True):
@@ -473,7 +473,8 @@ def test_find_termini_mods_annotates_modifications():
 
     # both termini are annotated, each with its own modification
     assert set(annotated) == set(modification_names.values())
-    assert annotated[modification_names[hashes[1]]] != annotated[modification_names[hashes[4]]]
+    assert (annotated[modification_names[('B', hashes[1])]]
+            != annotated[modification_names[('B', hashes[4])]])
 
 
 def test_termini_modifications_end_to_end(tmp_path):
