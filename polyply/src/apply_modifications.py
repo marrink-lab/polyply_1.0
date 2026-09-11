@@ -223,6 +223,118 @@ def _annotated_modifications(meta_molecule):
                 targets.append(target)
     return targets
 
+def modification_anchors(modification):
+    """
+    Collect the atoms of `modification` that are described by the block
+    and carry an atom that only the modification describes. Those atoms
+    are where the modification attaches to the residue; for the caps
+    that polyply generates they are the atoms whose bonding operator is
+    left unused.
+
+    Parameters
+    ----------
+    modification: :class:`vermouth.molecule.Modification`
+
+    Returns
+    -------
+    set[str]
+        the atomnames of those atoms
+    """
+    anchors = set()
+    for node, attrs in modification.nodes(data=True):
+        if attrs.get('PTM_atom', False):
+            continue
+        if any(modification.nodes[neigh].get('PTM_atom', False)
+               for neigh in modification.neighbors(node)):
+            anchors.add(attrs.get('atomname', node))
+    return anchors
+
+def _external_bonds(molecule, node):
+    """
+    Count the bonds of the atom `node` that go to an atom of another
+    residue.
+
+    Parameters
+    ----------
+    molecule: :class:`vermouth.molecule.Molecule`
+    node: abc.hashable
+
+    Returns
+    -------
+    int
+    """
+    resid = molecule.nodes[node]['resid']
+    return sum(1 for neigh in molecule.neighbors(node)
+               if molecule.nodes[neigh]['resid'] != resid)
+
+def _modifications_by_resname(force_field, resname):
+    """
+    Collect the modifications of `force_field` that describe a residue
+    with the name `resname`.
+    """
+    modifications = []
+    for modification in force_field.modifications.values():
+        resnames = {attrs.get('resname') for _, attrs in modification.nodes(data=True)
+                    if not attrs.get('PTM_atom', False)}
+        if resnames == {resname}:
+            modifications.append(modification)
+    return modifications
+
+def _find_modifications(meta_molecule):
+    """
+    Find the modifications that describe residues of `meta_molecule`
+    whose bonding operators are not all used.
+
+    A modification attaches to its residue at its anchors (see
+    `modification_anchors`). An anchor whose bonding operator is unused
+    has no bond leaving the residue, so it tells the versions of a
+    residue apart: the version that uses the operator is described by
+    the block and the version that does not is described by the
+    modification. A modification applies if exactly its own anchors are
+    free, so that a residue with more than one unused operator is not
+    described by the modifications of the individual operators.
+
+    Note that this only makes sense once the links are applied, because
+    only then the molecule has the bonds between the residues.
+
+    Parameters
+    ----------
+    meta_molecule: :class:`polyply.src.meta_molecule.MetaMolecule`
+
+    Returns
+    -------
+    list[tuple(dict, str)]
+        the (resspec, modification) pairs found
+    """
+    molecule = meta_molecule.molecule
+    targets = []
+    for res_node, res_attrs in meta_molecule.nodes(data=True):
+        if res_attrs.get('from_itp'):
+            continue
+        resname = res_attrs['resname']
+        modifications = _modifications_by_resname(molecule.force_field, resname)
+        if not modifications:
+            continue
+
+        atoms = {molecule.nodes[node]['atomname']: node for node in res_attrs['graph']}
+        candidates = set().union(*(modification_anchors(mod) for mod in modifications))
+        free = {atomname for atomname in candidates
+                if atomname in atoms and _external_bonds(molecule, atoms[atomname]) == 0}
+        if not free:
+            continue
+
+        for modification in modifications:
+            if modification_anchors(modification) == free:
+                targets.append(({'resid': res_attrs['resid'], 'resname': resname},
+                                modification.name))
+                break
+        else:
+            LOGGER.warning("The bonding operators of atoms {} of residue {}{} are not used, "
+                           "but no modification describes that. The residue is generated "
+                           "from the block alone.",
+                           " ".join(sorted(free)), resname, res_attrs['resid'])
+    return targets
+
 def modifications_finalising(meta_molecule, modifications):
     """
     clarify modifications in case we have multiple modifications targeting the same residue
@@ -271,6 +383,14 @@ def modifications_finalising(meta_molecule, modifications):
             final_target_mods.remove(spec)
         final_target_mods.append((target, mod_name))
 
+    # residues whose bonding operators are not all used are described by a
+    # modification as well; this is the least specific way of picking a
+    # modification, so it only applies where nothing else does
+    specified_resids = [spec[0]['resid'] for spec in final_target_mods]
+    for target, mod_name in _find_modifications(meta_molecule):
+        if target['resid'] not in specified_resids:
+            final_target_mods.append((target, mod_name))
+
     # check whether the final modifications are the same as the original ones
     if modifications and (not set(modifications[0]) == set([i[1] for i in final_target_mods])):
         LOGGER.info("Default modifications overwritten. Check log for modifications applied.")
@@ -284,9 +404,13 @@ class ApplyModifications(Processor):
     MetaMolecule applies them when appropriate.
 
     """
-    def __init__(self, meta_molecule, modifications=[]):
-        self.target_mods = modifications_finalising(meta_molecule, modifications)
+    def __init__(self, meta_molecule=None, modifications=[]):
+        self.modifications = modifications
 
     def run_molecule(self, meta_molecule):
-        apply_mod(meta_molecule, self.target_mods)
+        # the modifications are selected here rather than in the constructor,
+        # because which residue needs a modification depends on the bonds
+        # between the residues, which are only there once the links are applied
+        target_mods = modifications_finalising(meta_molecule, self.modifications)
+        apply_mod(meta_molecule, target_mods)
         return meta_molecule

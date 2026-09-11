@@ -14,7 +14,10 @@
 from collections import defaultdict
 import networkx as nx
 from vermouth.graph_utils import make_residue_graph
+from vermouth.log_helpers import StyleAdapter, get_logger
 from polyply.src.graph_utils import find_one_graph_match
+
+LOGGER = StyleAdapter(get_logger(__name__))
 
 def remove_special_nodes(graph, elements=["virtual", "H"]):
     """
@@ -252,20 +255,24 @@ class FragmentFinder():
 
     def _check_fragment_consistency(self):
         """
-        Verify that all residues sharing a resname consist of the same atoms.
+        Verify that all residues sharing a resname can be described together.
 
         Only one block per resname is written to the force field (see
-        `_select_unique_fragments`), so a resname whose instances differ in
-        composition cannot be represented. That happens when a bonding
-        operator of a fragment is used in some places but left open in
-        others, because an open operator is capped with a hydrogen. The
-        resulting force field would be silently wrong, so we refuse it here
-        rather than let it fail later when the parameters are applied.
+        `_select_unique_fragments`). A resname whose instances differ in
+        composition can still be described, as long as every version has
+        the atoms of the smallest version, because then the extra atoms
+        are written as a modification of the block. That is the case when
+        a bonding operator of a fragment is used in some places but left
+        open in others, because an open operator is capped with a
+        hydrogen. Versions that miss atoms of the smallest version cannot
+        be described at all, so we refuse them here rather than let them
+        fail later when the parameters are applied.
 
         Raises
         ------
         IOError
-            if any resname occurs with more than one set of atomnames
+            if any resname occurs with versions that do not all contain
+            the atoms of the smallest version
         """
         compositions = defaultdict(lambda: defaultdict(list))
         for res in self.res_graph:
@@ -277,6 +284,18 @@ class FragmentFinder():
         problems = []
         for resname, variants in sorted(compositions.items()):
             if len(variants) == 1:
+                continue
+            signatures = sorted(variants, key=len)
+            smallest = set(signatures[0])
+            # if the smallest version is part of all other versions, then the
+            # atoms the other versions have on top of it are described by a
+            # modification of the block (see `handle_ptms`)
+            if all(smallest.issubset(set(signature)) for signature in signatures[1:]):
+                LOGGER.info("Residue {} occurs in {} versions. The smallest version is "
+                            "written as block, the others are described by a modification "
+                            "each. Cap the unused bonding operators explicitly if you want "
+                            "one block per version instead.",
+                            resname, len(variants), type="step")
                 continue
             common = set.intersection(*(set(sig) for sig in variants))
             problems.append(f"Residue '{resname}' occurs with {len(variants)} "
@@ -292,12 +311,13 @@ class FragmentFinder():
             raise IOError(
                 "\n".join(problems)
                 + "\nIn your CGsmiles string you describe two residues that are not equivalent with "
-                  "the same residue name. However, only one block per residue name is written to the "
-                  " force field, so these cannot all be described. Usually a bonding operator of the "
-                  " residue is used in some places and left open in others, where it is capped with "
-                  " a hydrogen. Make that cap explicit in the CGsmiles string by adding a terminal "
-                  "residue (e.g. #Hter=[>1][<1][H]) everywhere the operator is unused. Note that the "
-                  "name of such a residue must contain 'ter'.")
+                  "the same residue name. Versions of a residue that only have atoms on top of the "
+                  "smallest version are described by a modification, but these versions have atoms "
+                  "the smallest version does not have, so they cannot all be described. Usually a "
+                  "bonding operator of the residue is used in some places and left open in others, "
+                  "where it is capped with a hydrogen. Make that cap explicit in the CGsmiles string "
+                  "by adding a terminal residue (e.g. #Hter=[>1][<1][H]) everywhere the operator is "
+                  "unused. Note that the name of such a residue must contain 'ter'.")
 
     def _select_unique_fragments(self):
         """

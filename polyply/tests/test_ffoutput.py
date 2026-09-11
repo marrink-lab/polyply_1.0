@@ -144,7 +144,7 @@ def test_ffoutput_modifications():
     force_field = vermouth.forcefield.ForceField("test")
     modification = vermouth.molecule.Modification(name="SER-phos")
     modification.add_node("OG", **{"atomname": "OG", "element": "O",
-                                   "PTM_atom": False,
+                                   "resname": "SER", "PTM_atom": False,
                                    "replace": {"charge": -0.55}})
     modification.add_node("P", **{"atomname": "P", "element": "P",
                                   "atype": "opls_4", "charge": 1.2,
@@ -171,3 +171,5 @@ def test_ffoutput_modifications():
         assert new_attrs == attrs
     assert set(map(frozenset, new_modification.edges)) == set(map(frozenset, modification.edges))
     assert new_modification.interactions["bonds"] == modification.interactions["bonds"]
+    # the resname tells which block the modification belongs to
+    assert new_modification.nodes["OG"]["resname"] == "SER"

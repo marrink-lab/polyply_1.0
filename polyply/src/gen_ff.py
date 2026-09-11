@@ -111,7 +111,7 @@ def gen_ff(itppath, smile_str, outpath, inpath=[], res_charges=None):
                                      target_mol, force_field, crg_dict)
 
     # extract the regular links
-    force_field.links += extract_links(target_mol)
+    force_field.links += extract_links(target_mol, force_field)
     # extract links that span the terminii; they also annotate the
     # terminal residues with the modifications generated above
     find_termini_mods(res_graph, target_mol, force_field, modification_names)

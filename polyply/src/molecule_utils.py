@@ -98,7 +98,7 @@ def _extract_edges_from_shortest_path(atoms, block, min_resid):
     return final_atoms, edges, resnames
 
 
-def extract_links(molecule):
+def extract_links(molecule, force_field=None):
     """
     Given a molecule that has the resid and resname attributes
     correctly set, extract the interactions which span more than
@@ -108,6 +108,11 @@ def extract_links(molecule):
     ----------
     molecule: :class:`vermouth.molecule.Molecule`
         the molecule from which to extract interactions
+    force_field: :class:`vermouth.forcefield.ForceField`
+        the force-field with the blocks of the molecule; if it is given
+        interactions involving atoms that are not described by the block
+        of their residue are skipped, because a link is applied before
+        the modifications that describe those atoms
 
     Returns
     -------
@@ -140,6 +145,13 @@ def extract_links(molecule):
             pattern = tuple(sorted(pattern))
             # in this case all interactions are in a block and we skip
             if np.sum(diff) == 0:
+                continue
+
+            # atoms that are not described by the block of their residue are
+            # described by a modification, which is applied after the links;
+            # the interactions involving them cannot be part of a link
+            if force_field and not all(_is_block_atom(molecule, atom, force_field)
+                                       for atom in interaction.atoms):
                 continue
 
             # we collect the edges corresponding to the simple paths between pairs of atoms
@@ -503,8 +515,9 @@ def find_termini_mods(meta_molecule, molecule, force_field, modification_names=N
 MOD_ATOM_ATTRS = ('atomname', 'element', 'atype', 'charge', 'mass')
 
 #: node attributes of an atom that is already described by the block;
-#: they are the criteria the modification is matched with
-MOD_MATCH_ATTRS = ('atomname', 'element')
+#: they are the criteria the modification is matched with. The resname
+#: also tells which block a modification belongs to
+MOD_MATCH_ATTRS = ('atomname', 'element', 'resname')
 
 #: node attributes that only reflect where a residue sits within the
 #: molecule; they differ between any two residues and thus are never
