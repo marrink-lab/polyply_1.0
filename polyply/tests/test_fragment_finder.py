@@ -109,7 +109,16 @@ def test_extract_fragments(big_smile, resnames):
                 return False
         return True
 
-    assert set(fragments.keys()) == set(resnames)
+    # the fragments are keyed by resname and the hash of the residue graph,
+    # because the same resname can come in more than one version; in the
+    # cases here every resname has exactly one version
+    fragment_resnames = []
+    for (resname, ghash), fragment in fragments.items():
+        assert ghash == nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(fragment,
+                                                                                node_attr='element')
+        assert set(nx.get_node_attributes(fragment, 'resname').values()) == {resname}
+        fragment_resnames.append(resname)
+    assert sorted(fragment_resnames) == sorted(resnames)
     print(meta.nodes(data=True))
     print(res_graph.nodes(data=True))
     assert nx.is_isomorphic(res_graph, meta, node_match=_res_node_match)
@@ -129,11 +138,11 @@ def test_extract_fragments(big_smile, resnames):
      ("{[#P3HT]|3}.{#P3HT=CCCCCCC1=C[$]SC[$]=C1}",
       "P3HT", 2),
     ])
-def test_inconsistent_fragments_raise(cgsmiles_str, resname, n_versions):
+def test_uncapped_fragments_are_kept(cgsmiles_str, resname, n_versions):
     """
-    Residues of the same name must consist of the same atoms; only one block
-    per resname is written, so anything else would silently produce a wrong
-    force field.
+    Residues of the same name that only differ by the atoms capping an
+    unused bonding operator are all kept; the smallest version becomes the
+    block and the others are described by a modification.
     """
     ff = ForceField("new")
     meta = polyply.MetaMolecule.from_cgsmiles_str(force_field=ff,
@@ -143,9 +152,34 @@ def test_inconsistent_fragments_raise(cgsmiles_str, resname, n_versions):
                                                   all_atom=True)
     target_molecule = _scramble_nodes(meta.molecule)
     frag_finder = polyply.src.fragment_finder.FragmentFinder(target_molecule)
+    fragments, _ = frag_finder.extract_unique_fragments(meta.molecule)
+
+    versions = [fragment for (name, _), fragment in fragments.items() if name == resname]
+    assert len(versions) == n_versions
+    # every version has the atoms of the smallest one
+    smallest = min(versions, key=len)
+    smallest_atoms = set(nx.get_node_attributes(smallest, 'atomname').values())
+    for version in versions:
+        assert smallest_atoms.issubset(set(nx.get_node_attributes(version, 'atomname').values()))
+
+
+def test_incompatible_fragments_raise():
+    """
+    Versions of a residue that miss atoms of the smallest version cannot be
+    described by a modification of the block, so they are refused.
+    """
+    frag_finder = polyply.src.fragment_finder.FragmentFinder(None)
+    res_graph = nx.Graph()
+    for idx, atomnames in enumerate([['C1', 'C2'], ['C1', 'C3']]):
+        graph = nx.Graph()
+        for atomname in atomnames:
+            graph.add_node(atomname, atomname=atomname)
+        res_graph.add_node(idx, graph=graph, resname='A', resid=idx + 1)
+    frag_finder.res_graph = res_graph
+
     with pytest.raises(IOError) as error:
-        frag_finder.extract_unique_fragments(meta.molecule)
+        frag_finder._check_fragment_consistency()
     msg = str(error.value)
-    assert f"Residue '{resname}' occurs with {n_versions} different sets of atoms" in msg
+    assert "Residue 'A' occurs with 2 different sets of atoms" in msg
     # the message has to say what to do about it
     assert "terminal residue" in msg

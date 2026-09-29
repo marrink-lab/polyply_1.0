@@ -227,3 +227,26 @@ def find_one_graph_match(graph1, graph2, node_match):
     except StopIteration:
         raise IOError("no match_found")
         return None
+
+def find_one_subgraph_match(graph, subgraph, node_match):
+    """
+    Returns one node induced subgraph isomorphism of `subgraph`
+    in `graph` and otherwise None. The mapping goes from the
+    nodes of `graph` to those of `subgraph`.
+
+    Parameters
+    ----------
+    graph: nx.Graph
+    subgraph: nx.Graph
+        the graph to look for in `graph`
+    node_match: :type:`collections.abc.callable`
+        function that takes two node attribute dicts and
+        returns True if they match
+
+    Returns
+    -------
+    dict or None
+    """
+    GM = nx.isomorphism.GraphMatcher(graph, subgraph, node_match=node_match)
+    raw_matches = GM.subgraph_isomorphisms_iter()
+    return next(raw_matches, None)

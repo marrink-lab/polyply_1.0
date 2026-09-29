@@ -23,9 +23,12 @@ from vermouth.molecule import Interaction
 from vermouth.processors.do_links import match_link
 import polyply
 from polyply.src.meta_molecule import MetaMolecule
-from polyply.src.molecule_utils import extract_block, extract_links, find_termini_mods
+from polyply.src.molecule_utils import (extract_block, extract_links,
+                                        find_termini_mods, find_minimal_residue)
 from polyply.src.ffoutput import ForceFieldDirectiveWriter
 from polyply.src.ff_parser_sub import read_ff
+from polyply.src.gen_itp import gen_params
+from collections import defaultdict
 from .example_fixtures import example_meta_molecule
 
 @pytest.mark.parametrize('lines, expected_bonds', (
@@ -220,8 +223,8 @@ def _build_linear_tetramer(mod_resid_sc1_mass, bonds=()):
     The SC1 mass of the residue next to the left-hand terminus (resid
     2) is set to `mod_resid_sc1_mass`, while the residue next to the
     right-hand terminus (resid 3) always matches the reference block
-    exactly (SC1 mass 2.0), so at most the left terminus can produce a
-    link. `bonds` are extra bond Interactions (using molecule atom
+    exactly (SC1 mass 2.0), so only the left terminus can produce a
+    link with a replace statement. `bonds` are extra bond Interactions (using molecule atom
     indices) on top of the backbone/side-chain bonds, letting tests
     probe bonds inside the terminal residue itself, the bond directly
     connecting it to its neighbor, or both.
@@ -251,36 +254,48 @@ def _build_linear_tetramer(mod_resid_sc1_mass, bonds=()):
 
 
 def test_find_termini_mods_no_difference():
-    # both neighbor residues match the reference block exactly, so no
-    # terminal modification link should be generated
+    # both neighbor residues match the reference block exactly; a link is
+    # still generated for each of the two termini, because the interactions
+    # at a terminus can differ from those in the chain even when the atoms
+    # themselves do not, but none of the atoms gets a replace statement
     res_graph, molecule, force_field = _build_linear_tetramer(mod_resid_sc1_mass=2.0)
     find_termini_mods(res_graph, molecule, force_field)
-    assert force_field.links == []
+
+    assert len(force_field.links) == 2
+    for link in force_field.links:
+        assert not any('replace' in attrs for _, attrs in link.nodes(data=True))
+        assert not link.interactions
 
 
 def test_find_termini_mods_with_difference():
     # the residue next to the left-hand terminus has a different SC1
-    # mass than the reference block; this must produce exactly one
-    # link (not two, since the right-hand residue still matches),
-    # capturing the atom replacement and all three kinds of bonds
-    # touching the modified residue: one entirely inside the terminal
-    # residue itself, the bond directly connecting the terminus to its
-    # neighbor, and one entirely inside the (modified) neighbor
+    # mass than the reference block; both termini produce a link, but
+    # only the left-hand one captures an atom replacement, as well as
+    # all three kinds of bonds touching the modified residue: one
+    # entirely inside the terminal residue itself, the bond directly
+    # connecting the terminus to its neighbor, and one entirely inside
+    # the (modified) neighbor
     bonds = [Interaction(atoms=(0, 1), parameters=['1', '0.20', '5000'], meta={}),
              Interaction(atoms=(0, 2), parameters=['1', '0.33', '1000'], meta={}),
              Interaction(atoms=(2, 3), parameters=['1', '0.30', '2000'], meta={})]
     res_graph, molecule, force_field = _build_linear_tetramer(mod_resid_sc1_mass=3.0, bonds=bonds)
     find_termini_mods(res_graph, molecule, force_field)
 
-    assert len(force_field.links) == 1
+    assert len(force_field.links) == 2
     link = force_field.links[0]
 
     assert link.nodes['BB']['resname'] == 'B'
-    assert link.nodes['BB']['replace'] == {}
+    assert 'replace' not in link.nodes['BB']
     assert link.nodes['SC1']['resname'] == 'B'
-    assert link.nodes['SC1']['replace'] == {}
+    assert 'replace' not in link.nodes['SC1']
     assert link.nodes['+SC1']['resname'] == 'B'
     assert link.nodes['+SC1']['replace'] == {'mass': 3.0}
+
+    # the right-hand terminus matches the reference block, so its link
+    # neither replaces an atom attribute nor overwrites an interaction
+    other_link = force_field.links[1]
+    assert not any('replace' in attrs for _, attrs in other_link.nodes(data=True))
+    assert not other_link.interactions
 
     # without a non-edge, this link would also match at any interior
     # BB-BB junction that looks the same locally; the non-edge requires
@@ -368,3 +383,123 @@ def test_find_termini_mods_non_edge_rejects_interior_match():
 
     matches = list(match_link(molecule, link))
     assert matches == [{'BB': 0, 'SC1': 1, '+BB': 2, '+SC1': 3}]
+
+
+def _build_variant_tetramer():
+    """
+    Build a linear B-B-B-B molecule in which both terminal residues have
+    one extra atom that the two interior residues do not have; the extra
+    atom is different at each terminus. All residues share the resname
+    'B', so the interior residues define the block and the two terminal
+    ones are described by a modification each.
+    """
+    force_field = vermouth.forcefield.ForceField('test')
+    molecule = vermouth.molecule.Molecule(force_field=force_field)
+    molecule.nrexcl = 1
+
+    layout = [(1, [('BB', 'C', 'P1', 45.0), ('SC1', 'C', 'P2', 45.0), ('H1', 'H', 'P3', 1.0)]),
+              (2, [('BB', 'C', 'P1', 45.0), ('SC1', 'C', 'P2', 45.0)]),
+              (3, [('BB', 'C', 'P1', 45.0), ('SC1', 'C', 'P2', 45.0)]),
+              (4, [('BB', 'C', 'P1', 45.0), ('SC1', 'C', 'P2', 45.0), ('O1', 'O', 'P4', 16.0)])]
+    node = 0
+    res_nodes = {}
+    for resid, atoms in layout:
+        res_nodes[resid] = []
+        for atomname, element, atype, mass in atoms:
+            molecule.add_node(node, atomname=atomname, element=element, atype=atype,
+                              mass=mass, resid=resid, resname='B',
+                              charge_group=resid, charge=0.0)
+            res_nodes[resid].append(node)
+            node += 1
+
+    edges = [(0, 1), (0, 2), (3, 4), (5, 6), (7, 8), (7, 9),
+             (0, 3), (3, 5), (5, 7)]
+    molecule.add_edges_from(edges)
+    for idx, jdx in edges:
+        molecule.interactions['bonds'].append(Interaction(atoms=(idx, jdx),
+                                                          parameters=['1', '0.35', '7000'],
+                                                          meta={}))
+    return force_field, molecule, res_nodes
+
+
+def _make_variant_force_field():
+    """
+    Run the force-field generation steps on the molecule of
+    `_build_variant_tetramer` and return the resulting force-field.
+    """
+    force_field, molecule, res_nodes = _build_variant_tetramer()
+    res_graph = MetaMolecule._block_graph_to_res_graph(molecule)
+    graphs = {resid: molecule.subgraph(nodes) for resid, nodes in res_nodes.items()}
+    hashes = {resid: nx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash(graph,
+                                                                             node_attr='element')
+              for resid, graph in graphs.items()}
+
+    fragment, modifications = find_minimal_residue([graphs[1], graphs[2], graphs[4]],
+                                                   [hashes[1], hashes[2], hashes[4]])
+    modification_names = {}
+    for ghash, modification in modifications.items():
+        force_field.modifications[modification.name] = modification
+        modification_names[('B', ghash)] = modification.name
+
+    block = extract_block(molecule, fragment, defines={})
+    nx.set_node_attributes(block, 1, "resid")
+    block.nrexcl = molecule.nrexcl
+    force_field.blocks['B'] = block
+    force_field.links += extract_links(molecule)
+    find_termini_mods(res_graph, molecule, force_field, modification_names)
+    return force_field, modification_names, hashes
+
+
+def test_find_termini_mods_annotates_modifications():
+    """
+    A terminal residue that is described by a modification must be
+    annotated with the name of that modification by the link, and the
+    atoms of the modification must not be part of the link, because the
+    link is applied before the modification.
+    """
+    force_field, modification_names, hashes = _make_variant_force_field()
+
+    assert set(modification_names) == {('B', hashes[1]), ('B', hashes[4])}
+    annotated = {}
+    for link in force_field.links:
+        for node, attrs in link.nodes(data=True):
+            names = attrs.get('replace', {}).get('annotated_modifications', [])
+            for name in names:
+                annotated[name] = node
+        # the extra atoms of the terminal residues are described by the
+        # modifications, so no link may require them
+        assert 'H1' not in link.nodes
+        assert 'O1' not in link.nodes
+
+    # both termini are annotated, each with its own modification
+    assert set(annotated) == set(modification_names.values())
+    assert (annotated[modification_names[('B', hashes[1])]]
+            != annotated[modification_names[('B', hashes[4])]])
+
+
+def test_termini_modifications_end_to_end(tmp_path):
+    """
+    The modifications generated for the two termini must be applied to
+    the correct terminus when a molecule is generated from the written
+    force-field alone.
+    """
+    force_field, _, _ = _make_variant_force_field()
+    ff_file = tmp_path / "variants.ff"
+    with open(ff_file, "w") as filehandle:
+        ForceFieldDirectiveWriter(forcefield=force_field, stream=filehandle).write()
+
+    itp_file = tmp_path / "variants.itp"
+    gen_params(inpath=[ff_file], seq=['B:4'], outpath=itp_file, name="test")
+
+    new_force_field = vermouth.forcefield.ForceField('read')
+    molecule = MetaMolecule.from_itp(new_force_field, itp_file, "test").molecule
+    atoms = defaultdict(list)
+    for node, attrs in molecule.nodes(data=True):
+        atoms[attrs['resid']].append(attrs['atomname'])
+
+    # only the terminal residues get the extra atom, and each terminus
+    # gets the one that belongs to it
+    assert atoms[1] == ['BB', 'SC1', 'H1']
+    assert atoms[2] == ['BB', 'SC1']
+    assert atoms[3] == ['BB', 'SC1']
+    assert atoms[4] == ['BB', 'SC1', 'O1']
