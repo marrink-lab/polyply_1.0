@@ -19,12 +19,12 @@ HMA 1
 1 1 500 500 500 {"ifdef": "POSRE_POLYM"}
 
 [ link ]
-resname HMA
+resname "HMA"
 [ bonds ]
 MVNL     +MVNL    1     0.315 4000 {"comment": "MVNL_MVNL"}
 
 [ link ]
-resname HMA
+resname "HMA"
 [ angles ]
 MVNL  +MVNL  ++MVNL   10  140  40  {"group": "vinyl backbone", "comment": "MVNL_MVNL_MVNL"}
 
