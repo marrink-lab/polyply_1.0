@@ -10,7 +10,7 @@ HMA 1
 [ bonds ]
 ;  ai  aj   funct
    1     2   1     0.36 10000 {"comment": "MVNL_SC1"}
-   2     3   1     0.29 9000  {"comment": "MVNL_SC2"} 
+   2     3   1     0.29 9000  {"comment": "SC1_SC2"} 
 
 [ angles ]
    1   2   3  2    126  50   {"comment": "MVNL_SC1_SC2"}

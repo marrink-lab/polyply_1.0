@@ -266,9 +266,9 @@ STYR 1
 ;
 [ angles ]
 ;  ai  aj  ak  funct
-   1     2     3    10  136.000000  150.000000 {"comment": "BB_SC1_SC2", "ifndef": "TI", "version": "1"}
-   1     2     3    1   136.000000  150.000000 {"comment": "BB_SC1_SC2", "ifdef": "TI", "version": "2"}
-   1     2     4    1   82.000000  100.000000 {"comment": "BB_SC1_SC4"}
+   1     2     3    10  136.000000  150.000000 {"comment": "VNL_SC1_SC2", "ifndef": "TI", "version": "1"}
+   1     2     3    1   136.000000  150.000000 {"comment": "VNL_SC1_SC2", "ifdef": "TI", "version": "2"}
+   1     2     4    1   82.000000  100.000000 {"comment": "VNL_SC1_SC3"}
 
 [ position_restraints ]
 1 1 500 500 500 {"ifdef": "POSRE_POLYM"}
@@ -304,8 +304,8 @@ STYR 1
 ;
 [ angles ]
 ;  ai  aj  ak  funct
-   1     2     3    1     157.000000  130.000000 {"comment": "BB_SC1_SC2"}
-   1     2     4    10    100.000000   80.000000 {"comment": "BB_SC1_SC4"}
+   1     2     3    1     157.000000  130.000000 {"comment": "VNL_SC1_SC2"}
+   1     2     4    10    100.000000   80.000000 {"comment": "VNL_SC1_SC3"}
  
 [ position_restraints ]
 1 1 500 500 500 {"ifdef": "POSRE_POLYM"}
@@ -338,14 +338,14 @@ These are preliminary parameters. Make sure to validate them before use.
 [ bonds ]
 ;  ai  aj  funct length
    2     3    1     0.220 10000 {"ifdef": "FLEXIBLE", "comment": "SC1_SC2"}
-   3     4    1     0.298 10000 {"ifdef": "FLEXIBLE", "comment": "SC3_SC1"}
-   4     2    1     0.290 10000 {"ifdef": "FLEXIBLE", "comment": "SC2_SC3"}
+   3     4    1     0.298 10000 {"ifdef": "FLEXIBLE", "comment": "SC2_SC3"}
+   4     2    1     0.290 10000 {"ifdef": "FLEXIBLE", "comment": "SC3_SC1"}
 
 ;
 [ angles ]
 ;  ai  aj  ak  funct
-   1     2     3    1     144.000000  130.000000 {"comment": "BB_SC1_SC2"}
-   1     2     4    10    84.000000  80.000000 {"comment": "BB_SC1_SC4"}
+   1     2     3    1     144.000000  130.000000 {"comment": "VNL_SC1_SC2"}
+   1     2     4    10    84.000000  80.000000 {"comment": "VNL_SC1_SC3"}
 
 [ position_restraints ]
 1 1 500 500 500 {"ifdef": "POSRE_POLYM"}
