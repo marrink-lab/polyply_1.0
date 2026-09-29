@@ -1,5 +1,7 @@
+; ch3ter_vnl: residues with a VNL backbone bead that can carry CH3ter caps; kept
+; separate from vinyl_polymers in vinyl_polymers.ff, which also sets the backbone links
 [ macros ]
-vinyl_polymers "CH3ter|ETHY|STYR|2VP|MAC|AAMD|PP|12BD|AAC|AAI|ALL|ALI"
+ch3ter_vnl "CH3ter|ETHY|STYR|2VP|4VP|MAC|AAMD|PP|12BD|AAC|AAI|ALL|ALI|HEA|HPA|nBA|EA1|PiB|NIPA|PMMA|PVA|PVF|PVC"
 
 [ moleculetype ]
 ; name nexcl.
@@ -8,12 +10,91 @@ CH3ter         1
 [ atoms ]
 1  TC2    1   CH3ter   CH3   1   0.000  36
 
+;;;;;;;;; VNL backbones: tail (VNL +CH3) and head (CH3 +VNL) caps
+
 [ link ]
-resname $vinyl_polymers
+resname $ch3ter_vnl
 [ bonds ]
 VNL   +CH3    1     0.245 4000  {"comment": "VNL_CH3"}
 
 [ link ]
-resname $vinyl_polymers
+resname $ch3ter_vnl
+[ bonds ]
+CH3   +VNL    1     0.245 4000  {"comment": "VNL_CH3"}
+
+[ link ]
+resname $ch3ter_vnl
 [ angles ]
-VNL +VNL  ++CH3    2  127  50    {"group": "vinly-backbone bonds", "comment": "VNL_VNL"}
+VNL +VNL  ++CH3    2  127  50    {"group": "vinly-backbone bonds", "comment": "VNL_VNL_CH3"}
+
+[ link ]
+resname $ch3ter_vnl
+[ angles ]
+CH3 +VNL  ++VNL    2  127  50    {"group": "vinly-backbone bonds", "comment": "VNL_VNL_CH3"}
+
+;;;;;;;;; HMA (MVNL backbone); parameters as for VNL
+
+[ link ]
+resname "HMA|CH3ter"
+[ bonds ]
+MVNL  +CH3    1     0.245 4000  {"comment": "MVNL_CH3"}
+
+[ link ]
+resname "HMA|CH3ter"
+[ bonds ]
+CH3   +MVNL   1     0.245 4000  {"comment": "MVNL_CH3"}
+
+[ link ]
+resname "HMA|CH3ter"
+[ angles ]
+MVNL +MVNL ++CH3   2  127  50    {"comment": "MVNL_MVNL_CH3"}
+
+[ link ]
+resname "HMA|CH3ter"
+[ angles ]
+CH3 +MVNL ++MVNL   2  127  50    {"comment": "MVNL_MVNL_CH3"}
+
+;;;;;;;;; EO (EC backbone); parameters as for the OHter cap in PEO.martini3.ff
+
+[ link ]
+resname "EO|CH3ter"
+[ bonds ]
+EC    +CH3    1     0.29 7000   {"comment": "EC_CH3"}
+
+[ link ]
+resname "EO|CH3ter"
+[ bonds ]
+CH3   +EC     1     0.29 7000   {"comment": "EC_CH3"}
+
+[ link ]
+resname "EO|CH3ter"
+[ angles ]
+EC  +EC  ++CH3     2  127  110   {"comment": "EC_EC_CH3"}
+
+[ link ]
+resname "EO|CH3ter"
+[ angles ]
+CH3 +EC  ++EC      2  127  110   {"comment": "EC_EC_CH3"}
+
+;;;;;;;;; PE (C1 backbone); placeholder parameters, equilibrium values from
+;;;;;;;;; CGenFF-mapped CH3-(PE)50-CH3, force constants as for the VNL caps
+
+[ link ]
+resname "PE|CH3ter"
+[ bonds ]
+C1    +CH3    1     0.32 4000   {"comment": "C1_CH3"}
+
+[ link ]
+resname "PE|CH3ter"
+[ bonds ]
+CH3   +C1     1     0.32 4000   {"comment": "C1_CH3"}
+
+[ link ]
+resname "PE|CH3ter"
+[ angles ]
+C1  +C1  ++CH3     2  124  50    {"comment": "C1_C1_CH3"}
+
+[ link ]
+resname "PE|CH3ter"
+[ angles ]
+CH3 +C1  ++C1      2  124  50    {"comment": "C1_C1_CH3"}
