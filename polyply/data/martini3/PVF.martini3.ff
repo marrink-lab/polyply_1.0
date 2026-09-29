@@ -1,0 +1,21 @@
+[ citations ]
+Martini3
+polyply
+;
+[ moleculetype ]
+PVF 1
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge    mass 
+   1    SX1          1  PVF       VNL       1     0.0   45
+
+[ link ]
+resname "PVF"
+[ bonds ]
+VNL     +VNL    1     0.30 8000
+
+
+[ link ]
+resname "PVF"
+[ angles ]
+VNL  +VNL  ++VNL  2  135 40

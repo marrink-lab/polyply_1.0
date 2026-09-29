@@ -1,0 +1,21 @@
+[ citations ]
+Martini3
+polyply
+;
+[ moleculetype ]
+PVC 1
+;
+[ atoms ]
+;  nr    type       resnr  residu    atom    cgnr        charge    mass 
+   1    SX3          1  PVC       VNL       1     0.0   45
+
+[ link ]
+resname "PVC"
+[ bonds ]
+VNL     +VNL    1     0.30 8000
+
+
+[ link ]
+resname "PVC"
+[ angles ]
+VNL  +VNL  ++VNL  2  135 40
