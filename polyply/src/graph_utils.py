@@ -214,13 +214,13 @@ def get_all_predecessors(graph, node, start_node=0):
     predecessors.reverse()
     return predecessors
 
-def find_one_ismags_match(graph1, graph2, node_match):
+def find_one_graph_match(graph1, graph2, node_match):
     """
-    Returns one ismags match when graphs are isomorphic
+    Returns one graph isomorphism between two graphs and
     otherwise None.
     """
     GM = nx.isomorphism.GraphMatcher(graph1, graph2, node_match=node_match)
-    raw_matches = GM.subgraph_isomorphisms_iter()
+    raw_matches = GM.isomorphisms_iter()
     try:
         mapping = next(raw_matches)
         return mapping

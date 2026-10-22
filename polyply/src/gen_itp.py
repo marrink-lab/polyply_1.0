@@ -36,6 +36,7 @@ from .load_library import load_ff_library
 from .gen_dna import complement_dsDNA
 from .simple_seq_parsers import parse_simple_seq_string
 from .apply_modifications import ApplyModifications
+from .simple_seq_parsers import parse_simple_seq_string
 
 LOGGER = StyleAdapter(get_logger(__name__))
 

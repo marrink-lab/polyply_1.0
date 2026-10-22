@@ -19,7 +19,7 @@ from cgsmiles.read_cgsmiles import read_cgsmiles
 from vermouth.graph_utils import make_residue_graph
 from vermouth.log_helpers import StyleAdapter, get_logger
 from vermouth.gmx.itp_read import read_itp
-from .graph_utils import find_nodes_with_attributes, find_one_ismags_match
+from .graph_utils import find_nodes_with_attributes, find_one_graph_match
 from .simple_seq_parsers import parse_txt, parse_ig, parse_fasta, parse_json, Monomer
 
 LOGGER = StyleAdapter(get_logger(__name__))
@@ -299,7 +299,7 @@ class MetaMolecule(nx.Graph):
         def _node_match(n1, n2):
             return n1[match_on] == n2[match_on]
 
-        mapping = find_one_ismags_match(new_meta_mol.molecule, self.molecule, node_match=_node_match)
+        mapping = find_one_graph_match(new_meta_mol.molecule, self.molecule, node_match=_node_match)
 
         # we need to do some bookkeeping for the resids
         for idx, node in enumerate(new_meta_mol.nodes):
